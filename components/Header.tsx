@@ -13,7 +13,7 @@ export default function Header() {
         {/* LOGO */}
         <Link href="/" className="flex items-center gap-3">
           <Image
-            src="/logov2.gif"
+            src="/logo.jpg"
             alt="CCTT"
             width={44}
             height={44}
