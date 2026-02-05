@@ -2,7 +2,7 @@ export default function HomePage() {
   return (
     <>
       {/* HERO */}
-      <section className="bg-gray-50">
+      <section className="bg-purple-50">
         <div className="max-w-6xl mx-auto px-4 py-20">
           <h1 className="text-4xl font-bold mb-4">
             Châlons-en-Champagne Tennis de Table
