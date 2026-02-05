@@ -39,7 +39,7 @@ export default function TarifsPage() {
           </div>
 
           {/* JUNIORS */}
-          <div className="bg-white border rounded-lg p-6">
+          <div className="bg-white border-l-4 border-purple-500 rounded-lg p-6">
             <h3 className="text-xl font-semibold mb-4">
               Juniors <span className="text-sm text-gray-500">(2007–2010)</span>
             </h3>
@@ -61,7 +61,7 @@ export default function TarifsPage() {
           </div>
 
           {/* CADETS & MINIMES */}
-          <div className="bg-white border rounded-lg p-6">
+          <div className="bg-white border-l-4 border-purple-500 rounded-lg p-6">
             <h3 className="text-xl font-semibold mb-4">
               Cadets & Minimes{" "}
               <span className="text-sm text-gray-500">(2011–2014)</span>
@@ -84,7 +84,7 @@ export default function TarifsPage() {
           </div>
 
           {/* POUSSINS & BENJAMINS */}
-          <div className="bg-white border rounded-lg p-6">
+          <div className="bg-white border-l-4 border-purple-500 rounded-lg p-6">
             <h3 className="text-xl font-semibold mb-4">
               Poussins & Benjamins{" "}
               <span className="text-sm text-gray-500">(2015 et après)</span>
