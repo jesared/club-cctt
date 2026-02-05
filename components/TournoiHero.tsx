@@ -1,7 +1,7 @@
 export default function TournoiHero() {
   return (
     <section>
-      <div className="max-w-6xl mx-auto px-4 py-20">
+      <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="bg-purple-600 rounded-lg px-8 py-12 text-white">
           <p className="uppercase tracking-wide text-sm text-purple-200 mb-4">
             Tournoi annuel du club

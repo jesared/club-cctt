@@ -48,6 +48,7 @@ export default function HomePage() {
             et structuré. Que vous souhaitiez pratiquer le tennis de table en
             loisir ou en compétition, notre club propose des entraînements
             adaptés à tous les niveaux et à tous les âges.
+            Encadré par un équipe d&apos;entraineurs professionnels diplômés
           </p>
 
           <p className="text-gray-700 leading-relaxed">
@@ -94,7 +95,7 @@ export default function HomePage() {
 
       {/* APPEL À L’ACTION */}
       <section>
-        <div className="max-w-6xl mx-auto px-4 py-20">
+        <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="bg-purple-600 rounded-lg px-8 py-12 text-white">
             <h2 className="text-3xl font-semibold mb-4">
               Envie de nous rejoindre ?
