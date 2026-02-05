@@ -69,10 +69,12 @@ export default function HorairesPage() {
           </CardHeader>
           <CardContent className="space-y-2 text-gray-700">
             <p>
-              Les entraînements ont lieu au gymnase de Châlons-en-Champagne.
+              Les entraînements ont lieu au salle Tirlet de
+              Châlons-en-Champagne.
             </p>
             <p>
-              <strong>Adresse :</strong> Gymnase – Châlons-en-Champagne
+              <strong>Adresse :</strong> rue de la Charrière cite administrative
+              Tirlet, 51000 Chalons en champagne
             </p>
 
             {/* Plus tard : Google Maps */}
