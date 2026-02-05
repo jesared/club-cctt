@@ -193,7 +193,7 @@ export default function TarifsPage() {
         </div>
         <a
           href="/contact"
-          className="inline-block mt-4 text-purple-600 hover:underline"
+          className="inline-flex justify-center border border-purple-600 text-purple-600 px-6 py-3 rounded-md hover:bg-purple-50 transition"
         >
           Nous contacter
         </a>
