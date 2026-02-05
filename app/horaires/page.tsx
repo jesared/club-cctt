@@ -2,46 +2,49 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function HorairesPage() {
   return (
-    <div className="max-w-6xl mx-auto px-4 py-16 space-y-16">
+    <div className="max-w-6xl mx-auto px-4 py-16 space-y-20">
       {/* TITRE PAGE */}
       <header>
-        <h1 className="text-4xl font-bold mb-4">Horaires</h1>
+        <h1 className="text-4xl font-bold mb-4">Horaires d’entraînement</h1>
         <p className="text-gray-600 max-w-3xl">
-          Retrouvez ci-dessous les horaires d’entraînement du
-          Châlons-en-Champagne Tennis de Table.
+          Retrouvez ici l’ensemble des horaires d’entraînement du
+          Châlons-en-Champagne Tennis de Table, selon les catégories et les
+          niveaux de pratique.
         </p>
       </header>
 
       {/* ENTRAÎNEMENTS */}
       <section>
-        <h2 className="text-2xl font-semibold mb-8">Horaires d’entraînement</h2>
+        <h2 className="text-3xl font-semibold mb-10">Séances d’entraînement</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
           {/* JEUNES */}
           <Card className="border-l-4 border-l-purple-500">
             <CardHeader>
               <CardTitle>Jeunes</CardTitle>
             </CardHeader>
-            <CardContent>
-              <ul className="space-y-2 text-gray-700">
-                <li>
-                  <strong>Mercredi</strong> : 14h00 – 16h00
-                </li>
-              </ul>
+            <CardContent className="space-y-2 text-gray-700">
+              <p>
+                <strong>Mercredi</strong> : 14h00 – 16h00
+              </p>
+              <p className="text-sm text-gray-500">
+                Enfants et adolescents – tous niveaux
+              </p>
             </CardContent>
           </Card>
 
           {/* ADULTES LOISIRS */}
           <Card className="border-l-4 border-l-purple-500">
             <CardHeader>
-              <CardTitle>Adultes loisirs</CardTitle>
+              <CardTitle>Adultes – Loisirs</CardTitle>
             </CardHeader>
-            <CardContent>
-              <ul className="space-y-2 text-gray-700">
-                <li>
-                  <strong>Lundi</strong> : 18h00 – 20h00
-                </li>
-              </ul>
+            <CardContent className="space-y-2 text-gray-700">
+              <p>
+                <strong>Lundi</strong> : 18h00 – 20h00
+              </p>
+              <p className="text-sm text-gray-500">
+                Pratique libre et encadrée
+              </p>
             </CardContent>
           </Card>
 
@@ -50,12 +53,13 @@ export default function HorairesPage() {
             <CardHeader>
               <CardTitle>Compétition</CardTitle>
             </CardHeader>
-            <CardContent>
-              <ul className="space-y-2 text-gray-700">
-                <li>
-                  <strong>Vendredi</strong> : 18h00 – 21h00
-                </li>
-              </ul>
+            <CardContent className="space-y-2 text-gray-700">
+              <p>
+                <strong>Vendredi</strong> : 18h00 – 21h00
+              </p>
+              <p className="text-sm text-gray-500">
+                Joueurs engagés en compétition
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -67,17 +71,17 @@ export default function HorairesPage() {
           <CardHeader>
             <CardTitle>Lieu d’entraînement</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-gray-700">
+          <CardContent className="space-y-3 text-gray-700 max-w-3xl">
             <p>
-              Les entraînements ont lieu au salle Tirlet de
-              Châlons-en-Champagne.
+              Les entraînements se déroulent à la
+              <strong> salle Tirlet</strong>.
             </p>
             <p>
-              <strong>Adresse :</strong> rue de la Charrière cite administrative
-              Tirlet, 51000 Chalons en champagne
+              <strong>Adresse :</strong> Rue de la Charrière, cité
+              administrative Tirlet, 51000 Châlons-en-Champagne
             </p>
 
-            {/* Plus tard : Google Maps */}
+            {/* future map */}
             {/* <div className="mt-6 h-64 bg-gray-200 rounded-lg" /> */}
           </CardContent>
         </Card>
@@ -89,9 +93,10 @@ export default function HorairesPage() {
           <CardHeader>
             <CardTitle>Essai gratuit</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-gray-700 max-w-3xl">
-              Les nouveaux joueurs peuvent venir essayer gratuitement avant
+          <CardContent className="max-w-3xl">
+            <p className="text-gray-700">
+              Les nouveaux joueurs ont la possibilité de venir
+              <strong> essayer gratuitement</strong> le tennis de table avant
               toute inscription. N’hésitez pas à nous contacter pour plus
               d’informations.
             </p>
