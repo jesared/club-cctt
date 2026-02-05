@@ -48,12 +48,12 @@ export default function HomePage() {
             et structuré. Que vous souhaitiez pratiquer le tennis de table en
             loisir ou en compétition, notre club propose des entraînements
             adaptés à tous les niveaux et à tous les âges.
-            Encadré par un équipe d&apos;entraineurs professionnels diplômés
           </p>
 
           <p className="text-gray-700 leading-relaxed">
-            Encadré par une équipe investie, le club met l’accent sur la
-            progression, le respect et le plaisir du jeu.
+            Encadré par un équipe d&apos;entraineurs professionnels diplômés, le
+            club met l’accent sur la progression, le respect et le plaisir du
+            jeu.
           </p>
         </div>
       </section>
