@@ -109,33 +109,45 @@ export default function TarifsPage() {
       </section>
 
       {/* MODALITÉS DE PAIEMENT */}
-      <section className="bg-gray-50 rounded-lg">
-        <div className="px-6 py-10 md:px-12">
-          <h2 className="text-2xl font-semibold mb-6">Modalités de paiement</h2>
+      <section>
+        <h2 className="text-2xl font-semibold mb-8">Modalités de paiement</h2>
 
-          <p className="text-gray-700 mb-4">
-            Les moyens de paiement suivants sont acceptés :
-          </p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* MOYENS DE PAIEMENT */}
+          <div className="bg-white border rounded-lg p-6">
+            <h3 className="text-lg font-semibold mb-4">Moyens acceptés</h3>
 
-          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-gray-700">
-            <li>Chèque ou numéraire</li>
-            <li>Chèques-vacances</li>
-            <li>Bons CAF</li>
-            <li>Chèques ACTOBI</li>
-            <li>MSA</li>
-          </ul>
+            <ul className="space-y-2 text-gray-700">
+              <li>Chèque ou numéraire</li>
+              <li>Chèques-vacances</li>
+              <li>Bons CAF</li>
+              <li>Chèques ACTOBI</li>
+              <li>MSA</li>
+            </ul>
+          </div>
 
-          <div className="mt-6 border-l-4 border-purple-500 pl-6">
-            <p className="font-semibold mb-2">PASS SPORT</p>
+          {/* PASS SPORT */}
+          <div className="bg-white border-l-4 border-purple-500 rounded-lg p-6">
+            <h3 className="text-lg font-semibold mb-4">PASS SPORT</h3>
+
             <p className="text-gray-700">
-              Le dispositif <strong>PASS SPORT</strong> est accepté.
+              Le dispositif <strong>PASS SPORT</strong> est accepté par le club
+              pour le règlement de la cotisation.
             </p>
           </div>
 
-          <p className="mt-6 text-gray-700">
-            Il est également possible de régler la cotisation
-            <strong> en plusieurs fois</strong>.
-          </p>
+          {/* PAIEMENT ÉCHELONNÉ */}
+          <div className="bg-white border rounded-lg p-6">
+            <h3 className="text-lg font-semibold mb-4">
+              Paiement en plusieurs fois
+            </h3>
+
+            <p className="text-gray-700">
+              Il est possible de régler la cotisation
+              <strong> en plusieurs fois</strong>. N’hésitez pas à nous
+              contacter pour plus d’informations.
+            </p>
+          </div>
         </div>
       </section>
 
