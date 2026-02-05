@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Image from "next/image";
 
-import { Shield, User, Users } from "lucide-react";
+import { User, Users } from "lucide-react";
 
 export default function ComiteDirecteurPage() {
   return (
@@ -21,14 +22,22 @@ export default function ComiteDirecteurPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* PRÉSIDENT */}
           <Card className="border-l-4 border-l-purple-500">
-            <CardHeader className="flex flex-row items-center gap-3">
-              <Shield className="w-5 h-5 text-purple-600" />
-              <CardTitle>Président</CardTitle>
+            <CardHeader className="flex flex-col items-center text-center gap-4">
+              <Image
+                src="/comite/julie_Fila_Tournant.jpg"
+                alt="FILA-TOURNANT Julie – Présidente du CCTT"
+                width={120}
+                height={120}
+                className="rounded-full object-cover"
+              />
+
+              <CardTitle>Présidente</CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="font-medium">Nom Prénom</p>
+
+            <CardContent className="text-center">
+              <p className="font-medium">FILA-TOURNANT Julie</p>
               <p className="text-sm text-gray-500">
-                Représentation du club, orientation générale
+                Représentation et orientation du club
               </p>
             </CardContent>
           </Card>
