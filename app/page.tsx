@@ -1,4 +1,4 @@
-import Image from "next/image";
+import TournoiHero from "@/components/TournoiHero";
 
 export default function HomePage() {
   return (
@@ -7,15 +7,6 @@ export default function HomePage() {
       <section className="bg-purple-50">
         <div className="max-w-6xl mx-auto px-4 py-24">
           <div className="max-w-3xl">
-            <Image
-              src="/logo.jpg"
-              alt="Châlons-en-Champagne Tennis de Table"
-              width={260}
-              height={130}
-              className="object-contain mb-6"
-              priority
-            />
-
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
               Châlons-en-Champagne
               <br />
@@ -122,6 +113,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      <TournoiHero />
     </>
   );
 }
