@@ -3,66 +3,121 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export default function HorairesPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-16 space-y-20">
-      {/* TITRE PAGE */}
+      {/* TITRE */}
       <header>
         <h1 className="text-4xl font-bold mb-4">Horaires d’entraînement</h1>
         <p className="text-gray-600 max-w-3xl">
-          Retrouvez ici l’ensemble des horaires d’entraînement du
-          Châlons-en-Champagne Tennis de Table, selon les catégories et les
-          niveaux de pratique.
+          Retrouvez ci-dessous l’ensemble des créneaux d’entraînement du
+          Châlons-en-Champagne Tennis de Table.
         </p>
       </header>
 
-      {/* ENTRAÎNEMENTS */}
-      <section>
-        <h2 className="text-3xl font-semibold mb-10">Séances d’entraînement</h2>
+      {/* HORAIRES PAR JOUR */}
+      <section className="space-y-8">
+        {/* LUNDI */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Lundi</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-gray-700">
+            <p>
+              <strong>Jeunes</strong> : 17h45 – 19h (Primaires + Handis)
+            </p>
+            <p>
+              <strong>Entraînement libre</strong> : 19h00 (Départementaux)
+            </p>
+          </CardContent>
+        </Card>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-          {/* JEUNES */}
-          <Card className="border-l-4 border-l-purple-500">
-            <CardHeader>
-              <CardTitle>Jeunes</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-gray-700">
-              <p>
-                <strong>Mercredi</strong> : 14h00 – 16h00
-              </p>
-              <p className="text-sm text-gray-500">
-                Enfants et adolescents – tous niveaux
-              </p>
-            </CardContent>
-          </Card>
+        {/* MARDI */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Mardi</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-gray-700">
+            <p>
+              <strong>Jeunes</strong> : 17h00 – 18h (Panier balles)
+            </p>
+            <p>
+              <strong>Élite</strong> : 18h00 – 19h30 (Élite + Lycée)
+            </p>
+            <p>
+              <strong>Sport santé</strong> : 10h00 – 11h00
+            </p>
+            <p>
+              <strong>Libre</strong> : 9h00 – 11h00 (Vétérans)
+            </p>
+          </CardContent>
+        </Card>
 
-          {/* ADULTES LOISIRS */}
-          <Card className="border-l-4 border-l-purple-500">
-            <CardHeader>
-              <CardTitle>Adultes – Loisirs</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-gray-700">
-              <p>
-                <strong>Lundi</strong> : 18h00 – 20h00
-              </p>
-              <p className="text-sm text-gray-500">
-                Pratique libre et encadrée
-              </p>
-            </CardContent>
-          </Card>
+        {/* MERCREDI */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Mercredi</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-gray-700">
+            <p>
+              <strong>Baby Ping</strong> : 13h30 – 14h30
+            </p>
+            <p>
+              <strong>Primaires</strong> : 14h30 – 16h00
+            </p>
+            <p>
+              <strong>Collèges</strong> : 16h00 – 17h30
+            </p>
+            <p>
+              <strong>Section sportive (Lycées)</strong> : 17h30 – 19h00
+            </p>
+            <p>
+              <strong>Loisirs dirigés</strong> : 19h00 – 20h30
+            </p>
+            <p>
+              <strong>Libre</strong> : 19h00 (Départementaux)
+            </p>
+          </CardContent>
+        </Card>
 
-          {/* COMPÉTITION */}
-          <Card className="border-l-4 border-l-purple-500">
-            <CardHeader>
-              <CardTitle>Compétition</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-gray-700">
-              <p>
-                <strong>Vendredi</strong> : 18h00 – 21h00
-              </p>
-              <p className="text-sm text-gray-500">
-                Joueurs engagés en compétition
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+        {/* JEUDI */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Jeudi</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-gray-700">
+            <p>
+              <strong>Jeunes</strong> : 17h00 – 18h00 (Panier balles)
+            </p>
+            <p>
+              <strong>Élite</strong> : 18h00 – 19h30 (Primaires – Collège)
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* VENDREDI */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Vendredi</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-gray-700">
+            <p>
+              <strong>Débutants – Moyens</strong> : 17h00 – 18h00
+            </p>
+            <p>
+              <strong>Lycées & Collèges</strong> : 18h00 – 19h30
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* SAMEDI */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Samedi</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-gray-700">
+            <p>
+              <strong>Loisirs libres</strong> : 10h00 – 11h30
+            </p>
+          </CardContent>
+        </Card>
       </section>
 
       {/* LIEU */}
@@ -71,18 +126,14 @@ export default function HorairesPage() {
           <CardHeader>
             <CardTitle>Lieu d’entraînement</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3 text-gray-700 max-w-3xl">
+          <CardContent className="space-y-2 text-gray-700 max-w-3xl">
             <p>
-              Les entraînements se déroulent à la
-              <strong> salle Tirlet</strong>.
+              Les entraînements ont lieu à la <strong>salle Tirlet</strong>.
             </p>
             <p>
               <strong>Adresse :</strong> Rue de la Charrière, cité
               administrative Tirlet, 51000 Châlons-en-Champagne
             </p>
-
-            {/* future map */}
-            {/* <div className="mt-6 h-64 bg-gray-200 rounded-lg" /> */}
           </CardContent>
         </Card>
       </section>
@@ -93,10 +144,9 @@ export default function HorairesPage() {
           <CardHeader>
             <CardTitle>Essai gratuit</CardTitle>
           </CardHeader>
-          <CardContent className="max-w-3xl">
-            <p className="text-gray-700">
-              Les nouveaux joueurs ont la possibilité de venir
-              <strong> essayer gratuitement</strong> le tennis de table avant
+          <CardContent>
+            <p className="text-gray-700 max-w-3xl">
+              Les nouveaux joueurs peuvent venir essayer gratuitement avant
               toute inscription. N’hésitez pas à nous contacter pour plus
               d’informations.
             </p>
