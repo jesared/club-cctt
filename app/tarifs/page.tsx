@@ -11,29 +11,83 @@ export default function TarifsPage() {
       </header>
 
       {/* TARIFS */}
+      {/* TABLEAU TARIFS */}
       <section>
-        <h2 className="text-2xl font-semibold mb-8">Cotisations annuelles</h2>
+        <h2 className="text-2xl font-semibold mb-6">Cotisations</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* JEUNES */}
-          <div className="border rounded-lg p-6 bg-white text-center">
-            <h3 className="text-lg font-semibold mb-2">Jeunes</h3>
-            <p className="text-3xl font-bold mb-4">XX €</p>
-            <p className="text-sm text-gray-600">Saison sportive</p>
+        <div className="space-y-8">
+          {/* ADULTES */}
+          <div>
+            <h3 className="font-semibold text-xl mb-2">
+              Adultes (Vétérans & Sénior)
+            </h3>
+
+            <ul className="list-disc list-inside text-gray-700">
+              <li>
+                Promotionnelle : <strong>140 €</strong>
+              </li>
+              <li>
+                Compétition : <strong>184 €</strong>
+              </li>
+              <li>
+                Compétition + Critérium Fédéral : <strong>226 €</strong>
+              </li>
+            </ul>
           </div>
 
-          {/* ADULTES LOISIRS */}
-          <div className="border rounded-lg p-6 bg-white text-center">
-            <h3 className="text-lg font-semibold mb-2">Adultes loisirs</h3>
-            <p className="text-3xl font-bold mb-4">XX €</p>
-            <p className="text-sm text-gray-600">Saison sportive</p>
+          {/* JUNIORS */}
+          <div>
+            <h3 className="font-semibold text-xl mb-2">Juniors (2007-2010)</h3>
+
+            <ul className="list-disc list-inside text-gray-700">
+              <li>
+                Promotionnelle : <strong>140 €</strong>
+              </li>
+              <li>
+                Compétition : <strong>184 €</strong>
+              </li>
+              <li>
+                Compétition + Critérium Fédéral : <strong>207 €</strong>
+              </li>
+            </ul>
           </div>
 
-          {/* COMPÉTITION */}
-          <div className="border rounded-lg p-6 bg-white text-center">
-            <h3 className="text-lg font-semibold mb-2">Compétition</h3>
-            <p className="text-3xl font-bold mb-4">XX €</p>
-            <p className="text-sm text-gray-600">Saison sportive</p>
+          {/* CADETS & MINIMES */}
+          <div>
+            <h3 className="font-semibold text-xl mb-2">
+              Cadets & Minimes (2011-2014)
+            </h3>
+
+            <ul className="list-disc list-inside text-gray-700">
+              <li>
+                Promotionnelle : <strong>130 €</strong>
+              </li>
+              <li>
+                Compétition : <strong>158 €</strong>
+              </li>
+              <li>
+                Compétition + Critérium Fédéral : <strong>181 €</strong>
+              </li>
+            </ul>
+          </div>
+
+          {/* POUSSINS & BENJAMINS */}
+          <div>
+            <h3 className="font-semibold text-xl mb-2">
+              Poussins & Benjamins (2015 et après)
+            </h3>
+
+            <ul className="list-disc list-inside text-gray-700">
+              <li>
+                Promotionnelle : <strong>130 €</strong>
+              </li>
+              <li>
+                Compétition : <strong>158 €</strong>
+              </li>
+              <li>
+                Compétition + Critérium Fédéral : <strong>168 €</strong>
+              </li>
+            </ul>
           </div>
         </div>
       </section>
