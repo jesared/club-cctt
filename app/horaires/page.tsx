@@ -53,8 +53,9 @@ export default function HorairesPage() {
               <span>10h00 – 11h00</span>
             </p>
 
-            <p>
-              <strong>Libre</strong> : 9h00 – 11h00 (Vétérans)
+            <p className="flex items-center gap-2">
+              <Badge variant={"libre"}>Libre</Badge>
+              <span>9h00 – 11h00 (Vétérans)</span>
             </p>
           </CardContent>
         </Card>
