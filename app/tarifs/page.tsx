@@ -16,7 +16,7 @@ export default function TarifsPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* ADULTES */}
-          <div className="bg-white border rounded-lg p-6">
+          <div className="bg-white border-l-4 border-purple-500 rounded-lg p-6">
             <h3 className="text-xl font-semibold mb-4">
               Adultes{" "}
               <span className="text-sm text-gray-500">(Vétérans & Sénior)</span>
@@ -27,7 +27,7 @@ export default function TarifsPage() {
                 <span>Promotionnelle</span>
                 <strong>140 €</strong>
               </li>
-              <li className="flex justify-between">
+              <li className="flex justify-between font-semibold text-purple-600">
                 <span>Compétition</span>
                 <strong>184 €</strong>
               </li>
@@ -49,7 +49,7 @@ export default function TarifsPage() {
                 <span>Promotionnelle</span>
                 <strong>140 €</strong>
               </li>
-              <li className="flex justify-between">
+              <li className="flex justify-between font-semibold text-purple-600">
                 <span>Compétition</span>
                 <strong>184 €</strong>
               </li>
@@ -72,7 +72,7 @@ export default function TarifsPage() {
                 <span>Promotionnelle</span>
                 <strong>130 €</strong>
               </li>
-              <li className="flex justify-between">
+              <li className="flex justify-between font-semibold text-purple-600">
                 <span>Compétition</span>
                 <strong>158 €</strong>
               </li>
@@ -95,7 +95,7 @@ export default function TarifsPage() {
                 <span>Promotionnelle</span>
                 <strong>130 €</strong>
               </li>
-              <li className="flex justify-between">
+              <li className="flex justify-between font-semibold text-purple-600">
                 <span>Compétition</span>
                 <strong>158 €</strong>
               </li>
