@@ -1,3 +1,5 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import TournoiHero from "@/components/TournoiHero";
 
 export default function HomePage() {
@@ -66,29 +68,41 @@ export default function HomePage() {
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white border rounded-lg p-6">
-              <h3 className="font-semibold mb-2">Tous les niveaux</h3>
-              <p className="text-gray-600 text-sm">
-                Enfants, adultes, débutants ou joueurs confirmés : chacun trouve
-                sa place au CCTT.
-              </p>
-            </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Tous les niveaux</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 text-sm">
+                  Enfants, adultes, débutants ou joueurs confirmés : chacun
+                  trouve sa place au CCTT.
+                </p>
+              </CardContent>
+            </Card>
 
-            <div className="bg-white border rounded-lg p-6">
-              <h3 className="font-semibold mb-2">Loisir & compétition</h3>
-              <p className="text-gray-600 text-sm">
-                Une pratique adaptée à vos objectifs, du loisir à la compétition
-                officielle.
-              </p>
-            </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Loisir & compétition</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 text-sm">
+                  Une pratique adaptée à vos objectifs, du loisir à la
+                  compétition officielle.
+                </p>
+              </CardContent>
+            </Card>
 
-            <div className="bg-white border rounded-lg p-6">
-              <h3 className="font-semibold mb-2">Esprit club</h3>
-              <p className="text-gray-600 text-sm">
-                Convivialité, respect et engagement sont au cœur de la vie du
-                club.
-              </p>
-            </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Esprit club</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 text-sm">
+                  Convivialité, respect et engagement sont au cœur de la vie du
+                  club.
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
@@ -96,24 +110,31 @@ export default function HomePage() {
       {/* APPEL À L’ACTION */}
       <section>
         <div className="max-w-6xl mx-auto px-4 py-8">
-          <div className="bg-purple-600 rounded-lg px-8 py-12 text-white">
-            <h2 className="text-3xl font-semibold mb-4">
-              Envie de nous rejoindre ?
-            </h2>
-            <p className="mb-6 max-w-2xl">
-              Venez essayer le tennis de table au sein du Châlons-en-Champagne
-              Tennis de Table. Les essais sont possibles avant toute
-              inscription.
-            </p>
-            <a
-              href="/contact"
-              className="inline-block bg-white text-purple-600 px-6 py-3 rounded-md font-medium hover:bg-gray-100 transition"
-            >
-              Nous contacter
-            </a>
-          </div>
+          <Card className="bg-purple-600 text-white">
+            <CardHeader>
+              <CardTitle className="text-white">
+                Envie de nous rejoindre ?
+              </CardTitle>
+            </CardHeader>
+
+            <CardContent className="space-y-6">
+              <p className="max-w-2xl">
+                Venez essayer le tennis de table au sein du Châlons-en-Champagne
+                Tennis de Table. Les essais sont possibles avant toute
+                inscription.
+              </p>
+
+              <a
+                href="/contact"
+                className="inline-block bg-white text-purple-600 px-6 py-3 rounded-md font-medium hover:bg-gray-100 transition"
+              >
+                Nous contacter
+              </a>
+            </CardContent>
+          </Card>
         </div>
       </section>
+
       <TournoiHero />
     </>
   );
