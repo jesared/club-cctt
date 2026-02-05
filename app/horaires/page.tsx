@@ -1,13 +1,7 @@
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function HorairesPage() {
-  const badgeBase = "inline-block text-xs font-medium px-2 py-1 rounded-md";
-
-  const badgeJeunes = `${badgeBase} bg-purple-100 text-purple-700`;
-  const badgeElite = `${badgeBase} bg-blue-100 text-blue-700`;
-  const badgeLoisir = `${badgeBase} bg-green-100 text-green-700`;
-  const badgeLibre = `${badgeBase} bg-gray-100 text-gray-700`;
-
   return (
     <div className="max-w-6xl mx-auto px-4 py-16 space-y-20">
       {/* TITRE */}
@@ -28,12 +22,12 @@ export default function HorairesPage() {
           </CardHeader>
           <CardContent className="space-y-2 text-gray-700">
             <p className="flex items-center gap-2">
-              <span className={badgeJeunes}>Jeunes</span>
+              <Badge variant={"jeunes"}>Jeunes</Badge>
               <span>17h45 – 19h (Primaires + Handis)</span>
             </p>
 
             <p className="flex items-center gap-2">
-              <span className={badgeLibre}>Libre</span>
+              <Badge variant={"libre"}>Libre</Badge>
               <span>19h00 (Départementaux)</span>
             </p>
           </CardContent>
@@ -46,16 +40,16 @@ export default function HorairesPage() {
           </CardHeader>
           <CardContent className="space-y-2 text-gray-700">
             <p className="flex items-center gap-2">
-              <span className={badgeJeunes}>Jeunes</span> 17h00 – 18h (Panier
+              <Badge variant={"jeunes"}>Jeunes</Badge> 17h00 – 18h (Panier
               balles)
             </p>
             <p className="flex items-center gap-2">
-              <span className={badgeElite}>Élite</span>
+              <Badge variant={"elite"}>Élite</Badge>
               <span>18h00 – 19h30 (Élite + Lycée)</span>
             </p>
 
             <p className="flex items-center gap-2">
-              <span className={badgeLoisir}>Sport santé</span>
+              <Badge variant={"loisir"}>Sport santé</Badge>
               <span>10h00 – 11h00</span>
             </p>
 
@@ -72,22 +66,23 @@ export default function HorairesPage() {
           </CardHeader>
           <CardContent className="space-y-2 text-gray-700">
             <p>
-              <strong>Baby Ping</strong> : 13h30 – 14h30
+              <Badge variant={"jeunes"}>Baby Ping</Badge> : 13h30 – 14h30
             </p>
             <p>
-              <strong>Primaires</strong> : 14h30 – 16h00
+              <Badge variant={"jeunes"}>Primaires</Badge> : 14h30 – 16h00
             </p>
             <p>
-              <strong>Collèges</strong> : 16h00 – 17h30
+              <Badge variant={"jeunes"}>Collèges</Badge> : 16h00 – 17h30
             </p>
             <p>
-              <strong>Section sportive (Lycées)</strong> : 17h30 – 19h00
+              <Badge variant={"jeunes"}>Section sportive (Lycées)</Badge> :
+              17h30 – 19h00
             </p>
             <p>
-              <strong>Loisirs dirigés</strong> : 19h00 – 20h30
+              <Badge variant={"loisir"}>Loisirs dirigés</Badge> : 19h00 – 20h30
             </p>
             <p>
-              <strong>Libre</strong> : 19h00 (Départementaux)
+              <Badge variant={"libre"}>Libre</Badge> : 19h00 (Départementaux)
             </p>
           </CardContent>
         </Card>
@@ -99,10 +94,12 @@ export default function HorairesPage() {
           </CardHeader>
           <CardContent className="space-y-2 text-gray-700">
             <p>
-              <strong>Jeunes</strong> : 17h00 – 18h00 (Panier balles)
+              <Badge variant={"jeunes"}>Jeunes</Badge> : 17h00 – 18h00 (Panier
+              balles)
             </p>
             <p>
-              <strong>Élite</strong> : 18h00 – 19h30 (Primaires – Collège)
+              <Badge variant={"elite"}>Élite</Badge> : 18h00 – 19h30 (Primaires
+              – Collège)
             </p>
           </CardContent>
         </Card>
@@ -114,10 +111,12 @@ export default function HorairesPage() {
           </CardHeader>
           <CardContent className="space-y-2 text-gray-700">
             <p>
-              <strong>Débutants – Moyens</strong> : 17h00 – 18h00
+              <Badge variant={"jeunes"}>Débutants – Moyens</Badge> : 17h00 –
+              18h00
             </p>
             <p>
-              <strong>Lycées & Collèges</strong> : 18h00 – 19h30
+              <Badge variant={"jeunes"}>Lycées & Collèges</Badge> : 18h00 –
+              19h30
             </p>
           </CardContent>
         </Card>
@@ -129,7 +128,7 @@ export default function HorairesPage() {
           </CardHeader>
           <CardContent className="space-y-2 text-gray-700">
             <p>
-              <strong>Loisirs libres</strong> : 10h00 – 11h30
+              <Badge variant={"loisir"}>Loisirs libres</Badge> : 10h00 – 11h30
             </p>
           </CardContent>
         </Card>
