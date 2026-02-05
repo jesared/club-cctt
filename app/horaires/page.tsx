@@ -1,6 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function HorairesPage() {
+  const badgeBase = "inline-block text-xs font-medium px-2 py-1 rounded-md";
+
+  const badgeJeunes = `${badgeBase} bg-purple-100 text-purple-700`;
+  const badgeElite = `${badgeBase} bg-blue-100 text-blue-700`;
+  const badgeLoisir = `${badgeBase} bg-green-100 text-green-700`;
+  const badgeLibre = `${badgeBase} bg-gray-100 text-gray-700`;
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-16 space-y-20">
       {/* TITRE */}
@@ -20,11 +27,14 @@ export default function HorairesPage() {
             <CardTitle>Lundi</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-gray-700">
-            <p>
-              <strong>Jeunes</strong> : 17h45 – 19h (Primaires + Handis)
+            <p className="flex items-center gap-2">
+              <span className={badgeJeunes}>Jeunes</span>
+              <span>17h45 – 19h (Primaires + Handis)</span>
             </p>
-            <p>
-              <strong>Entraînement libre</strong> : 19h00 (Départementaux)
+
+            <p className="flex items-center gap-2">
+              <span className={badgeLibre}>Libre</span>
+              <span>19h00 (Départementaux)</span>
             </p>
           </CardContent>
         </Card>
@@ -35,15 +45,20 @@ export default function HorairesPage() {
             <CardTitle>Mardi</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-gray-700">
-            <p>
-              <strong>Jeunes</strong> : 17h00 – 18h (Panier balles)
+            <p className="flex items-center gap-2">
+              <span className={badgeJeunes}>Jeunes</span> 17h00 – 18h (Panier
+              balles)
             </p>
-            <p>
-              <strong>Élite</strong> : 18h00 – 19h30 (Élite + Lycée)
+            <p className="flex items-center gap-2">
+              <span className={badgeElite}>Élite</span>
+              <span>18h00 – 19h30 (Élite + Lycée)</span>
             </p>
-            <p>
-              <strong>Sport santé</strong> : 10h00 – 11h00
+
+            <p className="flex items-center gap-2">
+              <span className={badgeLoisir}>Sport santé</span>
+              <span>10h00 – 11h00</span>
             </p>
+
             <p>
               <strong>Libre</strong> : 9h00 – 11h00 (Vétérans)
             </p>
