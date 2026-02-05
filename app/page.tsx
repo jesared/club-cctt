@@ -41,23 +41,26 @@ export default function HomePage() {
 
       {/* PRÉSENTATION */}
       <section className="max-w-6xl mx-auto px-4 py-20">
-        <div className="max-w-4xl">
-          <h2 className="text-3xl font-semibold mb-6">Bienvenue au CCTT</h2>
+        <Card className="max-w-4xl">
+          <CardHeader>
+            <CardTitle>Bienvenue au CCTT</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-8">
+            <p className="text-gray-700 leading-relaxed mb-6">
+              Le <strong>Châlons-en-Champagne Tennis de Table (CCTT)</strong>{" "}
+              accueille joueurs débutants comme confirmés dans un cadre
+              convivial et structuré. Que vous souhaitiez pratiquer le tennis de
+              table en loisir ou en compétition, notre club propose des
+              entraînements adaptés à tous les niveaux et à tous les âges.
+            </p>
 
-          <p className="text-gray-700 leading-relaxed mb-6">
-            Le <strong>Châlons-en-Champagne Tennis de Table (CCTT)</strong>{" "}
-            accueille joueurs débutants comme confirmés dans un cadre convivial
-            et structuré. Que vous souhaitiez pratiquer le tennis de table en
-            loisir ou en compétition, notre club propose des entraînements
-            adaptés à tous les niveaux et à tous les âges.
-          </p>
-
-          <p className="text-gray-700 leading-relaxed">
-            Encadré par un équipe d&apos;entraineurs professionnels diplômés, le
-            club met l’accent sur la progression, le respect et le plaisir du
-            jeu.
-          </p>
-        </div>
+            <p className="text-gray-700 leading-relaxed">
+              Encadré par un équipe d&apos;entraineurs professionnels diplômés,
+              le club met l’accent sur la progression, le respect et le plaisir
+              du jeu.
+            </p>
+          </CardContent>
+        </Card>
       </section>
 
       {/* MISE EN VALEUR */}
@@ -68,7 +71,7 @@ export default function HomePage() {
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card>
+            <Card className="hover:shadow-md transition">
               <CardHeader>
                 <CardTitle>Tous les niveaux</CardTitle>
               </CardHeader>
@@ -117,7 +120,7 @@ export default function HomePage() {
               </CardTitle>
             </CardHeader>
 
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-8">
               <p className="max-w-2xl">
                 Venez essayer le tennis de table au sein du Châlons-en-Champagne
                 Tennis de Table. Les essais sont possibles avant toute
@@ -135,7 +138,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      <TournoiHero />
+      <section className="bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4 py-24">
+          <h2 className="text-3xl font-semibold mb-12">Événement du club</h2>
+
+          <TournoiHero />
+        </div>
+      </section>
     </>
   );
 }
