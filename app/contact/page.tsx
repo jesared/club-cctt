@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Mail, MapPin, Users } from "lucide-react";
 
 export default function ContactPage() {
   return (
@@ -20,28 +21,41 @@ export default function ContactPage() {
               <CardTitle>Coordonnées du club</CardTitle>
             </CardHeader>
 
-            <CardContent className="space-y-4 text-gray-700">
-              <p>
-                <strong>Club :</strong> Châlons-en-Champagne Tennis de Table
-              </p>
+            <CardContent className="space-y-5 text-gray-700">
+              {/* CLUB */}
+              <div className="flex items-start gap-3">
+                <Users className="w-5 h-5 text-purple-600 mt-0.5" />
+                <div>
+                  <p className="font-medium">
+                    Châlons-en-Champagne Tennis de Table
+                  </p>
+                </div>
+              </div>
 
-              <p>
-                <strong>Email :</strong>{" "}
-                <a
-                  href="mailto:communication@cctt.fr"
-                  className="text-purple-600 hover:underline"
-                >
-                  communication@cctt.fr
-                </a>
-              </p>
+              {/* EMAIL */}
+              <div className="flex items-start gap-3">
+                <Mail className="w-5 h-5 text-purple-600 mt-0.5" />
+                <div>
+                  <a
+                    href="mailto:communication@cctt.fr"
+                    className="text-purple-600 hover:underline"
+                  >
+                    communication@cctt.fr
+                  </a>
+                </div>
+              </div>
 
-              <p>
-                <strong>Lieu :</strong> Salle Tirlet – Châlons-en-Champagne
-              </p>
+              {/* LIEU */}
+              <div className="flex items-start gap-3">
+                <MapPin className="w-5 h-5 text-purple-600 mt-0.5" />
+                <div>
+                  <p>Salle Tirlet</p>
+                  <p className="text-sm text-gray-500">Châlons-en-Champagne</p>
+                </div>
+              </div>
 
-              <p className="text-sm text-gray-500 max-w-md">
-                Nous nous efforçons de répondre dans les meilleurs délais,
-                généralement sous quelques jours.
+              <p className="text-sm text-gray-500 max-w-md pt-2">
+                Nous nous efforçons de répondre dans les meilleurs délais.
               </p>
             </CardContent>
           </Card>
