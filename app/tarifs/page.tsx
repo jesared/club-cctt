@@ -114,7 +114,7 @@ export default function TarifsPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* MOYENS DE PAIEMENT */}
-          <div className="bg-white border rounded-lg p-6">
+          <div className="bg-white border-l-4 border-purple-500 rounded-lg p-6">
             <h3 className="text-lg font-semibold mb-4">Moyens acceptés</h3>
 
             <ul className="space-y-2 text-gray-700">
@@ -137,7 +137,7 @@ export default function TarifsPage() {
           </div>
 
           {/* PAIEMENT ÉCHELONNÉ */}
-          <div className="bg-white border rounded-lg p-6">
+          <div className="bg-white border-l-4 border-purple-500 rounded-lg p-6">
             <h3 className="text-lg font-semibold mb-4">
               Paiement en plusieurs fois
             </h3>
@@ -191,6 +191,12 @@ export default function TarifsPage() {
             situations particulières.
           </p>
         </div>
+        <a
+          href="/contact"
+          className="inline-block mt-4 text-purple-600 hover:underline"
+        >
+          Nous contacter
+        </a>
       </section>
     </div>
   );
