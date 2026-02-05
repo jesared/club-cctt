@@ -37,6 +37,36 @@ export default function TarifsPage() {
           </div>
         </div>
       </section>
+      {/* MODALITÉS DE PAIEMENT */}
+      <section className="bg-gray-50 rounded-lg">
+        <div className="px-6 py-10 md:px-12">
+          <h2 className="text-2xl font-semibold mb-6">Modalités de paiement</h2>
+
+          <p className="text-gray-700 mb-4">
+            Les moyens de paiement suivants sont acceptés :
+          </p>
+
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-gray-700">
+            <li>Chèque ou numéraire</li>
+            <li>Chèques-vacances</li>
+            <li>Bons CAF</li>
+            <li>Chèques ACTOBI</li>
+            <li>MSA</li>
+          </ul>
+
+          <div className="mt-6 border-l-4 border-purple-500 pl-6">
+            <p className="font-semibold mb-2">PASS SPORT</p>
+            <p className="text-gray-700">
+              Le dispositif <strong>PASS SPORT</strong> est accepté.
+            </p>
+          </div>
+
+          <p className="mt-6 text-gray-700">
+            Il est également possible de régler la cotisation
+            <strong> en plusieurs fois</strong>.
+          </p>
+        </div>
+      </section>
 
       {/* INCLUS */}
       <section className="bg-gray-50 rounded-lg">
