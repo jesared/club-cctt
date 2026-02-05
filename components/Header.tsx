@@ -29,6 +29,7 @@ export default function Header() {
         {/* MENU DESKTOP */}
         <nav className="hidden md:flex gap-6 text-sm font-medium">
           <Link href="/club">Le club</Link>
+          <Link href="/comite-directeur">Comité directeur</Link>
           <Link href="/horaires">Horaires</Link>
           <Link href="/tarifs">Tarifs</Link>
           <Link href="/partenaires">Partenaires</Link>

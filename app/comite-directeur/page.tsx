@@ -1,0 +1,111 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+import { Shield, User, Users } from "lucide-react";
+
+export default function ComiteDirecteurPage() {
+  return (
+    <div className="max-w-6xl mx-auto px-4 py-16 space-y-20">
+      {/* TITRE PAGE */}
+      <header>
+        <h1 className="text-4xl font-bold mb-4">Comité directeur</h1>
+        <p className="text-gray-600 max-w-3xl">
+          Le comité directeur du Châlons-en-Champagne Tennis de Table assure la
+          gestion, l’organisation et le développement du club.
+        </p>
+      </header>
+
+      {/* BUREAU */}
+      <section>
+        <h2 className="text-3xl font-semibold mb-10">Bureau</h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* PRÉSIDENT */}
+          <Card className="border-l-4 border-l-purple-500">
+            <CardHeader className="flex flex-row items-center gap-3">
+              <Shield className="w-5 h-5 text-purple-600" />
+              <CardTitle>Président</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="font-medium">Nom Prénom</p>
+              <p className="text-sm text-gray-500">
+                Représentation du club, orientation générale
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* SECRÉTAIRE */}
+          <Card className="border-l-4 border-l-purple-500">
+            <CardHeader className="flex flex-row items-center gap-3">
+              <User className="w-5 h-5 text-purple-600" />
+              <CardTitle>Secrétaire</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="font-medium">Nom Prénom</p>
+              <p className="text-sm text-gray-500">
+                Gestion administrative et communication
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* TRÉSORIER */}
+          <Card className="border-l-4 border-l-purple-500">
+            <CardHeader className="flex flex-row items-center gap-3">
+              <User className="w-5 h-5 text-purple-600" />
+              <CardTitle>Trésorier</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="font-medium">Nom Prénom</p>
+              <p className="text-sm text-gray-500">
+                Gestion financière du club
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* MEMBRES */}
+      <section>
+        <h2 className="text-3xl font-semibold mb-10">Membres du comité</h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <Card>
+            <CardHeader className="flex flex-row items-center gap-3">
+              <Users className="w-5 h-5 text-purple-600" />
+              <CardTitle>Membre</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="font-medium">Nom Prénom</p>
+              <p className="text-sm text-gray-500">
+                Soutien aux actions du club
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center gap-3">
+              <Users className="w-5 h-5 text-purple-600" />
+              <CardTitle>Membre</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="font-medium">Nom Prénom</p>
+              <p className="text-sm text-gray-500">
+                Organisation des événements
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center gap-3">
+              <Users className="w-5 h-5 text-purple-600" />
+              <CardTitle>Membre</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="font-medium">Nom Prénom</p>
+              <p className="text-sm text-gray-500">Logistique et vie du club</p>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+    </div>
+  );
+}
