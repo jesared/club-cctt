@@ -10,15 +10,20 @@ export default function Header() {
   return (
     <header className="border-b bg-white">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-        {/* LOGO / TITRE */}
-        <Link href="/" className="font-bold text-lg">
+        {/* LOGO */}
+        <Link href="/" className="flex items-center gap-3">
           <Image
-            src="/logo_horiz.gif"
-            alt="CCTT Logo"
-            width={32}
-            height={32}
-            className="inline-block mr-2"
+            src="/logo.jpg"
+            alt="CCTT"
+            width={44}
+            height={44}
+            className="object-contain"
+            priority
           />
+          <div className="hidden sm:flex flex-col leading-tight">
+            <span className="font-bold text-lg">CCTT</span>
+            <span className="text-xs text-gray-500">Châlons-en-Champagne</span>
+          </div>
         </Link>
 
         {/* MENU DESKTOP */}
