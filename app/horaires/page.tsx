@@ -16,7 +16,7 @@ export default function HorairesPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* JEUNES */}
-          <div className="border rounded-lg p-6 bg-white">
+          <div className="bg-white border-l-4 border-purple-500 rounded-lg p-6">
             <h3 className="text-lg font-semibold mb-3">Jeunes</h3>
             <ul className="space-y-2 text-gray-700">
               <li>
@@ -26,7 +26,7 @@ export default function HorairesPage() {
           </div>
 
           {/* ADULTES LOISIRS */}
-          <div className="border rounded-lg p-6 bg-white">
+          <div className="bg-white border-l-4 border-purple-500 rounded-lg p-6">
             <h3 className="text-lg font-semibold mb-3">Adultes loisirs</h3>
             <ul className="space-y-2 text-gray-700">
               <li>
@@ -36,7 +36,7 @@ export default function HorairesPage() {
           </div>
 
           {/* COMPÉTITION */}
-          <div className="border rounded-lg p-6 bg-white">
+          <div className="bg-white border-l-4 border-purple-500 rounded-lg p-6">
             <h3 className="text-lg font-semibold mb-3">Compétition</h3>
             <ul className="space-y-2 text-gray-700">
               <li>
