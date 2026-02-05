@@ -23,14 +23,14 @@ export default function ComiteDirecteurPage() {
           {/* PRÉSIDENT */}
           <Card className="border-l-4 border-l-purple-500">
             <CardHeader className="flex flex-col items-center text-center gap-4">
-              <Image
-                src="/comite/julie_Fila_Tournant.jpg"
-                alt="FILA-TOURNANT Julie – Présidente du CCTT"
-                width={120}
-                height={120}
-                className="rounded-full object-cover"
-              />
-
+              <div className="relative w-28 h-28 overflow-hidden rounded-lg">
+                <Image
+                  src="/comite/julie_Fila_Tournant.jpg"
+                  alt="FILA-TOURNANT Julie – Présidente du CCTT"
+                  fill
+                  className="object-cover"
+                />
+              </div>
               <CardTitle>Présidente</CardTitle>
             </CardHeader>
 
