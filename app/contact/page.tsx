@@ -22,14 +22,14 @@ export default function ContactPage() {
             <li>
               <strong>Email :</strong>{" "}
               <a
-                href="mailto:contact@cctt.fr"
+                href="mailto:communication@cctt.fr"
                 className="text-purple-600 hover:underline"
               >
-                contact@cctt.fr
+                communication@cctt.fr
               </a>
             </li>
             <li>
-              <strong>Lieu :</strong> Gymnase de Châlons-en-Champagne
+              <strong>Lieu :</strong> Salle Tirlet Châlons-en-Champagne
             </li>
           </ul>
 
