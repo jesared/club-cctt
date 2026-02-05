@@ -5,8 +5,8 @@ export default function Footer() {
         <p className="font-semibold text-gray-800">
           Châlons-en-Champagne Tennis de Table
         </p>
-        <p>Gymnase – Châlons-en-Champagne</p>
-        <p>Email : contact@cctt.fr</p>
+        <p>Salle Tirlet – Châlons-en-Champagne</p>
+        <p>Email : communication@cctt.fr</p>
 
         <p className="mt-4 text-xs">
           © {new Date().getFullYear()} CCTT – Tous droits réservés
