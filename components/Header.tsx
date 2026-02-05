@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -11,7 +12,13 @@ export default function Header() {
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* LOGO / TITRE */}
         <Link href="/" className="font-bold text-lg">
-          CCTT
+          <Image
+            src="/logo.jpg"
+            alt="CCTT Logo"
+            width={32}
+            height={32}
+            className="inline-block mr-2"
+          />
         </Link>
 
         {/* MENU DESKTOP */}
