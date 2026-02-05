@@ -13,7 +13,7 @@ export default function Header() {
         {/* LOGO / TITRE */}
         <Link href="/" className="font-bold text-lg">
           <Image
-            src="/logo.jpg"
+            src="/logo_horiz.gif"
             alt="CCTT Logo"
             width={32}
             height={32}
