@@ -18,95 +18,120 @@ export default function TarifsPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* ADULTES */}
-          <div className="bg-white border-l-4 border-purple-500 rounded-lg p-6">
-            <h3 className="text-xl font-semibold mb-4">
-              Adultes{" "}
-              <span className="text-sm text-gray-500">(Vétérans & Sénior)</span>
-            </h3>
+          <Card className="border-l-4 border-l-purple-500">
+            <CardHeader>
+              <CardTitle>
+                Adultes{" "}
+                <span className="text-sm text-gray-500 font-normal">
+                  (Vétérans & Sénior)
+                </span>
+              </CardTitle>
+            </CardHeader>
 
-            <ul className="space-y-2 text-gray-700">
-              <li className="flex justify-between">
-                <span>Promotionnelle</span>
-                <strong>140 €</strong>
-              </li>
-              <li className="flex justify-between font-semibold text-purple-600">
-                <span>Compétition</span>
-                <strong>184 €</strong>
-              </li>
-              <li className="flex justify-between">
-                <span>Compétition + Critérium Fédéral</span>
-                <strong>226 €</strong>
-              </li>
-            </ul>
-          </div>
+            <CardContent>
+              <ul className="space-y-2 text-gray-700">
+                <li className="flex justify-between">
+                  <span>Promotionnelle</span>
+                  <strong>140 €</strong>
+                </li>
+                <li className="flex justify-between font-semibold text-purple-600">
+                  <span>Compétition</span>
+                  <strong>184 €</strong>
+                </li>
+                <li className="flex justify-between">
+                  <span>Compétition + Critérium Fédéral</span>
+                  <strong>226 €</strong>
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
 
           {/* JUNIORS */}
-          <div className="bg-white border-l-4 border-purple-500 rounded-lg p-6">
-            <h3 className="text-xl font-semibold mb-4">
-              Juniors <span className="text-sm text-gray-500">(2007–2010)</span>
-            </h3>
+          <Card className="border-l-4 border-l-purple-500">
+            <CardHeader>
+              <CardTitle>
+                Juniors{" "}
+                <span className="text-sm text-gray-500 font-normal">
+                  (2007–2010)
+                </span>
+              </CardTitle>
+            </CardHeader>
 
-            <ul className="space-y-2 text-gray-700">
-              <li className="flex justify-between">
-                <span>Promotionnelle</span>
-                <strong>140 €</strong>
-              </li>
-              <li className="flex justify-between font-semibold text-purple-600">
-                <span>Compétition</span>
-                <strong>184 €</strong>
-              </li>
-              <li className="flex justify-between">
-                <span>Compétition + Critérium Fédéral</span>
-                <strong>207 €</strong>
-              </li>
-            </ul>
-          </div>
+            <CardContent>
+              <ul className="space-y-2 text-gray-700">
+                <li className="flex justify-between">
+                  <span>Promotionnelle</span>
+                  <strong>140 €</strong>
+                </li>
+                <li className="flex justify-between font-semibold text-purple-600">
+                  <span>Compétition</span>
+                  <strong>184 €</strong>
+                </li>
+                <li className="flex justify-between">
+                  <span>Compétition + Critérium Fédéral</span>
+                  <strong>207 €</strong>
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
 
           {/* CADETS & MINIMES */}
-          <div className="bg-white border-l-4 border-purple-500 rounded-lg p-6">
-            <h3 className="text-xl font-semibold mb-4">
-              Cadets & Minimes{" "}
-              <span className="text-sm text-gray-500">(2011–2014)</span>
-            </h3>
+          <Card className="border-l-4 border-l-purple-500">
+            <CardHeader>
+              <CardTitle>
+                Cadets & Minimes{" "}
+                <span className="text-sm text-gray-500 font-normal">
+                  (2011–2014)
+                </span>
+              </CardTitle>
+            </CardHeader>
 
-            <ul className="space-y-2 text-gray-700">
-              <li className="flex justify-between">
-                <span>Promotionnelle</span>
-                <strong>130 €</strong>
-              </li>
-              <li className="flex justify-between font-semibold text-purple-600">
-                <span>Compétition</span>
-                <strong>158 €</strong>
-              </li>
-              <li className="flex justify-between">
-                <span>Compétition + Critérium Fédéral</span>
-                <strong>181 €</strong>
-              </li>
-            </ul>
-          </div>
+            <CardContent>
+              <ul className="space-y-2 text-gray-700">
+                <li className="flex justify-between">
+                  <span>Promotionnelle</span>
+                  <strong>130 €</strong>
+                </li>
+                <li className="flex justify-between font-semibold text-purple-600">
+                  <span>Compétition</span>
+                  <strong>158 €</strong>
+                </li>
+                <li className="flex justify-between">
+                  <span>Compétition + Critérium Fédéral</span>
+                  <strong>181 €</strong>
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
 
           {/* POUSSINS & BENJAMINS */}
-          <div className="bg-white border-l-4 border-purple-500 rounded-lg p-6">
-            <h3 className="text-xl font-semibold mb-4">
-              Poussins & Benjamins{" "}
-              <span className="text-sm text-gray-500">(2015 et après)</span>
-            </h3>
+          <Card className="border-l-4 border-l-purple-500">
+            <CardHeader>
+              <CardTitle>
+                Poussins & Benjamins{" "}
+                <span className="text-sm text-gray-500 font-normal">
+                  (2015 et après)
+                </span>
+              </CardTitle>
+            </CardHeader>
 
-            <ul className="space-y-2 text-gray-700">
-              <li className="flex justify-between">
-                <span>Promotionnelle</span>
-                <strong>130 €</strong>
-              </li>
-              <li className="flex justify-between font-semibold text-purple-600">
-                <span>Compétition</span>
-                <strong>158 €</strong>
-              </li>
-              <li className="flex justify-between">
-                <span>Compétition + Critérium Fédéral</span>
-                <strong>168 €</strong>
-              </li>
-            </ul>
-          </div>
+            <CardContent>
+              <ul className="space-y-2 text-gray-700">
+                <li className="flex justify-between">
+                  <span>Promotionnelle</span>
+                  <strong>130 €</strong>
+                </li>
+                <li className="flex justify-between font-semibold text-purple-600">
+                  <span>Compétition</span>
+                  <strong>158 €</strong>
+                </li>
+                <li className="flex justify-between">
+                  <span>Compétition + Critérium Fédéral</span>
+                  <strong>168 €</strong>
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
         </div>
       </section>
 
