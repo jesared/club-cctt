@@ -131,9 +131,6 @@ export default function PartenairesPage() {
                     <p className="text-sm text-gray-500">{partenaire.slogan}</p>
                   </div>
                 </div>
-                <span className="text-sm font-medium text-purple-600 group-hover:text-purple-700">
-                  Visiter
-                </span>
               </a>
             ))}
           </div>
