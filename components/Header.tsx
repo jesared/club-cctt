@@ -22,14 +22,30 @@ export default function Header() {
 
   useEffect(() => {
     if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setOpen(false);
       }
     };
     document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setOpen(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("resize", handleResize);
+    };
   }, [open]);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   return (
     <header className="sticky top-0 z-40 border-b bg-white/95 backdrop-blur">
@@ -79,13 +95,13 @@ export default function Header() {
 
         {/* BOUTON MOBILE */}
         <button
-          onClick={() => setOpen(true)}
+          onClick={() => setOpen((prev) => !prev)}
           className="md:hidden text-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
-          aria-label="Ouvrir le menu"
+          aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
           aria-expanded={open}
           aria-controls="mobile-menu"
         >
-          ☰
+          {open ? "✕" : "☰"}
         </button>
       </div>
 
@@ -100,7 +116,7 @@ export default function Header() {
           />
           <div
             id="mobile-menu"
-            className="absolute right-0 top-0 h-full w-72 max-w-[80%] bg-white shadow-xl"
+            className="absolute right-0 top-0 h-full w-72 max-w-[80%] overflow-y-auto bg-white shadow-xl"
             role="dialog"
             aria-modal="true"
           >
