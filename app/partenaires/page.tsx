@@ -1,3 +1,5 @@
+const DEFAULT_LOGO = "/partenaires/default-logo.svg";
+
 const partenairesInstitutionnels = [
   { nom: "FFTT", url: "https://www.fftt.com/" },
   { nom: "Ligue Grand Est TT", url: "https://www.lgett.fr/accueil" },
@@ -11,14 +13,41 @@ const partenairesInstitutionnels = [
 ];
 
 const partenairesPrives = [
-  "Opel Renesson",
-  "Colson Boulangerie",
-  "Ola Création",
-  "Joola",
-  "Saint Alp",
+  { nom: "Opel Renesson" },
+  { nom: "Colson Boulangerie" },
+  {
+    nom: "Ola Création",
+    logo: "/partenaires/ola-creation.svg",
+    url: "https://olacreation.fr/",
+  },
+  { nom: "Joola", logo: "/partenaires/joola.svg" },
+  { nom: "Saint Alp", logo: "/partenaires/saint-alp.svg" },
 ];
 
+type Partenaire = {
+  nom: string;
+  url?: string;
+  logo?: string;
+  type: "Institutionnel" | "Privé";
+};
+
+const toPartenaire = (
+  partenaire: { nom: string; url?: string; logo?: string },
+  type: Partenaire["type"]
+): Partenaire => ({
+  ...partenaire,
+  type,
+  logo: partenaire.logo ?? DEFAULT_LOGO,
+});
+
 export default function PartenairesPage() {
+  const institutionnels = partenairesInstitutionnels.map((partenaire) =>
+    toPartenaire(partenaire, "Institutionnel")
+  );
+  const prives = partenairesPrives.map((partenaire) =>
+    toPartenaire(partenaire, "Privé")
+  );
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-16 space-y-16">
       {/* TITRE PAGE */}
@@ -39,19 +68,30 @@ export default function PartenairesPage() {
             projets sportifs et associatifs.
           </p>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {partenairesInstitutionnels.map((partenaire) => (
+            {institutionnels.map((partenaire) => (
               <a
                 key={partenaire.nom}
-                className="group flex items-center justify-between rounded-2xl border border-gray-200 bg-white px-6 py-5 shadow-sm transition hover:-translate-y-0.5 hover:border-purple-200 hover:shadow-md"
+                className="group flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white px-6 py-5 shadow-sm transition hover:-translate-y-0.5 hover:border-purple-200 hover:shadow-md"
                 href={partenaire.url}
                 target="_blank"
                 rel="noreferrer"
               >
-                <div>
-                  <p className="text-sm text-gray-500">Institutionnel</p>
-                  <p className="text-lg font-semibold text-gray-900">
-                    {partenaire.nom}
-                  </p>
+                <div className="flex items-center gap-4">
+                  <div className="flex h-16 w-24 items-center justify-center rounded-xl border border-gray-100 bg-gray-50">
+                    <img
+                      className="max-h-12 max-w-20 object-contain"
+                      src={partenaire.logo}
+                      alt={`Logo ${partenaire.nom}`}
+                    />
+                  </div>
+                  <div>
+                    <p className="text-lg font-semibold text-gray-900">
+                      {partenaire.nom}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Partenaire du club pour nos actions sportives.
+                    </p>
+                  </div>
                 </div>
                 <span className="text-sm font-medium text-purple-600 group-hover:text-purple-700">
                   Visiter
@@ -67,17 +107,40 @@ export default function PartenairesPage() {
             Merci à nos partenaires privés pour leur engagement auprès du club.
           </p>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {partenairesPrives.map((partenaire) => (
-              <div
-                key={partenaire}
-                className="flex flex-col justify-between rounded-2xl border border-gray-200 bg-white px-6 py-5 shadow-sm"
-              >
-                <p className="text-sm text-gray-500">Partenaire privé</p>
-                <p className="text-lg font-semibold text-gray-900">
-                  {partenaire}
-                </p>
-              </div>
-            ))}
+            {prives.map((partenaire) => {
+              const Wrapper = partenaire.url ? "a" : "div";
+              return (
+                <Wrapper
+                  key={partenaire.nom}
+                  className={`flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white px-6 py-5 shadow-sm ${
+                    partenaire.url
+                      ? "transition hover:-translate-y-0.5 hover:border-purple-200 hover:shadow-md"
+                      : ""
+                  }`}
+                  href={partenaire.url}
+                  target={partenaire.url ? "_blank" : undefined}
+                  rel={partenaire.url ? "noreferrer" : undefined}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-16 w-24 items-center justify-center rounded-xl border border-gray-100 bg-transparent">
+                      <img
+                        className="max-h-12 max-w-20 object-contain"
+                        src={partenaire.logo}
+                        alt={`Logo ${partenaire.nom}`}
+                      />
+                    </div>
+                    <div>
+                      <p className="text-lg font-semibold text-gray-900">
+                        {partenaire.nom}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Partenaire du club pour nos actions sportives.
+                      </p>
+                    </div>
+                  </div>
+                </Wrapper>
+              );
+            })}
           </div>
         </div>
       </section>
