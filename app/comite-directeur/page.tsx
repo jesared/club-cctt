@@ -97,7 +97,7 @@ export default function ComiteDirecteurPage() {
               <CardTitle>Membre</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="font-medium">Philippot Julien</p>
+              <p className="font-medium">PHILIPPOT Julien</p>
             </CardContent>
           </Card>
 
@@ -107,7 +107,7 @@ export default function ComiteDirecteurPage() {
               <CardTitle>Membre</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="font-medium">Gauché Patrick</p>
+              <p className="font-medium">GAUCHÉ Patrick</p>
             </CardContent>
           </Card>
 
@@ -117,7 +117,7 @@ export default function ComiteDirecteurPage() {
               <CardTitle>Membre</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="font-medium">Dumange Benoît</p>
+              <p className="font-medium">DUMANGE Benoît</p>
             </CardContent>
           </Card>
 
@@ -127,7 +127,7 @@ export default function ComiteDirecteurPage() {
               <CardTitle>Membre</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="font-medium">Priam Thomas</p>
+              <p className="font-medium">PRIAM Thomas</p>
             </CardContent>
           </Card>
         </div>
