@@ -36,12 +36,12 @@ const partenairesInstitutionnels = [
 ];
 
 const partenairesPrives = [
-  { nom: "Opel Renesson", slogan: "La mobilité au service du club." },
+  { nom: "Opel Renesson", slogan: " Concessionnaire est un distributeur Opel" },
   { nom: "Colson Boulangerie", slogan: "Le goût du partage, chaque jour." },
   {
     nom: "Ola Création",
     slogan: "L’agence Ola Création : Une passion au service de vos projets",
-    logo: "/partenaires/ola-creation.svg",
+    logo: "/partenaires/olacreation.png",
     url: "https://olacreation.fr/",
   },
   {
@@ -50,8 +50,8 @@ const partenairesPrives = [
     logo: "/partenaires/joola.svg",
   },
   {
-    nom: "Saint Alp",
-    slogan: "Le plein air qui inspire la performance.",
+    nom: "Le Saint Alp'",
+    slogan: "Bar - Brasserie",
     logo: "/partenaires/saint-alp.svg",
   },
 ];
@@ -69,7 +69,7 @@ const getLogoSrc = (logo?: string) =>
 
 const toPartenaire = (
   partenaire: { nom: string; slogan: string; url?: string; logo?: string },
-  type: Partenaire["type"]
+  type: Partenaire["type"],
 ): Partenaire => ({
   ...partenaire,
   type,
@@ -78,10 +78,10 @@ const toPartenaire = (
 
 export default function PartenairesPage() {
   const institutionnels = partenairesInstitutionnels.map((partenaire) =>
-    toPartenaire(partenaire, "Institutionnel")
+    toPartenaire(partenaire, "Institutionnel"),
   );
   const prives = partenairesPrives.map((partenaire) =>
-    toPartenaire(partenaire, "Privé")
+    toPartenaire(partenaire, "Privé"),
   );
 
   return (
@@ -98,7 +98,9 @@ export default function PartenairesPage() {
       {/* LISTE PARTENAIRES */}
       <section className="space-y-10">
         <div className="space-y-4">
-          <h2 className="text-2xl font-semibold">Partenaires institutionnels</h2>
+          <h2 className="text-2xl font-semibold">
+            Partenaires institutionnels
+          </h2>
           <p className="text-gray-600 max-w-3xl">
             Nos partenaires institutionnels accompagnent le club dans ses
             projets sportifs et associatifs.
@@ -126,9 +128,7 @@ export default function PartenairesPage() {
                     <p className="text-lg font-semibold text-gray-900">
                       {partenaire.nom}
                     </p>
-                    <p className="text-sm text-gray-500">
-                      {partenaire.slogan}
-                    </p>
+                    <p className="text-sm text-gray-500">{partenaire.slogan}</p>
                   </div>
                 </div>
                 <span className="text-sm font-medium text-purple-600 group-hover:text-purple-700">
