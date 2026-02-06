@@ -2,13 +2,37 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  const menuItems = useMemo(
+    () => [
+      { href: "/club", label: "Le club" },
+      { href: "/comite-directeur", label: "Comité directeur" },
+      { href: "/horaires", label: "Horaires" },
+      { href: "/tarifs", label: "Tarifs" },
+      { href: "/partenaires", label: "Partenaires" },
+      { href: "/contact", label: "Contact" },
+    ],
+    []
+  );
+
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [open]);
 
   return (
-    <header className="border-b bg-white">
+    <header className="sticky top-0 z-40 border-b bg-white/95 backdrop-blur">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* LOGO */}
         <Link href="/" className="flex items-center gap-3">
@@ -20,27 +44,46 @@ export default function Header() {
             className="object-contain"
             priority
           />
-          <div className="hidden sm:flex flex-col leading-tight">
+          <div className="flex flex-col leading-tight">
             <span className="font-bold text-lg">CCTT</span>
-            <span className="text-xs text-gray-500">Châlons-en-Champagne</span>
+            <span className="text-xs text-gray-500">
+              <span className="hidden sm:inline">Châlons-en-Champagne</span>
+              <span className="sm:hidden">Châlons</span>
+            </span>
           </div>
         </Link>
 
         {/* MENU DESKTOP */}
-        <nav className="hidden md:flex gap-6 text-sm font-medium">
-          <Link href="/club">Le club</Link>
-          <Link href="/comite-directeur">Comité directeur</Link>
-          <Link href="/horaires">Horaires</Link>
-          <Link href="/tarifs">Tarifs</Link>
-          <Link href="/partenaires">Partenaires</Link>
-          <Link href="/contact">Contact</Link>
+        <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+          {menuItems.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`transition-colors hover:text-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500 ${
+                  isActive ? "text-blue-700" : "text-gray-700"
+                }`}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+          <Link
+            href="/contact"
+            className="rounded-full bg-blue-700 px-4 py-2 text-white transition-colors hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
+          >
+            Nous rejoindre
+          </Link>
         </nav>
 
         {/* BOUTON MOBILE */}
         <button
           onClick={() => setOpen(true)}
-          className="md:hidden text-2xl"
+          className="md:hidden text-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
           aria-label="Ouvrir le menu"
+          aria-expanded={open}
+          aria-controls="mobile-menu"
         >
           ☰
         </button>
@@ -48,38 +91,59 @@ export default function Header() {
 
       {/* MENU MOBILE */}
       {open && (
-        <div className="fixed inset-0 z-50 bg-white">
-          <div className="flex items-center justify-between h-16 px-4 border-b">
-            <span className="font-bold">Menu</span>
-            <button
-              onClick={() => setOpen(false)}
-              className="text-2xl"
-              aria-label="Fermer le menu"
-            >
-              ✕
-            </button>
-          </div>
+        <div className="fixed inset-0 z-50">
+          <button
+            type="button"
+            aria-label="Fermer le menu"
+            onClick={() => setOpen(false)}
+            className="absolute inset-0 bg-slate-900/40"
+          />
+          <div
+            id="mobile-menu"
+            className="absolute right-0 top-0 h-full w-72 max-w-[80%] bg-white shadow-xl"
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className="flex items-center justify-between h-16 px-4 border-b">
+              <span className="font-bold">Menu</span>
+              <button
+                onClick={() => setOpen(false)}
+                className="text-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
+                aria-label="Fermer le menu"
+              >
+                ✕
+              </button>
+            </div>
 
-          <nav className="flex flex-col px-6 py-8 gap-6 text-lg font-medium">
-            <Link href="/" onClick={() => setOpen(false)}>
-              Accueil
-            </Link>
-            <Link href="/club" onClick={() => setOpen(false)}>
-              Le club
-            </Link>
-            <Link href="/horaires" onClick={() => setOpen(false)}>
-              Horaires
-            </Link>
-            <Link href="/tarifs" onClick={() => setOpen(false)}>
-              Tarifs
-            </Link>
-            <Link href="/partenaires" onClick={() => setOpen(false)}>
-              Partenaires
-            </Link>
-            <Link href="/contact" onClick={() => setOpen(false)}>
-              Contact
-            </Link>
-          </nav>
+            <nav className="flex flex-col px-6 py-8 gap-6 text-lg font-medium">
+              <Link
+                href="/"
+                onClick={() => setOpen(false)}
+                className="text-gray-700 hover:text-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
+              >
+                Accueil
+              </Link>
+              {menuItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className={`transition-colors hover:text-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500 ${
+                    pathname === item.href ? "text-blue-700" : "text-gray-700"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+              <Link
+                href="/contact"
+                onClick={() => setOpen(false)}
+                className="rounded-full bg-blue-700 px-4 py-2 text-center text-white transition-colors hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
+              >
+                Nous rejoindre
+              </Link>
+            </nav>
+          </div>
         </div>
       )}
     </header>
