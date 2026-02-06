@@ -1,3 +1,23 @@
+const partenairesInstitutionnels = [
+  { nom: "FFTT", url: "https://www.fftt.com/" },
+  { nom: "Ligue Grand Est TT", url: "https://www.lgett.fr/accueil" },
+  { nom: "Comité Marne TT", url: "https://cd51tt.fr/" },
+  { nom: "Grand Est", url: "https://www.grandest.fr/" },
+  { nom: "La Marne", url: "https://www.marne.fr/" },
+  {
+    nom: "Châlons-en-Champagne",
+    url: "https://www.chalonsenchampagne.fr/ville",
+  },
+];
+
+const partenairesPrives = [
+  "Opel Renesson",
+  "Colson Boulangerie",
+  "Ola Création",
+  "Joola",
+  "Saint Alp",
+];
+
 export default function PartenairesPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-16 space-y-16">
@@ -11,25 +31,53 @@ export default function PartenairesPage() {
       </header>
 
       {/* LISTE PARTENAIRES */}
-      <section>
-        <h2 className="text-2xl font-semibold mb-8">Nos partenaires</h2>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-8">
-          {/* PARTENAIRE */}
-          <div className="flex items-center justify-center border rounded-lg p-6 bg-white">
-            <span className="text-gray-500 text-sm">Logo partenaire</span>
+      <section className="space-y-10">
+        <div className="space-y-4">
+          <h2 className="text-2xl font-semibold">Partenaires institutionnels</h2>
+          <p className="text-gray-600 max-w-3xl">
+            Nos partenaires institutionnels accompagnent le club dans ses
+            projets sportifs et associatifs.
+          </p>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {partenairesInstitutionnels.map((partenaire) => (
+              <a
+                key={partenaire.nom}
+                className="group flex items-center justify-between rounded-2xl border border-gray-200 bg-white px-6 py-5 shadow-sm transition hover:-translate-y-0.5 hover:border-purple-200 hover:shadow-md"
+                href={partenaire.url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <div>
+                  <p className="text-sm text-gray-500">Institutionnel</p>
+                  <p className="text-lg font-semibold text-gray-900">
+                    {partenaire.nom}
+                  </p>
+                </div>
+                <span className="text-sm font-medium text-purple-600 group-hover:text-purple-700">
+                  Visiter
+                </span>
+              </a>
+            ))}
           </div>
+        </div>
 
-          <div className="flex items-center justify-center border rounded-lg p-6 bg-white">
-            <span className="text-gray-500 text-sm">Logo partenaire</span>
-          </div>
-
-          <div className="flex items-center justify-center border rounded-lg p-6 bg-white">
-            <span className="text-gray-500 text-sm">Logo partenaire</span>
-          </div>
-
-          <div className="flex items-center justify-center border rounded-lg p-6 bg-white">
-            <span className="text-gray-500 text-sm">Logo partenaire</span>
+        <div className="space-y-4">
+          <h2 className="text-2xl font-semibold">Partenaires privés</h2>
+          <p className="text-gray-600 max-w-3xl">
+            Merci à nos partenaires privés pour leur engagement auprès du club.
+          </p>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {partenairesPrives.map((partenaire) => (
+              <div
+                key={partenaire}
+                className="flex flex-col justify-between rounded-2xl border border-gray-200 bg-white px-6 py-5 shadow-sm"
+              >
+                <p className="text-sm text-gray-500">Partenaire privé</p>
+                <p className="text-lg font-semibold text-gray-900">
+                  {partenaire}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
