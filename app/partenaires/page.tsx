@@ -3,31 +3,62 @@ import Image from "next/image";
 const DEFAULT_LOGO = "/partenaires/default-logo.svg";
 
 const partenairesInstitutionnels = [
-  { nom: "FFTT", url: "https://www.fftt.com/" },
-  { nom: "Ligue Grand Est TT", url: "https://www.lgett.fr/accueil" },
-  { nom: "Comité Marne TT", url: "https://cd51tt.fr/" },
-  { nom: "Grand Est", url: "https://www.grandest.fr/" },
-  { nom: "La Marne", url: "https://www.marne.fr/" },
+  {
+    nom: "FFTT",
+    slogan: "La fédération qui fait rayonner le tennis de table.",
+    url: "https://www.fftt.com/",
+  },
+  {
+    nom: "Ligue Grand Est TT",
+    slogan: "Le ping qui unit tout le Grand Est.",
+    url: "https://www.lgett.fr/accueil",
+  },
+  {
+    nom: "Comité Marne TT",
+    slogan: "Le ping au cœur de la Marne.",
+    url: "https://cd51tt.fr/",
+  },
+  {
+    nom: "Grand Est",
+    slogan: "Une région engagée pour le sport.",
+    url: "https://www.grandest.fr/",
+  },
+  {
+    nom: "La Marne",
+    slogan: "La Marne soutient l’élan sportif.",
+    url: "https://www.marne.fr/",
+  },
   {
     nom: "Châlons-en-Champagne",
+    slogan: "La ville qui encourage le sport de proximité.",
     url: "https://www.chalonsenchampagne.fr/ville",
   },
 ];
 
 const partenairesPrives = [
-  { nom: "Opel Renesson" },
-  { nom: "Colson Boulangerie" },
+  { nom: "Opel Renesson", slogan: "La mobilité au service du club." },
+  { nom: "Colson Boulangerie", slogan: "Le goût du partage, chaque jour." },
   {
     nom: "Ola Création",
+    slogan: "L’agence Ola Création : Une passion au service de vos projets",
     logo: "/partenaires/ola-creation.svg",
     url: "https://olacreation.fr/",
   },
-  { nom: "Joola", logo: "/partenaires/joola.svg" },
-  { nom: "Saint Alp", logo: "/partenaires/saint-alp.svg" },
+  {
+    nom: "Joola",
+    slogan: "L’excellence du matériel au service du jeu.",
+    logo: "/partenaires/joola.svg",
+  },
+  {
+    nom: "Saint Alp",
+    slogan: "Le plein air qui inspire la performance.",
+    logo: "/partenaires/saint-alp.svg",
+  },
 ];
 
 type Partenaire = {
   nom: string;
+  slogan: string;
   url?: string;
   logo: string;
   type: "Institutionnel" | "Privé";
@@ -37,7 +68,7 @@ const getLogoSrc = (logo?: string) =>
   logo && logo.trim().length > 0 ? logo : DEFAULT_LOGO;
 
 const toPartenaire = (
-  partenaire: { nom: string; url?: string; logo?: string },
+  partenaire: { nom: string; slogan: string; url?: string; logo?: string },
   type: Partenaire["type"]
 ): Partenaire => ({
   ...partenaire,
@@ -96,7 +127,7 @@ export default function PartenairesPage() {
                       {partenaire.nom}
                     </p>
                     <p className="text-sm text-gray-500">
-                      Partenaire du club pour nos actions sportives.
+                      {partenaire.slogan}
                     </p>
                   </div>
                 </div>
@@ -143,7 +174,7 @@ export default function PartenairesPage() {
                         {partenaire.nom}
                       </p>
                       <p className="text-sm text-gray-500">
-                        Partenaire du club pour nos actions sportives.
+                        {partenaire.slogan}
                       </p>
                     </div>
                   </div>
