@@ -9,6 +9,7 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const [openPathname, setOpenPathname] = useState(pathname);
+  const [isScrolled, setIsScrolled] = useState(false);
   const isOpen = open && openPathname === pathname;
   const menuItems = useMemo(
     () => [
@@ -38,8 +39,23 @@ export default function Header() {
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 8);
+    };
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <header className="sticky top-0 z-40 border-b bg-transparent">
+    <header
+      className={`sticky top-0 z-40 border-b transition-colors duration-200 ${
+        isScrolled
+          ? "bg-white/98 backdrop-blur shadow-md border-slate-200/80"
+          : "bg-transparent border-transparent"
+      }`}
+    >
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* LOGO */}
         <Link href="/" className="flex items-center gap-3">
@@ -68,9 +84,9 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`transition-colors hover:text-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500 ${
-                  isActive ? "text-blue-700" : "text-gray-700"
-                }`}
+                className={`transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500 ${
+                  isActive ? "text-blue-700" : "text-slate-700"
+                } ${isScrolled ? "hover:text-blue-700" : "hover:text-blue-600"}`}
               >
                 {item.label}
               </Link>
@@ -148,12 +164,12 @@ export default function Header() {
             </button>
           </div>
 
-          <nav className="flex flex-col px-6 py-8 gap-5 text-lg font-medium">
+        <nav className="flex flex-col px-6 py-8 gap-5 text-lg font-medium">
             <Link
               href="/"
               onClick={() => setOpen(false)}
               className={`transition-colors hover:text-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500 ${
-                pathname === "/" ? "text-blue-700" : "text-gray-700"
+                pathname === "/" ? "text-blue-700" : "text-slate-700"
               }`}
             >
               Accueil
@@ -164,7 +180,7 @@ export default function Header() {
                 href={item.href}
                 onClick={() => setOpen(false)}
                 className={`transition-colors hover:text-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500 ${
-                  pathname === item.href ? "text-blue-700" : "text-gray-700"
+                  pathname === item.href ? "text-blue-700" : "text-slate-700"
                 }`}
               >
                 {item.label}
