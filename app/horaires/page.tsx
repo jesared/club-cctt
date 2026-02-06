@@ -66,139 +66,139 @@ export default function HorairesPage() {
           </Card>
         </div>
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {/* LUNDI */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Lundi</CardTitle>
-          </CardHeader>
-          <CardContent className="text-gray-700">
-            <ul className="space-y-2">
-              <li className="flex items-center gap-2">
-                <Badge variant={"jeunes"}>Jeunes</Badge>
-                <span>17h45 – 19h00 (Primaires + Handis)</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Badge variant={"libre"}>Libre</Badge>
-                <span>19h00 (Départementaux)</span>
-              </li>
-            </ul>
-          </CardContent>
-        </Card>
+          {/* LUNDI */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Lundi</CardTitle>
+            </CardHeader>
+            <CardContent className="text-gray-700">
+              <ul className="space-y-2">
+                <li className="flex items-center gap-2">
+                  <Badge variant={"jeunes"}>Jeunes</Badge>
+                  <span>17h45 – 19h00 (Primaires + Handis)</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Badge variant={"libre"}>Libre</Badge>
+                  <span>19h00 (Départementaux)</span>
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
 
-        {/* MARDI */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Mardi</CardTitle>
-          </CardHeader>
-          <CardContent className="text-gray-700">
-            <ul className="space-y-2">
-              <li className="flex items-center gap-2">
-                <Badge variant={"libre"}>Libre</Badge>
-                <span>09h00 – 11h00 (Vétérans)</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Badge variant={"loisir"}>Sport santé</Badge>
-                <span>10h00 – 11h00</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Badge variant={"jeunes"}>Jeunes</Badge>
-                <span>17h00 – 18h00 (Panier balles)</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Badge variant={"elite"}>Élite</Badge>
-                <span>18h00 – 19h30 (Élite + Lycée)</span>
-              </li>
-            </ul>
-          </CardContent>
-        </Card>
+          {/* MARDI */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Mardi</CardTitle>
+            </CardHeader>
+            <CardContent className="text-gray-700">
+              <ul className="space-y-2">
+                <li className="flex items-center gap-2">
+                  <Badge variant={"libre"}>Libre</Badge>
+                  <span>09h00 – 11h00 (Vétérans)</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Badge variant={"loisir"}>Sport santé</Badge>
+                  <span>10h00 – 11h00</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Badge variant={"jeunes"}>Jeunes</Badge>
+                  <span>17h00 – 18h00 (Panier balles)</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Badge variant={"elite"}>Élite</Badge>
+                  <span>18h00 – 19h30 (Élite + Lycée)</span>
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
 
-        {/* MERCREDI */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Mercredi</CardTitle>
-          </CardHeader>
-          <CardContent className="text-gray-700">
-            <ul className="space-y-2">
-              <li className="flex items-center gap-2">
-                <Badge variant={"jeunes"}>Baby Ping</Badge>
-                <span>13h30 – 14h30</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Badge variant={"jeunes"}>Primaires</Badge>
-                <span>14h30 – 16h00</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Badge variant={"jeunes"}>Collèges</Badge>
-                <span>16h00 – 17h30</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Badge variant={"jeunes"}>Section sportive (Lycées)</Badge>
-                <span>17h30 – 19h00</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Badge variant={"loisir"}>Loisirs dirigés</Badge>
-                <span>19h00 – 20h30</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Badge variant={"libre"}>Libre</Badge>
-                <span>19h00 (Départementaux)</span>
-              </li>
-            </ul>
-          </CardContent>
-        </Card>
+          {/* MERCREDI */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Mercredi</CardTitle>
+            </CardHeader>
+            <CardContent className="text-gray-700">
+              <ul className="space-y-2">
+                <li className="flex items-center gap-2">
+                  <Badge variant={"jeunes"}>Baby Ping</Badge>
+                  <span>13h30 – 14h30</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Badge variant={"jeunes"}>Primaires</Badge>
+                  <span>14h30 – 16h00</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Badge variant={"jeunes"}>Collèges</Badge>
+                  <span>16h00 – 17h30</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Badge variant={"jeunes"}>Section sportive (Lycées)</Badge>
+                  <span>17h30 – 19h00</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Badge variant={"loisir"}>Loisirs dirigés</Badge>
+                  <span>19h00 – 20h30</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Badge variant={"libre"}>Libre</Badge>
+                  <span>19h00 (Départementaux)</span>
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
 
-        {/* JEUDI */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Jeudi</CardTitle>
-          </CardHeader>
-          <CardContent className="text-gray-700">
-            <ul className="space-y-2">
-              <li className="flex items-center gap-2">
-                <Badge variant={"jeunes"}>Jeunes</Badge>
-                <span>17h00 – 18h00 (Panier balles)</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Badge variant={"elite"}>Élite</Badge>
-                <span>18h00 – 19h30 (Primaires – Collège)</span>
-              </li>
-            </ul>
-          </CardContent>
-        </Card>
+          {/* JEUDI */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Jeudi</CardTitle>
+            </CardHeader>
+            <CardContent className="text-gray-700">
+              <ul className="space-y-2">
+                <li className="flex items-center gap-2">
+                  <Badge variant={"jeunes"}>Jeunes</Badge>
+                  <span>17h00 – 18h00 (Panier balles)</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Badge variant={"elite"}>Élite</Badge>
+                  <span>18h00 – 19h30 (Primaires – Collège)</span>
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
 
-        {/* VENDREDI */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Vendredi</CardTitle>
-          </CardHeader>
-          <CardContent className="text-gray-700">
-            <ul className="space-y-2">
-              <li className="flex items-center gap-2">
-                <Badge variant={"jeunes"}>Débutants – Moyens</Badge>
-                <span>17h00 – 18h00</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Badge variant={"jeunes"}>Lycées et Collèges</Badge>
-                <span>18h00 – 19h30</span>
-              </li>
-            </ul>
-          </CardContent>
-        </Card>
+          {/* VENDREDI */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Vendredi</CardTitle>
+            </CardHeader>
+            <CardContent className="text-gray-700">
+              <ul className="space-y-2">
+                <li className="flex items-center gap-2">
+                  <Badge variant={"jeunes"}>Débutants – Moyens</Badge>
+                  <span>17h00 – 18h00</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Badge variant={"jeunes"}>Lycées et Collèges</Badge>
+                  <span>18h00 – 19h30</span>
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
 
-        {/* SAMEDI */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Samedi</CardTitle>
-          </CardHeader>
-          <CardContent className="text-gray-700">
-            <ul className="space-y-2">
-              <li className="flex items-center gap-2">
-                <Badge variant={"loisir"}>Loisirs libres</Badge>
-                <span>10h00 – 11h30</span>
-              </li>
-            </ul>
-          </CardContent>
-        </Card>
+          {/* SAMEDI */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Samedi</CardTitle>
+            </CardHeader>
+            <CardContent className="text-gray-700">
+              <ul className="space-y-2">
+                <li className="flex items-center gap-2">
+                  <Badge variant={"loisir"}>Loisirs libres</Badge>
+                  <span>10h00 – 11h30</span>
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
         </div>
       </section>
 
