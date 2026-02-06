@@ -29,7 +29,7 @@ const partenairesPrives = [
 type Partenaire = {
   nom: string;
   url?: string;
-  logo?: string;
+  logo: string;
   type: "Institutionnel" | "Privé";
 };
 
