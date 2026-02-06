@@ -31,13 +31,16 @@ type Partenaire = {
   type: "Institutionnel" | "Privé";
 };
 
+const getLogoSrc = (logo?: string) =>
+  logo && logo.trim().length > 0 ? logo : DEFAULT_LOGO;
+
 const toPartenaire = (
   partenaire: { nom: string; url?: string; logo?: string },
   type: Partenaire["type"]
 ): Partenaire => ({
   ...partenaire,
   type,
-  logo: partenaire.logo ?? DEFAULT_LOGO,
+  logo: getLogoSrc(partenaire.logo),
 });
 
 export default function PartenairesPage() {
