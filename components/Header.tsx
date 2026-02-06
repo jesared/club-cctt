@@ -8,9 +8,8 @@ import { useEffect, useMemo, useState } from "react";
 export default function Header() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const [openPathname, setOpenPathname] = useState(pathname);
   const [isScrolled, setIsScrolled] = useState(false);
-  const isOpen = open && openPathname === pathname;
+  const isOpen = open;
   const menuItems = useMemo(
     () => [
       { href: "/club", label: "Le club" },
@@ -115,11 +114,7 @@ export default function Header() {
         <button
           onClick={() =>
             setOpen((prev) => {
-              const next = !prev;
-              if (next) {
-                setOpenPathname(pathname);
-              }
-              return next;
+              return !prev;
             })
           }
           className="md:hidden text-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
