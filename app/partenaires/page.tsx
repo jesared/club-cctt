@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const DEFAULT_LOGO = "/partenaires/default-logo.svg";
 
 const partenairesInstitutionnels = [
@@ -27,7 +29,7 @@ const partenairesPrives = [
 type Partenaire = {
   nom: string;
   url?: string;
-  logo?: string;
+  logo: string;
   type: "Institutionnel" | "Privé";
 };
 
@@ -81,10 +83,12 @@ export default function PartenairesPage() {
               >
                 <div className="flex items-center gap-4">
                   <div className="flex h-16 w-24 items-center justify-center rounded-xl border border-gray-100 bg-gray-50">
-                    <img
+                    <Image
                       className="max-h-12 max-w-20 object-contain"
                       src={partenaire.logo}
                       alt={`Logo ${partenaire.nom}`}
+                      width={80}
+                      height={48}
                     />
                   </div>
                   <div>
@@ -126,10 +130,12 @@ export default function PartenairesPage() {
                 >
                   <div className="flex items-center gap-4">
                     <div className="flex h-16 w-24 items-center justify-center rounded-xl border border-gray-100 bg-transparent">
-                      <img
+                      <Image
                         className="max-h-12 max-w-20 object-contain"
                         src={partenaire.logo}
                         alt={`Logo ${partenaire.nom}`}
+                        width={80}
+                        height={48}
                       />
                     </div>
                     <div>
