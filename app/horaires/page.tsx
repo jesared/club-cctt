@@ -29,7 +29,7 @@ export default function HorairesPage() {
 
       {/* HORAIRES PAR JOUR */}
       <section className="space-y-8">
-        <div className="grid gap-4 lg:grid-cols-[2fr,1fr]">
+        <div className="space-y-4">
           <div className="text-gray-600">
             <h2 className="text-xl font-semibold text-gray-900">
               Créneaux par jour
@@ -43,26 +43,29 @@ export default function HorairesPage() {
             <CardHeader>
               <CardTitle>Légende</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm text-gray-700">
-              <div className="flex items-center gap-2">
-                <Badge variant={"jeunes"}>Jeunes</Badge>
-                <span>Entraînements encadrés pour les jeunes.</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant={"elite"}>Élite</Badge>
-                <span>Groupes à niveau confirmé.</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant={"loisir"}>Loisir</Badge>
-                <span>Pratique loisir et sport santé.</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant={"libre"}>Libre</Badge>
-                <span>Jeu libre réservé aux licenciés.</span>
+            <CardContent className="text-sm text-gray-700">
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                <div className="flex items-center gap-2">
+                  <Badge variant={"jeunes"}>Jeunes</Badge>
+                  <span>Entraînements encadrés pour les jeunes.</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant={"elite"}>Élite</Badge>
+                  <span>Groupes à niveau confirmé.</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant={"loisir"}>Loisir</Badge>
+                  <span>Pratique loisir et sport santé.</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant={"libre"}>Libre</Badge>
+                  <span>Jeu libre réservé aux licenciés.</span>
+                </div>
               </div>
             </CardContent>
           </Card>
         </div>
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         {/* LUNDI */}
         <Card>
           <CardHeader>
@@ -196,6 +199,7 @@ export default function HorairesPage() {
             </ul>
           </CardContent>
         </Card>
+        </div>
       </section>
 
       {/* LIEU */}
