@@ -39,7 +39,7 @@ export default function Header() {
   }, [isOpen]);
 
   return (
-    <header className="sticky top-0 z-40 border-b bg-white/95 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b bg-transparent">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* LOGO */}
         <Link href="/" className="flex items-center gap-3">
