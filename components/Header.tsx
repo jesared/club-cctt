@@ -96,16 +96,16 @@ export default function Header() {
 
       {/* MENU MOBILE */}
       {open && (
-        <div className="fixed inset-0 z-50">
+        <div className="fixed inset-0 z-50 md:hidden">
           <button
             type="button"
             aria-label="Fermer le menu"
             onClick={() => setOpen(false)}
-            className="absolute inset-0 bg-slate-900/40"
+            className="absolute inset-0 z-0 bg-slate-900/40"
           />
           <div
             id="mobile-menu"
-            className="absolute right-0 top-0 h-full w-72 max-w-[80%] overflow-y-auto bg-white shadow-xl"
+            className="absolute right-0 top-0 z-10 h-full w-72 max-w-[80%] overflow-y-auto bg-white shadow-xl"
             role="dialog"
             aria-modal="true"
           >
