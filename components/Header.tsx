@@ -150,7 +150,7 @@ export default function Header() {
           aria-modal="true"
           aria-label="Menu principal"
         >
-          <div className="flex items-center justify-between h-16 px-4 border-b">
+          <div className="sticky top-0 z-20 flex h-16 items-center justify-between border-b bg-white px-4">
             <div className="flex items-center gap-3">
               <Image
                 src="/logo.jpg"
@@ -170,7 +170,7 @@ export default function Header() {
             </button>
           </div>
 
-        <nav className="flex flex-col px-6 py-8 gap-5 text-lg font-medium">
+          <nav className="flex flex-col gap-5 px-6 py-8 text-lg font-medium">
             <Link
               href="/"
               onClick={() => setOpen(false)}
