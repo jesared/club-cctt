@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 
-import { User, Users } from "lucide-react";
+import { Users } from "lucide-react";
 
 export default function ComiteDirecteurPage() {
   return (
@@ -44,11 +44,18 @@ export default function ComiteDirecteurPage() {
 
           {/* SECRÉTAIRE */}
           <Card className="border-l-4 border-l-purple-500">
-            <CardHeader className="flex flex-row items-center gap-3">
-              <User className="w-5 h-5 text-purple-600" />
+            <CardHeader className="flex flex-col items-center text-center gap-4">
+              <div className="relative w-28 h-28 overflow-hidden rounded-lg">
+                <Image
+                  src="/comite/secretaire.svg"
+                  alt="Secrétaire du CCTT"
+                  fill
+                  className="object-cover"
+                />
+              </div>
               <CardTitle>Secrétaire</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="text-center">
               <p className="font-medium">Nom Prénom</p>
               <p className="text-sm text-gray-500">
                 Gestion administrative et communication
@@ -58,11 +65,18 @@ export default function ComiteDirecteurPage() {
 
           {/* TRÉSORIER */}
           <Card className="border-l-4 border-l-purple-500">
-            <CardHeader className="flex flex-row items-center gap-3">
-              <User className="w-5 h-5 text-purple-600" />
+            <CardHeader className="flex flex-col items-center text-center gap-4">
+              <div className="relative w-28 h-28 overflow-hidden rounded-lg">
+                <Image
+                  src="/comite/tresorier.svg"
+                  alt="Trésorier du CCTT"
+                  fill
+                  className="object-cover"
+                />
+              </div>
               <CardTitle>Trésorier</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="text-center">
               <p className="font-medium">Nom Prénom</p>
               <p className="text-sm text-gray-500">
                 Gestion financière du club
