@@ -45,13 +45,18 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a className="text-gray-700 hover:text-gray-900" href="/inscription">
-                  Inscription
+                <a className="text-gray-700 hover:text-gray-900" href="/contact">
+                  Contact
                 </a>
               </li>
               <li>
-                <a className="text-gray-700 hover:text-gray-900" href="/contact">
-                  Contact
+                <a
+                  className="text-gray-700 hover:text-gray-900"
+                  href="https://cd51tt.fr/"
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  Comité Marne TT
                 </a>
               </li>
               <li>
