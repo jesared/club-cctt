@@ -77,7 +77,7 @@ export default function ComiteDirecteurPage() {
               <CardTitle>Trésorier</CardTitle>
             </CardHeader>
             <CardContent className="text-center">
-              <p className="font-medium">Nom Prénom</p>
+              <p className="font-medium">HAUTIER Jean-Marc</p>
               <p className="text-sm text-gray-500">
                 Gestion financière du club
               </p>
