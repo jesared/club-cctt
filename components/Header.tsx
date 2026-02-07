@@ -73,7 +73,7 @@ function HeaderContent() {
 
   return (
     <header
-      className={`sticky top-0 z-40 border-b transition-colors duration-200 ${
+      className={`relative z-40 border-b transition-colors duration-200 md:sticky md:top-0 ${
         isScrolled
           ? "bg-white/98 backdrop-blur shadow-md border-slate-200/80"
           : "bg-transparent border-transparent"
