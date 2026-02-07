@@ -3,10 +3,23 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Menu, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-export default function Header() {
-  const [open, setOpen] = useState(false);
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarTrigger,
+  useSidebar,
+} from "@/components/ui/sidebar";
+
+function HeaderContent() {
+  const { open, setOpen } = useSidebar();
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const isOpen = open;
@@ -43,7 +56,7 @@ export default function Header() {
       document.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("resize", handleResize);
     };
-  }, [isOpen]);
+  }, [isOpen, setOpen]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -56,7 +69,7 @@ export default function Header() {
 
   useEffect(() => {
     setOpen(false);
-  }, [pathname]);
+  }, [pathname, setOpen]);
 
   return (
     <header
@@ -111,99 +124,80 @@ export default function Header() {
         </nav>
 
         {/* BOUTON MOBILE */}
-        <button
-          onClick={() =>
-            setOpen((prev) => {
-              return !prev;
-            })
-          }
-          className="md:hidden text-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
-          aria-label={isOpen ? "Fermer le menu" : "Ouvrir le menu"}
-          aria-expanded={isOpen}
-          aria-controls="mobile-menu"
-        >
-          {isOpen ? "✕" : "☰"}
-        </button>
+        <SidebarTrigger asChild>
+          <button
+            className="md:hidden text-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
+            aria-label={isOpen ? "Fermer le menu" : "Ouvrir le menu"}
+            aria-expanded={isOpen}
+          >
+            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </SidebarTrigger>
       </div>
 
       {/* MENU MOBILE */}
-      <div
-        className={`fixed inset-0 z-50 md:hidden transition ${
-          isOpen ? "pointer-events-auto" : "pointer-events-none"
-        }`}
-        aria-hidden={!isOpen}
-      >
-        <button
-          type="button"
-          aria-label="Fermer le menu"
-          onClick={() => setOpen(false)}
-          className={`absolute inset-0 z-0 bg-slate-900/40 transition-opacity ${
-            isOpen ? "opacity-100" : "opacity-0"
-          }`}
-        />
-        <div
-          id="mobile-menu"
-          className={`absolute right-0 top-0 z-10 flex h-full w-80 max-w-[85%] flex-col overflow-y-auto bg-white shadow-2xl transition-transform duration-300 ${
-            isOpen ? "translate-x-0" : "translate-x-full"
-          }`}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Menu principal"
-        >
-          <div className="sticky top-0 z-20 flex h-16 items-center justify-between border-b bg-white px-4">
-            <div className="flex items-center gap-3">
-              <Image
-                src="/logo.jpg"
-                alt="CCTT"
-                width={36}
-                height={36}
-                className="object-contain"
-              />
-              <span className="font-bold">Menu</span>
-            </div>
-            <button
-              onClick={() => setOpen(false)}
-              className="text-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
-              aria-label="Fermer le menu"
-            >
-              ✕
-            </button>
+      <Sidebar side="right" className="bg-white" aria-label="Menu principal">
+        <SidebarHeader className="bg-white">
+          <div className="flex items-center gap-3">
+            <Image
+              src="/logo.jpg"
+              alt="CCTT"
+              width={36}
+              height={36}
+              className="object-contain"
+            />
+            <span className="font-bold">Menu</span>
           </div>
-
-          <nav className="flex flex-col gap-5 px-6 py-8 text-lg font-medium">
-            <Link
-              href="/"
-              onClick={() => setOpen(false)}
-              className={`transition-colors hover:text-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500 ${
-                pathname === "/" ? "text-blue-700" : "text-slate-700"
-              }`}
-            >
-              Accueil
-            </Link>
+          <button
+            onClick={() => setOpen(false)}
+            className="text-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
+            aria-label="Fermer le menu"
+          >
+            <X className="h-6 w-6" />
+          </button>
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarMenu className="text-lg font-medium">
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname === "/"}
+                onClick={() => setOpen(false)}
+              >
+                <Link href="/">Accueil</Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
             {menuItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className={`transition-colors hover:text-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500 ${
-                  pathname === item.href ? "text-blue-700" : "text-slate-700"
-                }`}
-              >
-                {item.label}
-              </Link>
+              <SidebarMenuItem key={item.href}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === item.href}
+                  onClick={() => setOpen(false)}
+                >
+                  <Link href={item.href}>{item.label}</Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             ))}
-            <div className="pt-4">
-              <Link
-                href="/contact"
-                onClick={() => setOpen(false)}
-                className="block rounded-full bg-blue-700 px-4 py-2 text-center text-white transition-colors hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
-              >
-                Nous rejoindre
-              </Link>
-            </div>
-          </nav>
-        </div>
-      </div>
+          </SidebarMenu>
+          <div className="px-6 pb-8">
+            <Link
+              href="/contact"
+              onClick={() => setOpen(false)}
+              className="block rounded-full bg-blue-700 px-4 py-2 text-center text-white transition-colors hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
+            >
+              Nous rejoindre
+            </Link>
+          </div>
+        </SidebarContent>
+      </Sidebar>
     </header>
+  );
+}
+
+export default function Header() {
+  return (
+    <SidebarProvider defaultOpen={false}>
+      <HeaderContent />
+    </SidebarProvider>
   );
 }
