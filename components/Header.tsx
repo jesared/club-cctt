@@ -65,13 +65,13 @@ function HeaderContent() {
 
   return (
     <header
-      className={`relative z-40 border-b transition-colors duration-200 md:sticky md:top-0 ${
+      className={`sticky top-0 z-40 border-b transition-colors duration-200 lg:hidden ${
         isScrolled
-          ? "bg-white/98 backdrop-blur shadow-md border-slate-200/80"
+          ? "bg-white/95 backdrop-blur shadow-sm border-slate-200/80"
           : "bg-transparent border-transparent"
       }`}
     >
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
+      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
         {/* LOGO */}
         <Link href="/" className="flex items-center gap-3">
           <Image
@@ -83,10 +83,10 @@ function HeaderContent() {
             priority
           />
           <div className="flex flex-col leading-tight">
-            <span className="font-bold text-lg">CCTT</span>
-            <span className="text-xs text-gray-500">
-              <span className="hidden sm:inline">Châlons-en-Champagne</span>
-              <span className="sm:hidden">Châlons</span>
+            <span className="text-base font-semibold">CCTT</span>
+            <span className="text-[11px] text-gray-500">
+              <span className="hidden md:inline">Châlons-en-Champagne</span>
+              <span className="md:hidden">Châlons</span>
             </span>
           </div>
         </Link>
