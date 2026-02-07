@@ -40,7 +40,7 @@ const partenairesPrives = [
   {
     nom: "Colson Boulangerie",
     slogan: "Le goût du partage, chaque jour.",
-    logo: "/partenaires/colson.svg",
+    logo: "/partenaires/colson.jpg",
   },
   {
     nom: "Ola Création",
@@ -56,7 +56,7 @@ const partenairesPrives = [
   {
     nom: "Le Saint Alp'",
     slogan: "Bar - Brasserie",
-    logo: "/partenaires/saint-alp.svg",
+    logo: "/partenaires/saint-alp.jpg",
   },
 ];
 
