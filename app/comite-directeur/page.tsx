@@ -48,7 +48,7 @@ export default function ComiteDirecteurPage() {
               <div className="relative w-28 h-28 overflow-hidden rounded-lg">
                 <Image
                   src="/comite/secretaire.svg"
-                  alt="Secrétaire du CCTT"
+                  alt="Frédéric Perard – Secrétaire du CCTT"
                   fill
                   className="object-cover"
                 />
@@ -56,7 +56,7 @@ export default function ComiteDirecteurPage() {
               <CardTitle>Secrétaire</CardTitle>
             </CardHeader>
             <CardContent className="text-center">
-              <p className="font-medium">Nom Prénom</p>
+              <p className="font-medium">PERARD Frédéric</p>
               <p className="text-sm text-gray-500">
                 Gestion administrative et communication
               </p>
