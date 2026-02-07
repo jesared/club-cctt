@@ -24,16 +24,19 @@ const partenairesInstitutionnels = [
   {
     nom: "Grand Est",
     slogan: "Une région engagée pour le sport.",
+    logo: "/partenaires/LOGO_Horizontal_RVB.jpg",
     url: "https://www.grandest.fr/",
   },
   {
     nom: "La Marne",
     slogan: "La Marne soutient l’élan sportif.",
+    logo: "/partenaires/logo-lamarne.svg",
     url: "https://www.marne.fr/",
   },
   {
     nom: "Châlons-en-Champagne",
     slogan: "La ville qui encourage le sport de proximité.",
+    logo: "/partenaires/logo-chalons.png",
     url: "https://www.chalonsenchampagne.fr/ville",
   },
 ];
