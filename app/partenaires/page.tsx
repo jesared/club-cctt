@@ -119,13 +119,13 @@ export default function PartenairesPage() {
                 rel="noreferrer"
               >
                 <div className="flex items-center gap-4">
-                  <div className="flex h-16 w-24 items-center justify-center rounded-xl border border-gray-100 bg-gray-50">
+                  <div className="flex h-20 w-32 items-center justify-center rounded-xl border border-gray-100 bg-gray-50">
                     <Image
-                      className="max-h-12 max-w-20 object-contain"
+                      className="max-h-16 max-w-28 object-contain"
                       src={partenaire.logo}
                       alt={`Logo ${partenaire.nom}`}
-                      width={80}
-                      height={48}
+                      width={112}
+                      height={64}
                     />
                   </div>
                   <div>
@@ -161,13 +161,13 @@ export default function PartenairesPage() {
                   rel={partenaire.url ? "noreferrer" : undefined}
                 >
                   <div className="flex items-center gap-4">
-                    <div className="flex h-16 w-24 items-center justify-center rounded-xl border border-gray-100 bg-transparent">
+                    <div className="flex h-20 w-32 items-center justify-center rounded-xl border border-gray-100 bg-transparent">
                       <Image
-                        className="max-h-12 max-w-20 object-contain"
+                        className="max-h-16 max-w-28 object-contain"
                         src={partenaire.logo}
                         alt={`Logo ${partenaire.nom}`}
-                        width={80}
-                        height={48}
+                        width={112}
+                        height={64}
                       />
                     </div>
                     <div>
