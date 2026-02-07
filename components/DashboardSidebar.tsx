@@ -104,7 +104,7 @@ export default function DashboardSidebar() {
             );
           })}
         </nav>
-        <div className={cn("pt-6", isCollapsed && "pt-4")}>
+        <div className={cn("mt-auto pt-6", isCollapsed && "pt-4")}>
           <Link
             href={primaryCta.href}
             className={cn(

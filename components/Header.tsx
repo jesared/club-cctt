@@ -125,7 +125,7 @@ function HeaderContent() {
           </button>
         </SidebarHeader>
         <SidebarContent>
-          <SidebarMenu className="text-lg font-medium">
+          <SidebarMenu className="flex-1 overflow-y-auto text-lg font-medium">
             {mainMenuItems.map((item) => (
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
@@ -138,7 +138,7 @@ function HeaderContent() {
               </SidebarMenuItem>
             ))}
           </SidebarMenu>
-          <div className="px-6 pb-8">
+          <div className="mt-auto px-6 pb-8">
             <Link
               href={primaryCta.href}
               onClick={() => setOpen(false)}
