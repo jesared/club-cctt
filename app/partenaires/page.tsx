@@ -36,7 +36,11 @@ const partenairesInstitutionnels = [
 ];
 
 const partenairesPrives = [
-  { nom: "Opel Renesson", slogan: " Concessionnaire est un distributeur Opel" },
+  {
+    nom: "Opel Renesson",
+    slogan: " Concessionnaire est un distributeur Opel",
+    logo: "/partenaires/opel-renesson.png",
+  },
   {
     nom: "Colson Boulangerie",
     slogan: "Le goût du partage, chaque jour.",
