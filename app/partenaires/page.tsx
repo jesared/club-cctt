@@ -6,16 +6,19 @@ const partenairesInstitutionnels = [
   {
     nom: "FFTT",
     slogan: "La fédération qui fait rayonner le tennis de table.",
+    logo: "/partenaires/FFTT_LOGO_VERTICAL_MASTER_CMJN.jpg",
     url: "https://www.fftt.com/",
   },
   {
     nom: "Ligue Grand Est TT",
     slogan: "Le ping qui unit tout le Grand Est.",
+    logo: "/partenaires/FFTT_V_LIGUE_GRAND EST_CMJN.jpg",
     url: "https://www.lgett.fr/accueil",
   },
   {
     nom: "Comité Marne TT",
     slogan: "Le ping au cœur de la Marne.",
+    logo: "/partenaires/FFTT_V_COMITE_MARNE_CMJN.jpg",
     url: "https://cd51tt.fr/",
   },
   {
