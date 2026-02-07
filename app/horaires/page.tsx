@@ -75,11 +75,24 @@ export default function HorairesPage() {
               <ul className="space-y-2">
                 <li className="flex items-center gap-2">
                   <Badge variant={"jeunes"}>Jeunes</Badge>
+<<<<<<< Updated upstream
                   <span>17h45 – 19h00 (Primaires + Handis)</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Badge variant={"libre"}>Libre</Badge>
                   <span>19h00 (Départementaux)</span>
+=======
+                  <span>17h00 – 18h00 (Débutants)</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Badge variant={"jeunes"}>Jeunes</Badge>
+                  <span>18h00 – 19h00 (Moyens)</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Badge variant={"libre"}>Libre</Badge>
+                  <Badge variant={"elite"}>Élite</Badge>
+                  <span>19h00 - 20h30 (Départementaux)</span>
+>>>>>>> Stashed changes
                 </li>
               </ul>
             </CardContent>
@@ -106,7 +119,11 @@ export default function HorairesPage() {
                 </li>
                 <li className="flex items-center gap-2">
                   <Badge variant={"elite"}>Élite</Badge>
+<<<<<<< Updated upstream
                   <span>18h00 – 19h30 (Élite + Lycée)</span>
+=======
+                  <span>18h00 – 20h00 (Élite)</span>
+>>>>>>> Stashed changes
                 </li>
               </ul>
             </CardContent>
@@ -155,6 +172,13 @@ export default function HorairesPage() {
             <CardContent className="text-gray-700">
               <ul className="space-y-2">
                 <li className="flex items-center gap-2">
+<<<<<<< Updated upstream
+=======
+                  <Badge variant={"libre"}>Libre</Badge>
+                  <span>à partir de 16h00</span>
+                </li>
+                <li className="flex items-center gap-2">
+>>>>>>> Stashed changes
                   <Badge variant={"jeunes"}>Jeunes</Badge>
                   <span>17h00 – 18h00 (Panier balles)</span>
                 </li>
@@ -184,12 +208,23 @@ export default function HorairesPage() {
               </ul>
             </CardContent>
           </Card>
+<<<<<<< Updated upstream
 
           {/* SAMEDI */}
           <Card>
             <CardHeader>
               <CardTitle>Samedi</CardTitle>
             </CardHeader>
+=======
+        </div>
+      </section>
+
+      {/* SAMEDI */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Samedi</CardTitle>
+        </CardHeader>
+>>>>>>> Stashed changes
             <CardContent className="text-gray-700">
               <ul className="space-y-2">
                 <li className="flex items-center gap-2">

@@ -47,7 +47,7 @@ export default function ComiteDirecteurPage() {
             <CardHeader className="flex flex-col items-center text-center gap-4">
               <div className="relative w-28 h-28 overflow-hidden rounded-lg">
                 <Image
-                  src="/comite/secretaire.svg"
+                  src="/comite/fred-perard.jpg"
                   alt="Frédéric Perard – Secrétaire du CCTT"
                   fill
                   className="object-cover"
@@ -68,7 +68,7 @@ export default function ComiteDirecteurPage() {
             <CardHeader className="flex flex-col items-center text-center gap-4">
               <div className="relative w-28 h-28 overflow-hidden rounded-lg">
                 <Image
-                  src="/comite/tresorier.svg"
+                  src="/comite/jean-marc-hautier.jpg"
                   alt="Trésorier du CCTT"
                   fill
                   className="object-cover"
