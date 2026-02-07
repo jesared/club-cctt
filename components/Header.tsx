@@ -3,11 +3,26 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Menu, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-export default function Header() {
-  const [open, setOpen] = useState(false);
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarTrigger,
+  useSidebar,
+} from "@/components/ui/sidebar";
+
+function HeaderContent() {
+  const { open, setOpen } = useSidebar();
   const pathname = usePathname();
+  const [isScrolled, setIsScrolled] = useState(false);
+  const isOpen = open;
   const menuItems = useMemo(
     () => [
       { href: "/club", label: "Le club" },
@@ -21,7 +36,7 @@ export default function Header() {
   );
 
   useEffect(() => {
-    if (!open) return;
+    if (!isOpen) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -41,14 +56,27 @@ export default function Header() {
       document.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("resize", handleResize);
     };
-  }, [open]);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname, setOpen]);
 
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
 
   return (
-    <header className="sticky top-0 z-40 border-b bg-white/95 backdrop-blur">
+    <header
+      className={`relative z-40 border-b transition-colors duration-200 md:sticky md:top-0 ${
+        isScrolled
+          ? "bg-white/98 backdrop-blur shadow-md border-slate-200/80"
+          : "bg-transparent border-transparent"
+      }`}
+    >
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* LOGO */}
         <Link href="/" className="flex items-center gap-3">
@@ -77,9 +105,9 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`transition-colors hover:text-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500 ${
-                  isActive ? "text-blue-700" : "text-gray-700"
-                }`}
+                className={`transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500 ${
+                  isActive ? "text-blue-700" : "text-slate-700"
+                } ${isScrolled ? "hover:text-blue-700" : "hover:text-blue-600"}`}
               >
                 {item.label}
               </Link>
@@ -107,19 +135,22 @@ export default function Header() {
       </div>
 
       {/* MENU MOBILE */}
-      {open && (
-        <div className="fixed inset-0 z-50">
+      <Sidebar side="right" className="bg-white" aria-label="Menu principal">
+        <SidebarHeader className="bg-white">
+          <div className="flex items-center gap-3">
+            <Image
+              src="/logo.jpg"
+              alt="CCTT"
+              width={36}
+              height={36}
+              className="object-contain"
+            />
+            <span className="font-bold">Menu</span>
+          </div>
           <button
-            type="button"
-            aria-label="Fermer le menu"
             onClick={() => setOpen(false)}
-            className="absolute inset-0 bg-slate-900/40"
-          />
-          <div
-            id="mobile-menu"
-            className="absolute right-0 top-0 h-full w-72 max-w-[80%] overflow-y-auto bg-white shadow-xl"
-            role="dialog"
-            aria-modal="true"
+            className="text-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
+            aria-label="Fermer le menu"
           >
             <div className="flex items-center justify-between h-16 px-4 border-b">
               <span className="font-bold">Menu</span>
@@ -137,33 +168,41 @@ export default function Header() {
               <Link
                 href="/"
                 onClick={() => setOpen(false)}
-                className="text-gray-700 hover:text-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
               >
-                Accueil
-              </Link>
-              {menuItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
+                <Link href="/">Accueil</Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            {menuItems.map((item) => (
+              <SidebarMenuItem key={item.href}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === item.href}
                   onClick={() => setOpen(false)}
-                  className={`transition-colors hover:text-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500 ${
-                    pathname === item.href ? "text-blue-700" : "text-gray-700"
-                  }`}
                 >
-                  {item.label}
-                </Link>
-              ))}
-              <Link
-                href="/contact"
-                onClick={() => setOpen(false)}
-                className="rounded-full bg-blue-700 px-4 py-2 text-center text-white transition-colors hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
-              >
-                Nous rejoindre
-              </Link>
-            </nav>
+                  <Link href={item.href}>{item.label}</Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+          <div className="px-6 pb-8">
+            <Link
+              href="/contact"
+              onClick={() => setOpen(false)}
+              className="block rounded-full bg-blue-700 px-4 py-2 text-center text-white transition-colors hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
+            >
+              Nous rejoindre
+            </Link>
           </div>
-        </div>
-      )}
+        </SidebarContent>
+      </Sidebar>
     </header>
+  );
+}
+
+export default function Header() {
+  return (
+    <SidebarProvider defaultOpen={false}>
+      <HeaderContent />
+    </SidebarProvider>
   );
 }

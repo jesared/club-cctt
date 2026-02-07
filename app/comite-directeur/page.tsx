@@ -97,10 +97,7 @@ export default function ComiteDirecteurPage() {
               <CardTitle>Membre</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="font-medium">Nom Prénom</p>
-              <p className="text-sm text-gray-500">
-                Soutien aux actions du club
-              </p>
+              <p className="font-medium">PHILIPPOT Julien</p>
             </CardContent>
           </Card>
 
@@ -110,10 +107,7 @@ export default function ComiteDirecteurPage() {
               <CardTitle>Membre</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="font-medium">Nom Prénom</p>
-              <p className="text-sm text-gray-500">
-                Organisation des événements
-              </p>
+              <p className="font-medium">GAUCHÉ Patrick</p>
             </CardContent>
           </Card>
 
@@ -123,10 +117,40 @@ export default function ComiteDirecteurPage() {
               <CardTitle>Membre</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="font-medium">Nom Prénom</p>
-              <p className="text-sm text-gray-500">Logistique et vie du club</p>
+              <p className="font-medium">DUMANGE Benoît</p>
             </CardContent>
           </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center gap-3">
+              <Users className="w-5 h-5 text-purple-600" />
+              <CardTitle>Membre</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="font-medium">PRIAM Thomas</p>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* SALARIÉS DIPLÔMÉS */}
+      <section>
+        <h2 className="text-3xl font-semibold mb-10">Salariés diplômés</h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {["LOUVET Sylvain", "BERTHELOT Maxime", "GUILLAUMÉ Lucas"].map(
+            (salarie) => (
+              <Card key={salarie}>
+                <CardHeader className="flex flex-row items-center gap-3">
+                  <Users className="w-5 h-5 text-purple-600" />
+                  <CardTitle>Salarié diplômé</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="font-medium">{salarie}</p>
+                </CardContent>
+              </Card>
+            ),
+          )}
         </div>
       </section>
     </div>
