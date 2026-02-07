@@ -36,7 +36,7 @@ const partenairesInstitutionnels = [
   {
     nom: "Châlons-en-Champagne",
     slogan: "La ville qui encourage le sport de proximité.",
-    logo: "/partenaires/logo-chalons.png",
+    logo: "/partenaires/Logo-chalons.png",
     url: "https://www.chalonsenchampagne.fr/ville",
   },
 ];
