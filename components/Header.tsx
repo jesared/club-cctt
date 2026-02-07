@@ -4,8 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
+import {
+  mainMenuItems,
+  primaryCta,
+} from "@/components/navigation/menu-items";
 import {
   Sidebar,
   SidebarContent,
@@ -13,7 +17,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarProvider,
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
@@ -23,17 +26,6 @@ function HeaderContent() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const isOpen = open;
-  const menuItems = useMemo(
-    () => [
-      { href: "/club", label: "Le club" },
-      { href: "/comite-directeur", label: "Comité directeur" },
-      { href: "/horaires", label: "Horaires" },
-      { href: "/tarifs", label: "Tarifs" },
-      { href: "/partenaires", label: "Partenaires" },
-      { href: "/contact", label: "Contact" },
-    ],
-    []
-  );
 
   useEffect(() => {
     if (!isOpen) return;
@@ -46,7 +38,7 @@ function HeaderContent() {
     };
     document.addEventListener("keydown", handleKeyDown);
     const handleResize = () => {
-      if (window.innerWidth >= 768) {
+      if (window.innerWidth >= 1024) {
         setOpen(false);
       }
     };
@@ -79,7 +71,7 @@ function HeaderContent() {
           : "bg-transparent border-transparent"
       }`}
     >
-      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         {/* LOGO */}
         <Link href="/" className="flex items-center gap-3">
           <Image
@@ -99,34 +91,10 @@ function HeaderContent() {
           </div>
         </Link>
 
-        {/* MENU DESKTOP */}
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-          {menuItems.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500 ${
-                  isActive ? "text-blue-700" : "text-slate-700"
-                } ${isScrolled ? "hover:text-blue-700" : "hover:text-blue-600"}`}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-          <Link
-            href="/contact"
-            className="rounded-full bg-blue-700 px-4 py-2 text-white transition-colors hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
-          >
-            Nous rejoindre
-          </Link>
-        </nav>
-
         {/* BOUTON MOBILE */}
         <SidebarTrigger asChild>
           <button
-            className="md:hidden text-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
+            className="lg:hidden text-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
             aria-label={isOpen ? "Fermer le menu" : "Ouvrir le menu"}
             aria-expanded={isOpen}
           >
@@ -158,16 +126,7 @@ function HeaderContent() {
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu className="text-lg font-medium">
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === "/"}
-                onClick={() => setOpen(false)}
-              >
-                <Link href="/">Accueil</Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            {menuItems.map((item) => (
+            {mainMenuItems.map((item) => (
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
                   asChild
@@ -181,11 +140,11 @@ function HeaderContent() {
           </SidebarMenu>
           <div className="px-6 pb-8">
             <Link
-              href="/contact"
+              href={primaryCta.href}
               onClick={() => setOpen(false)}
               className="block rounded-full bg-blue-700 px-4 py-2 text-center text-white transition-colors hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
             >
-              Nous rejoindre
+              {primaryCta.label}
             </Link>
           </div>
         </SidebarContent>
@@ -195,9 +154,5 @@ function HeaderContent() {
 }
 
 export default function Header() {
-  return (
-    <SidebarProvider defaultOpen={false}>
-      <HeaderContent />
-    </SidebarProvider>
-  );
+  return <HeaderContent />;
 }
