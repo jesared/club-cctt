@@ -24,7 +24,7 @@ type HorairesData = {
 
 export default async function HorairesPage() {
   // récupération des données depuis ton API (qui lit Google Drive)
-  const res = await fetch("http://localhost:3000/api/horaires", {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/horaires`, {
     cache: "no-store",
   });
 
