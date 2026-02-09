@@ -1,12 +1,38 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Users } from "lucide-react";
 import Image from "next/image";
 
-import { Users } from "lucide-react";
+/* ---------- TYPES ---------- */
 
-export default function ComiteDirecteurPage() {
+type BureauMember = {
+  poste: string;
+  nom: string;
+  description: string;
+  photo: string;
+};
+
+type SimpleMember = {
+  nom: string;
+};
+
+type ComiteData = {
+  bureau: BureauMember[];
+  membres: SimpleMember[];
+  salaries: SimpleMember[];
+};
+
+/* ---------- PAGE ---------- */
+
+export default async function ComiteDirecteurPage() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/comite`, {
+    cache: "no-store",
+  });
+
+  const data: ComiteData = await res.json();
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-16 space-y-20">
-      {/* TITRE PAGE */}
+      {/* TITRE */}
       <header>
         <h1 className="text-4xl font-bold mb-4">Comité directeur</h1>
         <p className="text-gray-600 max-w-3xl">
@@ -20,69 +46,27 @@ export default function ComiteDirecteurPage() {
         <h2 className="text-3xl font-semibold mb-10">Bureau</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {/* PRÉSIDENT */}
-          <Card className="border-l-4 border-l-purple-500">
-            <CardHeader className="flex flex-col items-center text-center gap-4">
-              <div className="relative w-28 h-28 overflow-hidden rounded-lg">
-                <Image
-                  src="/comite/julie_Fila_Tournant.jpg"
-                  alt="FILA-TOURNANT Julie – Présidente du CCTT"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <CardTitle>Présidente</CardTitle>
-            </CardHeader>
+          {data.bureau.map((personne) => (
+            <Card key={personne.nom} className="border-l-4 border-l-purple-500">
+              <CardHeader className="flex flex-col items-center text-center gap-4">
+                <div className="relative w-28 h-28 overflow-hidden rounded-lg">
+                  <Image
+                    src={personne.photo}
+                    alt={`${personne.nom} – ${personne.poste}`}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
 
-            <CardContent className="text-center">
-              <p className="font-medium">FILA-TOURNANT Julie</p>
-              <p className="text-sm text-gray-500">
-                Représentation et orientation du club
-              </p>
-            </CardContent>
-          </Card>
+                <CardTitle>{personne.poste}</CardTitle>
+              </CardHeader>
 
-          {/* SECRÉTAIRE */}
-          <Card className="border-l-4 border-l-purple-500">
-            <CardHeader className="flex flex-col items-center text-center gap-4">
-              <div className="relative w-28 h-28 overflow-hidden rounded-lg">
-                <Image
-                  src="/comite/fred-perard.jpg"
-                  alt="Frédéric Perard – Secrétaire du CCTT"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <CardTitle>Secrétaire</CardTitle>
-            </CardHeader>
-            <CardContent className="text-center">
-              <p className="font-medium">PERARD Frédéric</p>
-              <p className="text-sm text-gray-500">
-                Gestion administrative et communication
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* TRÉSORIER */}
-          <Card className="border-l-4 border-l-purple-500">
-            <CardHeader className="flex flex-col items-center text-center gap-4">
-              <div className="relative w-28 h-28 overflow-hidden rounded-lg">
-                <Image
-                  src="/comite/jean-marc-hautier.jpg"
-                  alt="Trésorier du CCTT"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <CardTitle>Trésorier</CardTitle>
-            </CardHeader>
-            <CardContent className="text-center">
-              <p className="font-medium">HAUTIER Jean-Marc</p>
-              <p className="text-sm text-gray-500">
-                Gestion financière du club
-              </p>
-            </CardContent>
-          </Card>
+              <CardContent className="text-center">
+                <p className="font-medium">{personne.nom}</p>
+                <p className="text-sm text-gray-500">{personne.description}</p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </section>
 
@@ -91,66 +75,36 @@ export default function ComiteDirecteurPage() {
         <h2 className="text-3xl font-semibold mb-10">Membres du comité</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center gap-3">
-              <Users className="w-5 h-5 text-purple-600" />
-              <CardTitle>Membre</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="font-medium">PHILIPPOT Julien</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center gap-3">
-              <Users className="w-5 h-5 text-purple-600" />
-              <CardTitle>Membre</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="font-medium">GAUCHÉ Patrick</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center gap-3">
-              <Users className="w-5 h-5 text-purple-600" />
-              <CardTitle>Membre</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="font-medium">DUMANGE Benoît</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center gap-3">
-              <Users className="w-5 h-5 text-purple-600" />
-              <CardTitle>Membre</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="font-medium">PRIAM Thomas</p>
-            </CardContent>
-          </Card>
+          {data.membres.map((membre) => (
+            <Card key={membre.nom}>
+              <CardHeader className="flex flex-row items-center gap-3">
+                <Users className="w-5 h-5 text-purple-600" />
+                <CardTitle>Membre</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="font-medium">{membre.nom}</p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </section>
 
-      {/* SALARIÉS DIPLÔMÉS */}
+      {/* SALARIÉS */}
       <section>
         <h2 className="text-3xl font-semibold mb-10">Salariés diplômés</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {["LOUVET Sylvain", "BERTHELOT Maxime", "GUILLAUMÉ Lucas"].map(
-            (salarie) => (
-              <Card key={salarie}>
-                <CardHeader className="flex flex-row items-center gap-3">
-                  <Users className="w-5 h-5 text-purple-600" />
-                  <CardTitle>Salarié diplômé</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="font-medium">{salarie}</p>
-                </CardContent>
-              </Card>
-            ),
-          )}
+          {data.salaries.map((salarie) => (
+            <Card key={salarie.nom}>
+              <CardHeader className="flex flex-row items-center gap-3">
+                <Users className="w-5 h-5 text-purple-600" />
+                <CardTitle>Salarié diplômé</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="font-medium">{salarie.nom}</p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </section>
     </div>
