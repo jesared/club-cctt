@@ -6,8 +6,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
-import { mainMenuItems, primaryCta } from "@/components/navigation/menu-items";
+import { mainMenuItems } from "@/components/navigation/menu-items";
 import { cn } from "@/lib/utils";
+import AuthButton from "./AuthButton";
 
 export default function DashboardSidebar() {
   const pathname = usePathname();
@@ -100,22 +101,7 @@ export default function DashboardSidebar() {
             );
           })}
         </nav>
-        <div className={cn("mt-auto pt-6", isCollapsed && "pt-4")}>
-          <Link
-            href={primaryCta.href}
-            className={cn(
-              "block rounded-full bg-blue-700 px-4 py-2 text-center text-sm font-semibold text-white transition-colors hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500",
-              isCollapsed ? "w-12 px-0" : "w-full",
-            )}
-            aria-label={
-              isCollapsed ? `${primaryCta.label} (raccourci)` : undefined
-            }
-          >
-            <span className={cn(isCollapsed && "sr-only")}>
-              {primaryCta.label}
-            </span>
-          </Link>
-        </div>
+        <AuthButton />
       </div>
     </aside>
   );

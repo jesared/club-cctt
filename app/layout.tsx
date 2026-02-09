@@ -1,6 +1,7 @@
-import Footer from "@/components/Footer";
 import DashboardSidebar from "@/components/DashboardSidebar";
+import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import Providers from "@/components/Providers";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import type { Metadata } from "next";
 import "./globals.css";
@@ -23,16 +24,18 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body className="min-h-screen text-gray-800">
-        <SidebarProvider defaultOpen={false}>
-          <div className="flex min-h-screen flex-col lg:flex-row">
-            <DashboardSidebar />
-            <div className="flex min-h-screen flex-1 flex-col">
-              <Header />
-              <main className="flex-1">{children}</main>
-              <Footer />
+        <Providers>
+          <SidebarProvider defaultOpen={false}>
+            <div className="flex min-h-screen flex-col lg:flex-row">
+              <DashboardSidebar />
+              <div className="flex min-h-screen flex-1 flex-col">
+                <Header />
+                <main className="flex-1">{children}</main>
+                <Footer />
+              </div>
             </div>
-          </div>
-        </SidebarProvider>
+          </SidebarProvider>
+        </Providers>
       </body>
     </html>
   );
