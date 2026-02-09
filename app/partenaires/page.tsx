@@ -2,105 +2,79 @@ import Image from "next/image";
 
 const DEFAULT_LOGO = "/partenaires/default-logo.svg";
 
-const partenairesInstitutionnels = [
-  {
-    nom: "FFTT",
-    slogan: "La fédération qui fait rayonner le tennis de table.",
-    logo: "/partenaires/FFTT_LOGO_VERTICAL_MASTER_CMJN.jpg",
-    url: "https://www.fftt.com/",
-  },
-  {
-    nom: "Ligue Grand Est TT",
-    slogan: "Le ping qui unit tout le Grand Est.",
-    logo: "/partenaires/FFTT_V_LIGUE_GRAND EST_CMJN.jpg",
-    url: "https://www.lgett.fr/accueil",
-  },
-  {
-    nom: "Comité Marne TT",
-    slogan: "Le ping au cœur de la Marne.",
-    logo: "/partenaires/FFTT_V_COMITE_MARNE_CMJN.jpg",
-    url: "https://cd51tt.fr/",
-  },
-  {
-    nom: "Grand Est",
-    slogan: "Une région engagée pour le sport.",
-    logo: "/partenaires/LOGO_Horizontal_RVB.jpg",
-    url: "https://www.grandest.fr/",
-  },
-  {
-    nom: "La Marne",
-    slogan: "La Marne soutient l’élan sportif.",
-    logo: "/partenaires/logo-lamarne.svg",
-    url: "https://www.marne.fr/",
-  },
-  {
-    nom: "Châlons-en-Champagne",
-    slogan: "La ville qui encourage le sport de proximité.",
-    logo: "/partenaires/Logo-chalons.png",
-    url: "https://www.chalonsenchampagne.fr/ville",
-  },
-];
-
-const partenairesPrives = [
-  {
-    nom: "Opel Rennesson",
-    slogan: " Concessionnaire est un distributeur Opel",
-    logo: "/partenaires/opel-rennesson.jpg",
-  },
-  {
-    nom: "Colson Boulangerie",
-    slogan: "Le goût du partage, chaque jour.",
-    logo: "/partenaires/colson.jpg",
-  },
-  {
-    nom: "Ola Création",
-    slogan: "L’agence Ola Création : Une passion au service de vos projets",
-    logo: "/partenaires/olacreation.png",
-    url: "https://olacreation.fr/",
-  },
-  {
-    nom: "Joola",
-    slogan: "L’excellence du matériel au service du jeu.",
-    logo: "/partenaires/joola.svg",
-  },
-  {
-    nom: "Le Saint Alp'",
-    slogan: "Bar - Brasserie",
-    logo: "/partenaires/saint-alp.jpg",
-  },
-];
-
 type Partenaire = {
   nom: string;
-  slogan: string;
-  url?: string;
+  description: string;
   logo: string;
-  type: "Institutionnel" | "Privé";
+  url?: string;
 };
 
-const getLogoSrc = (logo?: string) =>
-  logo && logo.trim().length > 0 ? logo : DEFAULT_LOGO;
-
-const toPartenaire = (
-  partenaire: { nom: string; slogan: string; url?: string; logo?: string },
-  type: Partenaire["type"],
-): Partenaire => ({
-  ...partenaire,
-  type,
-  logo: getLogoSrc(partenaire.logo),
-});
-
-export default function PartenairesPage() {
-  const institutionnels = partenairesInstitutionnels.map((partenaire) =>
-    toPartenaire(partenaire, "Institutionnel"),
+async function getPartenaires() {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_SITE_URL}/api/partenaires`,
+    { cache: "no-store" },
   );
-  const prives = partenairesPrives.map((partenaire) =>
-    toPartenaire(partenaire, "Privé"),
+
+  return res.json();
+}
+
+function CardPartenaire({ partenaire }: { partenaire: Partenaire }) {
+  const hasLink = partenaire.url && partenaire.url.trim().length > 0;
+
+  const content = (
+    <div className="flex items-center gap-4">
+      <div className="flex h-20 w-32 items-center justify-center rounded-xl border border-gray-100 bg-gray-50">
+        <Image
+          className="max-h-16 max-w-28 object-contain"
+          src={
+            partenaire.logo && partenaire.logo.trim() !== ""
+              ? `/api/drive-image/${partenaire.logo}`
+              : "/partenaires/default-logo.svg"
+          }
+          alt={`Logo ${partenaire.nom}`}
+          width={112}
+          height={64}
+        />
+      </div>
+
+      <div>
+        <p className="text-lg font-semibold text-gray-900">{partenaire.nom}</p>
+        <p className="text-sm text-gray-500">{partenaire.description}</p>
+      </div>
+    </div>
   );
+
+  // SI il y a un lien → <a>
+  if (hasLink) {
+    return (
+      <a
+        href={partenaire.url}
+        target="_blank"
+        rel="noreferrer"
+        className="group flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white px-6 py-5 shadow-sm transition hover:-translate-y-0.5 hover:border-purple-200 hover:shadow-md"
+      >
+        {content}
+      </a>
+    );
+  }
+
+  // SINON → simple div
+  return (
+    <div className="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white px-6 py-5 shadow-sm">
+      {content}
+    </div>
+  );
+}
+
+export default async function PartenairesPage() {
+  const data = await getPartenaires();
+
+  const institutionnels = data.institutionnels ?? [];
+  const prives = data.prives ?? [];
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-16 space-y-16">
-      {/* TITRE PAGE */}
+      {/* TITRE */}
       <header>
         <h1 className="text-4xl font-bold mb-4">Partenaires</h1>
         <p className="text-gray-600 max-w-3xl">
@@ -109,94 +83,36 @@ export default function PartenairesPage() {
         </p>
       </header>
 
-      {/* LISTE PARTENAIRES */}
-      <section className="space-y-10">
-        <div className="space-y-4">
-          <h2 className="text-2xl font-semibold">
-            Partenaires institutionnels
-          </h2>
-          <p className="text-gray-600 max-w-3xl">
-            Nos partenaires institutionnels accompagnent le club dans ses
-            projets sportifs et associatifs.
-          </p>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {institutionnels.map((partenaire) => (
-              <a
-                key={partenaire.nom}
-                className="group flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white px-6 py-5 shadow-sm transition hover:-translate-y-0.5 hover:border-purple-200 hover:shadow-md"
-                href={partenaire.url}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="flex h-20 w-32 items-center justify-center rounded-xl border border-gray-100 bg-gray-50">
-                    <Image
-                      className="max-h-16 max-w-28 object-contain"
-                      src={partenaire.logo}
-                      alt={`Logo ${partenaire.nom}`}
-                      width={112}
-                      height={64}
-                    />
-                  </div>
-                  <div>
-                    <p className="text-lg font-semibold text-gray-900">
-                      {partenaire.nom}
-                    </p>
-                    <p className="text-sm text-gray-500">{partenaire.slogan}</p>
-                  </div>
-                </div>
-              </a>
-            ))}
-          </div>
-        </div>
+      {/* INSTITUTIONNELS */}
+      <section className="space-y-4">
+        <h2 className="text-2xl font-semibold">Partenaires institutionnels</h2>
+        <p className="text-gray-600 max-w-3xl">
+          Nos partenaires institutionnels accompagnent le club dans ses projets
+          sportifs et associatifs.
+        </p>
 
-        <div className="space-y-4">
-          <h2 className="text-2xl font-semibold">Partenaires privés</h2>
-          <p className="text-gray-600 max-w-3xl">
-            Merci à nos partenaires privés pour leur engagement auprès du club.
-          </p>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {prives.map((partenaire) => {
-              const Wrapper = partenaire.url ? "a" : "div";
-              return (
-                <Wrapper
-                  key={partenaire.nom}
-                  className={`flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white px-6 py-5 shadow-sm ${
-                    partenaire.url
-                      ? "transition hover:-translate-y-0.5 hover:border-purple-200 hover:shadow-md"
-                      : ""
-                  }`}
-                  href={partenaire.url}
-                  target={partenaire.url ? "_blank" : undefined}
-                  rel={partenaire.url ? "noreferrer" : undefined}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-20 w-32 items-center justify-center rounded-xl border border-gray-100 bg-transparent">
-                      <Image
-                        className="max-h-16 max-w-28 object-contain"
-                        src={partenaire.logo}
-                        alt={`Logo ${partenaire.nom}`}
-                        width={112}
-                        height={64}
-                      />
-                    </div>
-                    <div>
-                      <p className="text-lg font-semibold text-gray-900">
-                        {partenaire.nom}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {partenaire.slogan}
-                      </p>
-                    </div>
-                  </div>
-                </Wrapper>
-              );
-            })}
-          </div>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {institutionnels.map((p: Partenaire) => (
+            <CardPartenaire key={p.nom} partenaire={p} />
+          ))}
         </div>
       </section>
 
-      {/* TEXTE DE REMERCIEMENT */}
+      {/* PRIVES */}
+      <section className="space-y-4">
+        <h2 className="text-2xl font-semibold">Partenaires privés</h2>
+        <p className="text-gray-600 max-w-3xl">
+          Merci à nos partenaires privés pour leur engagement auprès du club.
+        </p>
+
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {prives.map((p: Partenaire) => (
+            <CardPartenaire key={p.nom} partenaire={p} />
+          ))}
+        </div>
+      </section>
+
+      {/* REMERCIEMENT */}
       <section className="bg-gray-50 rounded-lg">
         <div className="px-6 py-10 md:px-12">
           <h2 className="text-2xl font-semibold mb-4">
@@ -211,14 +127,14 @@ export default function PartenairesPage() {
         </div>
       </section>
 
-      {/* DEVENIR PARTENAIRE */}
+      {/* CONTACT */}
       <section>
         <div className="border-l-4 border-purple-500 pl-6">
           <h2 className="text-xl font-semibold mb-2">Devenir partenaire</h2>
           <p className="text-gray-700 max-w-3xl">
             Vous souhaitez soutenir le Châlons-en-Champagne Tennis de Table et
-            devenir partenaire du club ? N’hésitez pas à nous contacter pour
-            échanger sur les différentes possibilités de partenariat.
+            devenir partenaire du club ? Contactez-nous pour échanger sur les
+            possibilités de partenariat.
           </p>
         </div>
       </section>
