@@ -8,10 +8,14 @@ import { useState } from "react";
 
 import { mainMenuItems } from "@/components/navigation/menu-items";
 import { cn } from "@/lib/utils";
+import { useSession } from "next-auth/react";
 import AuthButton from "./AuthButton";
 
 export default function DashboardSidebar() {
   const pathname = usePathname();
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role === "ADMIN";
+
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
@@ -100,6 +104,22 @@ export default function DashboardSidebar() {
               </Link>
             );
           })}
+          {/* 🔒 MENU ADMIN */}
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className={cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                "hover:bg-red-500/10 hover:text-red-600",
+                pathname.startsWith("/admin") && "bg-red-500/10 text-red-600",
+                isCollapsed ? "w-12 justify-center px-0" : "w-full",
+              )}
+            >
+              <span className={cn(isCollapsed && "sr-only")}>
+                Administration
+              </span>
+            </Link>
+          )}
         </nav>
         <AuthButton />
       </div>

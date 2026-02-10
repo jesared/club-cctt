@@ -20,7 +20,7 @@ export default function AuthButton() {
           onClick={() => signIn("google")}
           className="cursor-pointer w-full rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700 transition"
         >
-          Se connecter avec Google
+          Se connecter
         </button>
       </div>
     );
