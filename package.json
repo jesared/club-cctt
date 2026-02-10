@@ -9,8 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "next-auth": "5.0.0-beta.25",
-    "@auth/prisma-adapter": "2.4.0",
+    "next-auth": "^5.0.0-beta.30",
+    "@auth/prisma-adapter": "^2.11.1",
     "@prisma/client": "6.19.2",
     "prisma": "6.19.2",
     "@radix-ui/react-slot": "^1.2.4",
@@ -35,8 +35,5 @@
     "eslint-config-next": "^15.0.0",
     "tailwindcss": "^4",
     "typescript": "^5"
-  },
-  "overrides": {
-    "@auth/core": "0.34.2"
   }
 }
