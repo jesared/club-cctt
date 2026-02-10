@@ -1,10 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import NextAuth from "next-auth";
+import type { Adapter } from "next-auth/adapters";
 import Google from "next-auth/providers/google";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  // NOTE: cast avoids TypeScript conflicts when multiple @auth/core copies are present
+  adapter: PrismaAdapter(prisma) as Adapter,
 
   providers: [
     Google({
