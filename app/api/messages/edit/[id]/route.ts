@@ -1,23 +1,34 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+
+export const runtime = "nodejs";
 
 export async function PUT(
-  req: Request,
-  { params }: { params: { id: string } },
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> },
 ) {
   const session = await auth();
-  if (session?.user?.role !== "ADMIN")
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const { title, content, important } = await req.json();
+  if (!session || session.user.role !== "ADMIN") {
+    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  }
+
+  const { id } = await context.params;
+
+  const body = await req.json();
+  const { title, content, important } = body;
+
+  if (!title || !content) {
+    return NextResponse.json({ error: "Champs manquants" }, { status: 400 });
+  }
 
   await prisma.message.update({
-    where: { id: params.id },
+    where: { id },
     data: {
       title,
       content,
-      important,
+      important: Boolean(important),
     },
   });
 
