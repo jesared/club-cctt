@@ -71,3 +71,22 @@
 66
 67 Si le README vous paraît vide après un pull, vérifiez que votre branche est à
 68 jour et que le fichier n’est pas ouvert dans un éditeur filtrant l’encodage.
+
+## Variables d'environnement (authentification)
+
+Pour NextAuth v5, définissez au minimum :
+
+- `AUTH_SECRET`
+- `AUTH_GOOGLE_ID`
+- `AUTH_GOOGLE_SECRET`
+- `DATABASE_URL`
+
+Exemple dans `.env.local` :
+
+```env
+AUTH_SECRET=change-me
+AUTH_GOOGLE_ID=...
+AUTH_GOOGLE_SECRET=...
+DATABASE_URL=postgresql://...
+```
+
