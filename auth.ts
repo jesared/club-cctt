@@ -43,20 +43,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       const existing = user.id
         ? await prisma.user.findUnique({
             where: { id: user.id },
-            select: { id: true, role: true, isActive: true },
+            select: { id: true, role: true },
           })
         : user.email
         ? await prisma.user.findUnique({
             where: { email: user.email },
-            select: { id: true, role: true, isActive: true },
+            select: { id: true, role: true },
           })
         : null;
 
       if (!existing) return true;
 
-      if (!existing.isActive) {
-        return false;
-      }
 
       // sécurité : si role null
       if (!existing.role) {
