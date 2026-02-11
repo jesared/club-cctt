@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mail, MapPin, TriangleAlert, Users } from "lucide-react";
+import ContactForm from "@/components/ContactForm";
+import { Mail, MapPin, Users } from "lucide-react";
 
 export default function ContactPage() {
   return (
@@ -69,26 +70,7 @@ export default function ContactPage() {
             </CardHeader>
 
             <CardContent>
-              <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-amber-900">
-                <div className="flex items-start gap-3">
-                  <TriangleAlert className="mt-0.5 h-5 w-5 flex-shrink-0" />
-                  <div className="space-y-2">
-                    <p className="font-medium">
-                      Le service de contact est temporairement indisponible.
-                    </p>
-                    <p>
-                      Merci d&apos;écrire directement à{" "}
-                      <a
-                        href="mailto:communication@cctt.fr"
-                        className="font-medium underline"
-                      >
-                        communication@cctt.fr
-                      </a>
-                      .
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <ContactForm />
             </CardContent>
           </Card>
         </section>
