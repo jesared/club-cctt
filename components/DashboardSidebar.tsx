@@ -1,13 +1,18 @@
 "use client";
 
 import {
+  Banknote,
+  CalendarCheck,
   ClipboardPen,
+  Download,
   ChevronLeft,
   ChevronRight,
   FileText,
+  LayoutDashboard,
   MessageSquare,
   Shield,
   Trophy,
+  UserPlus,
   Users,
 } from "lucide-react";
 import Image from "next/image";
@@ -37,10 +42,28 @@ export default function DashboardSidebar() {
     { href: "/tournoi/reglement", label: "Règlement", icon: FileText },
   ];
 
-  const adminMenuItems = [
+  const clubAdminMenuItems = [
     { href: "/admin", label: "Administration", icon: Shield },
     { href: "/admin/messages", label: "Messages", icon: MessageSquare },
     { href: "/admin/users", label: "Utilisateurs", icon: Users },
+  ];
+
+  const tournamentAdminMenuItems = [
+    { href: "/admin/tournoi", label: "Dashboard", icon: LayoutDashboard },
+    {
+      href: "/admin/tournoi/inscriptions",
+      label: "Inscriptions",
+      icon: ClipboardPen,
+    },
+    { href: "/admin/tournoi/paiement", label: "Paiements", icon: Banknote },
+    { href: "/admin/tournoi/pointages", label: "Pointages", icon: CalendarCheck },
+    { href: "/admin/tournoi/joueurs", label: "Joueurs", icon: Users },
+    {
+      href: "/admin/tournoi/ajout-player",
+      label: "Ajouter un joueur",
+      icon: UserPlus,
+    },
+    { href: "/admin/tournoi/exports", label: "Exports", icon: Download },
   ];
 
   return (
@@ -176,13 +199,49 @@ export default function DashboardSidebar() {
                   isCollapsed && "sr-only",
                 )}
               >
-                Administration
+                Admin club
               </p>
 
               <div
                 className={cn("flex flex-col gap-1", isCollapsed && "items-center")}
               >
-                {adminMenuItems.map((item) => {
+                {clubAdminMenuItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = pathname === item.href;
+
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                        "hover:bg-red-500/10 hover:text-red-600",
+                        isActive && "bg-red-500/10 text-red-600",
+                        isCollapsed ? "w-12 justify-center px-0" : "w-full",
+                      )}
+                    >
+                      <Icon className="h-4 w-4" aria-hidden="true" />
+                      <span className={cn(isCollapsed && "sr-only")}>
+                        {item.label}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+
+              <p
+                className={cn(
+                  "mb-3 mt-4 text-xs font-semibold uppercase tracking-wide text-red-600/80",
+                  isCollapsed && "sr-only",
+                )}
+              >
+                Tournoi admin
+              </p>
+
+              <div
+                className={cn("flex flex-col gap-1", isCollapsed && "items-center")}
+              >
+                {tournamentAdminMenuItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = pathname === item.href;
 

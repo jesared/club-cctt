@@ -24,8 +24,9 @@ export default async function AdminPage() {
         </p>
 
         <p className="text-sm text-gray-500 mt-2">
-          Ici vous pourrez bientôt gérer les licenciés, les messages du club,
-          les événements et les inscriptions.
+          Cet espace est séparé en deux blocs&nbsp;: l&apos;administration du club
+          (messages et utilisateurs) et l&apos;administration tournoi (dashboard,
+          inscriptions, paiements, pointages, joueurs et exports).
         </p>
       </div>
     </div>
