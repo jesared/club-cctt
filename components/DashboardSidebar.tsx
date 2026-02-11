@@ -80,66 +80,82 @@ export default function DashboardSidebar() {
       <div
         className={cn("flex flex-1 flex-col px-4 py-6", isCollapsed && "px-3")}
       >
-        <p
-          className={cn(
-            "text-xs font-semibold uppercase tracking-wide text-sidebar-foreground/60",
-            isCollapsed && "sr-only",
-          )}
-        >
-          Navigation
-        </p>
         <nav
-          className={cn(
-            "mt-4 flex flex-1 flex-col gap-1",
-            isCollapsed && "items-center",
-          )}
+          className={cn("mt-1 flex flex-1 flex-col", isCollapsed && "items-center")}
         >
-          {mainMenuItems.map((item) => {
-            const isActive = pathname === item.href;
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                  "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                  isActive &&
-                    "bg-sidebar-accent text-sidebar-accent-foreground",
-                  isCollapsed ? "w-12 justify-center px-0" : "w-full",
-                )}
-              >
-                <Icon className="h-4 w-4" aria-hidden="true" />
-                <span className={cn(isCollapsed && "sr-only")}>
-                  {item.label}
-                </span>
-              </Link>
-            );
-          })}
-          {/* 🔒 MENU ADMIN */}
-          {isAdmin &&
-            adminMenuItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = pathname === item.href;
+          <p
+            className={cn(
+              "mb-3 text-xs font-semibold uppercase tracking-wide text-sidebar-foreground/60",
+              isCollapsed && "sr-only",
+            )}
+          >
+            Navigation
+          </p>
 
+          <div className={cn("flex flex-col gap-1", isCollapsed && "items-center")}>
+            {mainMenuItems.map((item) => {
+              const isActive = pathname === item.href;
+              const Icon = item.icon;
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   className={cn(
                     "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                    "hover:bg-red-500/10 hover:text-red-600",
-                    isActive && "bg-red-500/10 text-red-600",
+                    "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                    isActive && "bg-sidebar-accent text-sidebar-accent-foreground",
                     isCollapsed ? "w-12 justify-center px-0" : "w-full",
                   )}
                 >
                   <Icon className="h-4 w-4" aria-hidden="true" />
-                  <span className={cn(isCollapsed && "sr-only")}>
-                    {item.label}
-                  </span>
+                  <span className={cn(isCollapsed && "sr-only")}>{item.label}</span>
                 </Link>
               );
             })}
+          </div>
+
+          {isAdmin && (
+            <>
+              <div
+                className={cn("my-4 h-px bg-sidebar-border", isCollapsed && "w-10")}
+              />
+              <p
+                className={cn(
+                  "mb-3 text-xs font-semibold uppercase tracking-wide text-red-600/80",
+                  isCollapsed && "sr-only",
+                )}
+              >
+                Administration
+              </p>
+
+              <div
+                className={cn("flex flex-col gap-1", isCollapsed && "items-center")}
+              >
+                {adminMenuItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = pathname === item.href;
+
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                        "hover:bg-red-500/10 hover:text-red-600",
+                        isActive && "bg-red-500/10 text-red-600",
+                        isCollapsed ? "w-12 justify-center px-0" : "w-full",
+                      )}
+                    >
+                      <Icon className="h-4 w-4" aria-hidden="true" />
+                      <span className={cn(isCollapsed && "sr-only")}>
+                        {item.label}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </>
+          )}
         </nav>
         <AuthButton />
       </div>
