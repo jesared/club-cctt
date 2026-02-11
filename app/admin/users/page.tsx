@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
-const MANAGED_ROLES = ["JOUEUR", "COACH", "BUREAU"] as const;
+const MANAGED_ROLES = ["USER", "JOUEUR", "COACH", "BUREAU"] as const;
 
 type ManagedRole = (typeof MANAGED_ROLES)[number];
 
