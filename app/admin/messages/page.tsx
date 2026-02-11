@@ -171,14 +171,14 @@ export default function AdminMessagesPage() {
                 <div className="flex flex-col gap-2 min-w-[120px]">
                   <button
                     onClick={() => setEditing(m)}
-                    className="inline-flex items-center justify-center rounded-md border border-blue-200 bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-700 transition-colors hover:bg-blue-100 hover:border-blue-300"
+                    className="inline-flex cursor-pointer items-center justify-center rounded-md border border-blue-200 bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-700 transition-colors hover:bg-blue-100 hover:border-blue-300"
                   >
                     Modifier
                   </button>
 
                   <button
                     onClick={() => deleteMessage(m.id)}
-                    className="inline-flex items-center justify-center rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 transition-colors hover:bg-red-100 hover:border-red-300"
+                    className="inline-flex cursor-pointer items-center justify-center rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 transition-colors hover:bg-red-100 hover:border-red-300"
                   >
                     Supprimer
                   </button>
