@@ -69,6 +69,27 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
      */
     async signIn({ user }) {
       return canUserSignIn(user.id);
+      // si le user vient d'être créé par Google
+      const existing = await prisma.user.findUnique({
+        where: { id: user.id },
+        select: { role: true, isActive: true },
+      });
+
+      if (!existing) return true;
+
+      if (!existing.isActive) {
+        return false;
+      }
+
+      // sécurité : si role null
+      if (!existing.role) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { role: "USER" },
+        });
+      }
+
+      return true;
     },
   },
 });

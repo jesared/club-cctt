@@ -2,6 +2,65 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+
+const MANAGED_ROLES = ["JOUEUR", "COACH", "BUREAU"] as const;
+
+type ManagedRole = (typeof MANAGED_ROLES)[number];
+
+async function updateUserRole(formData: FormData) {
+  "use server";
+
+  const session = await auth();
+
+  if (!session || session.user.role !== "ADMIN") {
+    redirect("/");
+  }
+
+  const userId = formData.get("userId");
+  const role = formData.get("role");
+
+  if (typeof userId !== "string" || typeof role !== "string") {
+    return;
+  }
+
+  if (!MANAGED_ROLES.includes(role as ManagedRole)) {
+    return;
+  }
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { role },
+  });
+
+  revalidatePath("/admin/users");
+}
+
+async function toggleUserActive(formData: FormData) {
+  "use server";
+
+  const session = await auth();
+
+  if (!session || session.user.role !== "ADMIN") {
+    redirect("/");
+  }
+
+  const userId = formData.get("userId");
+  const isActiveRaw = formData.get("isActive");
+
+  if (typeof userId !== "string" || typeof isActiveRaw !== "string") {
+    return;
+  }
+
+  const isActive = isActiveRaw === "true";
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { isActive: !isActive },
+  });
+
+  revalidatePath("/admin/users");
+}
 
 const MANAGED_ROLES = ["JOUEUR", "COACH", "BUREAU"] as const;
 
@@ -91,6 +150,20 @@ async function updateUserRole(formData: FormData) {
   await prisma.user.update({
     where: { id: userId },
     data: { role },
+  const users = await prisma.user.findMany({
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      isActive: true,
+      players: {
+        select: {
+          id: true,
+        },
+      },
+    },
+    orderBy: [{ isActive: "desc" }, { role: "asc" }, { name: "asc" }],
   });
 
   revalidatePath("/admin/users");
@@ -196,6 +269,7 @@ export default async function AdminUsersPage() {
                           action={updateUserRole}
                           className="flex items-center gap-2"
                         >
+                        <form action={updateUserRole} className="flex items-center gap-2">
                           <input type="hidden" name="userId" value={user.id} />
                           <select
                             name="role"
@@ -233,6 +307,7 @@ export default async function AdminUsersPage() {
                                 : "bg-green-600 hover:bg-green-700"
                             }`}
                             disabled={user.role === "ADMIN" || !supportsIsActive}
+                            disabled={user.role === "ADMIN"}
                           >
                             {user.isActive ? "Bannir" : "Réactiver"}
                           </button>
