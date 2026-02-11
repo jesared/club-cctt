@@ -1,11 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const regles = [
-  "Le tournoi est ouvert aux joueurs licenciés FFTT et loisirs selon les tableaux.",
-  "Chaque joueur doit se présenter au pointage au moins 30 minutes avant sa série.",
-  "Le juge-arbitre se réserve le droit d'adapter les poules selon le nombre d'inscrits.",
-  "Le matériel doit être conforme à la réglementation FFTT en vigueur.",
-  "Tout comportement anti-sportif peut entraîner une exclusion du tournoi.",
+const pointsCles = [
+  "Le tournoi est ouvert aux licenciés FFTT et suit les règles sportives fédérales en vigueur.",
+  "Chaque joueur doit être pointé avant son tableau ; tout retard peut entraîner la perte de la place dans le tableau.",
+  "Le juge-arbitre est seul décisionnaire sur l'organisation sportive (formule, placements, horaires, enchaînement des matchs).",
+  "Le matériel utilisé doit être conforme à la réglementation FFTT (raquette, tenue sportive et conditions de jeu).",
+  "En cas d'attitude anti-sportive, l'organisation se réserve le droit de sanctionner ou d'exclure un participant.",
 ];
 
 export default function ReglementPage() {
@@ -13,20 +13,35 @@ export default function ReglementPage() {
     <main className="max-w-4xl mx-auto px-4 py-16">
       <Card>
         <CardHeader>
-          <CardTitle>Règlement du tournoi</CardTitle>
+          <CardTitle>Règlement du tournoi 2026 (synthèse)</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 text-gray-700">
+
+        <CardContent className="space-y-5 text-gray-700">
           <p>
-            Ce règlement synthétique encadre le déroulement du Tournoi de
-            Pâques. La version complète est disponible sur demande auprès de
-            l&apos;organisation.
+            Cette page reprend les points essentiels du règlement 2026 pour vous
+            aider à préparer votre participation. Les modalités détaillées
+            (tableaux, horaires exacts, droits d&apos;engagement et cas
+            particuliers) restent celles du document officiel de l&apos;organisation.
           </p>
 
           <ul className="list-disc pl-6 space-y-2">
-            {regles.map((regle) => (
-              <li key={regle}>{regle}</li>
+            {pointsCles.map((point) => (
+              <li key={point}>{point}</li>
             ))}
           </ul>
+
+          <p>
+            Règlement complet :{" "}
+            <a
+              href="https://tournoi.cctt.fr/wp-content/uploads/2026/01/reglement-tournoi-2026-ffttv2.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-purple-700 underline hover:text-purple-900"
+            >
+              consulter le document officiel 2026
+            </a>
+            .
+          </p>
 
           <a
             href="/tournoi"
