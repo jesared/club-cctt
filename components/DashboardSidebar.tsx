@@ -1,8 +1,10 @@
 "use client";
 
 import {
+  ClipboardPen,
   ChevronLeft,
   ChevronRight,
+  FileText,
   MessageSquare,
   Shield,
   Trophy,
@@ -30,7 +32,9 @@ export default function DashboardSidebar() {
 
   const clubMenuItems = mainMenuItems;
   const tournamentMenuItems: MenuItem[] = [
-    { href: "/tournoihome", label: "Accueil tournoi", icon: Trophy },
+    { href: "/tournoi", label: "Accueil tournoi", icon: Trophy },
+    { href: "/tournoi/inscription", label: "Inscription", icon: ClipboardPen },
+    { href: "/tournoi/reglement", label: "Règlement", icon: FileText },
   ];
 
   const adminMenuItems = [
