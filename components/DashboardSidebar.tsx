@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, MessageSquare, Shield } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -17,6 +17,11 @@ export default function DashboardSidebar() {
   const isAdmin = session?.user?.role === "ADMIN";
 
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+  const adminMenuItems = [
+    { href: "/admin", label: "Administration", icon: Shield },
+    { href: "/admin/messages", label: "Messages", icon: MessageSquare },
+  ];
 
   return (
     <aside
@@ -105,21 +110,29 @@ export default function DashboardSidebar() {
             );
           })}
           {/* 🔒 MENU ADMIN */}
-          {isAdmin && (
-            <Link
-              href="/admin"
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                "hover:bg-red-500/10 hover:text-red-600",
-                pathname.startsWith("/admin") && "bg-red-500/10 text-red-600",
-                isCollapsed ? "w-12 justify-center px-0" : "w-full",
-              )}
-            >
-              <span className={cn(isCollapsed && "sr-only")}>
-                Administration
-              </span>
-            </Link>
-          )}
+          {isAdmin &&
+            adminMenuItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = pathname === item.href;
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                    "hover:bg-red-500/10 hover:text-red-600",
+                    isActive && "bg-red-500/10 text-red-600",
+                    isCollapsed ? "w-12 justify-center px-0" : "w-full",
+                  )}
+                >
+                  <Icon className="h-4 w-4" aria-hidden="true" />
+                  <span className={cn(isCollapsed && "sr-only")}>
+                    {item.label}
+                  </span>
+                </Link>
+              );
+            })}
         </nav>
         <AuthButton />
       </div>
