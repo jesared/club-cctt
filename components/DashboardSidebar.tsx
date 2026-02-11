@@ -1,6 +1,12 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, MessageSquare, Shield } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  MessageSquare,
+  Shield,
+  Users,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -21,6 +27,7 @@ export default function DashboardSidebar() {
   const adminMenuItems = [
     { href: "/admin", label: "Administration", icon: Shield },
     { href: "/admin/messages", label: "Messages", icon: MessageSquare },
+    { href: "/admin/users", label: "Utilisateurs", icon: Users },
   ];
 
   return (
