@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
-const MANAGED_ROLES = ["USER", "CLUB"] as const;
+const MANAGED_ROLES = ["JOUEUR", "COACH", "BUREAU"] as const;
 
 type ManagedRole = (typeof MANAGED_ROLES)[number];
 
@@ -35,30 +35,6 @@ async function updateUserRole(formData: FormData) {
   revalidatePath("/admin/users");
 }
 
-async function toggleUserStatus(formData: FormData) {
-  "use server";
-
-  const session = await auth();
-
-  if (!session || session.user.role !== "ADMIN") {
-    redirect("/");
-  }
-
-  const userId = formData.get("userId");
-  const isActive = formData.get("isActive");
-
-  if (typeof userId !== "string" || typeof isActive !== "string") {
-    return;
-  }
-
-  await prisma.user.update({
-    where: { id: userId },
-    data: { isActive: isActive !== "true" },
-  });
-
-  revalidatePath("/admin/users");
-}
-
 export default async function AdminUsersPage() {
   const session = await auth();
 
@@ -76,7 +52,6 @@ export default async function AdminUsersPage() {
       name: true,
       email: true,
       role: true,
-      isActive: true,
       players: {
         select: {
           id: true,
@@ -91,7 +66,7 @@ export default async function AdminUsersPage() {
       <div>
         <h1 className="text-3xl font-bold">Gestion utilisateurs</h1>
         <p className="text-gray-600 mt-2">
-          Voir les membres connectés et gérer leurs rôles et leur statut.
+          Voir les membres connectés et gérer leurs rôles.
         </p>
       </div>
 
@@ -103,7 +78,6 @@ export default async function AdminUsersPage() {
                 <th className="text-left font-semibold px-4 py-3">Nom</th>
                 <th className="text-left font-semibold px-4 py-3">Email</th>
                 <th className="text-left font-semibold px-4 py-3">Rôle</th>
-                <th className="text-left font-semibold px-4 py-3">Statut</th>
                 <th className="text-left font-semibold px-4 py-3">Licenciés</th>
                 <th className="text-left font-semibold px-4 py-3">Actions</th>
               </tr>
@@ -129,17 +103,6 @@ export default async function AdminUsersPage() {
                         {user.role}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                          user.isActive
-                            ? "bg-green-100 text-green-700"
-                            : "bg-amber-100 text-amber-700"
-                        }`}
-                      >
-                        {user.isActive ? "Actif" : "Suspendu"}
-                      </span>
-                    </td>
                     <td className="px-4 py-3">{user.players.length}</td>
                     <td className="px-4 py-3">
                       <div className="flex flex-col md:flex-row gap-2">
@@ -148,7 +111,7 @@ export default async function AdminUsersPage() {
                           <select
                             name="role"
                             className="rounded-md border px-2 py-1 text-xs"
-                            defaultValue={isManagedRole ? user.role : "USER"}
+                            defaultValue={isManagedRole ? user.role : "JOUEUR"}
                             disabled={user.role === "ADMIN"}
                           >
                             {MANAGED_ROLES.map((role) => (
@@ -163,22 +126,6 @@ export default async function AdminUsersPage() {
                             disabled={user.role === "ADMIN"}
                           >
                             Changer rôle
-                          </button>
-                        </form>
-
-                        <form action={toggleUserStatus}>
-                          <input type="hidden" name="userId" value={user.id} />
-                          <input
-                            type="hidden"
-                            name="isActive"
-                            value={String(user.isActive)}
-                          />
-                          <button
-                            type="submit"
-                            className="rounded-md border px-2 py-1 text-xs font-medium hover:bg-gray-50 disabled:opacity-50"
-                            disabled={user.role === "ADMIN"}
-                          >
-                            {user.isActive ? "Suspendre" : "Réactiver"}
                           </button>
                         </form>
 
