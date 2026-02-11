@@ -71,3 +71,12 @@
 66
 67 Si le README vous paraît vide après un pull, vérifiez que votre branche est à
 68 jour et que le fichier n’est pas ouvert dans un éditeur filtrant l’encodage.
+
+## Dépannage Auth (`/api/auth/error?error=Configuration`)
+
+Si l’URL d’erreur NextAuth affiche `error=Configuration`, vérifier en priorité :
+
+1. Variables OAuth Google présentes en production (`AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET`, ou `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`).
+2. Secret d’authentification (`AUTH_SECRET` ou `NEXTAUTH_SECRET`).
+3. URL de callback Google OAuth autorisée côté Google Cloud (domaine de prod + `/api/auth/callback/google`).
+4. Variables injectées sur l’environnement de déploiement (Vercel/serveur), pas uniquement en local.

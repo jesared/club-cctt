@@ -4,27 +4,43 @@ import NextAuth from "next-auth";
 import type { Adapter } from "next-auth/adapters";
 import Google from "next-auth/providers/google";
 
-const googleClientId =
-  process.env.GOOGLE_CLIENT_ID ??
-  process.env.AUTH_GOOGLE_ID ??
-  process.env.GOOGLE_ID;
-const googleClientSecret =
-  process.env.GOOGLE_CLIENT_SECRET ??
-  process.env.AUTH_GOOGLE_SECRET ??
-  process.env.GOOGLE_SECRET;
-const authSecret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
+function getFirstNonEmpty(...values: Array<string | undefined>) {
+  return values.find((value) => typeof value === "string" && value.trim().length > 0);
+}
 
-if (!googleClientId || !googleClientSecret) {
-  console.error(
-    "[auth] Missing Google OAuth credentials. Set AUTH_GOOGLE_ID/AUTH_GOOGLE_SECRET (or GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET)."
+function requireAuthEnv(name: string, value: string | undefined, acceptedNames: string[]) {
+  if (value) return value;
+
+  throw new Error(
+    `[auth] Missing required ${name}. Define one of: ${acceptedNames.join(", ")}. Refusing to start to avoid runtime /api/auth/error?error=Configuration failures.`
   );
 }
 
-if (!authSecret) {
-  console.error(
-    "[auth] Missing AUTH_SECRET (or NEXTAUTH_SECRET). OAuth callbacks may fail with a server configuration error."
-  );
-}
+const googleClientId = requireAuthEnv(
+  "Google OAuth client id",
+  getFirstNonEmpty(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.AUTH_GOOGLE_ID,
+    process.env.GOOGLE_ID
+  ),
+  ["GOOGLE_CLIENT_ID", "AUTH_GOOGLE_ID", "GOOGLE_ID"]
+);
+
+const googleClientSecret = requireAuthEnv(
+  "Google OAuth client secret",
+  getFirstNonEmpty(
+    process.env.GOOGLE_CLIENT_SECRET,
+    process.env.AUTH_GOOGLE_SECRET,
+    process.env.GOOGLE_SECRET
+  ),
+  ["GOOGLE_CLIENT_SECRET", "AUTH_GOOGLE_SECRET", "GOOGLE_SECRET"]
+);
+
+const authSecret = requireAuthEnv(
+  "NextAuth secret",
+  getFirstNonEmpty(process.env.AUTH_SECRET, process.env.NEXTAUTH_SECRET),
+  ["AUTH_SECRET", "NEXTAUTH_SECRET"]
+);
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   // NOTE: cast avoids TypeScript conflicts when multiple @auth/core copies are present
