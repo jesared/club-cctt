@@ -160,12 +160,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return true;
     },
   },
-  logger: {
-    error(code, metadata) {
-      console.error("[next-auth][error]", code, metadata ?? "");
-    },
-    warn(code) {
-      console.warn("[next-auth][warn]", code);
-    },
-  },
 });
