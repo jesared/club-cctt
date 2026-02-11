@@ -5,23 +5,24 @@ export default function InscriptionsPage() {
     <main className="max-w-4xl mx-auto px-4 py-16">
       <Card>
         <CardHeader>
-          <CardTitle>Inscriptions au Tournoi de Pâques</CardTitle>
+          <CardTitle>Inscriptions au Tournoi de Pâques 2026</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 text-gray-700">
           <p>
-            Les inscriptions sont ouvertes jusqu&apos;au <strong>10 avril 2026</strong>,
-            sous réserve de places disponibles.
+            Les inscriptions se font dans la limite des places disponibles par
+            tableau, selon les critères et priorités précisés dans le règlement
+            officiel 2026.
           </p>
           <p>
-            Merci d&apos;indiquer le nom du joueur, le numéro de licence FFTT,
-            la(les) catégorie(s) choisie(s) et un contact email.
+            Merci d&apos;indiquer le nom et prénom du joueur, son numéro de licence
+            (ou statut), ses tableaux souhaités et un contact email/téléphone.
           </p>
           <p>
-            <strong>Par email :</strong> inscriptions-tournoi@cctt.fr
+            <strong>Contact inscriptions :</strong> inscriptions-tournoi@cctt.fr
           </p>
           <p>
-            <strong>Confirmation :</strong> un email récapitulatif vous sera
-            envoyé sous 48h.
+            <strong>Validation :</strong> l&apos;inscription devient effective après
+            confirmation par l&apos;organisation.
           </p>
           <a
             href="/tournoi"
