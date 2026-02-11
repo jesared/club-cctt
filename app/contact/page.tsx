@@ -1,3 +1,4 @@
+import ContactForm from "@/components/ContactForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mail, MapPin, Users } from "lucide-react";
 
@@ -69,69 +70,7 @@ export default function ContactPage() {
             </CardHeader>
 
             <CardContent>
-              <form className="space-y-6">
-                {/* NOM */}
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium mb-1"
-                  >
-                    Nom
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    required
-                    placeholder="Votre nom"
-                    className="w-full border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  />
-                </div>
-
-                {/* EMAIL */}
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium mb-1"
-                  >
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    required
-                    placeholder="votre@email.fr"
-                    className="w-full border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  />
-                </div>
-
-                {/* MESSAGE */}
-                <div>
-                  <label
-                    htmlFor="message"
-                    className="block text-sm font-medium mb-1"
-                  >
-                    Message
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows={5}
-                    required
-                    placeholder="Votre message…"
-                    className="w-full border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  />
-                </div>
-
-                {/* BOUTON */}
-                <button
-                  type="submit"
-                  className="inline-flex bg-purple-600 text-white px-6 py-3 rounded-md hover:bg-purple-700 transition"
-                >
-                  Envoyer le message
-                </button>
-              </form>
+              <ContactForm />
             </CardContent>
           </Card>
         </section>
