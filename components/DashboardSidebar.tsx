@@ -24,6 +24,9 @@ export default function DashboardSidebar() {
 
   const [isCollapsed, setIsCollapsed] = useState(false);
 
+  const tournamentMenuItem = mainMenuItems.find((item) => item.href === "/");
+  const clubMenuItems = mainMenuItems.filter((item) => item.href !== "/");
+
   const adminMenuItems = [
     { href: "/admin", label: "Administration", icon: Shield },
     { href: "/admin/messages", label: "Messages", icon: MessageSquare },
@@ -89,11 +92,11 @@ export default function DashboardSidebar() {
               isCollapsed && "sr-only",
             )}
           >
-            Navigation
+            Site du club
           </p>
 
           <div className={cn("flex flex-col gap-1", isCollapsed && "items-center")}>
-            {mainMenuItems.map((item) => {
+            {clubMenuItems.map((item) => {
               const isActive = pathname === item.href;
               const Icon = item.icon;
               return (
@@ -113,6 +116,39 @@ export default function DashboardSidebar() {
               );
             })}
           </div>
+
+          {tournamentMenuItem && (
+            <>
+              <p
+                className={cn(
+                  "mb-3 mt-4 text-xs font-semibold uppercase tracking-wide text-sidebar-foreground/60",
+                  isCollapsed && "sr-only",
+                )}
+              >
+                Tournoi
+              </p>
+
+              <div
+                className={cn("flex flex-col gap-1", isCollapsed && "items-center")}
+              >
+                <Link
+                  href={tournamentMenuItem.href}
+                  className={cn(
+                    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                    "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                    pathname === tournamentMenuItem.href &&
+                      "bg-sidebar-accent text-sidebar-accent-foreground",
+                    isCollapsed ? "w-12 justify-center px-0" : "w-full",
+                  )}
+                >
+                  <tournamentMenuItem.icon className="h-4 w-4" aria-hidden="true" />
+                  <span className={cn(isCollapsed && "sr-only")}>
+                    {tournamentMenuItem.label}
+                  </span>
+                </Link>
+              </div>
+            </>
+          )}
 
           {isAdmin && (
             <>
