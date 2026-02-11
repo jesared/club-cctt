@@ -71,3 +71,28 @@
 66
 67 Si le README vous paraît vide après un pull, vérifiez que votre branche est à
 68 jour et que le fichier n’est pas ouvert dans un éditeur filtrant l’encodage.
+
+## Variables d'environnement (Vercel) pour l'intégration FFTT Smartping
+
+Ajoutez ces variables dans **Project Settings > Environment Variables** :
+
+- `FFTT_API_SERIE` (**obligatoire**)
+  - Numéro de série de l'utilisateur qui émet la demande (`serie`).
+
+- `FFTT_API_ID` (**obligatoire**)
+  - Identifiant d'application FFTT (`id`).
+
+- `FFTT_API_PASSWORD` (**obligatoire**)
+  - Mot de passe fourni par la FFTT.
+  - Utilisé pour générer `tmc` côté serveur : `tmc = HMAC_SHA1(tm, MD5(password))`.
+
+- `FFTT_API_URL` (optionnelle)
+  - URL de l'endpoint FFTT, par défaut :
+  - `http://www.fftt.com/mobile/pxml/xml_licence_b.php`
+
+La route interne côté admin :
+
+- `GET /api/fftt/player-by-licence?licence=12345678`
+  - Appelle `xml_licence_b.php` avec les paramètres `serie`, `tm`, `tmc`, `id`, `licence`.
+- `GET /api/fftt/health`
+  - Vérifie la présence de la configuration FFTT Smartping.
