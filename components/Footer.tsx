@@ -2,7 +2,7 @@ export default function Footer() {
   return (
     <footer className="bg-gray-100 border-t mt-12">
       <div className="max-w-6xl mx-auto px-4 py-10 text-sm text-gray-600">
-        <div className="grid gap-8 md:grid-cols-3">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div>
             <p className="font-semibold text-gray-800">
               Châlons-en-Champagne Tennis de Table
@@ -67,6 +67,36 @@ export default function Footer() {
                   target="_blank"
                 >
                   Fédération Française de Tennis de Table
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-semibold text-gray-800">Suivez-nous</p>
+            <p className="mt-3 text-sm text-gray-700">
+              Rejoignez-nous sur nos réseaux pour suivre la vie du club,
+              l&apos;actualité sportive et les prochains événements.
+            </p>
+            <ul className="mt-3 space-y-2 text-sm">
+              <li>
+                <a
+                  className="text-gray-700 hover:text-gray-900"
+                  href="https://www.facebook.com/chalonstt51"
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  Facebook (@chalonstt51)
+                </a>
+              </li>
+              <li>
+                <a
+                  className="text-gray-700 hover:text-gray-900"
+                  href="https://www.instagram.com/chalonstt51/"
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  Instagram (@chalonstt51)
                 </a>
               </li>
             </ul>
