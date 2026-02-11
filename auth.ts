@@ -5,10 +5,26 @@ import type { Adapter } from "next-auth/adapters";
 import Google from "next-auth/providers/google";
 
 const googleClientId =
-  process.env.GOOGLE_CLIENT_ID ?? process.env.AUTH_GOOGLE_ID;
+  process.env.GOOGLE_CLIENT_ID ??
+  process.env.AUTH_GOOGLE_ID ??
+  process.env.GOOGLE_ID;
 const googleClientSecret =
-  process.env.GOOGLE_CLIENT_SECRET ?? process.env.AUTH_GOOGLE_SECRET;
+  process.env.GOOGLE_CLIENT_SECRET ??
+  process.env.AUTH_GOOGLE_SECRET ??
+  process.env.GOOGLE_SECRET;
 const authSecret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
+
+if (!googleClientId || !googleClientSecret) {
+  console.error(
+    "[auth] Missing Google OAuth credentials. Set AUTH_GOOGLE_ID/AUTH_GOOGLE_SECRET (or GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET)."
+  );
+}
+
+if (!authSecret) {
+  console.error(
+    "[auth] Missing AUTH_SECRET (or NEXTAUTH_SECRET). OAuth callbacks may fail with a server configuration error."
+  );
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   // NOTE: cast avoids TypeScript conflicts when multiple @auth/core copies are present
@@ -34,7 +50,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
      * sinon NextJS ne sait pas qui est admin
      */
     async session({ session, user }) {
-      if (session.user) {
+      if (session.user && user) {
         (session.user as any).id = user.id;
         (session.user as any).role = user.role;
       }
