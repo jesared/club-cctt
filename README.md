@@ -79,4 +79,6 @@ Si l’URL d’erreur NextAuth affiche `error=Configuration`, vérifier en prior
 1. Variables OAuth Google présentes en production (`AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET`, ou `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`).
 2. Secret d’authentification (`AUTH_SECRET` ou `NEXTAUTH_SECRET`).
 3. URL de callback Google OAuth autorisée côté Google Cloud (domaine de prod + `/api/auth/callback/google`).
-4. Variables injectées sur l’environnement de déploiement (Vercel/serveur), pas uniquement en local.
+4. `AUTH_URL` / `NEXTAUTH_URL` défini sur **l'origine du site uniquement** (ex: `https://club.cctt.fr`, sans `/api/auth`).
+5. Variables injectées sur l’environnement de déploiement (Vercel/serveur), pas uniquement en local.
+6. Valeurs sans guillemets parasites ni espaces (éviter `"..."` / `'...'` copiés depuis un `.env`).
