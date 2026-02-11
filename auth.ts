@@ -38,11 +38,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
      * → on force un rôle par défaut
      */
     async signIn({ user }) {
-      // si le user vient d'être créé par Google
-      const existing = await prisma.user.findUnique({
-        where: { id: user.id },
-        select: { role: true, isActive: true },
-      });
+      // Selon le provider et l'étape du flow OAuth,
+      // user.id peut être absent au moment du callback.
+      const existing = user.id
+        ? await prisma.user.findUnique({
+            where: { id: user.id },
+            select: { id: true, role: true, isActive: true },
+          })
+        : user.email
+        ? await prisma.user.findUnique({
+            where: { email: user.email },
+            select: { id: true, role: true, isActive: true },
+          })
+        : null;
 
       if (!existing) return true;
 
@@ -53,7 +61,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // sécurité : si role null
       if (!existing.role) {
         await prisma.user.update({
-          where: { id: user.id },
+          where: { id: existing.id },
           data: { role: "USER" },
         });
       }
