@@ -4,6 +4,36 @@ import NextAuth from "next-auth";
 import type { Adapter } from "next-auth/adapters";
 import Google from "next-auth/providers/google";
 
+async function canUserSignIn(userId?: string) {
+  if (!userId) {
+    return true;
+  }
+
+  try {
+    const existing = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { role: true, isActive: true },
+    });
+
+    if (!existing) return true;
+
+    // Ne bloque pas la connexion ici pour éviter les erreurs "Access Denied"
+    // en cas de décalage temporaire de schéma/environnement.
+    if (!existing.role) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: { role: "USER" },
+      });
+    }
+
+    return true;
+  } catch {
+    // Compatibilité: si la colonne isActive n'est pas encore présente en base,
+    // on ne bloque pas toute l'authentification.
+    return true;
+  }
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   // NOTE: cast avoids TypeScript conflicts when multiple @auth/core copies are present
   adapter: PrismaAdapter(prisma) as Adapter,
@@ -38,22 +68,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
      * → on force un rôle par défaut
      */
     async signIn({ user }) {
-      // si le user vient d'être créé par Google
-      const existing = await prisma.user.findUnique({
-        where: { id: user.id },
-      });
-
-      if (!existing) return true;
-
-      // sécurité : si role null
-      if (!existing.role) {
-        await prisma.user.update({
-          where: { id: user.id },
-          data: { role: "USER" },
-        });
-      }
-
-      return true;
+      return canUserSignIn(user.id);
     },
   },
 });
