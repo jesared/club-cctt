@@ -42,17 +42,17 @@ export default function TournoiHero() {
 
               <div className="flex flex-col sm:flex-row gap-4">
                 <a
-                  href="/inscriptions"
+                  href="/tournoihome"
                   className="inline-flex justify-center bg-purple-600 text-white px-6 py-3 rounded-md hover:bg-purple-700 transition"
                 >
-                  S’inscrire au tournoi
+                  Infos du tournoi
                 </a>
 
                 <a
-                  href="/reglement"
+                  href="/inscriptions"
                   className="inline-flex justify-center border border-purple-600 text-purple-600 px-6 py-3 rounded-md hover:bg-purple-100 transition"
                 >
-                  Voir le règlement
+                  S’inscrire
                 </a>
               </div>
             </CardContent>
