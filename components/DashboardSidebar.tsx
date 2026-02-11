@@ -5,6 +5,7 @@ import {
   ChevronRight,
   MessageSquare,
   Shield,
+  Trophy,
   Users,
 } from "lucide-react";
 import Image from "next/image";
@@ -12,7 +13,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
-import { mainMenuItems } from "@/components/navigation/menu-items";
+import {
+  type MenuItem,
+  mainMenuItems,
+} from "@/components/navigation/menu-items";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import AuthButton from "./AuthButton";
@@ -24,8 +28,10 @@ export default function DashboardSidebar() {
 
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const tournamentMenuItem = mainMenuItems.find((item) => item.href === "/");
-  const clubMenuItems = mainMenuItems.filter((item) => item.href !== "/");
+  const clubMenuItems = mainMenuItems;
+  const tournamentMenuItems: MenuItem[] = [
+    { href: "/tournoihome", label: "Accueil tournoi", icon: Trophy },
+  ];
 
   const adminMenuItems = [
     { href: "/admin", label: "Administration", icon: Shield },
@@ -117,7 +123,7 @@ export default function DashboardSidebar() {
             })}
           </div>
 
-          {tournamentMenuItem && (
+          {tournamentMenuItems.length > 0 && (
             <>
               <p
                 className={cn(
@@ -131,21 +137,26 @@ export default function DashboardSidebar() {
               <div
                 className={cn("flex flex-col gap-1", isCollapsed && "items-center")}
               >
-                <Link
-                  href={tournamentMenuItem.href}
-                  className={cn(
-                    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                    "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                    pathname === tournamentMenuItem.href &&
-                      "bg-sidebar-accent text-sidebar-accent-foreground",
-                    isCollapsed ? "w-12 justify-center px-0" : "w-full",
-                  )}
-                >
-                  <tournamentMenuItem.icon className="h-4 w-4" aria-hidden="true" />
-                  <span className={cn(isCollapsed && "sr-only")}>
-                    {tournamentMenuItem.label}
-                  </span>
-                </Link>
+                {tournamentMenuItems.map((item) => {
+                  const isActive = pathname === item.href;
+                  const Icon = item.icon;
+
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                        "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                        isActive && "bg-sidebar-accent text-sidebar-accent-foreground",
+                        isCollapsed ? "w-12 justify-center px-0" : "w-full",
+                      )}
+                    >
+                      <Icon className="h-4 w-4" aria-hidden="true" />
+                      <span className={cn(isCollapsed && "sr-only")}>{item.label}</span>
+                    </Link>
+                  );
+                })}
               </div>
             </>
           )}
