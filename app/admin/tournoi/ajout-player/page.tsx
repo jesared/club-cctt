@@ -32,13 +32,24 @@ async function createPlayerRegistration(formData: FormData) {
     .map((eventId) => String(eventId).trim())
     .filter(Boolean);
 
-  if (!tournamentId || !licence || !nom || !prenom || selectedEvents.length === 0) {
+  if (
+    !tournamentId
+    || !licence
+    || !nom
+    || !prenom
+    || !pointsValue
+    || !club
+    || !contactEmail
+    || !contactPhone
+    || !notes
+    || selectedEvents.length === 0
+  ) {
     redirect("/admin/tournoi/ajout-player?error=Veuillez+remplir+les+champs+obligatoires");
   }
 
-  const points = pointsValue ? Number.parseInt(pointsValue, 10) : null;
+  const points = Number.parseInt(pointsValue, 10);
 
-  if (Number.isNaN(points)) {
+  if (Number.isNaN(points) || points < 0) {
     redirect("/admin/tournoi/ajout-player?error=Classement+invalide");
   }
 
@@ -59,13 +70,50 @@ async function createPlayerRegistration(formData: FormData) {
     }),
   ]);
 
+  const selectedTournamentEvents = await prisma.tournamentEvent.findMany({
+    where: {
+      tournamentId,
+      id: {
+        in: selectedEvents,
+      },
+    },
+    select: {
+      code: true,
+      minPoints: true,
+      maxPoints: true,
+    },
+  });
+
+  if (selectedTournamentEvents.length !== selectedEvents.length) {
+    redirect("/admin/tournoi/ajout-player?error=Tableaux+invalides+ou+indisponibles");
+  }
+
+  const ineligibleTables = selectedTournamentEvents
+    .filter((event) => {
+      if (event.minPoints !== null && points < event.minPoints) {
+        return true;
+      }
+
+      if (event.maxPoints !== null && points > event.maxPoints) {
+        return true;
+      }
+
+      return false;
+    })
+    .map((event) => event.code);
+
+  if (ineligibleTables.length > 0) {
+    const tables = encodeURIComponent(ineligibleTables.join(", "));
+    redirect(`/admin/tournoi/ajout-player?error=Le+classement+ne+permet+pas+les+tableaux+${tables}`);
+  }
+
   const playerRefId = existingPlayer?.id ?? (await prisma.player.create({
     data: {
       licence,
       nom,
       prenom,
-      points: points ?? undefined,
-      club: club || null,
+      points,
+      club,
       ownerId: session.user.id,
     },
     select: { id: true },
@@ -79,10 +127,10 @@ async function createPlayerRegistration(formData: FormData) {
         playerRefId,
         userId: session.user.id,
         licenseNumber: licence,
-        clubName: club || null,
-        contactEmail: contactEmail || null,
-        contactPhone: contactPhone || null,
-        notes: notes || null,
+        clubName: club,
+        contactEmail,
+        contactPhone,
+        notes,
         status: RegistrationStatus.CONFIRMED,
         source: RegistrationSource.ADMIN,
         registrationEvents: {
@@ -166,33 +214,37 @@ export default async function AdminTournoiAjoutPlayerPage({ searchParams }: Page
                 />
               </label>
               <label className="space-y-1 text-sm">
-                <span className="font-medium text-gray-700">Classement (points)</span>
+                <span className="font-medium text-gray-700">Classement (points) *</span>
                 <input
                   name="points"
                   type="number"
                   min={0}
+                  required
                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none"
                 />
               </label>
               <label className="space-y-1 text-sm">
-                <span className="font-medium text-gray-700">Club</span>
+                <span className="font-medium text-gray-700">Club *</span>
                 <input
                   name="club"
+                  required
                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none"
                 />
               </label>
               <label className="space-y-1 text-sm">
-                <span className="font-medium text-gray-700">Email</span>
+                <span className="font-medium text-gray-700">Email *</span>
                 <input
                   name="contactEmail"
                   type="email"
+                  required
                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none"
                 />
               </label>
               <label className="space-y-1 text-sm sm:col-span-2">
-                <span className="font-medium text-gray-700">Téléphone</span>
+                <span className="font-medium text-gray-700">Téléphone *</span>
                 <input
                   name="contactPhone"
+                  required
                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none"
                 />
               </label>
@@ -218,10 +270,11 @@ export default async function AdminTournoiAjoutPlayerPage({ searchParams }: Page
             </div>
 
             <label className="space-y-1 text-sm block">
-              <span className="font-medium text-gray-700">Notes internes</span>
+              <span className="font-medium text-gray-700">Notes internes *</span>
               <textarea
                 name="notes"
                 rows={3}
+                required
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none"
               />
             </label>
