@@ -8,15 +8,30 @@ type PointagesGridPlayer = {
   club: string;
   table: string;
   status: string;
+  checkedDayKeys: string[];
+  registrationEventIdsByDay: Record<string, string[]>;
+};
+
+type DayColumn = {
+  key: string;
+  label: string;
 };
 
 type PointagesGridProps = {
   players: PointagesGridPlayer[];
-  dayLabels: string[];
+  dayColumns: DayColumn[];
 };
 
-export function PointagesGrid({ players, dayLabels }: PointagesGridProps) {
-  const [checkedState, setCheckedState] = useState<Record<string, boolean>>({});
+export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
+  const [checkedState, setCheckedState] = useState<Record<string, boolean>>(() => {
+    return players.reduce<Record<string, boolean>>((acc, player) => {
+      player.checkedDayKeys.forEach((dayKey) => {
+        acc[`${player.licence}-${dayKey}`] = true;
+      });
+      return acc;
+    }, {});
+  });
+  const [pendingState, setPendingState] = useState<Record<string, boolean>>({});
   const [selectedClub, setSelectedClub] = useState<string>("all");
   const [selectedTable, setSelectedTable] = useState<string>("all");
 
@@ -39,13 +54,13 @@ export function PointagesGrid({ players, dayLabels }: PointagesGridProps) {
     );
   }, [players]);
 
-  const normalizedDayLabels = useMemo(() => {
-    if (dayLabels.length >= 3) {
-      return dayLabels.slice(0, 3);
+  const normalizedDayColumns = useMemo(() => {
+    if (dayColumns.length >= 3) {
+      return dayColumns.slice(0, 3);
     }
 
-    return Array.from({ length: 3 }, (_, index) => dayLabels[index] ?? `Jour ${index + 1}`);
-  }, [dayLabels]);
+    return Array.from({ length: 3 }, (_, index) => dayColumns[index] ?? { key: `day-${index + 1}`, label: `Jour ${index + 1}` });
+  }, [dayColumns]);
 
   const filteredPlayers = useMemo(() => {
     return players.filter((player) => {
@@ -60,12 +75,45 @@ export function PointagesGrid({ players, dayLabels }: PointagesGridProps) {
     });
   }, [players, selectedClub, selectedTable]);
 
-  function toggleCheck(licence: string, dayLabel: string) {
-    const key = `${licence}-${dayLabel}`;
+  async function toggleCheck(player: PointagesGridPlayer, dayKey: string) {
+    const key = `${player.licence}-${dayKey}`;
+    const eventIds = player.registrationEventIdsByDay[dayKey] ?? [];
+
+    if (eventIds.length === 0 || pendingState[key]) {
+      return;
+    }
+
+    const nextCheckedValue = !(checkedState[key] ?? false);
+
     setCheckedState((previousState) => ({
       ...previousState,
-      [key]: !previousState[key],
+      [key]: nextCheckedValue,
     }));
+    setPendingState((previousState) => ({ ...previousState, [key]: true }));
+
+    try {
+      const response = await fetch("/api/admin/tournoi/pointages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          registrationEventIds: eventIds,
+          checked: nextCheckedValue,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de la sauvegarde du pointage");
+      }
+    } catch {
+      setCheckedState((previousState) => ({
+        ...previousState,
+        [key]: !nextCheckedValue,
+      }));
+    } finally {
+      setPendingState((previousState) => ({ ...previousState, [key]: false }));
+    }
   }
 
   return (
@@ -117,8 +165,8 @@ export function PointagesGrid({ players, dayLabels }: PointagesGridProps) {
             <th className="py-2 pr-3 font-medium">Joueur</th>
             <th className="py-2 pr-3 font-medium">Club</th>
             <th className="py-2 pr-3 font-medium">Tableau(x)</th>
-            {normalizedDayLabels.map((dayLabel) => (
-              <th key={dayLabel} className="py-2 pr-3 font-medium">{dayLabel}</th>
+            {normalizedDayColumns.map((dayColumn) => (
+              <th key={dayColumn.key} className="py-2 pr-3 font-medium">{dayColumn.label}</th>
             ))}
             <th className="py-2 font-medium">Statut inscription</th>
           </tr>
@@ -129,8 +177,9 @@ export function PointagesGrid({ players, dayLabels }: PointagesGridProps) {
               <td className="py-3 pr-3 text-gray-900 font-medium">{player.name}</td>
               <td className="py-3 pr-3 text-gray-700">{player.club}</td>
               <td className="py-3 pr-3 text-gray-700">{player.table}</td>
-              {normalizedDayLabels.map((dayLabel) => {
-                const key = `${player.licence}-${dayLabel}`;
+              {normalizedDayColumns.map((dayColumn) => {
+                const key = `${player.licence}-${dayColumn.key}`;
+                const hasEventForDay = (player.registrationEventIdsByDay[dayColumn.key] ?? []).length > 0;
                 return (
                   <td key={key} className="py-3 pr-3 text-gray-700">
                     <label className="inline-flex items-center gap-2">
@@ -138,7 +187,8 @@ export function PointagesGrid({ players, dayLabels }: PointagesGridProps) {
                         type="checkbox"
                         className="h-4 w-4 rounded border-gray-300"
                         checked={checkedState[key] ?? false}
-                        onChange={() => toggleCheck(player.licence, dayLabel)}
+                        disabled={!hasEventForDay || pendingState[key]}
+                        onChange={() => toggleCheck(player, dayColumn.key)}
                       />
                       <span className="text-xs text-gray-500">Présent</span>
                     </label>
@@ -150,7 +200,7 @@ export function PointagesGrid({ players, dayLabels }: PointagesGridProps) {
           ))}
           {filteredPlayers.length === 0 ? (
             <tr>
-              <td colSpan={6 + normalizedDayLabels.length} className="py-6 text-center text-sm text-gray-500">
+              <td colSpan={6 + normalizedDayColumns.length} className="py-6 text-center text-sm text-gray-500">
                 Aucun joueur ne correspond aux filtres sélectionnés.
               </td>
             </tr>
