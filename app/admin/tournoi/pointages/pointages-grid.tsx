@@ -183,16 +183,20 @@ export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
                 const hasEventForDay = (player.registrationEventIdsByDay[dayColumn.key] ?? []).length > 0;
                 return (
                   <td key={key} className="py-3 pr-3 text-gray-700">
-                    <label className="inline-flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        className="h-4 w-4 rounded border-gray-300"
-                        checked={checkedState[key] ?? false}
-                        disabled={!hasEventForDay || pendingState[key]}
-                        onChange={() => toggleCheck(player, dayColumn.key)}
-                      />
-                      <span className="text-xs text-gray-500">Présent</span>
-                    </label>
+                    {hasEventForDay ? (
+                      <label className="inline-flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 rounded border-gray-300"
+                          checked={checkedState[key] ?? false}
+                          disabled={pendingState[key]}
+                          onChange={() => toggleCheck(player, dayColumn.key)}
+                        />
+                        <span className="text-xs text-gray-500">Présent</span>
+                      </label>
+                    ) : (
+                      <span className="text-xs text-gray-400">Non inscrit</span>
+                    )}
                   </td>
                 );
               })}
