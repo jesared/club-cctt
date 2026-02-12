@@ -156,7 +156,18 @@ function getRegistrationStatusLabel(status: RegistrationStatus) {
 export async function getAdminPlayers(tournamentId: string): Promise<AdminPlayerRow[]> {
   const registrations = await prisma.tournamentRegistration.findMany({
     where: { tournamentId },
-    orderBy: [{ createdAt: "desc" }],
+    orderBy: [
+      {
+        player: {
+          nom: "asc",
+        },
+      },
+      {
+        player: {
+          prenom: "asc",
+        },
+      },
+    ],
     select: {
       id: true,
       status: true,
