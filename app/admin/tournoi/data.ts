@@ -35,6 +35,16 @@ export type AdminPlayerRow = {
   registrationEventIdsByDay: Record<string, string[]>;
 };
 
+export type AdminPaymentGroupRow = {
+  groupKey: string;
+  payerLabel: string;
+  registrations: number;
+  players: string[];
+  totalAmountDueCents: number;
+  totalPaidCents: number;
+  paymentStatus: "PAYÉ" | "PARTIEL" | "SUR PLACE";
+};
+
 const DATE_FORMATTER = new Intl.DateTimeFormat("fr-FR", {
   day: "numeric",
   month: "long",
@@ -248,5 +258,118 @@ export async function getAdminPlayers(tournamentId: string): Promise<AdminPlayer
         return acc;
       }, {}),
     };
+  });
+}
+
+function normalizeGroupValue(value: string | null | undefined) {
+  if (!value) {
+    return "";
+  }
+
+  return value.trim().toLowerCase();
+}
+
+function buildPayerLabel(email: string | null | undefined, phone: string | null | undefined) {
+  if (email && phone) {
+    return `${email} / ${phone}`;
+  }
+
+  if (email) {
+    return email;
+  }
+
+  if (phone) {
+    return phone;
+  }
+
+  return "Contact manquant";
+}
+
+export async function getAdminPaymentGroups(tournamentId: string): Promise<AdminPaymentGroupRow[]> {
+  const registrations = await prisma.tournamentRegistration.findMany({
+    where: { tournamentId },
+    select: {
+      id: true,
+      contactEmail: true,
+      contactPhone: true,
+      player: {
+        select: {
+          nom: true,
+          prenom: true,
+        },
+      },
+      registrationEvents: {
+        select: {
+          event: {
+            select: {
+              feeOnlineCents: true,
+            },
+          },
+        },
+      },
+      payments: {
+        select: {
+          amountCents: true,
+          status: true,
+        },
+      },
+    },
+  });
+
+  const groups = new Map<string, AdminPaymentGroupRow>();
+
+  for (const registration of registrations) {
+    const normalizedEmail = normalizeGroupValue(registration.contactEmail);
+    const normalizedPhone = normalizeGroupValue(registration.contactPhone);
+    const groupKey = normalizedEmail || normalizedPhone || `registration:${registration.id}`;
+
+    const totalAmountDueCents = registration.registrationEvents.reduce(
+      (acc, eventEntry) => acc + eventEntry.event.feeOnlineCents,
+      0,
+    );
+    const totalPaidCents = registration.payments
+      .filter((payment) => payment.status === "PAID")
+      .reduce((acc, payment) => acc + payment.amountCents, 0);
+
+    if (!groups.has(groupKey)) {
+      groups.set(groupKey, {
+        groupKey,
+        payerLabel: buildPayerLabel(registration.contactEmail, registration.contactPhone),
+        registrations: 0,
+        players: [],
+        totalAmountDueCents: 0,
+        totalPaidCents: 0,
+        paymentStatus: "SUR PLACE",
+      });
+    }
+
+    const group = groups.get(groupKey)!;
+    group.registrations += 1;
+    group.players.push(`${registration.player.prenom} ${registration.player.nom}`.trim());
+    group.totalAmountDueCents += totalAmountDueCents;
+    group.totalPaidCents += totalPaidCents;
+  }
+
+  const rows = Array.from(groups.values()).map((group) => {
+    let paymentStatus: AdminPaymentGroupRow["paymentStatus"] = "SUR PLACE";
+    if (group.totalPaidCents >= group.totalAmountDueCents && group.totalAmountDueCents > 0) {
+      paymentStatus = "PAYÉ";
+    } else if (group.totalPaidCents > 0) {
+      paymentStatus = "PARTIEL";
+    }
+
+    return {
+      ...group,
+      paymentStatus,
+      players: group.players.sort((a, b) => a.localeCompare(b, "fr")),
+    };
+  });
+
+  return rows.sort((a, b) => {
+    if (a.registrations !== b.registrations) {
+      return b.registrations - a.registrations;
+    }
+
+    return a.payerLabel.localeCompare(b.payerLabel, "fr");
   });
 }
