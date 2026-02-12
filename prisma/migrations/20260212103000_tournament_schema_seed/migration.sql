@@ -1,17 +1,59 @@
 -- CreateTable
+CREATE TABLE "Player" (
+    "id" TEXT NOT NULL,
+    "licence" TEXT NOT NULL,
+    "nom" TEXT NOT NULL,
+    "prenom" TEXT NOT NULL,
+    "points" INTEGER,
+    "club" TEXT,
+    "ownerId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Player_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Message" (
+    "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "important" BOOLEAN NOT NULL DEFAULT false,
+    "authorId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Message_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "MessageRead" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "messageId" TEXT NOT NULL,
+    "readAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "MessageRead_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Player_licence_key" ON "Player"("licence");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "MessageRead_userId_messageId_key" ON "MessageRead"("userId", "messageId");
+
+-- CreateTable
 CREATE TABLE "Tournament" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "slug" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
     "venue" TEXT,
-    "registrationOpenAt" DATETIME,
-    "registrationCloseAt" DATETIME,
-    "startDate" DATETIME NOT NULL,
-    "endDate" DATETIME NOT NULL,
+    "registrationOpenAt" TIMESTAMP(3),
+    "registrationCloseAt" TIMESTAMP(3),
+    "startDate" TIMESTAMP(3) NOT NULL,
+    "endDate" TIMESTAMP(3) NOT NULL,
     "status" TEXT NOT NULL DEFAULT 'DRAFT',
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL
 );
 
 -- CreateTable
@@ -20,16 +62,16 @@ CREATE TABLE "TournamentEvent" (
     "tournamentId" TEXT NOT NULL,
     "code" TEXT NOT NULL,
     "label" TEXT NOT NULL,
-    "gender" TEXT NOT NULL DEFAULT 'MIXED',
+    "gender" TEXT NOT NULL DEFAULT 'M',
     "minPoints" INTEGER,
     "maxPoints" INTEGER,
     "maxPlayers" INTEGER NOT NULL DEFAULT 32,
-    "startAt" DATETIME NOT NULL,
+    "startAt" TIMESTAMP(3) NOT NULL,
     "feeOnlineCents" INTEGER NOT NULL,
     "feeOnsiteCents" INTEGER NOT NULL,
     "status" TEXT NOT NULL DEFAULT 'OPEN',
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     CONSTRAINT "TournamentEvent_tournamentId_fkey" FOREIGN KEY ("tournamentId") REFERENCES "Tournament" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -48,8 +90,8 @@ CREATE TABLE "TournamentRegistration" (
     "notes" TEXT,
     "status" TEXT NOT NULL DEFAULT 'PENDING',
     "source" TEXT NOT NULL DEFAULT 'WEB',
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     CONSTRAINT "TournamentRegistration_tournamentId_fkey" FOREIGN KEY ("tournamentId") REFERENCES "Tournament" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "TournamentRegistration_playerRefId_fkey" FOREIGN KEY ("playerRefId") REFERENCES "Player" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT "TournamentRegistration_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE
@@ -64,8 +106,8 @@ CREATE TABLE "TournamentRegistrationEvent" (
     "position" INTEGER,
     "status" TEXT NOT NULL DEFAULT 'REGISTERED',
     "waitlistRank" INTEGER,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     CONSTRAINT "TournamentRegistrationEvent_registrationId_fkey" FOREIGN KEY ("registrationId") REFERENCES "TournamentRegistration" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "TournamentRegistrationEvent_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "TournamentEvent" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -79,8 +121,8 @@ CREATE TABLE "TournamentPayment" (
     "status" TEXT NOT NULL DEFAULT 'PENDING',
     "provider" TEXT,
     "providerRef" TEXT,
-    "paidAt" DATETIME,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "paidAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "TournamentPayment_registrationId_fkey" FOREIGN KEY ("registrationId") REFERENCES "TournamentRegistration" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -88,7 +130,7 @@ CREATE TABLE "TournamentPayment" (
 CREATE TABLE "TournamentCheckIn" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "registrationEventId" TEXT NOT NULL,
-    "checkedInAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "checkedInAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "checkedInByUserId" TEXT,
     "desk" TEXT,
     CONSTRAINT "TournamentCheckIn_registrationEventId_fkey" FOREIGN KEY ("registrationEventId") REFERENCES "TournamentRegistrationEvent" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
@@ -97,6 +139,19 @@ CREATE TABLE "TournamentCheckIn" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Tournament_slug_key" ON "Tournament"("slug");
+
+-- AddForeignKey
+ALTER TABLE "Player" ADD CONSTRAINT "Player_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Message" ADD CONSTRAINT "Message_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "MessageRead" ADD CONSTRAINT "MessageRead_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "MessageRead" ADD CONSTRAINT "MessageRead_messageId_fkey" FOREIGN KEY ("messageId") REFERENCES "Message"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
 CREATE UNIQUE INDEX "TournamentEvent_tournamentId_code_key" ON "TournamentEvent"("tournamentId", "code");
 CREATE INDEX "TournamentEvent_tournamentId_startAt_idx" ON "TournamentEvent"("tournamentId", "startAt");
 CREATE UNIQUE INDEX "TournamentRegistration_tournamentId_playerId_key" ON "TournamentRegistration"("tournamentId", "playerId");
@@ -125,21 +180,21 @@ INSERT INTO "Tournament" (
 );
 
 INSERT INTO "TournamentEvent" ("id", "tournamentId", "code", "label", "gender", "minPoints", "maxPoints", "maxPlayers", "startAt", "feeOnlineCents", "feeOnsiteCents", "status", "updatedAt") VALUES
-('evt-A','tournoi-2026-cctt','A','500 à 799 pts','MIXED',500,799,32,'2026-04-04T11:30:00Z',800,900,'OPEN',CURRENT_TIMESTAMP),
-('evt-B','tournoi-2026-cctt','B','500 à 1099 pts','MIXED',500,1099,32,'2026-04-04T13:30:00Z',800,900,'OPEN',CURRENT_TIMESTAMP),
-('evt-C','tournoi-2026-cctt','C','800 à 1399 pts','MIXED',800,1399,32,'2026-04-04T10:30:00Z',800,900,'OPEN',CURRENT_TIMESTAMP),
-('evt-D','tournoi-2026-cctt','D','1100 à 1699 pts','MIXED',1100,1699,32,'2026-04-04T12:30:00Z',800,900,'OPEN',CURRENT_TIMESTAMP),
-('evt-E','tournoi-2026-cctt','E','500 à 899 pts','MIXED',500,899,32,'2026-04-05T11:00:00Z',800,900,'OPEN',CURRENT_TIMESTAMP),
-('evt-F','tournoi-2026-cctt','F','500 à 1199 pts','MIXED',500,1199,32,'2026-04-05T08:30:00Z',800,900,'OPEN',CURRENT_TIMESTAMP),
-('evt-G','tournoi-2026-cctt','G','900 à 1499 pts','MIXED',900,1499,32,'2026-04-05T12:00:00Z',800,900,'OPEN',CURRENT_TIMESTAMP),
-('evt-H','tournoi-2026-cctt','H','1200 à 1799 pts','MIXED',1200,1799,32,'2026-04-05T09:30:00Z',800,900,'OPEN',CURRENT_TIMESTAMP),
-('evt-I','tournoi-2026-cctt','I','-500 à N°400','MIXED',NULL,NULL,32,'2026-04-05T13:15:00Z',900,1000,'OPEN',CURRENT_TIMESTAMP),
-('evt-J','tournoi-2026-cctt','J','Dames TC','WOMEN',NULL,NULL,32,'2026-04-05T14:30:00Z',800,900,'OPEN',CURRENT_TIMESTAMP),
-('evt-K','tournoi-2026-cctt','K','500 à 999 pts','MIXED',500,999,32,'2026-04-06T11:00:00Z',800,900,'OPEN',CURRENT_TIMESTAMP),
-('evt-L','tournoi-2026-cctt','L','500 à 1299 pts','MIXED',500,1299,32,'2026-04-06T08:30:00Z',800,900,'OPEN',CURRENT_TIMESTAMP),
-('evt-M','tournoi-2026-cctt','M','1000 à 1599 pts','MIXED',1000,1599,32,'2026-04-06T12:00:00Z',800,900,'OPEN',CURRENT_TIMESTAMP),
-('evt-N','tournoi-2026-cctt','N','1300 à 2099 pts','MIXED',1300,2099,32,'2026-04-06T09:30:00Z',800,900,'OPEN',CURRENT_TIMESTAMP),
-('evt-P','tournoi-2026-cctt','P','TC','MIXED',NULL,NULL,32,'2026-04-06T13:15:00Z',1000,1100,'OPEN',CURRENT_TIMESTAMP);
+('evt-A','tournoi-2026-cctt','A','500 à 799 pts','M',500,799,32,'2026-04-04T11:30:00Z',800,900,'OPEN',CURRENT_TIMESTAMP),
+('evt-B','tournoi-2026-cctt','B','500 à 1099 pts','M',500,1099,32,'2026-04-04T13:30:00Z',800,900,'OPEN',CURRENT_TIMESTAMP),
+('evt-C','tournoi-2026-cctt','C','800 à 1399 pts','M',800,1399,32,'2026-04-04T10:30:00Z',800,900,'OPEN',CURRENT_TIMESTAMP),
+('evt-D','tournoi-2026-cctt','D','1100 à 1699 pts','M',1100,1699,32,'2026-04-04T12:30:00Z',800,900,'OPEN',CURRENT_TIMESTAMP),
+('evt-E','tournoi-2026-cctt','E','500 à 899 pts','M',500,899,32,'2026-04-05T11:00:00Z',800,900,'OPEN',CURRENT_TIMESTAMP),
+('evt-F','tournoi-2026-cctt','F','500 à 1199 pts','M',500,1199,32,'2026-04-05T08:30:00Z',800,900,'OPEN',CURRENT_TIMESTAMP),
+('evt-G','tournoi-2026-cctt','G','900 à 1499 pts','M',900,1499,32,'2026-04-05T12:00:00Z',800,900,'OPEN',CURRENT_TIMESTAMP),
+('evt-H','tournoi-2026-cctt','H','1200 à 1799 pts','M',1200,1799,32,'2026-04-05T09:30:00Z',800,900,'OPEN',CURRENT_TIMESTAMP),
+('evt-I','tournoi-2026-cctt','I','-500 à N°400','M',NULL,NULL,32,'2026-04-05T13:15:00Z',900,1000,'OPEN',CURRENT_TIMESTAMP),
+('evt-J','tournoi-2026-cctt','J','Dames TC','F',NULL,NULL,32,'2026-04-05T14:30:00Z',800,900,'OPEN',CURRENT_TIMESTAMP),
+('evt-K','tournoi-2026-cctt','K','500 à 999 pts','M',500,999,32,'2026-04-06T11:00:00Z',800,900,'OPEN',CURRENT_TIMESTAMP),
+('evt-L','tournoi-2026-cctt','L','500 à 1299 pts','M',500,1299,32,'2026-04-06T08:30:00Z',800,900,'OPEN',CURRENT_TIMESTAMP),
+('evt-M','tournoi-2026-cctt','M','1000 à 1599 pts','M',1000,1599,32,'2026-04-06T12:00:00Z',800,900,'OPEN',CURRENT_TIMESTAMP),
+('evt-N','tournoi-2026-cctt','N','1300 à 2099 pts','M',1300,2099,32,'2026-04-06T09:30:00Z',800,900,'OPEN',CURRENT_TIMESTAMP),
+('evt-P','tournoi-2026-cctt','P','TC','M',NULL,NULL,32,'2026-04-06T13:15:00Z',1000,1100,'OPEN',CURRENT_TIMESTAMP);
 
 INSERT INTO "Player" ("id", "licence", "nom", "prenom", "points", "club", "ownerId", "createdAt") VALUES
 ('p001','2501001','Martin','Léa',1240,'CCTT','cmlgqxfdo0000tjdccvq010t1',CURRENT_TIMESTAMP),

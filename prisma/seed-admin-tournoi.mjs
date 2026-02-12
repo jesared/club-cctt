@@ -101,7 +101,7 @@ const EVENTS = [
     label: 'Dames TC',
     minPoints: null,
     maxPoints: null,
-    gender: 'FEMALE',
+    gender: 'F',
     startAt: new Date('2026-04-05T14:30:00Z'),
     feeOnlineCents: 800,
     feeOnsiteCents: 900,
