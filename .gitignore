@@ -43,3 +43,6 @@ next-env.d.ts
 /lib/generated/prisma
 
 /lib/generated/prisma
+
+# local prisma sqlite artifacts
+prisma/prisma/*.db
