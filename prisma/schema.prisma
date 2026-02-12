@@ -22,6 +22,8 @@ model User {
   players  Player[]
   messages Message[]
   reads MessageRead[]
+  registrations TournamentRegistration[]
+  checkIns TournamentCheckIn[]
 
 }
 
@@ -36,6 +38,8 @@ model Player {
 
   ownerId String
   owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  registrations TournamentRegistration[]
 
   createdAt DateTime @default(now())
 }
@@ -82,6 +86,59 @@ enum Role {
   ADMIN
 }
 
+enum TournamentStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+  ARCHIVED
+}
+
+enum TournamentEventStatus {
+  OPEN
+  FULL
+  CLOSED
+  CANCELLED
+}
+
+enum RegistrationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum RegistrationEventStatus {
+  REGISTERED
+  WAITLISTED
+  CHECKED_IN
+  NO_SHOW
+  FORFEIT
+}
+
+enum PaymentMethod {
+  ONLINE
+  CASH
+  CARD
+  TRANSFER
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum RegistrationSource {
+  WEB
+  ADMIN
+}
+
+enum EventGender {
+  MIXED
+  WOMEN
+  MEN
+}
+
 model Message {
   id        String  @id @default(cuid())
   title     String
@@ -95,6 +152,134 @@ reads MessageRead[]
 
   createdAt DateTime @default(now())
 }
+
+model Tournament {
+  id                  String                  @id @default(cuid())
+  slug                String                  @unique
+  name                String
+  description         String?
+  venue               String?
+  registrationOpenAt  DateTime?
+  registrationCloseAt DateTime?
+  startDate           DateTime
+  endDate             DateTime
+  status              TournamentStatus        @default(DRAFT)
+
+  events        TournamentEvent[]
+  registrations TournamentRegistration[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TournamentEvent {
+  id           String         @id @default(cuid())
+  tournamentId String
+  tournament   Tournament     @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+
+  code          String
+  label         String
+  gender        EventGender           @default(MIXED)
+  minPoints     Int?
+  maxPoints     Int?
+  maxPlayers    Int                   @default(32)
+  startAt       DateTime
+  feeOnlineCents Int
+  feeOnsiteCents Int
+  status        TournamentEventStatus @default(OPEN)
+
+  registrationEvents TournamentRegistrationEvent[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([tournamentId, code])
+  @@index([tournamentId, startAt])
+}
+
+model TournamentRegistration {
+  id           String     @id @default(cuid())
+  tournamentId String
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+
+  playerId Int
+
+  playerRefId String
+  player      Player @relation(fields: [playerRefId], references: [id], onDelete: Restrict)
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  licenseNumber String?
+  clubName      String?
+  gender        String?
+  contactEmail  String?
+  contactPhone  String?
+  notes         String?
+  status        RegistrationStatus @default(PENDING)
+  source        RegistrationSource @default(WEB)
+
+  registrationEvents TournamentRegistrationEvent[]
+  payments           TournamentPayment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([tournamentId, playerId])
+  @@unique([tournamentId, playerRefId])
+  @@index([tournamentId, status])
+}
+
+model TournamentRegistrationEvent {
+  id             String                 @id @default(cuid())
+  registrationId String
+  registration   TournamentRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+
+  eventId String
+  event   TournamentEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  seedPointsSnapshot Int?
+  position           Int?
+  status             RegistrationEventStatus @default(REGISTERED)
+  waitlistRank       Int?
+
+  checkIn TournamentCheckIn?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([registrationId, eventId])
+  @@index([eventId, status, waitlistRank])
+}
+
+model TournamentPayment {
+  id             String                 @id @default(cuid())
+  registrationId String
+  registration   TournamentRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+
+  amountCents Int
+  method      PaymentMethod
+  status      PaymentStatus @default(PENDING)
+  provider    String?
+  providerRef String?
+  paidAt      DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([registrationId, status])
+}
+
+model TournamentCheckIn {
+  id                  String                    @id @default(cuid())
+  registrationEventId String                    @unique
+  registrationEvent   TournamentRegistrationEvent @relation(fields: [registrationEventId], references: [id], onDelete: Cascade)
+
+  checkedInAt       DateTime @default(now())
+  checkedInByUserId String?
+  checkedInByUser   User?    @relation(fields: [checkedInByUserId], references: [id], onDelete: SetNull)
+  desk              String?
+}
+
 model MessageRead {
   id        String   @id @default(cuid())
   userId    String
