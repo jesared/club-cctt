@@ -153,8 +153,6 @@ const EVENTS = [
   },
 ];
 
-const CLUBS = ['CCTT', 'Reims TT', 'Troyes TT', 'Épernay TT', 'Vitry TT'];
-
 function getEventCodesForPlayer(index, points) {
   const eventCodes = new Set();
 
@@ -241,24 +239,64 @@ async function main() {
     eventByCode[event.code] = saved;
   }
 
-  const firstNames = [
-    'Léo','Emma','Noah','Jade','Hugo','Inès','Lucas','Nina','Tom','Lina',
-    'Jules','Zoé','Adam','Léa','Axel','Chloé','Ethan','Clara','Maël','Louise',
-  ];
-  const lastNames = [
-    'Martin','Bernard','Dubois','Thomas','Robert','Richard','Petit','Durand','Leroy','Moreau',
-    'Simon','Laurent','Lefebvre','Michel','Garcia','David','Bertrand','Roux','Vincent','Fournier',
+  const FFTT_PLAYERS = [
+    { prenom: 'Félix', nom: 'Lebrun', club: 'Alliance Nîmes-Montpellier TT', points: 2945, gender: 'M', licence: '07810001' },
+    { prenom: 'Alexis', nom: 'Lebrun', club: 'Alliance Nîmes-Montpellier TT', points: 2860, gender: 'M', licence: '07810002' },
+    { prenom: 'Simon', nom: 'Gauzy', club: 'GV Hennebont TT', points: 2820, gender: 'M', licence: '05620001' },
+    { prenom: 'Jules', nom: 'Rolland', club: 'GV Hennebont TT', points: 2420, gender: 'M', licence: '05620002' },
+    { prenom: 'Florian', nom: 'Bourrassaud', club: 'AS Pontoise-Cergy TT', points: 2625, gender: 'M', licence: '09510001' },
+    { prenom: 'Esteban', nom: 'Dorr', club: 'TT Joué-lès-Tours', points: 2580, gender: 'M', licence: '03710001' },
+    { prenom: 'Can', nom: 'Akkuzu', club: 'Jura Morez TT', points: 2660, gender: 'M', licence: '03910001' },
+    { prenom: 'Bastien', nom: 'Rembert', club: 'TT La Romagne', points: 2390, gender: 'M', licence: '04910001' },
+    { prenom: 'Thibault', nom: 'Poret', club: 'Rouen SPO TT', points: 2480, gender: 'M', licence: '07610001' },
+    { prenom: 'Antoine', nom: 'Hachard', club: 'SPO Rouen TT', points: 2510, gender: 'M', licence: '07610002' },
+    { prenom: 'Romain', nom: 'Ruiz', club: 'Istres TT', points: 2440, gender: 'M', licence: '01310001' },
+    { prenom: 'Benjamin', nom: 'Brossier', club: 'Angers Vaillante TT', points: 2470, gender: 'M', licence: '04910002' },
+    { prenom: 'Hugo', nom: 'Deschamps', club: '4S Tours TT', points: 2360, gender: 'M', licence: '03710002' },
+    { prenom: 'Jules', nom: 'Cavaille', club: 'Nantes TT', points: 2320, gender: 'M', licence: '04410001' },
+    { prenom: 'Vincent', nom: 'Picard', club: 'Lille Métropole TT', points: 2340, gender: 'M', licence: '05910001' },
+    { prenom: 'Mehdi', nom: 'Bouloussa', club: 'Boulogne-Billancourt AC', points: 2285, gender: 'M', licence: '09210001' },
+    { prenom: 'Tom', nom: 'Perrin', club: 'AS Pontoise-Cergy TT', points: 2210, gender: 'M', licence: '09510002' },
+    { prenom: 'Nathan', nom: 'Lam', club: 'Entente Saint-Pierraise TT', points: 2195, gender: 'M', licence: '97410001' },
+    { prenom: 'Léo', nom: 'de Nodrest', club: 'Alliance Nîmes-Montpellier TT', points: 2260, gender: 'M', licence: '07810003' },
+    { prenom: 'Jérémy', nom: 'Petiot', club: 'GV Hennebont TT', points: 2240, gender: 'M', licence: '05620003' },
+    { prenom: 'Camille', nom: 'Lutz', club: 'Metz TT', points: 2690, gender: 'F', licence: '05710001' },
+    { prenom: 'Prithika', nom: 'Pavade', club: 'Saint-Denis 93 TT', points: 2665, gender: 'F', licence: '09310001' },
+    { prenom: 'Jia Nan', nom: 'Yuan', club: 'Saint-Denis 93 TT', points: 2760, gender: 'F', licence: '09310002' },
+    { prenom: 'Charlotte', nom: 'Lutz', club: 'Metz TT', points: 2580, gender: 'F', licence: '05710002' },
+    { prenom: 'Audrey', nom: 'Zarif', club: 'CP Lyssois Lille Métropole', points: 2540, gender: 'F', licence: '05910002' },
+    { prenom: 'Pauline', nom: 'Chasselin', club: 'Metz TT', points: 2490, gender: 'F', licence: '05710003' },
+    { prenom: 'Anaïs', nom: 'Salpin', club: 'Quimper CTT', points: 2385, gender: 'F', licence: '02910001' },
+    { prenom: 'Marie', nom: 'Migot', club: 'Poitiers TTACC 86', points: 2415, gender: 'F', licence: '08610001' },
+    { prenom: 'Leana', nom: 'Hochart', club: 'CP Lyssois Lille Métropole', points: 2330, gender: 'F', licence: '05910003' },
+    { prenom: 'Lucie', nom: 'Gauthier', club: 'Entente Saint-Pierraise TT', points: 2305, gender: 'F', licence: '97410002' },
+    { prenom: 'Océane', nom: 'Guisnel', club: 'Quimper CTT', points: 2280, gender: 'F', licence: '02910002' },
+    { prenom: 'Léa', nom: 'Rakotoarimanana', club: 'Saint-Denis 93 TT', points: 2510, gender: 'F', licence: '09310003' },
+    { prenom: 'Morgane', nom: 'Bailly', club: 'TT Joué-lès-Tours', points: 2190, gender: 'F', licence: '03710003' },
+    { prenom: 'Nina', nom: 'Guo Zheng', club: 'CP Lyssois Lille Métropole', points: 2465, gender: 'F', licence: '05910004' },
+    { prenom: 'Sophie', nom: 'Wang', club: 'Etival Clairefontaine TT', points: 2325, gender: 'F', licence: '08810001' },
+    { prenom: 'Tatiana', nom: 'Kukulkova', club: 'Metz TT', points: 2430, gender: 'F', licence: '05710004' },
+    { prenom: 'Yuan', nom: 'Jiaqi', club: 'Saint-Denis 93 TT', points: 2475, gender: 'F', licence: '09310004' },
+    { prenom: 'Marie', nom: 'Pascal', club: 'Poitiers TTACC 86', points: 2215, gender: 'F', licence: '08610002' },
+    { prenom: 'Ilona', nom: 'Sztwiertnia', club: 'Etival Clairefontaine TT', points: 2180, gender: 'F', licence: '08810002' },
+    { prenom: 'Lana', nom: 'Ben Yahia', club: 'TT Saint-Quentin', points: 2140, gender: 'F', licence: '02110001' },
+    { prenom: 'Enzo', nom: 'Angles', club: 'Vineuil Sports TT', points: 2085, gender: 'M', licence: '04110001' },
+    { prenom: 'Adrien', nom: 'Mattenet', club: 'SUS Ceyrat TT', points: 2345, gender: 'M', licence: '06310001' },
+    { prenom: 'Tristan', nom: 'Flore', club: 'Bayard Argentan', points: 2455, gender: 'M', licence: '06110001' },
+    { prenom: 'Quentin', nom: 'Robinot', club: 'Chartres ASTT', points: 2525, gender: 'M', licence: '02810001' },
+    { prenom: 'Alexandre', nom: 'Cassin', club: 'CA Roanne TT', points: 2380, gender: 'M', licence: '04210001' },
+    { prenom: 'Romain', nom: 'Lorentz', club: 'Metz TT', points: 2295, gender: 'M', licence: '05710005' },
+    { prenom: 'Flavien', nom: 'Coton', club: 'Fréjus TT', points: 2235, gender: 'M', licence: '08310001' },
+    { prenom: 'Joe', nom: 'Seyfried', club: 'Jura Morez TT', points: 2185, gender: 'M', licence: '03910002' },
+    { prenom: 'Gaëtan', nom: 'Migeon', club: 'AS Pontoise-Cergy TT', points: 2275, gender: 'M', licence: '09510003' },
+    { prenom: 'Antoine', nom: 'Lefèvre', club: 'TT Caen', points: 2105, gender: 'M', licence: '01410001' },
   ];
 
   const registrationsByIndex = new Map();
 
-  for (let i = 1; i <= 50; i += 1) {
-    const nom = lastNames[(i - 1) % lastNames.length];
-    const prenom = firstNames[(i - 1) % firstNames.length];
-    const licence = String(2602000 + i);
-    const points = 550 + (i * 27) % 1400;
-    const club = CLUBS[(i - 1) % CLUBS.length];
-    const gender = i % 2 === 0 ? 'M' : 'F';
+  for (let i = 1; i <= FFTT_PLAYERS.length; i += 1) {
+    const seededPlayer = FFTT_PLAYERS[i - 1];
+    const { nom, prenom, licence, points, club, gender } = seededPlayer;
 
     const player = await prisma.player.upsert({
       where: { licence },
