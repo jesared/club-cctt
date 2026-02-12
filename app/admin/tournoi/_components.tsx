@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import type { ReactNode } from "react";
 
 const TOURNAMENT_ADMIN_LINKS = [
   { href: "/admin/tournoi", label: "Dashboard" },
@@ -29,6 +30,7 @@ type TournamentAdminPageProps = {
   description: string;
   activeHref: (typeof TOURNAMENT_ADMIN_LINKS)[number]["href"];
   items?: readonly string[];
+  children?: ReactNode;
 };
 
 export function TournamentAdminPage({
@@ -36,6 +38,7 @@ export function TournamentAdminPage({
   description,
   activeHref,
   items,
+  children,
 }: TournamentAdminPageProps) {
   return (
     <div className="max-w-6xl mx-auto px-4 py-12 space-y-8">
@@ -85,6 +88,8 @@ export function TournamentAdminPage({
           </p>
         )}
       </section>
+
+      {children}
     </div>
   );
 }
