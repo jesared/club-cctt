@@ -70,7 +70,7 @@ export default function DashboardSidebar() {
     <aside
       className={cn(
         "hidden lg:flex lg:sticky lg:top-0 lg:h-screen lg:flex-col lg:border-r lg:border-sidebar-border lg:bg-sidebar lg:text-sidebar-foreground lg:overflow-y-auto",
-        isCollapsed ? "lg:w-20" : "lg:w-72",
+        isCollapsed ? "lg:w-16" : "lg:w-72",
       )}
     >
       <div
@@ -113,9 +113,7 @@ export default function DashboardSidebar() {
           )}
         </button>
       </div>
-      <div
-        className={cn("flex flex-1 flex-col px-4 py-6", isCollapsed && "px-3")}
-      >
+      <div className={cn("flex flex-1 flex-col px-4 py-6", isCollapsed && "hidden")}>
         <nav
           className={cn("mt-1 flex flex-1 flex-col", isCollapsed && "items-center")}
         >
@@ -267,7 +265,7 @@ export default function DashboardSidebar() {
             </>
           )}
         </nav>
-        <AuthButton collapsed={isCollapsed} />
+        <AuthButton />
       </div>
     </aside>
   );
