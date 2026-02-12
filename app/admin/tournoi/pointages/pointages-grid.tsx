@@ -170,6 +170,7 @@ export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
               <th key={dayColumn.key} className="py-2 pr-3 font-medium">{dayColumn.label}</th>
             ))}
             <th className="py-2 font-medium">Statut inscription</th>
+            <th className="py-2 font-medium">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -201,11 +202,27 @@ export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
                 );
               })}
               <td className="py-3 text-gray-700">{player.status}</td>
+              <td className="py-3 text-gray-700">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    className="rounded-md border border-gray-300 px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    className="rounded-md border border-red-200 px-2.5 py-1 text-xs font-medium text-red-700 hover:bg-red-50"
+                  >
+                    Supprimer
+                  </button>
+                </div>
+              </td>
             </tr>
           ))}
           {filteredPlayers.length === 0 ? (
             <tr>
-              <td colSpan={6 + normalizedDayColumns.length} className="py-6 text-center text-sm text-gray-500">
+              <td colSpan={7 + normalizedDayColumns.length} className="py-6 text-center text-sm text-gray-500">
                 Aucun joueur ne correspond aux filtres sélectionnés.
               </td>
             </tr>
