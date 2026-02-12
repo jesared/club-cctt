@@ -1,5 +1,5 @@
 import { requireAdminSession, TournamentAdminPage } from "../_components";
-import { tournamentTables } from "../data";
+import { getCurrentTournament, getTournamentTables } from "../data";
 
 const exportsList = [
   { name: "inscriptions-tableaux.csv", description: "Inscriptions regroupées par tableau et catégorie." },
@@ -10,16 +10,14 @@ const exportsList = [
 export default async function AdminTournoiExportsPage() {
   await requireAdminSession();
 
+  const tournament = await getCurrentTournament();
+  const tournamentTables = tournament ? await getTournamentTables(tournament.id) : [];
+
   return (
     <TournamentAdminPage
       title="Exports"
       description="Préparation des exports opérationnels pour le juge-arbitre, la caisse et l'accueil."
       activeHref="/admin/tournoi/exports"
-      items={[
-        "Exports alignés avec la grille des tableaux 2026.",
-        "Formats prêts pour diffusion aux bénévoles.",
-        "Référentiel unique des tarifs et créneaux.",
-      ]}
     >
       <section className="rounded-xl border bg-white p-6 shadow-sm space-y-4">
         <h2 className="text-xl font-semibold">Fichiers recommandés</h2>

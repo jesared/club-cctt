@@ -1,18 +1,21 @@
 import { requireAdminSession, TournamentAdminPage } from "../_components";
-import { adminPlayers } from "../data";
+import { getAdminPlayers, getCurrentTournament } from "../data";
 
 export default async function AdminTournoiJoueursPage() {
   await requireAdminSession();
 
+  const tournament = await getCurrentTournament();
+  const players = tournament ? await getAdminPlayers(tournament.id) : [];
+
   return (
     <TournamentAdminPage
       title="Joueurs"
-      description="Base joueurs consolidée avec clubs, classements et tableaux de participation."
+      description="Base joueurs consolidée depuis Player + TournamentRegistration."
       activeHref="/admin/tournoi/joueurs"
       items={[
-        "Vision claire des licences engagées cette année.",
-        "Contrôle du tableau choisi selon le classement.",
-        "Repérage des statuts à traiter (relance, pointage).",
+        "Vision claire des licences réellement enregistrées.",
+        "Tableaux calculés depuis les inscriptions événements.",
+        "Statut et mode de paiement déduits des enregistrements.",
       ]}
     >
       <section className="rounded-xl border bg-white p-6 shadow-sm overflow-x-auto">
@@ -29,7 +32,7 @@ export default async function AdminTournoiJoueursPage() {
             </tr>
           </thead>
           <tbody>
-            {adminPlayers.map((player) => (
+            {players.map((player) => (
               <tr key={player.licence} className="border-b last:border-0">
                 <td className="py-3 pr-3 text-gray-900">{player.name}</td>
                 <td className="py-3 pr-3 text-gray-700">{player.club}</td>
