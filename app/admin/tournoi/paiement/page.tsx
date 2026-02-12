@@ -3,7 +3,7 @@ import {
   getAdminPaymentGroups,
   getAdminPlayers,
   getCurrentTournament,
-  getTournamentTables,
+  getRegistrationsByTable,
 } from "../data";
 
 function formatEuro(cents: number) {
@@ -14,25 +14,29 @@ export default async function AdminTournoiPaiementPage() {
   await requireAdminSession();
 
   const tournament = await getCurrentTournament();
-  const [adminPlayers, tournamentTables, paymentGroups] = tournament
+  const [adminPlayers, registrationsByTable, paymentGroups] = tournament
     ? await Promise.all([
         getAdminPlayers(tournament.id),
-        getTournamentTables(tournament.id),
+        getRegistrationsByTable(tournament.id),
         getAdminPaymentGroups(tournament.id),
       ])
     : [[], [], []];
 
-  const onSitePlayers = adminPlayers.filter((player) => player.payment === "Sur place");
-  const earlyPlayers = adminPlayers.filter((player) => player.payment === "Anticipé");
+  const participantsCount = adminPlayers.length;
+  const engagementsCount = registrationsByTable.reduce((sum, row) => sum + row.registrations, 0);
+  const totalCollectedCents = paymentGroups.reduce((sum, group) => sum + group.totalPaidCents, 0);
+  const totalRemainingCents = paymentGroups.reduce(
+    (sum, group) => sum + Math.max(group.totalAmountDueCents - group.totalPaidCents, 0),
+    0,
+  );
   const groupedPayments = paymentGroups.filter((group) => group.registrations > 1);
   const standardTablePriceCents = 800;
-  const premiumTablePriceCents = 1000;
 
   const paymentsToValidate = groupedPayments
     .filter((group) => group.paymentStatus !== "PAYÉ")
     .map((group) => {
       const remainingCents = Math.max(group.totalAmountDueCents - group.totalPaidCents, 0);
-      const priority = remainingCents >= premiumTablePriceCents * 2 || group.registrations >= 3 ? "HAUTE" : "NORMALE";
+      const priority = remainingCents >= standardTablePriceCents * 3 || group.registrations >= 3 ? "HAUTE" : "NORMALE";
 
       return {
         ...group,
@@ -56,24 +60,20 @@ export default async function AdminTournoiPaiementPage() {
     >
       <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <article className="rounded-xl border bg-white p-4 shadow-sm">
-          <p className="text-sm text-gray-500">Joueurs anticipés</p>
-          <p className="mt-2 text-3xl font-bold text-gray-900">{earlyPlayers.length}</p>
+          <p className="text-sm text-gray-500">Participants</p>
+          <p className="mt-2 text-3xl font-bold text-gray-900">{participantsCount}</p>
         </article>
         <article className="rounded-xl border bg-white p-4 shadow-sm">
-          <p className="text-sm text-gray-500">Joueurs sur place</p>
-          <p className="mt-2 text-3xl font-bold text-gray-900">{onSitePlayers.length}</p>
+          <p className="text-sm text-gray-500">Engagements</p>
+          <p className="mt-2 text-3xl font-bold text-gray-900">{engagementsCount}</p>
         </article>
         <article className="rounded-xl border bg-white p-4 shadow-sm">
-          <p className="text-sm text-gray-500">Tableaux standard</p>
-          <p className="mt-2 text-3xl font-bold text-gray-900">
-            {tournamentTables.filter((table) => table.earlyPayment === "8€").length}
-          </p>
+          <p className="text-sm text-gray-500">Total encaissé</p>
+          <p className="mt-2 text-3xl font-bold text-gray-900">{formatEuro(totalCollectedCents)}</p>
         </article>
         <article className="rounded-xl border bg-white p-4 shadow-sm">
-          <p className="text-sm text-gray-500">Tableaux premium</p>
-          <p className="mt-2 text-3xl font-bold text-gray-900">
-            {tournamentTables.filter((table) => table.earlyPayment !== "8€").length}
-          </p>
+          <p className="text-sm text-gray-500">Total restant</p>
+          <p className="mt-2 text-3xl font-bold text-gray-900">{formatEuro(totalRemainingCents)}</p>
         </article>
       </section>
 
