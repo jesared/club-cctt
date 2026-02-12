@@ -1,17 +1,30 @@
 import { requireAdminSession, TournamentAdminPage } from "../_components";
-import { adminPlayers, registrationsByTable } from "../data";
-
-const totalRegistrations = registrationsByTable.reduce((sum, row) => sum + row.registrations, 0);
-const totalWaitlist = registrationsByTable.reduce((sum, row) => sum + row.waitlist, 0);
-const totalCheckins = registrationsByTable.reduce((sum, row) => sum + row.checkins, 0);
+import {
+  getAdminPlayers,
+  getCurrentTournament,
+  getRegistrationsByTable,
+} from "../data";
 
 export default async function AdminTournoiInscriptionsPage() {
   await requireAdminSession();
 
+  const tournament = await getCurrentTournament();
+  const [registrationsByTable, adminPlayers] = tournament
+    ? await Promise.all([
+        getRegistrationsByTable(tournament.id),
+        getAdminPlayers(tournament.id),
+      ])
+    : [[], []];
+
+  const totalRegistrations = registrationsByTable.reduce((sum, row) => sum + row.registrations, 0);
+  const totalWaitlist = registrationsByTable.reduce((sum, row) => sum + row.waitlist, 0);
+  const totalCheckins = registrationsByTable.reduce((sum, row) => sum + row.checkins, 0);
+  const toFollowUp = adminPlayers.filter((player) => player.status === "À confirmer").length;
+
   return (
     <TournamentAdminPage
       title="Inscriptions"
-      description="Suivi détaillé des engagements par tableau, avec données alignées sur la grille du tournoi."
+      description="Suivi détaillé des engagements par tableau avec les données Player/TournamentRegistration."
       activeHref="/admin/tournoi/inscriptions"
       items={[
         "Pilotage des inscriptions par tableau avec focus capacité et attente.",
@@ -21,10 +34,10 @@ export default async function AdminTournoiInscriptionsPage() {
     >
       <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {[
-          { label: "Inscriptions suivies", value: `${totalRegistrations}`, helper: "Sur tableaux prioritaires" },
-          { label: "Pointages saisis", value: `${totalCheckins}`, helper: "Présences déjà confirmées" },
-          { label: "Liste d'attente", value: `${totalWaitlist}`, helper: "À arbitrer selon forfaits" },
-          { label: "À relancer", value: "2", helper: "Paiement / confirmation manquants" },
+          { label: "Inscriptions suivies", value: `${totalRegistrations}`, helper: "Tous tableaux" },
+          { label: "Pointages saisis", value: `${totalCheckins}`, helper: "Présences confirmées" },
+          { label: "Liste d'attente", value: `${totalWaitlist}`, helper: "À arbitrer" },
+          { label: "À relancer", value: `${toFollowUp}`, helper: "Confirmation manquante" },
         ].map((card) => (
           <article key={card.label} className="rounded-xl border bg-white p-4 shadow-sm">
             <p className="text-sm text-gray-500">{card.label}</p>

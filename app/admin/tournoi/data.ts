@@ -1,4 +1,8 @@
+import { prisma } from "@/lib/prisma";
+import { RegistrationEventStatus, RegistrationStatus } from "@prisma/client";
+
 export type TournamentTable = {
+  id: string;
   date: string;
   time: string;
   table: string;
@@ -7,36 +11,196 @@ export type TournamentTable = {
   onsitePayment: string;
 };
 
-export const tournamentTables: TournamentTable[] = [
-  { date: "4 avril", time: "10h30", table: "C", category: "800 à 1399 pts", earlyPayment: "8€", onsitePayment: "9€" },
-  { date: "4 avril", time: "11h30", table: "A", category: "500 à 799 pts", earlyPayment: "8€", onsitePayment: "9€" },
-  { date: "4 avril", time: "12h30", table: "D", category: "1100 à 1699 pts", earlyPayment: "8€", onsitePayment: "9€" },
-  { date: "4 avril", time: "13h30", table: "B", category: "500 à 1099 pts", earlyPayment: "8€", onsitePayment: "9€" },
-  { date: "5 avril", time: "8h30", table: "F", category: "500 à 1199 pts", earlyPayment: "8€", onsitePayment: "9€" },
-  { date: "5 avril", time: "9h30", table: "H", category: "1200 à 1799 pts", earlyPayment: "8€", onsitePayment: "9€" },
-  { date: "5 avril", time: "11h", table: "E", category: "500 à 899 pts", earlyPayment: "8€", onsitePayment: "9€" },
-  { date: "5 avril", time: "12h", table: "G", category: "900 à 1499 pts", earlyPayment: "8€", onsitePayment: "9€" },
-  { date: "5 avril", time: "13h15", table: "I", category: "-500 à N°400", earlyPayment: "9€", onsitePayment: "10€" },
-  { date: "5 avril", time: "14h30", table: "J", category: "Dames TC", earlyPayment: "8€", onsitePayment: "9€" },
-  { date: "6 avril", time: "8h30", table: "L", category: "500 à 1299 pts", earlyPayment: "8€", onsitePayment: "9€" },
-  { date: "6 avril", time: "9h30", table: "N", category: "1300 à 2099 pts", earlyPayment: "8€", onsitePayment: "9€" },
-  { date: "6 avril", time: "11h", table: "K", category: "500 à 999 pts", earlyPayment: "8€", onsitePayment: "9€" },
-  { date: "6 avril", time: "12h", table: "M", category: "1000 à 1599 pts", earlyPayment: "8€", onsitePayment: "9€" },
-  { date: "6 avril", time: "13h15", table: "P", category: "TC", earlyPayment: "10€", onsitePayment: "11€" },
-];
+export type RegistrationByTable = {
+  table: string;
+  category: string;
+  registrations: number;
+  waitlist: number;
+  checkins: number;
+};
 
-export const registrationsByTable = [
-  { table: "A", category: "500 à 799 pts", registrations: 22, waitlist: 3, checkins: 14 },
-  { table: "C", category: "800 à 1399 pts", registrations: 24, waitlist: 4, checkins: 16 },
-  { table: "I", category: "-500 à N°400", registrations: 18, waitlist: 2, checkins: 8 },
-  { table: "P", category: "TC", registrations: 20, waitlist: 5, checkins: 7 },
-];
+export type AdminPlayerRow = {
+  name: string;
+  club: string;
+  licence: string;
+  ranking: string;
+  table: string;
+  payment: string;
+  status: string;
+};
 
-export const adminPlayers = [
-  { name: "Léa Martin", club: "CCTT", licence: "0512345", ranking: "11", table: "C", payment: "Anticipé", status: "Confirmée" },
-  { name: "Noah Petit", club: "TT Saint-Orens", licence: "0928871", ranking: "8", table: "A", payment: "Sur place", status: "À pointer" },
-  { name: "Camille Durand", club: "AS Muret", licence: "0734219", ranking: "14", table: "H", payment: "Anticipé", status: "Confirmée" },
-  { name: "Mathis Bernard", club: "Ping Fronton", licence: "0645321", ranking: "16", table: "N", payment: "Sur place", status: "À relancer" },
-  { name: "Sarah Lopez", club: "Reims Olympique TT", licence: "1024567", ranking: "9", table: "G", payment: "Anticipé", status: "Confirmée" },
-  { name: "Lucas Bernard", club: "TT Épernay", licence: "1034789", ranking: "18", table: "I", payment: "Sur place", status: "À pointer" },
-];
+const DATE_FORMATTER = new Intl.DateTimeFormat("fr-FR", {
+  day: "numeric",
+  month: "long",
+});
+
+const TIME_FORMATTER = new Intl.DateTimeFormat("fr-FR", {
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
+function formatEuro(cents: number) {
+  return `${(cents / 100).toFixed(0)}€`;
+}
+
+function formatCategory(minPoints: number | null, maxPoints: number | null) {
+  if (minPoints === null && maxPoints === null) {
+    return "Toutes catégories";
+  }
+
+  if (minPoints === null) {
+    return `Jusqu'à ${maxPoints} pts`;
+  }
+
+  if (maxPoints === null) {
+    return `${minPoints}+ pts`;
+  }
+
+  return `${minPoints} à ${maxPoints} pts`;
+}
+
+export async function getCurrentTournament() {
+  return prisma.tournament.findFirst({
+    orderBy: [{ startDate: "desc" }],
+    select: {
+      id: true,
+      name: true,
+      startDate: true,
+      endDate: true,
+    },
+  });
+}
+
+export async function getTournamentTables(tournamentId: string): Promise<TournamentTable[]> {
+  const events = await prisma.tournamentEvent.findMany({
+    where: { tournamentId },
+    orderBy: [{ startAt: "asc" }, { code: "asc" }],
+    select: {
+      id: true,
+      code: true,
+      minPoints: true,
+      maxPoints: true,
+      startAt: true,
+      feeOnlineCents: true,
+      feeOnsiteCents: true,
+    },
+  });
+
+  return events.map((event) => ({
+    id: event.id,
+    date: DATE_FORMATTER.format(event.startAt),
+    time: TIME_FORMATTER.format(event.startAt),
+    table: event.code,
+    category: formatCategory(event.minPoints, event.maxPoints),
+    earlyPayment: formatEuro(event.feeOnlineCents),
+    onsitePayment: formatEuro(event.feeOnsiteCents),
+  }));
+}
+
+export async function getRegistrationsByTable(tournamentId: string): Promise<RegistrationByTable[]> {
+  const events = await prisma.tournamentEvent.findMany({
+    where: { tournamentId },
+    orderBy: [{ startAt: "asc" }, { code: "asc" }],
+    select: {
+      code: true,
+      minPoints: true,
+      maxPoints: true,
+      registrationEvents: {
+        select: {
+          status: true,
+        },
+      },
+    },
+  });
+
+  return events.map((event) => {
+    const registrations = event.registrationEvents.length;
+    const waitlist = event.registrationEvents.filter(
+      (registrationEvent) => registrationEvent.status === RegistrationEventStatus.WAITLISTED,
+    ).length;
+    const checkins = event.registrationEvents.filter(
+      (registrationEvent) => registrationEvent.status === RegistrationEventStatus.CHECKED_IN,
+    ).length;
+
+    return {
+      table: event.code,
+      category: formatCategory(event.minPoints, event.maxPoints),
+      registrations,
+      waitlist,
+      checkins,
+    };
+  });
+}
+
+function getRegistrationStatusLabel(status: RegistrationStatus) {
+  switch (status) {
+    case RegistrationStatus.CONFIRMED:
+      return "Confirmée";
+    case RegistrationStatus.CANCELLED:
+      return "Annulée";
+    case RegistrationStatus.PENDING:
+    default:
+      return "À confirmer";
+  }
+}
+
+export async function getAdminPlayers(tournamentId: string): Promise<AdminPlayerRow[]> {
+  const registrations = await prisma.tournamentRegistration.findMany({
+    where: { tournamentId },
+    orderBy: [{ createdAt: "desc" }],
+    select: {
+      status: true,
+      player: {
+        select: {
+          nom: true,
+          prenom: true,
+          club: true,
+          licence: true,
+          points: true,
+        },
+      },
+      registrationEvents: {
+        select: {
+          event: {
+            select: {
+              code: true,
+            },
+          },
+          status: true,
+        },
+      },
+      payments: {
+        select: {
+          status: true,
+        },
+      },
+    },
+    take: 100,
+  });
+
+  return registrations.map((registration) => {
+    const hasPaidPayment = registration.payments.some((payment) => payment.status === "PAID");
+    const hasCheckedIn = registration.registrationEvents.some(
+      (registrationEvent) => registrationEvent.status === RegistrationEventStatus.CHECKED_IN,
+    );
+    const hasWaitlist = registration.registrationEvents.some(
+      (registrationEvent) => registrationEvent.status === RegistrationEventStatus.WAITLISTED,
+    );
+
+    const computedStatus = hasCheckedIn
+      ? "Pointé"
+      : hasWaitlist
+        ? "Liste d'attente"
+        : getRegistrationStatusLabel(registration.status);
+
+    return {
+      name: `${registration.player.prenom} ${registration.player.nom}`.trim(),
+      club: registration.player.club ?? "—",
+      licence: registration.player.licence,
+      ranking: registration.player.points ? `${registration.player.points}` : "—",
+      table: registration.registrationEvents.map((entry) => entry.event.code).join(", ") || "—",
+      payment: hasPaidPayment ? "Anticipé" : "Sur place",
+      status: computedStatus,
+    };
+  });
+}
