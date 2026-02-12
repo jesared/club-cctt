@@ -13,7 +13,9 @@ export default async function AdminTournoiPointagesPage() {
       ])
     : [[], []];
 
-  const dayLabels = Array.from(new Set(tournamentTables.map((table) => table.date))).slice(0, 3);
+  const dayColumns = Array.from(
+    new Map(tournamentTables.map((table) => [table.dayKey, { key: table.dayKey, label: table.date }])).values(),
+  ).slice(0, 3);
 
   return (
     <TournamentAdminPage
@@ -26,7 +28,7 @@ export default async function AdminTournoiPointagesPage() {
         "Conservation du statut d'inscription comme repère administratif.",
       ]}
     >
-      <PointagesGrid players={adminPlayers} dayLabels={dayLabels} />
+      <PointagesGrid players={adminPlayers} dayColumns={dayColumns} />
     </TournamentAdminPage>
   );
 }

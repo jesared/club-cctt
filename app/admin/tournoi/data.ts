@@ -3,6 +3,7 @@ import { RegistrationEventStatus, RegistrationStatus } from "@prisma/client";
 
 export type TournamentTable = {
   id: string;
+  dayKey: string;
   date: string;
   time: string;
   table: string;
@@ -27,6 +28,8 @@ export type AdminPlayerRow = {
   table: string;
   payment: string;
   status: string;
+  checkedDayKeys: string[];
+  registrationEventIdsByDay: Record<string, string[]>;
 };
 
 const DATE_FORMATTER = new Intl.DateTimeFormat("fr-FR", {
@@ -88,6 +91,7 @@ export async function getTournamentTables(tournamentId: string): Promise<Tournam
 
   return events.map((event) => ({
     id: event.id,
+    dayKey: event.startAt.toISOString().slice(0, 10),
     date: DATE_FORMATTER.format(event.startAt),
     time: TIME_FORMATTER.format(event.startAt),
     table: event.code,
@@ -161,12 +165,19 @@ export async function getAdminPlayers(tournamentId: string): Promise<AdminPlayer
       },
       registrationEvents: {
         select: {
+          id: true,
           event: {
             select: {
               code: true,
+              startAt: true,
             },
           },
           status: true,
+          checkIn: {
+            select: {
+              id: true,
+            },
+          },
         },
       },
       payments: {
@@ -201,6 +212,23 @@ export async function getAdminPlayers(tournamentId: string): Promise<AdminPlayer
       table: registration.registrationEvents.map((entry) => entry.event.code).join(", ") || "—",
       payment: hasPaidPayment ? "Anticipé" : "Sur place",
       status: computedStatus,
+      checkedDayKeys: Array.from(
+        new Set(
+          registration.registrationEvents
+            .filter(
+              (entry) => entry.checkIn !== null || entry.status === RegistrationEventStatus.CHECKED_IN,
+            )
+            .map((entry) => entry.event.startAt.toISOString().slice(0, 10)),
+        ),
+      ),
+      registrationEventIdsByDay: registration.registrationEvents.reduce<Record<string, string[]>>((acc, entry) => {
+        const dayKey = entry.event.startAt.toISOString().slice(0, 10);
+        if (!acc[dayKey]) {
+          acc[dayKey] = [];
+        }
+        acc[dayKey].push(entry.id);
+        return acc;
+      }, {}),
     };
   });
 }
