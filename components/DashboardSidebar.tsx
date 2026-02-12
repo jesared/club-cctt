@@ -39,8 +39,8 @@ export default function DashboardSidebar() {
   const [menuGroups, setMenuGroups] = useState({
     club: true,
     tournament: true,
-    adminClub: true,
-    adminTournament: true,
+    adminClub: false,
+    adminTournament: false,
   });
 
   const toggleMenuGroup = (group: keyof typeof menuGroups) => {
