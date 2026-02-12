@@ -60,7 +60,10 @@ export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
       return dayColumns.slice(0, 3);
     }
 
-    return Array.from({ length: 3 }, (_, index) => dayColumns[index] ?? { key: `day-${index + 1}`, label: `Jour ${index + 1}` });
+    return Array.from({ length: 3 }, (_, index) => ({
+      key: dayColumns[index]?.key ?? `day-${index + 1}`,
+      label: `Jour ${index + 1}`,
+    }));
   }, [dayColumns]);
 
   const filteredPlayers = useMemo(() => {
