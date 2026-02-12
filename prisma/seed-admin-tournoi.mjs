@@ -317,38 +317,36 @@ async function main() {
       },
     });
 
-    const registration = await prisma.tournamentRegistration.upsert({
+    const registrationData = {
+      tournamentId: tournament.id,
+      playerId: i,
+      playerRefId: player.id,
+      userId: admin.id,
+      licenseNumber: licence,
+      clubName: club,
+      gender,
+      contactEmail: `${prenom.toLowerCase()}.${nom.toLowerCase()}${i}@example.org`,
+      contactPhone: `06${String(i).padStart(8, '0')}`,
+      status: 'CONFIRMED',
+      source: 'ADMIN',
+    };
+
+    const existingRegistration = await prisma.tournamentRegistration.findFirst({
       where: {
-        tournamentId_playerRefId: {
-          tournamentId: tournament.id,
-          playerRefId: player.id,
-        },
-      },
-      create: {
         tournamentId: tournament.id,
-        playerId: i,
-        playerRefId: player.id,
-        userId: admin.id,
-        licenseNumber: licence,
-        clubName: club,
-        gender,
-        contactEmail: `${prenom.toLowerCase()}.${nom.toLowerCase()}${i}@example.org`,
-        contactPhone: `06${String(i).padStart(8, '0')}`,
-        status: 'CONFIRMED',
-        source: 'ADMIN',
+        OR: [{ playerId: i }, { playerRefId: player.id }],
       },
-      update: {
-        playerId: i,
-        userId: admin.id,
-        licenseNumber: licence,
-        clubName: club,
-        gender,
-        contactEmail: `${prenom.toLowerCase()}.${nom.toLowerCase()}${i}@example.org`,
-        contactPhone: `06${String(i).padStart(8, '0')}`,
-        status: 'CONFIRMED',
-        source: 'ADMIN',
-      },
+      select: { id: true },
     });
+
+    const registration = existingRegistration
+      ? await prisma.tournamentRegistration.update({
+          where: { id: existingRegistration.id },
+          data: registrationData,
+        })
+      : await prisma.tournamentRegistration.create({
+          data: registrationData,
+        });
 
     registrationsByIndex.set(i, registration.id);
 
