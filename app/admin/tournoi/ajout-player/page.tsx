@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdminSession, TournamentAdminPage } from "../_components";
 import { getCurrentTournament, getTournamentTables } from "../data";
+import { AddPlayerForm } from "./add-player-form";
 
 type PageProps = {
   searchParams?: Promise<{
@@ -41,7 +42,6 @@ async function createPlayerRegistration(formData: FormData) {
     || !club
     || !contactEmail
     || !contactPhone
-    || !notes
     || selectedEvents.length === 0
   ) {
     redirect("/admin/tournoi/ajout-player?error=Veuillez+remplir+les+champs+obligatoires");
@@ -185,107 +185,11 @@ export default async function AdminTournoiAjoutPlayerPage({ searchParams }: Page
         </div>
 
         {tournament ? (
-          <form action={createPlayerRegistration} className="space-y-6">
-            <input type="hidden" name="tournamentId" value={tournament.id} />
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <label className="space-y-1 text-sm">
-                <span className="font-medium text-gray-700">Nom *</span>
-                <input
-                  name="nom"
-                  required
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none"
-                />
-              </label>
-              <label className="space-y-1 text-sm">
-                <span className="font-medium text-gray-700">Prénom *</span>
-                <input
-                  name="prenom"
-                  required
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none"
-                />
-              </label>
-              <label className="space-y-1 text-sm">
-                <span className="font-medium text-gray-700">Licence *</span>
-                <input
-                  name="licence"
-                  required
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none"
-                />
-              </label>
-              <label className="space-y-1 text-sm">
-                <span className="font-medium text-gray-700">Classement (points) *</span>
-                <input
-                  name="points"
-                  type="number"
-                  min={0}
-                  required
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none"
-                />
-              </label>
-              <label className="space-y-1 text-sm">
-                <span className="font-medium text-gray-700">Club *</span>
-                <input
-                  name="club"
-                  required
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none"
-                />
-              </label>
-              <label className="space-y-1 text-sm">
-                <span className="font-medium text-gray-700">Email *</span>
-                <input
-                  name="contactEmail"
-                  type="email"
-                  required
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none"
-                />
-              </label>
-              <label className="space-y-1 text-sm sm:col-span-2">
-                <span className="font-medium text-gray-700">Téléphone *</span>
-                <input
-                  name="contactPhone"
-                  required
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none"
-                />
-              </label>
-            </div>
-
-            <div className="space-y-3">
-              <p className="text-sm font-medium text-gray-700">Tableaux à inscrire *</p>
-              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                {tournamentTables.map((table) => (
-                  <label
-                    key={table.id}
-                    className="flex items-start gap-2 rounded-lg border border-gray-200 p-3 text-sm"
-                  >
-                    <input type="checkbox" name="eventIds" value={table.id} className="mt-0.5" />
-                    <span>
-                      <span className="block font-semibold text-gray-900">Tableau {table.table}</span>
-                      <span className="block text-gray-600">{table.category}</span>
-                      <span className="block text-gray-500">Sur place : {table.onsitePayment}</span>
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <label className="space-y-1 text-sm block">
-              <span className="font-medium text-gray-700">Notes internes *</span>
-              <textarea
-                name="notes"
-                rows={3}
-                required
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none"
-              />
-            </label>
-
-            <button
-              type="submit"
-              className="inline-flex items-center rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
-            >
-              Ajouter le joueur
-            </button>
-          </form>
+          <AddPlayerForm
+            tournamentId={tournament.id}
+            tournamentTables={tournamentTables}
+            action={createPlayerRegistration}
+          />
         ) : (
           <p className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
             Aucun tournoi actif n'a été trouvé. Créez d'abord un tournoi avant d'ajouter un joueur.
