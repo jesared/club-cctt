@@ -3,6 +3,8 @@
 import {
   Banknote,
   CalendarCheck,
+  ChevronDown,
+  ChevronUp,
   ClipboardPen,
   Download,
   ChevronLeft,
@@ -34,6 +36,16 @@ export default function DashboardSidebar() {
   const isAdmin = session?.user?.role === "ADMIN";
 
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [menuGroups, setMenuGroups] = useState({
+    club: true,
+    tournament: true,
+    adminClub: true,
+    adminTournament: true,
+  });
+
+  const toggleMenuGroup = (group: keyof typeof menuGroups) => {
+    setMenuGroups((prev) => ({ ...prev, [group]: !prev[group] }));
+  };
 
   const clubMenuItems = mainMenuItems;
   const tournamentMenuItems: MenuItem[] = [
@@ -118,71 +130,99 @@ export default function DashboardSidebar() {
           className={cn("mt-1 flex flex-1 flex-col", isCollapsed && "items-center")}
         >
           <p
-            className={cn(
-              "mb-3 text-xs font-semibold uppercase tracking-wide text-sidebar-foreground/60",
-              isCollapsed && "sr-only",
-            )}
+            className={cn("mb-3", isCollapsed && "sr-only")}
           >
-            Site du club
+            <button
+              type="button"
+              onClick={() => toggleMenuGroup("club")}
+              className="flex w-full items-center justify-between text-xs font-semibold uppercase tracking-wide text-sidebar-foreground/60"
+              aria-expanded={menuGroups.club}
+              aria-controls="menu-group-club"
+            >
+              <span>Site du club</span>
+              {menuGroups.club ? (
+                <ChevronUp className="h-3.5 w-3.5" aria-hidden="true" />
+              ) : (
+                <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
+              )}
+            </button>
           </p>
 
-          <div className={cn("flex flex-col gap-1", isCollapsed && "items-center")}>
-            {clubMenuItems.map((item) => {
-              const isActive = pathname === item.href;
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                    "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                    isActive && "bg-sidebar-accent text-sidebar-accent-foreground",
-                    isCollapsed ? "w-12 justify-center px-0" : "w-full",
-                  )}
-                >
-                  <Icon className="h-4 w-4" aria-hidden="true" />
-                  <span className={cn(isCollapsed && "sr-only")}>{item.label}</span>
-                </Link>
-              );
-            })}
-          </div>
+          {menuGroups.club && (
+            <div
+              id="menu-group-club"
+              className={cn("flex flex-col gap-1", isCollapsed && "items-center")}
+            >
+              {clubMenuItems.map((item) => {
+                const isActive = pathname === item.href;
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                      "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                      isActive && "bg-sidebar-accent text-sidebar-accent-foreground",
+                      isCollapsed ? "w-12 justify-center px-0" : "w-full",
+                    )}
+                  >
+                    <Icon className="h-4 w-4" aria-hidden="true" />
+                    <span className={cn(isCollapsed && "sr-only")}>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
 
           {tournamentMenuItems.length > 0 && (
             <>
               <p
-                className={cn(
-                  "mb-3 mt-4 text-xs font-semibold uppercase tracking-wide text-sidebar-foreground/60",
-                  isCollapsed && "sr-only",
-                )}
+                className={cn("mb-3 mt-4", isCollapsed && "sr-only")}
               >
-                Tournoi
+                <button
+                  type="button"
+                  onClick={() => toggleMenuGroup("tournament")}
+                  className="flex w-full items-center justify-between text-xs font-semibold uppercase tracking-wide text-sidebar-foreground/60"
+                  aria-expanded={menuGroups.tournament}
+                  aria-controls="menu-group-tournament"
+                >
+                  <span>Tournoi</span>
+                  {menuGroups.tournament ? (
+                    <ChevronUp className="h-3.5 w-3.5" aria-hidden="true" />
+                  ) : (
+                    <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
+                  )}
+                </button>
               </p>
 
-              <div
-                className={cn("flex flex-col gap-1", isCollapsed && "items-center")}
-              >
-                {tournamentMenuItems.map((item) => {
-                  const isActive = pathname === item.href;
-                  const Icon = item.icon;
+              {menuGroups.tournament && (
+                <div
+                  id="menu-group-tournament"
+                  className={cn("flex flex-col gap-1", isCollapsed && "items-center")}
+                >
+                  {tournamentMenuItems.map((item) => {
+                    const isActive = pathname === item.href;
+                    const Icon = item.icon;
 
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={cn(
-                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                        "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                        isActive && "bg-sidebar-accent text-sidebar-accent-foreground",
-                        isCollapsed ? "w-12 justify-center px-0" : "w-full",
-                      )}
-                    >
-                      <Icon className="h-4 w-4" aria-hidden="true" />
-                      <span className={cn(isCollapsed && "sr-only")}>{item.label}</span>
-                    </Link>
-                  );
-                })}
-              </div>
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={cn(
+                          "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                          "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                          isActive && "bg-sidebar-accent text-sidebar-accent-foreground",
+                          isCollapsed ? "w-12 justify-center px-0" : "w-full",
+                        )}
+                      >
+                        <Icon className="h-4 w-4" aria-hidden="true" />
+                        <span className={cn(isCollapsed && "sr-only")}>{item.label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
             </>
           )}
 
@@ -192,76 +232,102 @@ export default function DashboardSidebar() {
                 className={cn("my-4 h-px bg-sidebar-border", isCollapsed && "w-10")}
               />
               <p
-                className={cn(
-                  "mb-3 text-xs font-semibold uppercase tracking-wide text-red-600/80",
-                  isCollapsed && "sr-only",
-                )}
+                className={cn("mb-3", isCollapsed && "sr-only")}
               >
-                Admin club
+                <button
+                  type="button"
+                  onClick={() => toggleMenuGroup("adminClub")}
+                  className="flex w-full items-center justify-between text-xs font-semibold uppercase tracking-wide text-red-600/80"
+                  aria-expanded={menuGroups.adminClub}
+                  aria-controls="menu-group-admin-club"
+                >
+                  <span>Admin club</span>
+                  {menuGroups.adminClub ? (
+                    <ChevronUp className="h-3.5 w-3.5" aria-hidden="true" />
+                  ) : (
+                    <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
+                  )}
+                </button>
               </p>
 
-              <div
-                className={cn("flex flex-col gap-1", isCollapsed && "items-center")}
-              >
-                {clubAdminMenuItems.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = pathname === item.href;
+              {menuGroups.adminClub && (
+                <div
+                  id="menu-group-admin-club"
+                  className={cn("flex flex-col gap-1", isCollapsed && "items-center")}
+                >
+                  {clubAdminMenuItems.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = pathname === item.href;
 
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={cn(
-                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                        "hover:bg-red-500/10 hover:text-red-600",
-                        isActive && "bg-red-500/10 text-red-600",
-                        isCollapsed ? "w-12 justify-center px-0" : "w-full",
-                      )}
-                    >
-                      <Icon className="h-4 w-4" aria-hidden="true" />
-                      <span className={cn(isCollapsed && "sr-only")}>
-                        {item.label}
-                      </span>
-                    </Link>
-                  );
-                })}
-              </div>
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={cn(
+                          "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                          "hover:bg-red-500/10 hover:text-red-600",
+                          isActive && "bg-red-500/10 text-red-600",
+                          isCollapsed ? "w-12 justify-center px-0" : "w-full",
+                        )}
+                      >
+                        <Icon className="h-4 w-4" aria-hidden="true" />
+                        <span className={cn(isCollapsed && "sr-only")}>
+                          {item.label}
+                        </span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
 
               <p
-                className={cn(
-                  "mb-3 mt-4 text-xs font-semibold uppercase tracking-wide text-red-600/80",
-                  isCollapsed && "sr-only",
-                )}
+                className={cn("mb-3 mt-4", isCollapsed && "sr-only")}
               >
-                Tournoi admin
+                <button
+                  type="button"
+                  onClick={() => toggleMenuGroup("adminTournament")}
+                  className="flex w-full items-center justify-between text-xs font-semibold uppercase tracking-wide text-red-600/80"
+                  aria-expanded={menuGroups.adminTournament}
+                  aria-controls="menu-group-admin-tournament"
+                >
+                  <span>Tournoi admin</span>
+                  {menuGroups.adminTournament ? (
+                    <ChevronUp className="h-3.5 w-3.5" aria-hidden="true" />
+                  ) : (
+                    <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
+                  )}
+                </button>
               </p>
 
-              <div
-                className={cn("flex flex-col gap-1", isCollapsed && "items-center")}
-              >
-                {tournamentAdminMenuItems.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = pathname === item.href;
+              {menuGroups.adminTournament && (
+                <div
+                  id="menu-group-admin-tournament"
+                  className={cn("flex flex-col gap-1", isCollapsed && "items-center")}
+                >
+                  {tournamentAdminMenuItems.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = pathname === item.href;
 
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={cn(
-                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                        "hover:bg-red-500/10 hover:text-red-600",
-                        isActive && "bg-red-500/10 text-red-600",
-                        isCollapsed ? "w-12 justify-center px-0" : "w-full",
-                      )}
-                    >
-                      <Icon className="h-4 w-4" aria-hidden="true" />
-                      <span className={cn(isCollapsed && "sr-only")}>
-                        {item.label}
-                      </span>
-                    </Link>
-                  );
-                })}
-              </div>
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={cn(
+                          "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                          "hover:bg-red-500/10 hover:text-red-600",
+                          isActive && "bg-red-500/10 text-red-600",
+                          isCollapsed ? "w-12 justify-center px-0" : "w-full",
+                        )}
+                      >
+                        <Icon className="h-4 w-4" aria-hidden="true" />
+                        <span className={cn(isCollapsed && "sr-only")}>
+                          {item.label}
+                        </span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
             </>
           )}
         </nav>
