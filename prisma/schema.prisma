@@ -134,9 +134,8 @@ enum RegistrationSource {
 }
 
 enum EventGender {
-  MIXED
-  WOMEN
-  MEN
+  M
+  F
 }
 
 model Message {
@@ -179,7 +178,7 @@ model TournamentEvent {
 
   code          String
   label         String
-  gender        EventGender           @default(MIXED)
+  gender        EventGender           @default(M)
   minPoints     Int?
   maxPoints     Int?
   maxPlayers    Int                   @default(32)
