@@ -17,6 +17,27 @@ type PointagesGridProps = {
 
 export function PointagesGrid({ players, dayLabels }: PointagesGridProps) {
   const [checkedState, setCheckedState] = useState<Record<string, boolean>>({});
+  const [selectedClub, setSelectedClub] = useState<string>("all");
+  const [selectedTable, setSelectedTable] = useState<string>("all");
+
+  const clubOptions = useMemo(() => {
+    return Array.from(new Set(players.map((player) => player.club))).sort((clubA, clubB) =>
+      clubA.localeCompare(clubB, "fr"),
+    );
+  }, [players]);
+
+  const tableOptions = useMemo(() => {
+    const extractedTables = players.flatMap((player) =>
+      player.table
+        .split(",")
+        .map((table) => table.trim())
+        .filter((table) => table && table !== "—"),
+    );
+
+    return Array.from(new Set(extractedTables)).sort((tableA, tableB) =>
+      tableA.localeCompare(tableB, "fr"),
+    );
+  }, [players]);
 
   const normalizedDayLabels = useMemo(() => {
     if (dayLabels.length >= 3) {
@@ -25,6 +46,19 @@ export function PointagesGrid({ players, dayLabels }: PointagesGridProps) {
 
     return Array.from({ length: 3 }, (_, index) => dayLabels[index] ?? `Jour ${index + 1}`);
   }, [dayLabels]);
+
+  const filteredPlayers = useMemo(() => {
+    return players.filter((player) => {
+      const matchesClub = selectedClub === "all" || player.club === selectedClub;
+      const playerTables = player.table
+        .split(",")
+        .map((table) => table.trim())
+        .filter(Boolean);
+      const matchesTable = selectedTable === "all" || playerTables.includes(selectedTable);
+
+      return matchesClub && matchesTable;
+    });
+  }, [players, selectedClub, selectedTable]);
 
   function toggleCheck(licence: string, dayLabel: string) {
     const key = `${licence}-${dayLabel}`;
@@ -43,6 +77,40 @@ export function PointagesGrid({ players, dayLabels }: PointagesGridProps) {
         </p>
       </header>
 
+      <div className="grid gap-3 md:grid-cols-2">
+        <label className="space-y-1">
+          <span className="text-xs font-medium uppercase tracking-wide text-gray-500">Filtrer par club</span>
+          <select
+            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800"
+            value={selectedClub}
+            onChange={(event) => setSelectedClub(event.target.value)}
+          >
+            <option value="all">Tous les clubs</option>
+            {clubOptions.map((club) => (
+              <option key={club} value={club}>
+                {club}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="space-y-1">
+          <span className="text-xs font-medium uppercase tracking-wide text-gray-500">Filtrer par tableau</span>
+          <select
+            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800"
+            value={selectedTable}
+            onChange={(event) => setSelectedTable(event.target.value)}
+          >
+            <option value="all">Tous les tableaux</option>
+            {tableOptions.map((table) => (
+              <option key={table} value={table}>
+                {table}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
       <table className="min-w-full text-sm">
         <thead>
           <tr className="border-b text-left text-gray-500">
@@ -56,7 +124,7 @@ export function PointagesGrid({ players, dayLabels }: PointagesGridProps) {
           </tr>
         </thead>
         <tbody>
-          {players.map((player) => (
+          {filteredPlayers.map((player) => (
             <tr key={player.licence} className="border-b last:border-0">
               <td className="py-3 pr-3 text-gray-900 font-medium">{player.name}</td>
               <td className="py-3 pr-3 text-gray-700">{player.club}</td>
@@ -80,6 +148,13 @@ export function PointagesGrid({ players, dayLabels }: PointagesGridProps) {
               <td className="py-3 text-gray-700">{player.status}</td>
             </tr>
           ))}
+          {filteredPlayers.length === 0 ? (
+            <tr>
+              <td colSpan={6 + normalizedDayLabels.length} className="py-6 text-center text-sm text-gray-500">
+                Aucun joueur ne correspond aux filtres sélectionnés.
+              </td>
+            </tr>
+          ) : null}
         </tbody>
       </table>
     </section>
