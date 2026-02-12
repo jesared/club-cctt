@@ -1,73 +1,102 @@
-/workspace/club-cctt$ /bin/bash -lc 'git add README.md'
-/workspace/club-cctt$ /bin/bash -lc 'git commit -m "docs: clarify README visibility note"'
-[work b4b2ad2] docs: clarify README visibility note
-1 file changed, 5 insertions(+)
-/workspace/club-cctt$ /bin/bash -lc 'nl -ba README.md'
-1 # Châlons-en-Champagne Tennis de Table (CCTT)
-2
-3 Site vitrine du club de tennis de table de Châlons-en-Champagne. Le site
-4 présente le club, ses horaires, ses tarifs et met en avant les événements
-5 annuels.
-6
-7 ## Prérequis
-8
-9 - Node.js 20+
-10 - npm 10+ (ou yarn/pnpm/bun)
-11
-12 ## Installation
-13
-14 `bash
-    15	npm install
-    16	`
-17
-18 ## Démarrage en local
-19
-20 `bash
-    21	npm run dev
-    22	`
-23
-24 Puis ouvrez [http://localhost:3000](http://localhost:3000).
-25
-26 ## Scripts utiles
-27
-28 `bash
-    29	npm run dev     # Lancer le serveur de développement
-    30	npm run build   # Build de production
-    31	npm run start   # Démarrer le build de production
-    32	npm run lint    # Lint du projet
-    33	`
-34
-35 ## Structure du projet
-36
-37 - `app/` : routes et pages (App Router Next.js).
-38 - `components/` : composants UI réutilisables.
-39 - `public/` : assets statiques (images, logos).
-40 - `lib/` : utilitaires et helpers.
-41
-42 ## Déploiement
-43
-44 Le projet peut être déployé sur Vercel ou tout hébergeur compatible Node.js.
-45
-46 1. Construire le projet :
-47 `bash
-    48	   npm run build
-    49	   `
-50 2. Démarrer en production :
-51 `bash
-    52	   npm run start
-    53	   `
-54
-55 ## Contribution
-56
-57 1. Créer une branche dédiée.
-58 2. Décrire clairement les changements.
-59 3. Vérifier que le lint passe avant de proposer une PR.
-60
-61 ## Contact
-62
-63 Pour toute question liée au site : communication@cctt.fr
-64
-65 ## Notes
-66
-67 Si le README vous paraît vide après un pull, vérifiez que votre branche est à
-68 jour et que le fichier n’est pas ouvert dans un éditeur filtrant l’encodage.
+# Châlons-en-Champagne Tennis de Table (CCTT)
+
+Site vitrine du club de tennis de table de Châlons-en-Champagne. Le site présente le club, ses horaires, ses tarifs et met en avant les événements annuels.
+
+## Prérequis
+
+- Node.js 20+
+- npm 10+ (ou yarn/pnpm/bun)
+- Une base PostgreSQL accessible via `DATABASE_URL`
+
+## Installation
+
+```bash
+npm install
+```
+
+## Configuration
+
+1. Créez un fichier `.env` à partir d’un modèle local.
+2. Définissez au minimum `DATABASE_URL`.
+
+## Base de données (Prisma)
+
+Le projet utilise Prisma Migrate avec les migrations du dossier `prisma/migrations`.
+
+### Initialiser une base vide (local/dev)
+
+```bash
+npx prisma migrate deploy
+```
+
+### Cas d’une base déjà existante (erreur `P3005`)
+
+Si vous obtenez l’erreur suivante :
+
+```txt
+Error: P3005
+The database schema is not empty.
+```
+
+cela signifie que Prisma tente d’appliquer des migrations sur une base déjà peuplée sans historique Prisma.
+
+Dans ce cas, baseliner la base existante avec la première migration du projet :
+
+```bash
+npx prisma migrate resolve --applied 20260210144025_init
+npx prisma migrate deploy
+```
+
+> Si plusieurs migrations ont déjà été appliquées manuellement, marquez-les aussi comme `--applied` dans l’ordre avant `migrate deploy`.
+
+## Démarrage en local
+
+```bash
+npm run dev
+```
+
+Puis ouvrez [http://localhost:3000](http://localhost:3000).
+
+## Scripts utiles
+
+```bash
+npm run dev     # Lancer le serveur de développement
+npm run build   # Build de production
+npm run start   # Démarrer le build de production
+npm run lint    # Lint du projet
+npm run seed:admin-tournoi # Seed admin tournoi
+```
+
+## Structure du projet
+
+- `app/` : routes et pages (App Router Next.js).
+- `components/` : composants UI réutilisables.
+- `public/` : assets statiques (images, logos).
+- `lib/` : utilitaires et helpers.
+- `prisma/` : schéma, migrations et scripts de seed.
+
+## Déploiement
+
+Le projet peut être déployé sur Vercel ou tout hébergeur compatible Node.js.
+
+1. Construire le projet :
+
+   ```bash
+   npm run build
+   ```
+
+2. Démarrer en production :
+
+   ```bash
+   npm run start
+   ```
+
+## Contribution
+
+1. Créer une branche dédiée.
+2. Décrire clairement les changements.
+3. Vérifier que le lint passe avant de proposer une PR.
+
+## Contact
+
+Pour toute question liée au site : communication@cctt.fr
