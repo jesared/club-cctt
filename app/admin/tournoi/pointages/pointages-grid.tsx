@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 
 type PointagesGridPlayer = {
+  id: string;
   licence: string;
   name: string;
   club: string;
@@ -26,7 +27,7 @@ export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
   const [checkedState, setCheckedState] = useState<Record<string, boolean>>(() => {
     return players.reduce<Record<string, boolean>>((acc, player) => {
       player.checkedDayKeys.forEach((dayKey) => {
-        acc[`${player.licence}-${dayKey}`] = true;
+        acc[`${player.id}-${dayKey}`] = true;
       });
       return acc;
     }, {});
@@ -76,7 +77,7 @@ export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
   }, [players, selectedClub, selectedTable]);
 
   async function toggleCheck(player: PointagesGridPlayer, dayKey: string) {
-    const key = `${player.licence}-${dayKey}`;
+    const key = `${player.id}-${dayKey}`;
     const eventIds = player.registrationEventIdsByDay[dayKey] ?? [];
 
     if (eventIds.length === 0 || pendingState[key]) {
@@ -173,12 +174,12 @@ export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
         </thead>
         <tbody>
           {filteredPlayers.map((player) => (
-            <tr key={player.licence} className="border-b last:border-0">
+            <tr key={player.id} className="border-b last:border-0">
               <td className="py-3 pr-3 text-gray-900 font-medium">{player.name}</td>
               <td className="py-3 pr-3 text-gray-700">{player.club}</td>
               <td className="py-3 pr-3 text-gray-700">{player.table}</td>
               {normalizedDayColumns.map((dayColumn) => {
-                const key = `${player.licence}-${dayColumn.key}`;
+                const key = `${player.id}-${dayColumn.key}`;
                 const hasEventForDay = (player.registrationEventIdsByDay[dayColumn.key] ?? []).length > 0;
                 return (
                   <td key={key} className="py-3 pr-3 text-gray-700">
