@@ -42,7 +42,8 @@ export type AdminPaymentGroupRow = {
   players: string[];
   totalAmountDueCents: number;
   totalPaidCents: number;
-  paymentStatus: "PAYÉ" | "PARTIEL" | "SUR PLACE";
+  totalPendingCents: number;
+  paymentStatus: "PAYÉ" | "PARTIEL" | "EN ATTENTE" | "SUR PLACE";
 };
 
 const DATE_FORMATTER = new Intl.DateTimeFormat("fr-FR", {
@@ -330,6 +331,9 @@ export async function getAdminPaymentGroups(tournamentId: string): Promise<Admin
     const totalPaidCents = registration.payments
       .filter((payment) => payment.status === "PAID")
       .reduce((acc, payment) => acc + payment.amountCents, 0);
+    const totalPendingCents = registration.payments
+      .filter((payment) => payment.status === "PENDING")
+      .reduce((acc, payment) => acc + payment.amountCents, 0);
 
     if (!groups.has(groupKey)) {
       groups.set(groupKey, {
@@ -339,6 +343,7 @@ export async function getAdminPaymentGroups(tournamentId: string): Promise<Admin
         players: [],
         totalAmountDueCents: 0,
         totalPaidCents: 0,
+        totalPendingCents: 0,
         paymentStatus: "SUR PLACE",
       });
     }
@@ -348,6 +353,7 @@ export async function getAdminPaymentGroups(tournamentId: string): Promise<Admin
     group.players.push(`${registration.player.prenom} ${registration.player.nom}`.trim());
     group.totalAmountDueCents += totalAmountDueCents;
     group.totalPaidCents += totalPaidCents;
+    group.totalPendingCents += totalPendingCents;
   }
 
   const rows = Array.from(groups.values()).map((group) => {
@@ -356,6 +362,8 @@ export async function getAdminPaymentGroups(tournamentId: string): Promise<Admin
       paymentStatus = "PAYÉ";
     } else if (group.totalPaidCents > 0) {
       paymentStatus = "PARTIEL";
+    } else if (group.totalPendingCents > 0) {
+      paymentStatus = "EN ATTENTE";
     }
 
     return {
