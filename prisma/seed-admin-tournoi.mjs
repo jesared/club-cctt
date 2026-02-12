@@ -55,6 +55,34 @@ const EVENTS = [
 
 const CLUBS = ['CCTT', 'Reims TT', 'Troyes TT', 'Épernay TT', 'Vitry TT'];
 
+function getEventCodesForPlayer(index, points) {
+  const eventCodes = new Set();
+
+  if (points < 1000) {
+    eventCodes.add('A');
+  }
+  if (points >= 1000 && points < 1400) {
+    eventCodes.add('B');
+  }
+  if (points >= 1400) {
+    eventCodes.add('C');
+  }
+
+  if (index % 2 === 0) {
+    eventCodes.add('D');
+  }
+
+  if (index % 5 === 0) {
+    eventCodes.add('B');
+  }
+
+  if (index % 7 === 0) {
+    eventCodes.add('C');
+  }
+
+  return [...eventCodes];
+}
+
 async function main() {
   const admin = await prisma.user.upsert({
     where: { email: 'admin.tournoi@cctt.local' },
@@ -162,27 +190,22 @@ async function main() {
       },
     });
 
-    const eventCode = i % 4 === 0 ? 'D' : i % 3 === 0 ? 'C' : i % 2 === 0 ? 'B' : 'A';
+    const eventCodes = getEventCodesForPlayer(i, points);
 
-    await prisma.tournamentRegistrationEvent.upsert({
+    await prisma.tournamentRegistrationEvent.deleteMany({
       where: {
-        registrationId_eventId: {
-          registrationId: registration.id,
-          eventId: eventByCode[eventCode].id,
-        },
+        registrationId: registration.id,
       },
-      create: {
+    });
+
+    await prisma.tournamentRegistrationEvent.createMany({
+      data: eventCodes.map((eventCode, eventIndex) => ({
         registrationId: registration.id,
         eventId: eventByCode[eventCode].id,
         seedPointsSnapshot: points,
-        position: i,
+        position: i * 10 + eventIndex,
         status: 'REGISTERED',
-      },
-      update: {
-        seedPointsSnapshot: points,
-        position: i,
-        status: 'REGISTERED',
-      },
+      })),
     });
   }
 
