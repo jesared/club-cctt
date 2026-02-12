@@ -21,6 +21,7 @@ export type RegistrationByTable = {
 };
 
 export type AdminPlayerRow = {
+  id: string;
   name: string;
   club: string;
   licence: string;
@@ -153,6 +154,7 @@ export async function getAdminPlayers(tournamentId: string): Promise<AdminPlayer
     where: { tournamentId },
     orderBy: [{ createdAt: "desc" }],
     select: {
+      id: true,
       status: true,
       player: {
         select: {
@@ -205,6 +207,7 @@ export async function getAdminPlayers(tournamentId: string): Promise<AdminPlayer
         : getRegistrationStatusLabel(registration.status);
 
     return {
+      id: registration.id,
       name: `${registration.player.prenom} ${registration.player.nom}`.trim(),
       club: registration.player.club ?? "—",
       licence: registration.player.licence,
