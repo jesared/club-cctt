@@ -130,6 +130,8 @@ async function main() {
     'Simon','Laurent','Lefebvre','Michel','Garcia','David','Bertrand','Roux','Vincent','Fournier',
   ];
 
+  const registrationsByIndex = new Map();
+
   for (let i = 1; i <= 50; i += 1) {
     const nom = lastNames[(i - 1) % lastNames.length];
     const prenom = firstNames[(i - 1) % firstNames.length];
@@ -190,6 +192,8 @@ async function main() {
       },
     });
 
+    registrationsByIndex.set(i, registration.id);
+
     const eventCodes = getEventCodesForPlayer(i, points);
 
     await prisma.tournamentRegistrationEvent.deleteMany({
@@ -206,6 +210,90 @@ async function main() {
         position: i * 10 + eventIndex,
         status: 'REGISTERED',
       })),
+    });
+  }
+
+
+  const parentSolo = await prisma.user.upsert({
+    where: { email: 'parent.solo@cctt.local' },
+    create: {
+      email: 'parent.solo@cctt.local',
+      name: 'Parent Solo',
+      role: 'USER',
+    },
+    update: {
+      name: 'Parent Solo',
+      role: 'USER',
+    },
+  });
+
+  const parentGroup = await prisma.user.upsert({
+    where: { email: 'parent.groupe@cctt.local' },
+    create: {
+      email: 'parent.groupe@cctt.local',
+      name: 'Parent Groupe',
+      role: 'USER',
+    },
+    update: {
+      name: 'Parent Groupe',
+      role: 'USER',
+    },
+  });
+
+  const singleRegistrationId = registrationsByIndex.get(3);
+  const groupedRegistrationIds = [registrationsByIndex.get(7), registrationsByIndex.get(8), registrationsByIndex.get(9)].filter(Boolean);
+
+  if (singleRegistrationId) {
+    await prisma.tournamentRegistration.update({
+      where: { id: singleRegistrationId },
+      data: {
+        userId: parentSolo.id,
+        contactEmail: 'parent.solo@cctt.local',
+        contactPhone: '0611111111',
+      },
+    });
+
+    await prisma.tournamentPayment.deleteMany({
+      where: { registrationId: singleRegistrationId },
+    });
+
+    await prisma.tournamentPayment.create({
+      data: {
+        registrationId: singleRegistrationId,
+        amountCents: 800,
+        method: 'ONLINE',
+        status: 'PAID',
+        provider: 'seed',
+        providerRef: 'solo-paid',
+        paidAt: new Date('2026-05-20T12:00:00Z'),
+      },
+    });
+  }
+
+  if (groupedRegistrationIds.length > 0) {
+    await prisma.tournamentRegistration.updateMany({
+      where: { id: { in: groupedRegistrationIds } },
+      data: {
+        userId: parentGroup.id,
+        contactEmail: 'parent.groupe@cctt.local',
+        contactPhone: '0622222222',
+      },
+    });
+
+    await prisma.tournamentPayment.deleteMany({
+      where: { registrationId: { in: groupedRegistrationIds } },
+    });
+
+    await prisma.tournamentPayment.create({
+      data: {
+        registrationId: groupedRegistrationIds[0],
+        amountCents: 800,
+        method: 'TRANSFER',
+        status: 'PAID',
+        provider: 'seed',
+        providerRef: 'group-partial',
+        paidAt: new Date('2026-05-22T15:30:00Z'),
+      },
     });
   }
 

@@ -46,13 +46,6 @@ export default async function AdminTournoiPaiementPage() {
     })
     .sort((a, b) => b.remainingCents - a.remainingCents);
 
-  const recommendationItems = [
-    "Ajouter une colonne “Mode de règlement” (CB, espèces, virement, chèque) pour faciliter la caisse.",
-    "Créer un rappel automatique 72h avant le tournoi pour tous les paiements PARTIEL/EN ATTENTE.",
-    "Mettre en avant les groupes avec >2 joueurs non soldés pour prioriser les relances.",
-    "Afficher un total “reste à encaisser” global en haut de page pour piloter la trésorerie.",
-  ];
-
   return (
     <TournamentAdminPage
       title="Paiements"
@@ -203,21 +196,6 @@ export default async function AdminTournoiPaiementPage() {
               </table>
             </div>
           )}
-        </article>
-
-        <article className="rounded-xl border bg-white p-5 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900">Suggestions d'amélioration</h2>
-          <p className="mt-1 text-sm text-gray-500">
-            Propositions concrètes pour fiabiliser le suivi des encaissements et réduire les oublis.
-          </p>
-          <ul className="mt-4 space-y-3 text-sm text-gray-700">
-            {recommendationItems.map((item) => (
-              <li key={item} className="flex gap-2 rounded-lg bg-gray-50 p-3">
-                <span className="mt-0.5 text-indigo-600">•</span>
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
         </article>
       </section>
     </TournamentAdminPage>
