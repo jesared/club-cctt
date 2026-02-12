@@ -41,7 +41,9 @@ export default async function AdminTournoiPaiementPage() {
         suggestedAction:
           group.paymentStatus === "PARTIEL"
             ? "Relance douce + confirmation du solde"
-            : "Vérifier règlement à l'accueil",
+            : group.paymentStatus === "EN ATTENTE"
+              ? "Attendre la validation du paiement en ligne"
+              : "Vérifier règlement à l'accueil",
       };
     })
     .sort((a, b) => b.remainingCents - a.remainingCents);
@@ -95,6 +97,7 @@ export default async function AdminTournoiPaiementPage() {
                   <th className="px-4 py-3">Joueurs</th>
                   <th className="px-4 py-3">Total dû</th>
                   <th className="px-4 py-3">Déjà payé</th>
+                  <th className="px-4 py-3">En attente</th>
                   <th className="px-4 py-3">Statut</th>
                 </tr>
               </thead>
@@ -108,6 +111,7 @@ export default async function AdminTournoiPaiementPage() {
                     </td>
                     <td className="px-4 py-3 font-medium">{formatEuro(group.totalAmountDueCents)}</td>
                     <td className="px-4 py-3">{formatEuro(group.totalPaidCents)}</td>
+                    <td className="px-4 py-3">{formatEuro(group.totalPendingCents)}</td>
                     <td className="px-4 py-3">
                       <span
                         className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
@@ -115,7 +119,9 @@ export default async function AdminTournoiPaiementPage() {
                             ? "bg-emerald-100 text-emerald-700"
                             : group.paymentStatus === "PARTIEL"
                               ? "bg-amber-100 text-amber-700"
-                              : "bg-gray-100 text-gray-700"
+                              : group.paymentStatus === "EN ATTENTE"
+                                ? "bg-indigo-100 text-indigo-700"
+                                : "bg-gray-100 text-gray-700"
                         }`}
                       >
                         {group.paymentStatus}
@@ -183,7 +189,11 @@ export default async function AdminTournoiPaiementPage() {
                       <td className="px-4 py-3">
                         <span
                           className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
-                            group.paymentStatus === "PARTIEL" ? "bg-amber-100 text-amber-700" : "bg-gray-100 text-gray-700"
+                            group.paymentStatus === "PARTIEL"
+                              ? "bg-amber-100 text-amber-700"
+                              : group.paymentStatus === "EN ATTENTE"
+                                ? "bg-indigo-100 text-indigo-700"
+                                : "bg-gray-100 text-gray-700"
                           }`}
                         >
                           {group.paymentStatus}
