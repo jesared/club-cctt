@@ -267,7 +267,7 @@ export default function DashboardSidebar() {
             </>
           )}
         </nav>
-        <AuthButton />
+        <AuthButton collapsed={isCollapsed} />
       </div>
     </aside>
   );
