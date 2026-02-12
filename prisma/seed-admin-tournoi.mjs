@@ -3,51 +3,151 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 const TOURNAMENT = {
-  slug: 'tournoi-admin-cctt-2026',
-  name: 'Tournoi Admin CCTT 2026',
-  description: 'Tournoi généré automatiquement pour /admin/tournoi.',
-  venue: 'Gymnase Pierre de Coubertin, Châlons-en-Champagne',
-  registrationOpenAt: new Date('2026-02-01T08:00:00Z'),
-  registrationCloseAt: new Date('2026-05-30T23:00:00Z'),
-  startDate: new Date('2026-06-06T00:00:00Z'),
-  endDate: new Date('2026-06-07T23:59:59Z'),
+  slug: 'tournoi-national-chalons-2026',
+  name: 'Tournoi National Chalons en Champagne TT',
+  description: 'Tournoi national de Pâques organisé par le Chalons en Champagne TT (Gymnase Kiezer, 30 tables).',
+  venue: 'Gymnase Kiezer, 150 avenue des Alliés, Chalons en Champagne',
+  registrationOpenAt: new Date('2026-01-15T08:00:00Z'),
+  registrationCloseAt: new Date('2026-04-04T23:00:00Z'),
+  startDate: new Date('2026-04-04T00:00:00Z'),
+  endDate: new Date('2026-04-06T23:59:59Z'),
   status: 'PUBLISHED',
 };
 
 const EVENTS = [
   {
+    code: 'C',
+    label: '800 à 1399 pts',
+    minPoints: 800,
+    maxPoints: 1399,
+    startAt: new Date('2026-04-04T10:30:00Z'),
+    feeOnlineCents: 800,
+    feeOnsiteCents: 900,
+  },
+  {
     code: 'A',
-    label: '500 à 999 pts',
+    label: '500 à 799 pts',
     minPoints: 500,
-    maxPoints: 999,
-    startAt: new Date('2026-06-06T09:00:00Z'),
+    maxPoints: 799,
+    startAt: new Date('2026-04-04T11:30:00Z'),
+    feeOnlineCents: 800,
+    feeOnsiteCents: 900,
+  },
+  {
+    code: 'D',
+    label: '1100 à 1699 pts',
+    minPoints: 1100,
+    maxPoints: 1699,
+    startAt: new Date('2026-04-04T12:30:00Z'),
     feeOnlineCents: 800,
     feeOnsiteCents: 900,
   },
   {
     code: 'B',
-    label: '1000 à 1399 pts',
-    minPoints: 1000,
-    maxPoints: 1399,
-    startAt: new Date('2026-06-06T13:00:00Z'),
+    label: '500 à 1099 pts',
+    minPoints: 500,
+    maxPoints: 1099,
+    startAt: new Date('2026-04-04T13:30:00Z'),
     feeOnlineCents: 800,
     feeOnsiteCents: 900,
   },
   {
-    code: 'C',
-    label: '1400 à 1799 pts',
-    minPoints: 1400,
+    code: 'F',
+    label: '500 à 1199 pts',
+    minPoints: 500,
+    maxPoints: 1199,
+    startAt: new Date('2026-04-05T08:30:00Z'),
+    feeOnlineCents: 800,
+    feeOnsiteCents: 900,
+  },
+  {
+    code: 'H',
+    label: '1200 à 1799 pts',
+    minPoints: 1200,
     maxPoints: 1799,
-    startAt: new Date('2026-06-07T09:00:00Z'),
+    startAt: new Date('2026-04-05T09:30:00Z'),
+    feeOnlineCents: 800,
+    feeOnsiteCents: 900,
+  },
+  {
+    code: 'E',
+    label: '500 à 899 pts',
+    minPoints: 500,
+    maxPoints: 899,
+    startAt: new Date('2026-04-05T11:00:00Z'),
+    feeOnlineCents: 800,
+    feeOnsiteCents: 900,
+  },
+  {
+    code: 'G',
+    label: '900 à 1499 pts',
+    minPoints: 900,
+    maxPoints: 1499,
+    startAt: new Date('2026-04-05T12:00:00Z'),
+    feeOnlineCents: 800,
+    feeOnsiteCents: 900,
+  },
+  {
+    code: 'I',
+    label: '500 à N°400',
+    minPoints: 500,
+    maxPoints: null,
+    startAt: new Date('2026-04-05T13:15:00Z'),
     feeOnlineCents: 900,
     feeOnsiteCents: 1000,
   },
   {
-    code: 'D',
-    label: 'Toutes catégories',
+    code: 'J',
+    label: 'Dames TC',
     minPoints: null,
     maxPoints: null,
-    startAt: new Date('2026-06-07T13:00:00Z'),
+    gender: 'FEMALE',
+    startAt: new Date('2026-04-05T14:30:00Z'),
+    feeOnlineCents: 800,
+    feeOnsiteCents: 900,
+  },
+  {
+    code: 'L',
+    label: '500 à 1299 pts',
+    minPoints: 500,
+    maxPoints: 1299,
+    startAt: new Date('2026-04-06T08:30:00Z'),
+    feeOnlineCents: 800,
+    feeOnsiteCents: 900,
+  },
+  {
+    code: 'N',
+    label: '1300 à 2099 pts',
+    minPoints: 1300,
+    maxPoints: 2099,
+    startAt: new Date('2026-04-06T09:30:00Z'),
+    feeOnlineCents: 800,
+    feeOnsiteCents: 900,
+  },
+  {
+    code: 'K',
+    label: '500 à 999 pts',
+    minPoints: 500,
+    maxPoints: 999,
+    startAt: new Date('2026-04-06T11:00:00Z'),
+    feeOnlineCents: 800,
+    feeOnsiteCents: 900,
+  },
+  {
+    code: 'M',
+    label: '1000 à 1599 pts',
+    minPoints: 1000,
+    maxPoints: 1599,
+    startAt: new Date('2026-04-06T12:00:00Z'),
+    feeOnlineCents: 800,
+    feeOnsiteCents: 900,
+  },
+  {
+    code: 'P',
+    label: 'TC',
+    minPoints: null,
+    maxPoints: null,
+    startAt: new Date('2026-04-06T13:15:00Z'),
     feeOnlineCents: 1000,
     feeOnsiteCents: 1100,
   },
@@ -58,32 +158,52 @@ const CLUBS = ['CCTT', 'Reims TT', 'Troyes TT', 'Épernay TT', 'Vitry TT'];
 function getEventCodesForPlayer(index, points) {
   const eventCodes = new Set();
 
-  if (points < 1000) {
-    eventCodes.add('A');
-  }
-  if (points >= 1000 && points < 1400) {
-    eventCodes.add('B');
-  }
-  if (points >= 1400) {
-    eventCodes.add('C');
+  const rankedEvents = EVENTS.filter((event) => event.minPoints !== null || event.maxPoints !== null);
+
+  const matchingByPoints = rankedEvents
+    .filter((event) => {
+      const minOk = event.minPoints === null || points >= event.minPoints;
+      const maxOk = event.maxPoints === null || points <= event.maxPoints;
+      return minOk && maxOk;
+    })
+    .sort((a, b) => a.startAt.getTime() - b.startAt.getTime());
+
+  if (matchingByPoints.length > 0) {
+    eventCodes.add(matchingByPoints[0].code);
   }
 
-  if (index % 2 === 0) {
-    eventCodes.add('D');
+  if (index % 3 === 0) {
+    eventCodes.add('I');
+  }
+
+  if (index % 4 === 0) {
+    eventCodes.add('P');
   }
 
   if (index % 5 === 0) {
-    eventCodes.add('B');
+    eventCodes.add('M');
   }
 
-  if (index % 7 === 0) {
-    eventCodes.add('C');
+  if (index % 2 !== 0) {
+    eventCodes.add('J');
+  }
+
+  if (eventCodes.size === 0) {
+    eventCodes.add('P');
   }
 
   return [...eventCodes];
 }
 
 async function main() {
+  await prisma.tournament.deleteMany({
+    where: {
+      slug: {
+        in: ['tournoi-admin-cctt-2026', 'tournoi-cctt-2026'],
+      },
+    },
+  });
+
   const admin = await prisma.user.upsert({
     where: { email: 'admin.tournoi@cctt.local' },
     create: {
