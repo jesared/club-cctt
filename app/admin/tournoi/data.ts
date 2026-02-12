@@ -10,6 +10,8 @@ export type TournamentTable = {
   category: string;
   earlyPayment: string;
   onsitePayment: string;
+  minPoints: number | null;
+  maxPoints: number | null;
 };
 
 export type RegistrationByTable = {
@@ -99,6 +101,8 @@ export async function getTournamentTables(tournamentId: string): Promise<Tournam
     category: formatCategory(event.minPoints, event.maxPoints),
     earlyPayment: formatEuro(event.feeOnlineCents),
     onsitePayment: formatEuro(event.feeOnsiteCents),
+    minPoints: event.minPoints,
+    maxPoints: event.maxPoints,
   }));
 }
 
