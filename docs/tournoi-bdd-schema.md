@@ -54,6 +54,9 @@ Champs clés:
 - `tournamentId` (FK)
 - `playerId` (FK vers `Player`)
 - `userId` (FK vers `User`, nullable si saisie admin)
+- `licenseNumber`
+- `clubName`
+- `gender` (`M`, `F`, `X`... selon convention retenue)
 - `contactEmail`, `contactPhone`
 - `notes`
 - `status` (`PENDING`, `CONFIRMED`, `CANCELLED`)
@@ -231,6 +234,9 @@ model TournamentRegistration {
   userId                String?
   user                  User?                   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
+  licenseNumber         String?
+  clubName              String?
+  gender                String?
   contactEmail          String?
   contactPhone          String?
   notes                 String?
