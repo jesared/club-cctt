@@ -383,88 +383,139 @@ async function main() {
   }
 
 
-  const parentSolo = await prisma.user.upsert({
-    where: { email: 'parent.solo@cctt.local' },
-    create: {
-      email: 'parent.solo@cctt.local',
-      name: 'Parent Solo',
-      role: 'USER',
-    },
-    update: {
-      name: 'Parent Solo',
-      role: 'USER',
-    },
-  });
+  async function upsertSeedUser(email, name) {
+    return prisma.user.upsert({
+      where: { email },
+      create: {
+        email,
+        name,
+        role: 'USER',
+      },
+      update: {
+        name,
+        role: 'USER',
+      },
+    });
+  }
 
-  const parentGroup = await prisma.user.upsert({
-    where: { email: 'parent.groupe@cctt.local' },
-    create: {
-      email: 'parent.groupe@cctt.local',
-      name: 'Parent Groupe',
-      role: 'USER',
-    },
-    update: {
-      name: 'Parent Groupe',
-      role: 'USER',
-    },
-  });
+  async function assignRegistrationsToUser({ user, contactEmail, contactPhone, indexes, payments }) {
+    const registrationIds = indexes.map((index) => registrationsByIndex.get(index)).filter(Boolean);
 
-  const singleRegistrationId = registrationsByIndex.get(3);
-  const groupedRegistrationIds = [registrationsByIndex.get(7), registrationsByIndex.get(8), registrationsByIndex.get(9)].filter(Boolean);
+    if (registrationIds.length === 0) {
+      return;
+    }
 
-  if (singleRegistrationId) {
-    await prisma.tournamentRegistration.update({
-      where: { id: singleRegistrationId },
+    await prisma.tournamentRegistration.updateMany({
+      where: { id: { in: registrationIds } },
       data: {
-        userId: parentSolo.id,
-        contactEmail: 'parent.solo@cctt.local',
-        contactPhone: '0611111111',
+        userId: user.id,
+        contactEmail,
+        contactPhone,
       },
     });
 
     await prisma.tournamentPayment.deleteMany({
-      where: { registrationId: singleRegistrationId },
+      where: { registrationId: { in: registrationIds } },
     });
 
-    await prisma.tournamentPayment.create({
-      data: {
-        registrationId: singleRegistrationId,
+    for (const payment of payments) {
+      const registrationId = registrationsByIndex.get(payment.index);
+      if (!registrationId) {
+        continue;
+      }
+
+      await prisma.tournamentPayment.create({
+        data: {
+          registrationId,
+          amountCents: payment.amountCents,
+          method: payment.method,
+          status: payment.status,
+          provider: 'seed',
+          providerRef: payment.providerRef,
+          paidAt: payment.paidAt ?? null,
+        },
+      });
+    }
+  }
+
+  const parentSolo = await upsertSeedUser('parent.solo@cctt.local', 'Parent Solo');
+  const parentGroup = await upsertSeedUser('parent.groupe@cctt.local', 'Parent Groupe');
+  const parentPending = await upsertSeedUser('parent.attente@cctt.local', 'Parent En Attente');
+  const coachClub = await upsertSeedUser('coach.club@cctt.local', 'Coach Club Invités');
+
+  await assignRegistrationsToUser({
+    user: parentSolo,
+    contactEmail: 'parent.solo@cctt.local',
+    contactPhone: '0611111111',
+    indexes: [3],
+    payments: [
+      {
+        index: 3,
         amountCents: 800,
         method: 'ONLINE',
         status: 'PAID',
-        provider: 'seed',
         providerRef: 'solo-paid',
         paidAt: new Date('2026-05-20T12:00:00Z'),
       },
-    });
-  }
+    ],
+  });
 
-  if (groupedRegistrationIds.length > 0) {
-    await prisma.tournamentRegistration.updateMany({
-      where: { id: { in: groupedRegistrationIds } },
-      data: {
-        userId: parentGroup.id,
-        contactEmail: 'parent.groupe@cctt.local',
-        contactPhone: '0622222222',
-      },
-    });
-
-    await prisma.tournamentPayment.deleteMany({
-      where: { registrationId: { in: groupedRegistrationIds } },
-    });
-
-    await prisma.tournamentPayment.create({
-      data: {
-        registrationId: groupedRegistrationIds[0],
+  await assignRegistrationsToUser({
+    user: parentGroup,
+    contactEmail: 'parent.groupe@cctt.local',
+    contactPhone: '0622222222',
+    indexes: [7, 8, 9],
+    payments: [
+      {
+        index: 7,
         amountCents: 800,
         method: 'TRANSFER',
         status: 'PAID',
-        provider: 'seed',
-        providerRef: 'group-partial',
+        providerRef: 'group-partial-paid',
         paidAt: new Date('2026-05-22T15:30:00Z'),
       },
-    });
-  }
+    ],
+  });
+
+  await assignRegistrationsToUser({
+    user: parentPending,
+    contactEmail: 'parent.attente@cctt.local',
+    contactPhone: '0633333333',
+    indexes: [10, 11, 12],
+    payments: [
+      {
+        index: 10,
+        amountCents: 1600,
+        method: 'ONLINE',
+        status: 'PENDING',
+        providerRef: 'pending-order-001',
+      },
+    ],
+  });
+
+  await assignRegistrationsToUser({
+    user: coachClub,
+    contactEmail: 'coach.club@cctt.local',
+    contactPhone: '0644444444',
+    indexes: [41, 42, 43, 44],
+    payments: [
+      {
+        index: 41,
+        amountCents: 1600,
+        method: 'TRANSFER',
+        status: 'PAID',
+        providerRef: 'club-batch-1',
+        paidAt: new Date('2026-05-25T09:00:00Z'),
+      },
+      {
+        index: 43,
+        amountCents: 800,
+        method: 'TRANSFER',
+        status: 'PENDING',
+        providerRef: 'club-batch-2',
+      },
+    ],
+  });
 
   const count = await prisma.tournamentRegistration.count({
     where: { tournamentId: tournament.id },
