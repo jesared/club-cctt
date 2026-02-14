@@ -13,19 +13,37 @@ type RegistrationPayload = {
   email: string;
   phone: string;
   licenseNumber: string;
-  ranking: string;
+  points: string;
+  gender: "M" | "F" | "";
   club: string;
   tables: string[];
-  notes: string;
   website: string;
 };
 
-const TABLE_OPTIONS = [
-  { value: "A", label: "Tableau A (1700+ points)" },
-  { value: "B", label: "Tableau B (1300 à 1699 points)" },
-  { value: "C", label: "Tableau C (900 à 1299 points)" },
-  { value: "D", label: "Tableau D (< 900 points)" },
-  { value: "X", label: "Doubles / toutes catégories" },
+type TableOption = {
+  value: string;
+  label: string;
+  minPoints: number | null;
+  maxPoints: number | null;
+  womenOnly?: boolean;
+};
+
+const TABLE_OPTIONS: TableOption[] = [
+  { value: "C", label: "Tableau C (800 à 1399 pts)", minPoints: 800, maxPoints: 1399 },
+  { value: "A", label: "Tableau A (500 à 799 pts)", minPoints: 500, maxPoints: 799 },
+  { value: "D", label: "Tableau D (1100 à 1699 pts)", minPoints: 1100, maxPoints: 1699 },
+  { value: "B", label: "Tableau B (500 à 1099 pts)", minPoints: 500, maxPoints: 1099 },
+  { value: "F", label: "Tableau F (500 à 1199 pts)", minPoints: 500, maxPoints: 1199 },
+  { value: "H", label: "Tableau H (1200 à 1799 pts)", minPoints: 1200, maxPoints: 1799 },
+  { value: "E", label: "Tableau E (500 à 899 pts)", minPoints: 500, maxPoints: 899 },
+  { value: "G", label: "Tableau G (900 à 1499 pts)", minPoints: 900, maxPoints: 1499 },
+  { value: "I", label: "Tableau I (500 à N°400)", minPoints: 500, maxPoints: null },
+  { value: "J", label: "Tableau J (Dames TC)", minPoints: null, maxPoints: null, womenOnly: true },
+  { value: "L", label: "Tableau L (500 à 1299 pts)", minPoints: 500, maxPoints: 1299 },
+  { value: "N", label: "Tableau N (1300 à 2099 pts)", minPoints: 1300, maxPoints: 2099 },
+  { value: "K", label: "Tableau K (500 à 999 pts)", minPoints: 500, maxPoints: 999 },
+  { value: "M", label: "Tableau M (1000 à 1599 pts)", minPoints: 1000, maxPoints: 1599 },
+  { value: "P", label: "Tableau P (Toutes catégories)", minPoints: null, maxPoints: null },
 ] as const;
 
 const initialData: RegistrationPayload = {
@@ -34,22 +52,61 @@ const initialData: RegistrationPayload = {
   email: "",
   phone: "",
   licenseNumber: "",
-  ranking: "",
+  points: "",
+  gender: "",
   club: "",
   tables: [],
-  notes: "",
   website: "",
 };
+
+function isEligible(points: number | null, gender: "M" | "F" | "", table: TableOption) {
+  if (table.womenOnly && gender !== "F") {
+    return false;
+  }
+
+  if (points === null) {
+    return true;
+  }
+
+  if (table.minPoints !== null && points < table.minPoints) {
+    return false;
+  }
+
+  if (table.maxPoints !== null && points > table.maxPoints) {
+    return false;
+  }
+
+  return true;
+}
 
 export default function TournamentRegistrationForm() {
   const [formData, setFormData] = useState(initialData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<FeedbackState>(null);
 
+  const parsedPoints = useMemo(() => {
+    if (!formData.points.trim()) {
+      return null;
+    }
+
+    const numericPoints = Number.parseInt(formData.points, 10);
+    return Number.isNaN(numericPoints) ? null : numericPoints;
+  }, [formData.points]);
+
+  const ineligibleTableCodes = useMemo(
+    () => TABLE_OPTIONS.filter((table) => !isEligible(parsedPoints, formData.gender, table)).map((table) => table.value),
+    [formData.gender, parsedPoints],
+  );
+
   const canSubmit = useMemo(() => formData.tables.length > 0, [formData.tables.length]);
 
   const toggleTable = (tableCode: string) => {
     setFormData((current) => {
+      const table = TABLE_OPTIONS.find((option) => option.value === tableCode);
+      if (!table || !isEligible(parsedPoints, current.gender, table)) {
+        return current;
+      }
+
       const exists = current.tables.includes(tableCode);
       return {
         ...current,
@@ -108,6 +165,22 @@ export default function TournamentRegistrationForm() {
       setIsSubmitting(false);
     }
   };
+
+  const infoMessage = useMemo(() => {
+    if (!formData.points.trim()) {
+      return "Renseignez vos points pour filtrer automatiquement les tableaux disponibles.";
+    }
+
+    if (parsedPoints === null || parsedPoints < 0) {
+      return "Points invalides : veuillez saisir un nombre positif.";
+    }
+
+    if (ineligibleTableCodes.length === 0) {
+      return "Tous les tableaux sont disponibles avec ces informations.";
+    }
+
+    return `Tableaux indisponibles : ${ineligibleTableCodes.join(", ")}.`;
+  }, [formData.points, ineligibleTableCodes, parsedPoints]);
 
   return (
     <form className="space-y-6" onSubmit={handleSubmit}>
@@ -192,7 +265,7 @@ export default function TournamentRegistrationForm() {
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-4">
         <div>
           <label htmlFor="licenseNumber" className="block text-sm font-medium mb-1">
             N° licence FFTT
@@ -213,21 +286,67 @@ export default function TournamentRegistrationForm() {
           />
         </div>
         <div>
-          <label htmlFor="ranking" className="block text-sm font-medium mb-1">
-            Classement / points
+          <label htmlFor="points" className="block text-sm font-medium mb-1">
+            Points
           </label>
           <input
-            id="ranking"
-            name="ranking"
-            type="text"
-            maxLength={20}
-            value={formData.ranking}
+            id="points"
+            name="points"
+            type="number"
+            min={0}
+            required
+            value={formData.points}
             onChange={(event) =>
-              setFormData((current) => ({ ...current, ranking: event.target.value }))
+              setFormData((current) => {
+                const nextValue = event.target.value;
+                const nextPoints = Number.parseInt(nextValue, 10);
+
+                if (!nextValue.trim() || Number.isNaN(nextPoints)) {
+                  return { ...current, points: nextValue };
+                }
+
+                return {
+                  ...current,
+                  points: nextValue,
+                  tables: current.tables.filter((tableCode) => {
+                    const table = TABLE_OPTIONS.find((option) => option.value === tableCode);
+                    return table ? isEligible(nextPoints, current.gender, table) : false;
+                  }),
+                };
+              })
             }
             className="w-full border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-            placeholder="12 / 1248"
+            placeholder="1248"
           />
+        </div>
+        <div>
+          <label htmlFor="gender" className="block text-sm font-medium mb-1">
+            Genre
+          </label>
+          <select
+            id="gender"
+            name="gender"
+            required
+            value={formData.gender}
+            onChange={(event) =>
+              setFormData((current) => {
+                const nextGender = event.target.value as "M" | "F" | "";
+                return {
+                  ...current,
+                  gender: nextGender,
+                  tables: current.tables.filter((tableCode) => {
+                    const table = TABLE_OPTIONS.find((option) => option.value === tableCode);
+                    return table ? isEligible(parsedPoints, nextGender, table) : false;
+                  }),
+                };
+              })
+            }
+            className="w-full border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          >
+            <option value="">Sélectionner</option>
+            <option value="M">M</option>
+            <option value="F">F</option>
+          </select>
         </div>
         <div>
           <label htmlFor="club" className="block text-sm font-medium mb-1">
@@ -253,15 +372,21 @@ export default function TournamentRegistrationForm() {
       <fieldset className="space-y-3">
         <legend className="text-sm font-medium">Tableaux souhaités</legend>
         <p className="text-sm text-gray-600">Vous pouvez sélectionner plusieurs tableaux.</p>
+        <p className="rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-800">{infoMessage}</p>
         <div className="grid gap-2 sm:grid-cols-2">
           {TABLE_OPTIONS.map((table) => (
             <label
               key={table.value}
-              className="flex items-start gap-2 rounded-md border border-gray-200 px-3 py-2"
+              className={`flex items-start gap-2 rounded-md border px-3 py-2 ${
+                isEligible(parsedPoints, formData.gender, table)
+                  ? "border-gray-200"
+                  : "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400"
+              }`}
             >
               <input
                 type="checkbox"
                 checked={formData.tables.includes(table.value)}
+                disabled={!isEligible(parsedPoints, formData.gender, table)}
                 onChange={() => toggleTable(table.value)}
                 className="mt-1"
               />
@@ -270,24 +395,6 @@ export default function TournamentRegistrationForm() {
           ))}
         </div>
       </fieldset>
-
-      <div>
-        <label htmlFor="notes" className="block text-sm font-medium mb-1">
-          Remarques (optionnel)
-        </label>
-        <textarea
-          id="notes"
-          name="notes"
-          rows={4}
-          maxLength={1000}
-          value={formData.notes}
-          onChange={(event) =>
-            setFormData((current) => ({ ...current, notes: event.target.value }))
-          }
-          className="w-full border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          placeholder="Disponibilités, accompagnant, informations utiles..."
-        />
-      </div>
 
       <div className="hidden" aria-hidden="true">
         <label htmlFor="website">Site web</label>
