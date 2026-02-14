@@ -171,15 +171,15 @@ export default async function AdminTournoiAjoutPlayerPage({ searchParams }: Page
         </p>
       ) : null}
       {params.error ? (
-        <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <p className="rounded-lg border border-primary/40 bg-primary/10 px-4 py-3 text-sm text-primary">
           {params.error}
         </p>
       ) : null}
 
-      <section className="rounded-xl border bg-white p-6 shadow-sm space-y-6">
+      <section className="rounded-xl border bg-card p-6 shadow-sm space-y-6">
         <div>
           <h2 className="text-xl font-semibold">Formulaire d'ajout joueur</h2>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             Tous les champs marqués d'un * sont obligatoires. Le joueur sera inscrit en statut confirmé.
           </p>
         </div>

@@ -73,31 +73,31 @@ export function AddPlayerForm({ tournamentId, tournamentTables, action }: Props)
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="space-y-1 text-sm">
-          <span className="font-medium text-gray-700">Nom *</span>
+          <span className="font-medium text-muted-foreground">Nom *</span>
           <input
             name="nom"
             required
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none"
+            className="w-full rounded-md border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
           />
         </label>
         <label className="space-y-1 text-sm">
-          <span className="font-medium text-gray-700">Prénom *</span>
+          <span className="font-medium text-muted-foreground">Prénom *</span>
           <input
             name="prenom"
             required
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none"
+            className="w-full rounded-md border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
           />
         </label>
         <label className="space-y-1 text-sm">
-          <span className="font-medium text-gray-700">Licence *</span>
+          <span className="font-medium text-muted-foreground">Licence *</span>
           <input
             name="licence"
             required
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none"
+            className="w-full rounded-md border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
           />
         </label>
         <label className="space-y-1 text-sm">
-          <span className="font-medium text-gray-700">Classement (points) *</span>
+          <span className="font-medium text-muted-foreground">Classement (points) *</span>
           <input
             name="points"
             type="number"
@@ -121,39 +121,39 @@ export function AddPlayerForm({ tournamentId, tournamentTables, action }: Props)
                 });
               }
             }}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none"
+            className="w-full rounded-md border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
           />
         </label>
         <label className="space-y-1 text-sm">
-          <span className="font-medium text-gray-700">Club *</span>
+          <span className="font-medium text-muted-foreground">Club *</span>
           <input
             name="club"
             required
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none"
+            className="w-full rounded-md border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
           />
         </label>
         <label className="space-y-1 text-sm">
-          <span className="font-medium text-gray-700">Email *</span>
+          <span className="font-medium text-muted-foreground">Email *</span>
           <input
             name="contactEmail"
             type="email"
             required
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none"
+            className="w-full rounded-md border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
           />
         </label>
         <label className="space-y-1 text-sm sm:col-span-2">
-          <span className="font-medium text-gray-700">Téléphone *</span>
+          <span className="font-medium text-muted-foreground">Téléphone *</span>
           <input
             name="contactPhone"
             required
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none"
+            className="w-full rounded-md border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
           />
         </label>
       </div>
 
       <div className="space-y-3">
         <div className="flex flex-col gap-2">
-          <p className="text-sm font-medium text-gray-700">Tableaux à inscrire *</p>
+          <p className="text-sm font-medium text-muted-foreground">Tableaux à inscrire *</p>
           <p className="rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-800">{infoMessage}</p>
         </div>
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
@@ -166,8 +166,8 @@ export function AddPlayerForm({ tournamentId, tournamentTables, action }: Props)
                 key={table.id}
                 className={`flex items-start gap-2 rounded-lg border p-3 text-sm transition ${
                   eligible
-                    ? "border-gray-200"
-                    : "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400"
+                    ? "border-border"
+                    : "cursor-not-allowed border-border bg-secondary text-muted-foreground"
                 }`}
               >
                 <input
@@ -191,9 +191,9 @@ export function AddPlayerForm({ tournamentId, tournamentTables, action }: Props)
                   }}
                 />
                 <span>
-                  <span className="block font-semibold text-gray-900">Tableau {table.table}</span>
-                  <span className="block text-gray-600">{table.category}</span>
-                  <span className="block text-gray-500">Sur place : {table.onsitePayment}</span>
+                  <span className="block font-semibold text-foreground">Tableau {table.table}</span>
+                  <span className="block text-muted-foreground">{table.category}</span>
+                  <span className="block text-muted-foreground">Sur place : {table.onsitePayment}</span>
                 </span>
               </label>
             );
@@ -202,17 +202,17 @@ export function AddPlayerForm({ tournamentId, tournamentTables, action }: Props)
       </div>
 
       <label className="space-y-1 text-sm block">
-        <span className="font-medium text-gray-700">Notes internes</span>
+        <span className="font-medium text-muted-foreground">Notes internes</span>
         <textarea
           name="notes"
           rows={3}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none"
+          className="w-full rounded-md border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
         />
       </label>
 
       <button
         type="submit"
-        className="inline-flex items-center rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+        className="inline-flex items-center rounded-md bg-[#ff00c8] px-4 py-2 text-sm font-medium text-white hover:bg-[#ff00c8]/90"
       >
         Ajouter le joueur
       </button>

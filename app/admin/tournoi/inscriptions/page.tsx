@@ -39,24 +39,24 @@ export default async function AdminTournoiInscriptionsPage() {
           { label: "Liste d'attente", value: `${totalWaitlist}`, helper: "À arbitrer" },
           { label: "À relancer", value: `${toFollowUp}`, helper: "Confirmation manquante" },
         ].map((card) => (
-          <article key={card.label} className="rounded-xl border bg-white p-4 shadow-sm">
-            <p className="text-sm text-gray-500">{card.label}</p>
-            <p className="mt-2 text-3xl font-bold text-gray-900">{card.value}</p>
-            <p className="mt-1 text-sm text-gray-600">{card.helper}</p>
+          <article key={card.label} className="rounded-xl border bg-card p-4 shadow-sm">
+            <p className="text-sm text-muted-foreground">{card.label}</p>
+            <p className="mt-2 text-3xl font-bold text-foreground">{card.value}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{card.helper}</p>
           </article>
         ))}
       </section>
 
-      <section className="rounded-xl border bg-white shadow-sm p-6 space-y-4">
+      <section className="rounded-xl border bg-card shadow-sm p-6 space-y-4">
         <div>
           <h2 className="text-xl font-semibold">Occupation des tableaux</h2>
-          <p className="text-sm text-gray-600">Synthèse des séries à surveiller en priorité.</p>
+          <p className="text-sm text-muted-foreground">Synthèse des séries à surveiller en priorité.</p>
         </div>
 
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
             <thead>
-              <tr className="border-b text-left text-gray-500">
+              <tr className="border-b text-left text-muted-foreground">
                 <th className="py-2 pr-3 font-medium">Tableau</th>
                 <th className="py-2 pr-3 font-medium">Catégorie</th>
                 <th className="py-2 pr-3 font-medium">Inscrits</th>
@@ -67,11 +67,11 @@ export default async function AdminTournoiInscriptionsPage() {
             <tbody>
               {registrationsByTable.map((table) => (
                 <tr key={table.table} className="border-b last:border-0">
-                  <td className="py-3 pr-3 font-semibold text-gray-900">{table.table}</td>
-                  <td className="py-3 pr-3 text-gray-700">{table.category}</td>
-                  <td className="py-3 pr-3 text-gray-700">{table.registrations}</td>
-                  <td className="py-3 pr-3 text-gray-700">{table.waitlist}</td>
-                  <td className="py-3 text-gray-700">{table.checkins}</td>
+                  <td className="py-3 pr-3 font-semibold text-foreground">{table.table}</td>
+                  <td className="py-3 pr-3 text-muted-foreground">{table.category}</td>
+                  <td className="py-3 pr-3 text-muted-foreground">{table.registrations}</td>
+                  <td className="py-3 pr-3 text-muted-foreground">{table.waitlist}</td>
+                  <td className="py-3 text-muted-foreground">{table.checkins}</td>
                 </tr>
               ))}
             </tbody>
@@ -79,12 +79,12 @@ export default async function AdminTournoiInscriptionsPage() {
         </div>
       </section>
 
-      <section className="rounded-xl border bg-white shadow-sm p-6 space-y-4">
+      <section className="rounded-xl border bg-card shadow-sm p-6 space-y-4">
         <h2 className="text-xl font-semibold">Derniers dossiers joueurs</h2>
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
             <thead>
-              <tr className="border-b text-left text-gray-500">
+              <tr className="border-b text-left text-muted-foreground">
                 <th className="py-2 pr-3 font-medium">Joueur</th>
                 <th className="py-2 pr-3 font-medium">Club</th>
                 <th className="py-2 pr-3 font-medium">Licence</th>
@@ -97,14 +97,14 @@ export default async function AdminTournoiInscriptionsPage() {
             <tbody>
               {adminPlayers.map((player) => (
                 <tr key={player.licence} className="border-b last:border-0">
-                  <td className="py-3 pr-3 text-gray-900">{player.name}</td>
-                  <td className="py-3 pr-3 text-gray-700">{player.club}</td>
-                  <td className="py-3 pr-3 text-gray-700">{player.licence}</td>
-                  <td className="py-3 pr-3 text-gray-700">{player.ranking}</td>
-                  <td className="py-3 pr-3 text-gray-700">{player.table}</td>
-                  <td className="py-3 pr-3 text-gray-700">{player.payment}</td>
-                  <td className="py-3 text-gray-700">
-                    <span className="inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700">
+                  <td className="py-3 pr-3 text-foreground">{player.name}</td>
+                  <td className="py-3 pr-3 text-muted-foreground">{player.club}</td>
+                  <td className="py-3 pr-3 text-muted-foreground">{player.licence}</td>
+                  <td className="py-3 pr-3 text-muted-foreground">{player.ranking}</td>
+                  <td className="py-3 pr-3 text-muted-foreground">{player.table}</td>
+                  <td className="py-3 pr-3 text-muted-foreground">{player.payment}</td>
+                  <td className="py-3 text-muted-foreground">
+                    <span className="inline-flex rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">
                       {player.status}
                     </span>
                   </td>
