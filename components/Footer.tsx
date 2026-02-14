@@ -108,17 +108,16 @@ export default function Footer() {
             <div className="mt-4 flex flex-col gap-3 text-sm">
               {socialButtons.map((socialButton) => (
                 <a
-                  key={socialButton.name}
-                  className={`inline-flex items-center justify-between rounded-lg border px-4 py-2 font-medium transition-colors ${socialButton.className}`}
+                  key={socialButton.href}
+                  className={`inline-flex items-center rounded-lg border px-4 py-2 font-medium transition-colors ${socialButton.className}`}
                   href={socialButton.href}
                   rel="noreferrer"
                   target="_blank"
                 >
                   <span className="inline-flex items-center gap-2">
                     {socialButton.icon}
-                    {socialButton.name}
+                    {socialButton.handle}
                   </span>
-                  <span className="text-xs opacity-90">{socialButton.handle}</span>
                 </a>
               ))}
             </div>
