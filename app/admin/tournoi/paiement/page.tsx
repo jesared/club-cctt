@@ -173,8 +173,9 @@ export default async function AdminTournoiPaiementPage() {
               ✅ Tout est soldé : aucun paiement en attente de validation.
             </p>
           ) : (
-            <div className="mt-4 overflow-x-auto rounded-lg border border-gray-200">
-              <table className="min-w-full divide-y divide-gray-200 text-sm">
+            <>
+              <div className="mt-4 overflow-x-auto rounded-lg border border-gray-200">
+                <table className="min-w-full divide-y divide-gray-200 text-sm">
                 <thead className="bg-gray-50 text-left text-xs uppercase tracking-wide text-gray-500">
                   <tr>
                     <th className="px-4 py-3">Priorité</th>
@@ -261,7 +262,7 @@ export default async function AdminTournoiPaiementPage() {
                 </article>
               ))}
             </div>
-
+            </>
           )}
         </article>
       </section>
