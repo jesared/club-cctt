@@ -45,7 +45,8 @@ export default async function AdminTournoiPaiementPage() {
     .filter((group) => group.paymentStatus !== "PAYÉ")
     .map((group) => {
       const remainingCents = Math.max(group.totalAmountDueCents - group.totalPaidCents, 0);
-      const priority = remainingCents >= standardTablePriceCents * 3 || group.registrations >= 3 ? "HAUTE" : "NORMALE";
+      const priority: "HAUTE" | "NORMALE" =
+        remainingCents >= standardTablePriceCents * 3 || group.registrations >= 3 ? "HAUTE" : "NORMALE";
       const dossierType = group.registrations > 1 ? "Dossier groupé" : "Dossier individuel";
       const statusLabel = formatPaymentStatus(group.paymentStatus);
 
