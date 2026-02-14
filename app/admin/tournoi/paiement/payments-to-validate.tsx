@@ -170,12 +170,12 @@ export function PaymentsToValidate({ initialPayments }: Props) {
 
   return (
     <>
-      <div className="mt-4 flex flex-col gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4 md:flex-row md:items-end">
-        <label className="flex-1 text-sm font-medium text-gray-900" htmlFor="payment-status-filter">
+      <div className="mt-4 flex flex-col gap-3 rounded-lg border border-border bg-secondary p-4 md:flex-row md:items-end">
+        <label className="flex-1 text-sm font-medium text-foreground" htmlFor="payment-status-filter">
           Filtrer par statut
           <select
             id="payment-status-filter"
-            className="mt-2 w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm"
+            className="mt-2 w-full rounded-lg border border-border bg-card p-2.5 text-sm"
             value={statusFilter}
             onChange={(event) => setStatusFilter(event.target.value as FilterStatus)}
           >
@@ -185,19 +185,19 @@ export function PaymentsToValidate({ initialPayments }: Props) {
           </select>
         </label>
 
-        <label className="flex-1 text-sm font-medium text-gray-900" htmlFor="payment-name-filter">
+        <label className="flex-1 text-sm font-medium text-foreground" htmlFor="payment-name-filter">
           Filtrer par nom du payeur
           <input
             id="payment-name-filter"
             type="search"
-            className="mt-2 w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm"
+            className="mt-2 w-full rounded-lg border border-border bg-card p-2.5 text-sm"
             value={nameFilter}
             onChange={(event) => setNameFilter(event.target.value)}
             placeholder="Ex: Martin"
           />
         </label>
 
-        <label className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700">
+        <label className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium text-muted-foreground">
           <input
             type="checkbox"
             className="h-4 w-4"
@@ -208,9 +208,9 @@ export function PaymentsToValidate({ initialPayments }: Props) {
         </label>
       </div>
 
-      <div className="mt-4 overflow-x-auto rounded-lg border border-gray-200">
+      <div className="mt-4 overflow-x-auto rounded-lg border border-border">
         <table className="min-w-full divide-y divide-gray-200 text-sm">
-          <thead className="bg-gray-50 text-left text-xs uppercase tracking-wide text-gray-500">
+          <thead className="bg-secondary text-left text-xs uppercase tracking-wide text-muted-foreground">
             <tr>
               <th className="px-4 py-3">Priorité</th>
               <th className="px-4 py-3">Type</th>
@@ -221,9 +221,9 @@ export function PaymentsToValidate({ initialPayments }: Props) {
               <th className="px-4 py-3">Action suggérée</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 bg-white text-gray-700">
+          <tbody className="divide-y divide-gray-100 bg-card text-muted-foreground">
             {filteredPayments.map((group) => (
-              <tr key={group.groupKey} className="hover:bg-gray-50">
+              <tr key={group.groupKey} className="hover:bg-secondary">
                 <td className="px-4 py-3">
                   <span
                     className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
@@ -233,8 +233,8 @@ export function PaymentsToValidate({ initialPayments }: Props) {
                     {group.priority}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-xs text-gray-600">{group.dossierType}</td>
-                <td className="px-4 py-3 font-medium text-gray-900">
+                <td className="px-4 py-3 text-xs text-muted-foreground">{group.dossierType}</td>
+                <td className="px-4 py-3 font-medium text-foreground">
                   <button
                     type="button"
                     className="underline decoration-dotted underline-offset-2 hover:text-indigo-700"
@@ -244,10 +244,10 @@ export function PaymentsToValidate({ initialPayments }: Props) {
                   </button>
                 </td>
                 <td className="px-4 py-3">
-                  <p className="font-medium text-gray-900">{group.registrations} inscriptions</p>
-                  <p className="text-xs text-gray-500">{group.players.join(", ")}</p>
+                  <p className="font-medium text-foreground">{group.registrations} inscriptions</p>
+                  <p className="text-xs text-muted-foreground">{group.players.join(", ")}</p>
                 </td>
-                <td className="px-4 py-3 font-semibold text-gray-900">{formatEuro(group.remainingCents)}</td>
+                <td className="px-4 py-3 font-semibold text-foreground">{formatEuro(group.remainingCents)}</td>
                 <td className="px-4 py-3">
                   <span
                     className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
@@ -261,7 +261,7 @@ export function PaymentsToValidate({ initialPayments }: Props) {
                     {group.statusLabel}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-gray-600">{group.suggestedAction}</td>
+                <td className="px-4 py-3 text-muted-foreground">{group.suggestedAction}</td>
               </tr>
             ))}
           </tbody>
@@ -269,39 +269,39 @@ export function PaymentsToValidate({ initialPayments }: Props) {
       </div>
 
       {filteredPayments.length === 0 ? (
-        <p className="mt-3 rounded-lg border border-gray-200 bg-white p-3 text-sm text-gray-600">
+        <p className="mt-3 rounded-lg border border-border bg-card p-3 text-sm text-muted-foreground">
           Aucun dossier ne correspond aux filtres actuels.
         </p>
       ) : null}
 
       {selectedPayment ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4" role="dialog" aria-modal="true">
-          <div className="w-full max-w-2xl rounded-xl bg-white p-6 shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" role="dialog" aria-modal="true">
+          <div className="w-full max-w-2xl rounded-xl bg-card p-6 shadow-xl">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Traitement du dossier</h3>
-                <p className="mt-1 text-sm text-gray-600">{selectedPayment.payerLabel}</p>
+                <h3 className="text-lg font-semibold text-foreground">Traitement du dossier</h3>
+                <p className="mt-1 text-sm text-muted-foreground">{selectedPayment.payerLabel}</p>
               </div>
-              <button type="button" onClick={closeModal} className="rounded-md border px-2 py-1 text-sm text-gray-600 hover:bg-gray-50">
+              <button type="button" onClick={closeModal} className="rounded-md border px-2 py-1 text-sm text-muted-foreground hover:bg-secondary">
                 Fermer
               </button>
             </div>
 
-            <ul className="mt-4 space-y-2 text-sm text-gray-700">
-              <li><span className="font-medium text-gray-900">Type :</span> {selectedPayment.dossierType}</li>
-              <li><span className="font-medium text-gray-900">Statut :</span> {selectedPayment.statusLabel}</li>
-              <li><span className="font-medium text-gray-900">Montant dû :</span> {formatEuro(selectedPayment.totalAmountDueCents)}</li>
-              <li><span className="font-medium text-gray-900">Déjà payé :</span> {formatEuro(selectedPayment.totalPaidCents)}</li>
-              <li><span className="font-medium text-gray-900">Reste à encaisser :</span> {formatEuro(selectedPayment.remainingCents)}</li>
-              <li><span className="font-medium text-gray-900">Joueurs :</span> {selectedPayment.players.join(", ")}</li>
+            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+              <li><span className="font-medium text-foreground">Type :</span> {selectedPayment.dossierType}</li>
+              <li><span className="font-medium text-foreground">Statut :</span> {selectedPayment.statusLabel}</li>
+              <li><span className="font-medium text-foreground">Montant dû :</span> {formatEuro(selectedPayment.totalAmountDueCents)}</li>
+              <li><span className="font-medium text-foreground">Déjà payé :</span> {formatEuro(selectedPayment.totalPaidCents)}</li>
+              <li><span className="font-medium text-foreground">Reste à encaisser :</span> {formatEuro(selectedPayment.remainingCents)}</li>
+              <li><span className="font-medium text-foreground">Joueurs :</span> {selectedPayment.players.join(", ")}</li>
             </ul>
 
-            <label className="mt-4 block text-sm font-medium text-gray-900" htmlFor="payment-priority">
+            <label className="mt-4 block text-sm font-medium text-foreground" htmlFor="payment-priority">
               Priorité
             </label>
             <select
               id="payment-priority"
-              className="mt-2 w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-indigo-500 focus:outline-none"
+              className="mt-2 w-full rounded-lg border border-border p-3 text-sm focus:border-indigo-500 focus:outline-none"
               value={selectedPayment.priority}
               onChange={updateSelectedPriority}
             >
@@ -309,12 +309,12 @@ export function PaymentsToValidate({ initialPayments }: Props) {
               <option value="HAUTE">HAUTE</option>
             </select>
 
-            <label className="mt-4 block text-sm font-medium text-gray-900" htmlFor="payment-note">
+            <label className="mt-4 block text-sm font-medium text-foreground" htmlFor="payment-note">
               Note interne
             </label>
             <textarea
               id="payment-note"
-              className="mt-2 min-h-28 w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-indigo-500 focus:outline-none"
+              className="mt-2 min-h-28 w-full rounded-lg border border-border p-3 text-sm focus:border-indigo-500 focus:outline-none"
               placeholder="Ajouter une note sur le dossier..."
               value={noteByGroup[selectedPayment.groupKey] ?? ""}
               onChange={(event) =>
@@ -326,7 +326,7 @@ export function PaymentsToValidate({ initialPayments }: Props) {
             />
 
             <div className="mt-5 flex justify-end gap-3">
-              <button type="button" onClick={closeModal} className="rounded-lg border px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+              <button type="button" onClick={closeModal} className="rounded-lg border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary">
                 Annuler
               </button>
               {selectedPayment.paymentStatus === "PAYÉ" ? (

@@ -259,7 +259,7 @@ export default function DashboardSidebar() {
                 <button
                   type="button"
                   onClick={() => toggleMenuGroup("adminClub")}
-                  className="flex w-full items-center justify-between text-xs font-semibold uppercase tracking-wide text-red-600/80"
+                  className="flex w-full items-center justify-between text-xs font-semibold uppercase tracking-wide text-sidebar-foreground/90"
                   aria-expanded={menuGroups.adminClub}
                   aria-controls="menu-group-admin-club"
                 >
@@ -287,8 +287,8 @@ export default function DashboardSidebar() {
                         href={item.href}
                         className={cn(
                           "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                          "hover:bg-red-500/10 hover:text-red-600",
-                          isActive && "bg-red-500/10 text-red-600",
+                          "hover:bg-[#ff00c8]/90 hover:text-white",
+                          isActive && "bg-[#ff00c8] text-white",
                           isCollapsed ? "w-12 justify-center px-0" : "w-full",
                         )}
                       >
@@ -308,7 +308,7 @@ export default function DashboardSidebar() {
                 <button
                   type="button"
                   onClick={() => toggleMenuGroup("adminTournament")}
-                  className="flex w-full items-center justify-between text-xs font-semibold uppercase tracking-wide text-red-600/80"
+                  className="flex w-full items-center justify-between text-xs font-semibold uppercase tracking-wide text-sidebar-foreground/90"
                   aria-expanded={menuGroups.adminTournament}
                   aria-controls="menu-group-admin-tournament"
                 >
@@ -336,8 +336,8 @@ export default function DashboardSidebar() {
                         href={item.href}
                         className={cn(
                           "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                          "hover:bg-red-500/10 hover:text-red-600",
-                          isActive && "bg-red-500/10 text-red-600",
+                          "hover:bg-[#ff00c8]/90 hover:text-white",
+                          isActive && "bg-[#ff00c8] text-white",
                           isCollapsed ? "w-12 justify-center px-0" : "w-full",
                         )}
                       >

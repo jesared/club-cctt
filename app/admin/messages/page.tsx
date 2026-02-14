@@ -150,19 +150,19 @@ export default function AdminMessagesPage() {
               key={m.id}
               className={`border rounded-lg p-4 ${
                 m.important
-                  ? "border-red-400 bg-red-50"
-                  : "border-gray-200 bg-white"
+                  ? "border-primary/60 bg-primary/10"
+                  : "border-border bg-card"
               }`}
             >
               <div className="flex justify-between items-start gap-4">
                 <div>
                   <h3 className="font-semibold text-lg">{m.title}</h3>
 
-                  <p className="text-gray-700 whitespace-pre-wrap">
+                  <p className="text-muted-foreground whitespace-pre-wrap">
                     {m.content}
                   </p>
 
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p className="text-xs text-muted-foreground mt-2">
                     {m.author?.name || m.author?.email} —{" "}
                     {new Date(m.createdAt).toLocaleString()}
                   </p>
@@ -178,7 +178,7 @@ export default function AdminMessagesPage() {
 
                   <button
                     onClick={() => deleteMessage(m.id)}
-                    className="inline-flex cursor-pointer items-center justify-center rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 transition-colors hover:bg-red-100 hover:border-red-300"
+                    className="inline-flex cursor-pointer items-center justify-center rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-sm font-medium text-primary transition-colors hover:bg-primary/20 hover:border-primary/60"
                   >
                     Supprimer
                   </button>
@@ -193,7 +193,7 @@ export default function AdminMessagesPage() {
 
       {editing && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-lg space-y-4">
+          <div className="bg-card rounded-lg p-6 w-full max-w-lg space-y-4">
             <h2 className="text-xl font-semibold">Modifier le message</h2>
 
             <input

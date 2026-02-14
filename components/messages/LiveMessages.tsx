@@ -60,7 +60,7 @@ export default function LiveMessages() {
           key={m.id}
           className={`border rounded-lg p-4 transition ${
             m.important
-              ? "border-red-500 bg-red-50"
+              ? "border-primary/60 bg-primary/10"
               : "border-gray-200 bg-white"
           }`}
         >
@@ -68,7 +68,7 @@ export default function LiveMessages() {
             <h3 className="font-semibold">{m.title}</h3>
 
             {m.important && (
-              <span className="text-xs font-bold text-red-600">IMPORTANT</span>
+              <span className="text-xs font-bold text-primary">IMPORTANT</span>
             )}
           </div>
 

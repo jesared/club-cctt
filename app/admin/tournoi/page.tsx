@@ -42,31 +42,31 @@ export default async function AdminTournoiPage() {
       ]}
     >
       <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <article className="tournament-panel rounded-xl border bg-card p-4 shadow-sm">
+        <article className="rounded-xl border bg-card p-4 shadow-sm">
           <p className="text-sm text-muted-foreground">Tableaux programmés</p>
           <p className="mt-2 text-3xl font-bold text-foreground">{tournamentTables.length}</p>
           <p className="mt-1 text-sm text-muted-foreground">Depuis la base tournoi</p>
         </article>
-        <article className="tournament-panel rounded-xl border bg-card p-4 shadow-sm">
+        <article className="rounded-xl border bg-card p-4 shadow-sm">
           <p className="text-sm text-muted-foreground">Inscriptions suivies</p>
           <p className="mt-2 text-3xl font-bold text-foreground">
             {registrationsByTable.reduce((sum, row) => sum + row.registrations, 0)}
           </p>
           <p className="mt-1 text-sm text-muted-foreground">Tous tableaux confondus</p>
         </article>
-        <article className="tournament-panel rounded-xl border bg-card p-4 shadow-sm">
+        <article className="rounded-xl border bg-card p-4 shadow-sm">
           <p className="text-sm text-muted-foreground">Recette mini anticipée</p>
           <p className="mt-2 text-3xl font-bold text-foreground">{totalEarlyRevenue}€</p>
           <p className="mt-1 text-sm text-muted-foreground">Base 1 joueur par tableau</p>
         </article>
-        <article className="tournament-panel rounded-xl border bg-card p-4 shadow-sm">
+        <article className="rounded-xl border bg-card p-4 shadow-sm">
           <p className="text-sm text-muted-foreground">Recette mini sur place</p>
           <p className="mt-2 text-3xl font-bold text-foreground">{totalOnsiteRevenue}€</p>
           <p className="mt-1 text-sm text-muted-foreground">Base 1 joueur par tableau</p>
         </article>
       </section>
 
-      <section className="tournament-panel rounded-xl border bg-card p-6 shadow-sm space-y-4">
+      <section className="rounded-xl border bg-card p-6 shadow-sm space-y-4">
         <div>
           <h2 className="text-xl font-semibold text-foreground">Programme officiel des tableaux</h2>
           <p className="text-sm text-muted-foreground">
@@ -88,13 +88,13 @@ export default async function AdminTournoiPage() {
             </thead>
             <tbody>
               {tournamentTables.map((table) => (
-                <tr key={table.id} className="border-b last:border-0 hover:bg-secondary/40 transition-colors">
+                <tr key={table.id} className="border-b last:border-0">
                   <td className="py-3 pr-3 text-muted-foreground">{table.date}</td>
                   <td className="py-3 pr-3 text-muted-foreground">{table.time}</td>
                   <td className="py-3 pr-3 font-semibold text-foreground">{table.table}</td>
                   <td className="py-3 pr-3 text-muted-foreground">{table.category}</td>
-                  <td className="py-3 pr-3 text-primary">{table.earlyPayment}</td>
-                  <td className="py-3 text-accent">{table.onsitePayment}</td>
+                  <td className="py-3 pr-3 text-muted-foreground">{table.earlyPayment}</td>
+                  <td className="py-3 text-muted-foreground">{table.onsitePayment}</td>
                 </tr>
               ))}
             </tbody>

@@ -65,15 +65,15 @@ export default async function AdminUsersPage() {
     <div className="max-w-6xl mx-auto px-4 py-12 space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Gestion utilisateurs</h1>
-        <p className="text-gray-600 mt-2">
+        <p className="text-muted-foreground mt-2">
           Voir les membres connectés et gérer leurs rôles.
         </p>
       </div>
 
-      <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
+      <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b">
+            <thead className="bg-secondary border-b">
               <tr>
                 <th className="text-left font-semibold px-4 py-3">Nom</th>
                 <th className="text-left font-semibold px-4 py-3">Email</th>
@@ -96,8 +96,8 @@ export default async function AdminUsersPage() {
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
                           user.role === "ADMIN"
-                            ? "bg-red-100 text-red-700"
-                            : "bg-gray-100 text-gray-700"
+                            ? "bg-primary/15 text-primary"
+                            : "bg-secondary text-muted-foreground"
                         }`}
                       >
                         {user.role}
@@ -122,7 +122,7 @@ export default async function AdminUsersPage() {
                           </select>
                           <button
                             type="submit"
-                            className="rounded-md border px-2 py-1 text-xs font-medium hover:bg-gray-50 disabled:opacity-50"
+                            className="rounded-md border px-2 py-1 text-xs font-medium hover:bg-secondary disabled:opacity-50"
                             disabled={user.role === "ADMIN"}
                           >
                             Changer rôle

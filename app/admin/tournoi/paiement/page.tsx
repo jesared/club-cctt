@@ -67,31 +67,31 @@ export default async function AdminTournoiPaiementPage() {
       activeHref="/admin/tournoi/paiement"
     >
       <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <article className="rounded-xl border bg-white p-4 shadow-sm">
-          <p className="text-sm text-gray-500">Participants</p>
-          <p className="mt-2 text-3xl font-bold text-gray-900">{participantsCount}</p>
+        <article className="rounded-xl border bg-card p-4 shadow-sm">
+          <p className="text-sm text-muted-foreground">Participants</p>
+          <p className="mt-2 text-3xl font-bold text-foreground">{participantsCount}</p>
         </article>
-        <article className="rounded-xl border bg-white p-4 shadow-sm">
-          <p className="text-sm text-gray-500">Engagements</p>
-          <p className="mt-2 text-3xl font-bold text-gray-900">{engagementsCount}</p>
+        <article className="rounded-xl border bg-card p-4 shadow-sm">
+          <p className="text-sm text-muted-foreground">Engagements</p>
+          <p className="mt-2 text-3xl font-bold text-foreground">{engagementsCount}</p>
         </article>
-        <article className="rounded-xl border bg-white p-4 shadow-sm">
-          <p className="text-sm text-gray-500">Total encaissé</p>
-          <p className="mt-2 text-3xl font-bold text-gray-900">{formatEuro(totalCollectedCents)}</p>
+        <article className="rounded-xl border bg-card p-4 shadow-sm">
+          <p className="text-sm text-muted-foreground">Total encaissé</p>
+          <p className="mt-2 text-3xl font-bold text-foreground">{formatEuro(totalCollectedCents)}</p>
         </article>
-        <article className="rounded-xl border bg-white p-4 shadow-sm">
-          <p className="text-sm text-gray-500">Total restant</p>
-          <p className="mt-2 text-3xl font-bold text-gray-900">{formatEuro(totalRemainingCents)}</p>
+        <article className="rounded-xl border bg-card p-4 shadow-sm">
+          <p className="text-sm text-muted-foreground">Total restant</p>
+          <p className="mt-2 text-3xl font-bold text-foreground">{formatEuro(totalRemainingCents)}</p>
         </article>
       </section>
 
 
       <section className="mt-6 grid gap-6 lg:grid-cols-2">
-        <article className="rounded-xl border bg-white p-5 shadow-sm lg:col-span-2">
+        <article className="rounded-xl border bg-card p-5 shadow-sm lg:col-span-2">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">Paiements à valider</h2>
-              <p className="mt-1 text-sm text-gray-500">
+              <h2 className="text-lg font-semibold text-foreground">Paiements à valider</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
                 Vue priorisée des dossiers non soldés pour accélérer les relances et la validation en caisse.
               </p>
             </div>
