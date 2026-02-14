@@ -49,6 +49,7 @@ function getEventStatusLabel(status: "REGISTERED" | "WAITLISTED" | "CHECKED_IN" 
 
 export default async function MesInscriptionsPage() {
   const session = await auth();
+  const userEmail = session?.user?.email?.trim().toLowerCase();
 
   if (!session?.user?.id) {
     redirect("/api/auth/signin?callbackUrl=/tournoi/mes-inscriptions");
@@ -78,7 +79,19 @@ export default async function MesInscriptionsPage() {
   const registrations = await prisma.tournamentRegistration.findMany({
     where: {
       tournamentId: tournament.id,
-      userId: session.user.id,
+      OR: [
+        { userId: session.user.id },
+        ...(userEmail
+          ? [
+              {
+                contactEmail: {
+                  equals: userEmail,
+                  mode: "insensitive" as const,
+                },
+              },
+            ]
+          : []),
+      ],
     },
     orderBy: [
       {
@@ -114,6 +127,7 @@ export default async function MesInscriptionsPage() {
               code: true,
               label: true,
               startAt: true,
+              feeOnlineCents: true,
             },
           },
         },
@@ -130,7 +144,10 @@ export default async function MesInscriptionsPage() {
   const totalDueCents = registrations.reduce(
     (sum, registration) =>
       sum +
-      registration.payments.reduce((paymentSum, payment) => paymentSum + payment.amountCents, 0),
+      registration.registrationEvents.reduce(
+        (eventSum, entry) => eventSum + entry.event.feeOnlineCents,
+        0,
+      ),
     0,
   );
 
@@ -188,7 +205,10 @@ export default async function MesInscriptionsPage() {
             const paidCents = registration.payments
               .filter((payment) => payment.status === "PAID")
               .reduce((sum, payment) => sum + payment.amountCents, 0);
-            const dueCents = registration.payments.reduce((sum, payment) => sum + payment.amountCents, 0);
+            const dueCents = registration.registrationEvents.reduce(
+              (sum, entry) => sum + entry.event.feeOnlineCents,
+              0,
+            );
 
             return (
               <article key={registration.id} className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
@@ -212,6 +232,7 @@ export default async function MesInscriptionsPage() {
                       <tr className="border-b text-left text-gray-500">
                         <th className="pb-2 pr-4 font-medium">Tableau</th>
                         <th className="pb-2 pr-4 font-medium">Horaire</th>
+                        <th className="pb-2 pr-4 font-medium">Engagement</th>
                         <th className="pb-2 pr-4 font-medium">Statut</th>
                       </tr>
                     </thead>
@@ -222,6 +243,7 @@ export default async function MesInscriptionsPage() {
                             {entry.event.code} - {entry.event.label}
                           </td>
                           <td className="py-2 pr-4 text-gray-700">{DATE_TIME_FORMATTER.format(entry.event.startAt)}</td>
+                          <td className="py-2 pr-4 text-gray-700">{formatAmount(entry.event.feeOnlineCents)}</td>
                           <td className="py-2 pr-4 text-gray-700">{getEventStatusLabel(entry.status)}</td>
                         </tr>
                       ))}
