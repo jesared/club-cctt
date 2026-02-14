@@ -3,6 +3,7 @@
 import { ChangeEvent, useMemo, useState } from "react";
 
 type PaymentStatus = "PAYÉ" | "PARTIEL" | "EN ATTENTE";
+type FilterStatus = "TOUS" | Exclude<PaymentStatus, "PAYÉ">;
 
 type PaymentDossier = {
   groupKey: string;
@@ -35,7 +36,7 @@ export function PaymentsToValidate({ initialPayments }: Props) {
   const [payments, setPayments] = useState(initialPayments);
   const [selectedGroupKey, setSelectedGroupKey] = useState<string | null>(null);
   const [noteByGroup, setNoteByGroup] = useState<Record<string, string>>({});
-  const [statusFilter, setStatusFilter] = useState<"TOUS" | PaymentStatus>("TOUS");
+  const [statusFilter, setStatusFilter] = useState<FilterStatus>("TOUS");
   const [nameFilter, setNameFilter] = useState("");
   const [showPaidPayments, setShowPaidPayments] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -86,7 +87,7 @@ export function PaymentsToValidate({ initialPayments }: Props) {
     );
   };
 
-  const validatePayment = () => {
+  const updatePaymentStatus = (nextStatus: PaymentStatus) => {
     if (!selectedPayment) {
       return;
     }
@@ -99,19 +100,29 @@ export function PaymentsToValidate({ initialPayments }: Props) {
 
         return {
           ...group,
-          paymentStatus: "PAYÉ",
-          statusLabel: "PAYÉ",
+          paymentStatus: nextStatus,
+          statusLabel: nextStatus,
           priority: invertPriority(group.priority),
-          remainingCents: 0,
-          totalPaidCents: group.totalAmountDueCents,
+          remainingCents: nextStatus === "PAYÉ" ? 0 : group.totalAmountDueCents,
+          totalPaidCents: nextStatus === "PAYÉ" ? group.totalAmountDueCents : 0,
+          suggestedAction: nextStatus === "PAYÉ" ? "Aucune action" : "Vérifier le règlement reçu",
         };
       }),
     );
 
-    setToastMessage(`Paiement validé pour ${selectedPayment.payerLabel}.`);
+    if (nextStatus === "PAYÉ") {
+      setToastMessage(`Paiement validé pour ${selectedPayment.payerLabel}.`);
+    } else {
+      setToastMessage(`Le dossier de ${selectedPayment.payerLabel} a été remis en attente.`);
+    }
+
     setTimeout(() => setToastMessage(null), 3000);
     closeModal();
   };
+
+  const validatePayment = () => updatePaymentStatus("PAYÉ");
+
+  const resetPaymentToPending = () => updatePaymentStatus("EN ATTENTE");
 
   return (
     <>
@@ -122,12 +133,11 @@ export function PaymentsToValidate({ initialPayments }: Props) {
             id="payment-status-filter"
             className="mt-2 w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm"
             value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value as "TOUS" | PaymentStatus)}
+            onChange={(event) => setStatusFilter(event.target.value as FilterStatus)}
           >
             <option value="TOUS">Tous</option>
             <option value="EN ATTENTE">En attente</option>
             <option value="PARTIEL">À régulariser</option>
-            <option value="PAYÉ">Payé</option>
           </select>
         </label>
 
@@ -275,10 +285,20 @@ export function PaymentsToValidate({ initialPayments }: Props) {
               <button type="button" onClick={closeModal} className="rounded-lg border px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
                 Annuler
               </button>
+              {selectedPayment.paymentStatus === "PAYÉ" ? (
+                <button
+                  type="button"
+                  onClick={resetPaymentToPending}
+                  className="rounded-lg border border-amber-500 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50"
+                >
+                  Remettre en attente
+                </button>
+              ) : null}
               <button
                 type="button"
                 onClick={validatePayment}
-                className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+                className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-indigo-300"
+                disabled={selectedPayment.paymentStatus === "PAYÉ"}
               >
                 Valider le paiement
               </button>
