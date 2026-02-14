@@ -20,14 +20,17 @@ const themeScript = `
 (() => {
   try {
     const storedTheme = localStorage.getItem("theme");
-    const resolvedTheme = storedTheme === "light" || storedTheme === "dark"
+    const resolvedTheme = storedTheme === "light" || storedTheme === "dark" || storedTheme === "cyberpunk"
       ? storedTheme
       : window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"
         : "light";
-    document.documentElement.classList.toggle("dark", resolvedTheme === "dark");
+    document.documentElement.classList.remove("light", "dark", "cyberpunk");
+    if (resolvedTheme !== "light") {
+      document.documentElement.classList.add(resolvedTheme);
+    }
   } catch (_) {
-    document.documentElement.classList.remove("dark");
+    document.documentElement.classList.remove("light", "dark", "cyberpunk");
   }
 })();
 `;
