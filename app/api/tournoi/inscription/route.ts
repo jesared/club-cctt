@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { RegistrationSource } from "@prisma/client";
 
 type RegistrationPayload = {
   firstName?: string;
@@ -170,6 +172,21 @@ async function sendWithResend(payload: {
   return response.ok;
 }
 
+async function ensureWebRegistrationOwnerId() {
+  const user = await prisma.user.upsert({
+    where: { email: "inscriptions-web@cctt.local" },
+    update: {},
+    create: {
+      email: "inscriptions-web@cctt.local",
+      name: "Inscriptions Web CCTT",
+      role: "ADMIN",
+    },
+    select: { id: true },
+  });
+
+  return user.id;
+}
+
 export async function POST(request: NextRequest) {
   const clientIp =
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
@@ -305,6 +322,107 @@ export async function POST(request: NextRequest) {
   const sent =
     (await sendWithWebhook(normalizedPayload)) ||
     (await sendWithResend(normalizedPayload));
+
+  const tournament = await prisma.tournament.findFirst({
+    where: {
+      status: {
+        in: ["PUBLISHED", "DRAFT"],
+      },
+    },
+    orderBy: [{ startDate: "desc" }],
+    select: {
+      id: true,
+    },
+  });
+
+  if (!tournament) {
+    return NextResponse.json(
+      {
+        message: "Aucun tournoi actif n'est disponible pour le moment.",
+      },
+      { status: 400 }
+    );
+  }
+
+  const ownerId = await ensureWebRegistrationOwnerId();
+
+  const existingPlayer = await prisma.player.findUnique({
+    where: { licence: licenseNumber },
+    select: { id: true },
+  });
+
+  const selectedEvents = await prisma.tournamentEvent.findMany({
+    where: {
+      tournamentId: tournament.id,
+      code: {
+        in: tables,
+      },
+      status: {
+        in: ["OPEN", "FULL"],
+      },
+    },
+    select: {
+      id: true,
+      code: true,
+    },
+  });
+
+  if (selectedEvents.length !== tables.length) {
+    return NextResponse.json(
+      {
+        message: "Un ou plusieurs tableaux ne sont pas disponibles sur ce tournoi.",
+      },
+      { status: 400 }
+    );
+  }
+
+  const maxPlayer = await prisma.tournamentRegistration.aggregate({
+    where: { tournamentId: tournament.id },
+    _max: { playerId: true },
+  });
+
+  const playerRefId =
+    existingPlayer?.id ??
+    (await prisma.player.create({
+      data: {
+        licence: licenseNumber,
+        nom: lastName,
+        prenom: firstName,
+        points: numericPoints,
+        club,
+        ownerId,
+      },
+      select: { id: true },
+    })).id;
+
+  try {
+    await prisma.tournamentRegistration.create({
+      data: {
+        tournamentId: tournament.id,
+        playerId: (maxPlayer._max.playerId ?? 0) + 1,
+        playerRefId,
+        licenseNumber,
+        clubName: club,
+        gender,
+        contactEmail: email,
+        contactPhone: phone,
+        source: RegistrationSource.WEB,
+        registrationEvents: {
+          create: selectedEvents.map((event) => ({
+            eventId: event.id,
+            seedPointsSnapshot: numericPoints,
+          })),
+        },
+      },
+    });
+  } catch {
+    return NextResponse.json(
+      {
+        message: "Ce joueur est déjà inscrit sur ce tournoi.",
+      },
+      { status: 409 }
+    );
+  }
 
   if (!sent) {
     console.error(
