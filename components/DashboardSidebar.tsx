@@ -20,7 +20,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   type MenuItem,
@@ -42,6 +42,26 @@ export default function DashboardSidebar() {
     adminClub: false,
     adminTournament: false,
   });
+
+  useEffect(() => {
+    if (isAdmin) {
+      setMenuGroups({
+        club: false,
+        tournament: false,
+        adminClub: true,
+        adminTournament: true,
+      });
+
+      return;
+    }
+
+    setMenuGroups({
+      club: true,
+      tournament: true,
+      adminClub: false,
+      adminTournament: false,
+    });
+  }, [isAdmin]);
 
   const toggleMenuGroup = (group: keyof typeof menuGroups) => {
     setMenuGroups((prev) => ({ ...prev, [group]: !prev[group] }));
