@@ -22,13 +22,14 @@ const themeScript = `
     const storedTheme = localStorage.getItem("theme");
     const resolvedTheme = storedTheme === "light" || storedTheme === "cyberpunk"
       ? storedTheme
-      : "light";
+      : "cyberpunk";
     document.documentElement.classList.remove("light", "cyberpunk");
     if (resolvedTheme !== "light") {
       document.documentElement.classList.add(resolvedTheme);
     }
   } catch (_) {
     document.documentElement.classList.remove("light", "cyberpunk");
+    document.documentElement.classList.add("cyberpunk");
   }
 })();
 `;
