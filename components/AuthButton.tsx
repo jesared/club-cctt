@@ -15,7 +15,7 @@ export default function AuthButton({ collapsed = false }: AuthButtonProps) {
   // Chargement
   if (status === "loading") {
     return (
-      <div className={cn("mt-6 text-sm text-gray-400", collapsed && "text-center text-xs")}>Chargement...</div>
+      <div className={cn("mt-6 text-sm text-muted-foreground", collapsed && "text-center text-xs")}>Chargement...</div>
     );
   }
 
@@ -68,7 +68,7 @@ export default function AuthButton({ collapsed = false }: AuthButtonProps) {
       <div className={cn("mt-3 flex flex-col gap-2", collapsed && "hidden")}>
         <Link
           href="/espace"
-          className="rounded-md bg-white/80 px-3 py-2 text-center text-xs font-medium hover:bg-white"
+          className="rounded-md border border-sidebar-border bg-background px-3 py-2 text-center text-xs font-medium text-foreground hover:bg-sidebar-accent"
         >
           Mon espace
         </Link>
