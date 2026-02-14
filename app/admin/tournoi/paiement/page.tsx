@@ -40,7 +40,6 @@ export default async function AdminTournoiPaiementPage() {
   );
   const groupedPayments = paymentGroups.filter((group) => group.registrations > 1);
   const paymentsToValidate = paymentGroups
-    .filter((group) => group.paymentStatus !== "PAYÉ")
     .map((group) => {
       const remainingCents = Math.max(group.totalAmountDueCents - group.totalPaidCents, 0);
       const priority: "HAUTE" | "NORMALE" = "NORMALE";
@@ -60,6 +59,7 @@ export default async function AdminTournoiPaiementPage() {
       };
     })
     .sort((a, b) => b.remainingCents - a.remainingCents);
+  const pendingPaymentsCount = paymentsToValidate.filter((group) => group.paymentStatus !== "PAYÉ").length;
 
   return (
     <TournamentAdminPage
@@ -154,11 +154,11 @@ export default async function AdminTournoiPaiementPage() {
               </p>
             </div>
             <span className="inline-flex rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700">
-              {paymentsToValidate.length} dossier{paymentsToValidate.length > 1 ? "s" : ""} à traiter
+              {pendingPaymentsCount} dossier{pendingPaymentsCount > 1 ? "s" : ""} à traiter
             </span>
           </div>
 
-          {paymentsToValidate.length === 0 ? (
+          {pendingPaymentsCount === 0 ? (
             <p className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">
               ✅ Tout est soldé : aucun paiement en attente de validation.
             </p>

@@ -35,11 +35,35 @@ export function PaymentsToValidate({ initialPayments }: Props) {
   const [payments, setPayments] = useState(initialPayments);
   const [selectedGroupKey, setSelectedGroupKey] = useState<string | null>(null);
   const [noteByGroup, setNoteByGroup] = useState<Record<string, string>>({});
+  const [statusFilter, setStatusFilter] = useState<"TOUS" | PaymentStatus>("TOUS");
+  const [nameFilter, setNameFilter] = useState("");
+  const [showPaidPayments, setShowPaidPayments] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const selectedPayment = useMemo(
     () => payments.find((group) => group.groupKey === selectedGroupKey) ?? null,
     [payments, selectedGroupKey],
   );
+
+  const filteredPayments = useMemo(() => {
+    const normalizedNameFilter = nameFilter.trim().toLowerCase();
+
+    return payments.filter((group) => {
+      if (!showPaidPayments && group.paymentStatus === "PAYÉ") {
+        return false;
+      }
+
+      if (statusFilter !== "TOUS" && group.paymentStatus !== statusFilter) {
+        return false;
+      }
+
+      if (!normalizedNameFilter) {
+        return true;
+      }
+
+      return group.payerLabel.toLowerCase().includes(normalizedNameFilter);
+    });
+  }, [payments, statusFilter, nameFilter, showPaidPayments]);
 
   const closeModal = () => setSelectedGroupKey(null);
 
@@ -68,28 +92,68 @@ export function PaymentsToValidate({ initialPayments }: Props) {
     }
 
     setPayments((current) =>
-      current
-        .map<PaymentDossier>((group): PaymentDossier => {
-          if (group.groupKey !== selectedPayment.groupKey) {
-            return group;
-          }
+      current.map<PaymentDossier>((group): PaymentDossier => {
+        if (group.groupKey !== selectedPayment.groupKey) {
+          return group;
+        }
 
-          return {
-            ...group,
-            paymentStatus: "PAYÉ",
-            statusLabel: "PAYÉ",
-            priority: invertPriority(group.priority),
-            remainingCents: 0,
-            totalPaidCents: group.totalAmountDueCents,
-          };
-        })
-        .filter((group) => group.paymentStatus !== "PAYÉ"),
+        return {
+          ...group,
+          paymentStatus: "PAYÉ",
+          statusLabel: "PAYÉ",
+          priority: invertPriority(group.priority),
+          remainingCents: 0,
+          totalPaidCents: group.totalAmountDueCents,
+        };
+      }),
     );
+
+    setToastMessage(`Paiement validé pour ${selectedPayment.payerLabel}.`);
+    setTimeout(() => setToastMessage(null), 3000);
     closeModal();
   };
 
   return (
     <>
+      <div className="mt-4 flex flex-col gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4 md:flex-row md:items-end">
+        <label className="flex-1 text-sm font-medium text-gray-900" htmlFor="payment-status-filter">
+          Filtrer par statut
+          <select
+            id="payment-status-filter"
+            className="mt-2 w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm"
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value as "TOUS" | PaymentStatus)}
+          >
+            <option value="TOUS">Tous</option>
+            <option value="EN ATTENTE">En attente</option>
+            <option value="PARTIEL">À régulariser</option>
+            <option value="PAYÉ">Payé</option>
+          </select>
+        </label>
+
+        <label className="flex-1 text-sm font-medium text-gray-900" htmlFor="payment-name-filter">
+          Filtrer par nom du payeur
+          <input
+            id="payment-name-filter"
+            type="search"
+            className="mt-2 w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm"
+            value={nameFilter}
+            onChange={(event) => setNameFilter(event.target.value)}
+            placeholder="Ex: Martin"
+          />
+        </label>
+
+        <label className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700">
+          <input
+            type="checkbox"
+            className="h-4 w-4"
+            checked={showPaidPayments}
+            onChange={(event) => setShowPaidPayments(event.target.checked)}
+          />
+          Afficher les paiements validés
+        </label>
+      </div>
+
       <div className="mt-4 overflow-x-auto rounded-lg border border-gray-200">
         <table className="min-w-full divide-y divide-gray-200 text-sm">
           <thead className="bg-gray-50 text-left text-xs uppercase tracking-wide text-gray-500">
@@ -104,7 +168,7 @@ export function PaymentsToValidate({ initialPayments }: Props) {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 bg-white text-gray-700">
-            {payments.map((group) => (
+            {filteredPayments.map((group) => (
               <tr key={group.groupKey} className="hover:bg-gray-50">
                 <td className="px-4 py-3">
                   <span
@@ -133,7 +197,11 @@ export function PaymentsToValidate({ initialPayments }: Props) {
                 <td className="px-4 py-3">
                   <span
                     className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
-                      group.paymentStatus === "PARTIEL" ? "bg-amber-100 text-amber-700" : "bg-indigo-100 text-indigo-700"
+                      group.paymentStatus === "PAYÉ"
+                        ? "bg-emerald-100 text-emerald-700"
+                        : group.paymentStatus === "PARTIEL"
+                          ? "bg-amber-100 text-amber-700"
+                          : "bg-indigo-100 text-indigo-700"
                     }`}
                   >
                     {group.statusLabel}
@@ -145,6 +213,12 @@ export function PaymentsToValidate({ initialPayments }: Props) {
           </tbody>
         </table>
       </div>
+
+      {filteredPayments.length === 0 ? (
+        <p className="mt-3 rounded-lg border border-gray-200 bg-white p-3 text-sm text-gray-600">
+          Aucun dossier ne correspond aux filtres actuels.
+        </p>
+      ) : null}
 
       {selectedPayment ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4" role="dialog" aria-modal="true">
@@ -210,6 +284,12 @@ export function PaymentsToValidate({ initialPayments }: Props) {
               </button>
             </div>
           </div>
+        </div>
+      ) : null}
+
+      {toastMessage ? (
+        <div className="fixed bottom-4 right-4 z-[60] rounded-lg bg-emerald-600 px-4 py-3 text-sm font-medium text-white shadow-lg">
+          {toastMessage}
         </div>
       ) : null}
     </>
