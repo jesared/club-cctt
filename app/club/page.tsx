@@ -14,12 +14,12 @@ export default function ClubPage() {
 
       {/* PRÉSENTATION */}
       <section>
-        <Card className="bg-purple-50">
+        <Card className="bg-purple-50 cyberpunk-highlight">
           <CardHeader>
             <CardTitle>Présentation</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-700 leading-relaxed max-w-4xl">
+            <p className="text-gray-700 leading-relaxed max-w-4xl cyberpunk-text-soft">
               Fondé à Châlons-en-Champagne, le <strong>CCTT</strong> est un club
               affilié à la Fédération Française de Tennis de Table. Le club a
               pour objectif de promouvoir la pratique du tennis de table, aussi

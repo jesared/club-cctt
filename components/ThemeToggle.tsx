@@ -3,7 +3,7 @@
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 
-type Theme = "light" | "dark" | "cyberpunk";
+type Theme = "light" | "cyberpunk";
 
 const THEME_STORAGE_KEY = "theme";
 
@@ -13,15 +13,15 @@ function getPreferredTheme(): Theme {
   }
 
   const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
-  if (savedTheme === "light" || savedTheme === "dark" || savedTheme === "cyberpunk") {
+  if (savedTheme === "light" || savedTheme === "cyberpunk") {
     return savedTheme;
   }
 
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  return "light";
 }
 
 function applyTheme(theme: Theme) {
-  document.documentElement.classList.remove("light", "dark", "cyberpunk");
+  document.documentElement.classList.remove("light", "cyberpunk");
   if (theme !== "light") {
     document.documentElement.classList.add(theme);
   }
@@ -39,7 +39,7 @@ export default function ThemeToggle() {
   }, []);
 
   const toggleTheme = () => {
-    const cycle: Theme[] = ["light", "dark", "cyberpunk"];
+    const cycle: Theme[] = ["light", "cyberpunk"];
     const currentIndex = cycle.indexOf(theme);
     const nextTheme = cycle[(currentIndex + 1) % cycle.length];
     setTheme(nextTheme);
@@ -55,23 +55,19 @@ export default function ThemeToggle() {
       aria-label={
         isMounted
           ? theme === "light"
-            ? "Activer le thème sombre"
-            : theme === "dark"
-              ? "Activer le thème cyberpunk"
-              : "Activer le thème clair"
+            ? "Activer le thème cyberpunk"
+            : "Activer le thème clair"
           : "Basculer le thème"
       }
       title={
         isMounted
           ? theme === "light"
             ? "Mode clair"
-            : theme === "dark"
-              ? "Mode sombre"
-              : "Mode cyberpunk"
+            : "Mode cyberpunk"
           : "Thème"
       }
     >
-      {isMounted && theme === "dark" ? (
+      {isMounted && theme === "cyberpunk" ? (
         <Sun className="h-4 w-4" aria-hidden="true" />
       ) : (
         <Moon className="h-4 w-4" aria-hidden="true" />
