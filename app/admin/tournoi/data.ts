@@ -195,6 +195,7 @@ export async function getAdminPlayers(tournamentId: string): Promise<AdminPlayer
       registrationEvents: {
         select: {
           id: true,
+          eventId: true,
           event: {
             select: {
               code: true,
