@@ -12,7 +12,7 @@ const badgeVariants = cva(
         jeunes: "bg-purple-100 text-purple-700",
         elite: "bg-blue-600 text-white",
         loisir: "bg-green-600 text-white",
-        libre: "bg-gray-200 text-gray-700",
+        libre: "bg-muted text-foreground",
         secondary:
           "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
         destructive:
