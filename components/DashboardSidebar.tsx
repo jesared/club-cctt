@@ -1,30 +1,16 @@
 "use client";
 
-import {
-  Banknote,
-  CalendarCheck,
-  ChevronDown,
-  ChevronUp,
-  ClipboardPen,
-  Download,
-  ChevronLeft,
-  ChevronRight,
-  FileText,
-  LayoutDashboard,
-  MessageSquare,
-  Shield,
-  Trophy,
-  UserPlus,
-  Users,
-} from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import {
-  type MenuItem,
+  clubAdminMenuItems,
   mainMenuItems,
+  tournamentAdminMenuItems,
+  tournamentMenuItems,
 } from "@/components/navigation/menu-items";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
@@ -69,36 +55,6 @@ export default function DashboardSidebar() {
   };
 
   const clubMenuItems = mainMenuItems;
-  const tournamentMenuItems: MenuItem[] = [
-    { href: "/tournoi", label: "Accueil tournoi", icon: Trophy },
-    { href: "/tournoi/inscription", label: "Inscription", icon: ClipboardPen },
-    { href: "/tournoi/mes-inscriptions", label: "Mes inscriptions", icon: CalendarCheck },
-    { href: "/tournoi/reglement", label: "Règlement", icon: FileText },
-  ];
-
-  const clubAdminMenuItems = [
-    { href: "/admin", label: "Administration", icon: Shield },
-    { href: "/admin/messages", label: "Messages", icon: MessageSquare },
-    { href: "/admin/users", label: "Utilisateurs", icon: Users },
-  ];
-
-  const tournamentAdminMenuItems = [
-    { href: "/admin/tournoi", label: "Dashboard", icon: LayoutDashboard },
-    {
-      href: "/admin/tournoi/inscriptions",
-      label: "Inscriptions",
-      icon: ClipboardPen,
-    },
-    { href: "/admin/tournoi/paiement", label: "Paiements", icon: Banknote },
-    { href: "/admin/tournoi/pointages", label: "Pointages", icon: CalendarCheck },
-    { href: "/admin/tournoi/joueurs", label: "Joueurs", icon: Users },
-    {
-      href: "/admin/tournoi/ajout-player",
-      label: "Ajouter un joueur",
-      icon: UserPlus,
-    },
-    { href: "/admin/tournoi/exports", label: "Exports", icon: Download },
-  ];
 
   return (
     <aside
