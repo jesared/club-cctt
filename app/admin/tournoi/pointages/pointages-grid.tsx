@@ -8,8 +8,10 @@ type PointagesGridPlayer = {
   licence: string;
   name: string;
   club: string;
+  ranking: string;
   table: string;
   status: string;
+  engagedEventIds: string[];
   checkedDayKeys: string[];
   registrationEventIdsByDay: Record<string, string[]>;
 };
@@ -19,12 +21,38 @@ type DayColumn = {
   label: string;
 };
 
+type TournamentTable = {
+  id: string;
+  table: string;
+  category: string;
+  onsitePayment: string;
+  minPoints: number | null;
+  maxPoints: number | null;
+};
+
 type PointagesGridProps = {
   players: PointagesGridPlayer[];
   dayColumns: DayColumn[];
+  tournamentTables: TournamentTable[];
 };
 
-export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
+function isEligible(points: number | null, table: TournamentTable) {
+  if (points === null) {
+    return true;
+  }
+
+  if (table.minPoints !== null && points < table.minPoints) {
+    return false;
+  }
+
+  if (table.maxPoints !== null && points > table.maxPoints) {
+    return false;
+  }
+
+  return true;
+}
+
+export function PointagesGrid({ players, dayColumns, tournamentTables }: PointagesGridProps) {
   const [playersState, setPlayersState] = useState<PointagesGridPlayer[]>(players);
   const [checkedState, setCheckedState] = useState<Record<string, boolean>>(() => {
     return players.reduce<Record<string, boolean>>((acc, player) => {
@@ -40,7 +68,8 @@ export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
   const [editingPlayer, setEditingPlayer] = useState<PointagesGridPlayer | null>(null);
   const [deletingPlayer, setDeletingPlayer] = useState<PointagesGridPlayer | null>(null);
   const [deletePending, setDeletePending] = useState<boolean>(false);
-  const [engagementDraft, setEngagementDraft] = useState<string>("");
+  const [selectedEditEventIds, setSelectedEditEventIds] = useState<Set<string>>(new Set());
+  const [editPending, setEditPending] = useState<boolean>(false);
 
   const clubOptions = useMemo(() => {
     return Array.from(new Set(playersState.map((player) => player.club))).sort((clubA, clubB) =>
@@ -85,6 +114,21 @@ export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
     });
   }, [playersState, selectedClub, selectedTable]);
 
+  const parsedEditingPoints = useMemo(() => {
+    if (!editingPlayer || !editingPlayer.ranking.trim() || editingPlayer.ranking === "—") {
+      return null;
+    }
+
+    const numericPoints = Number.parseInt(editingPlayer.ranking, 10);
+    return Number.isNaN(numericPoints) ? null : numericPoints;
+  }, [editingPlayer]);
+
+  const ineligibleTableCodes = useMemo(() => {
+    return tournamentTables
+      .filter((table) => !isEligible(parsedEditingPoints, table))
+      .map((table) => table.table);
+  }, [parsedEditingPoints, tournamentTables]);
+
   async function toggleCheck(player: PointagesGridPlayer, dayKey: string) {
     const key = `${player.id}-${dayKey}`;
     const eventIds = player.registrationEventIdsByDay[dayKey] ?? [];
@@ -128,33 +172,83 @@ export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
 
   function openEditPopup(player: PointagesGridPlayer) {
     setEditingPlayer(player);
-    setEngagementDraft(player.table === "—" ? "" : player.table);
+    setSelectedEditEventIds(new Set(player.engagedEventIds));
   }
 
-  function saveEngagements() {
+  async function saveEngagements() {
     if (!editingPlayer) {
       return;
     }
 
-    const nextTableValue = engagementDraft
-      .split(",")
-      .map((value) => value.trim())
-      .filter(Boolean)
-      .join(", ");
+    const nextEventIds = Array.from(selectedEditEventIds);
+    setEditPending(true);
 
-    setPlayersState((previousState) =>
-      previousState.map((player) =>
-        player.id === editingPlayer.id
-          ? {
-              ...player,
-              table: nextTableValue || "—",
-            }
-          : player,
-      ),
-    );
+    try {
+      const response = await fetch("/api/admin/tournoi/pointages", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          registrationId: editingPlayer.id,
+          eventIds: nextEventIds,
+        }),
+      });
 
-    setEditingPlayer(null);
-    setEngagementDraft("");
+      if (!response.ok) {
+        throw new Error("Erreur lors de la sauvegarde des engagements");
+      }
+
+      const payload = (await response.json()) as {
+        player?: {
+          registrationId: string;
+          table: string;
+          engagedEventIds: string[];
+          registrationEventIdsByDay: Record<string, string[]>;
+          checkedDayKeys: string[];
+        };
+      };
+
+      const updatedPlayer = payload.player;
+      if (!updatedPlayer) {
+        throw new Error("Réponse invalide");
+      }
+
+      setPlayersState((previousState) =>
+        previousState.map((player) =>
+          player.id === updatedPlayer.registrationId
+            ? {
+                ...player,
+                table: updatedPlayer.table,
+                engagedEventIds: updatedPlayer.engagedEventIds,
+                registrationEventIdsByDay: updatedPlayer.registrationEventIdsByDay,
+                checkedDayKeys: updatedPlayer.checkedDayKeys,
+              }
+            : player,
+        ),
+      );
+
+      setCheckedState((previousState) => {
+        const nextState = { ...previousState };
+
+        Object.keys(nextState).forEach((key) => {
+          if (key.startsWith(`${updatedPlayer.registrationId}-`)) {
+            delete nextState[key];
+          }
+        });
+
+        updatedPlayer.checkedDayKeys.forEach((dayKey) => {
+          nextState[`${updatedPlayer.registrationId}-${dayKey}`] = true;
+        });
+
+        return nextState;
+      });
+
+      setEditingPlayer(null);
+      setSelectedEditEventIds(new Set());
+    } finally {
+      setEditPending(false);
+    }
   }
 
   async function confirmDeletePlayer() {
@@ -316,25 +410,66 @@ export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
 
       {editingPlayer ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4" role="dialog" aria-modal="true">
-          <div className="w-full max-w-lg space-y-4 rounded-lg bg-white p-6 shadow-lg">
+          <div className="w-full max-w-2xl space-y-4 rounded-lg bg-white p-6 shadow-lg">
             <h3 className="text-lg font-semibold text-gray-900">Modifier les engagements</h3>
             <p className="text-sm text-gray-600">
-              Mettez à jour les tableaux de <span className="font-medium">{editingPlayer.name}</span> (séparés par des virgules).
+              Modifiez les tableaux de <span className="font-medium">{editingPlayer.name}</span>.
             </p>
-            <textarea
-              rows={4}
-              value={engagementDraft}
-              onChange={(event) => setEngagementDraft(event.target.value)}
-              placeholder="Ex: Simple A, Double B"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-800"
-            />
+            <p className="rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-800">
+              {ineligibleTableCodes.length === 0
+                ? "Tous les tableaux sont disponibles pour ce classement."
+                : `Tableaux indisponibles pour ce classement : ${ineligibleTableCodes.join(", ")}.`}
+            </p>
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 max-h-80 overflow-y-auto pr-1">
+              {tournamentTables.map((table) => {
+                const eligible = isEligible(parsedEditingPoints, table);
+                const checked = selectedEditEventIds.has(table.id);
+
+                return (
+                  <label
+                    key={table.id}
+                    className={`flex items-start gap-2 rounded-lg border p-3 text-sm transition ${
+                      eligible
+                        ? "border-gray-200"
+                        : "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      value={table.id}
+                      className="mt-0.5"
+                      disabled={!eligible || editPending}
+                      checked={checked}
+                      onChange={(event) => {
+                        const isChecked = event.target.checked;
+                        setSelectedEditEventIds((currentSelection) => {
+                          const nextSelection = new Set(currentSelection);
+                          if (isChecked) {
+                            nextSelection.add(table.id);
+                          } else {
+                            nextSelection.delete(table.id);
+                          }
+                          return nextSelection;
+                        });
+                      }}
+                    />
+                    <span>
+                      <span className="block font-semibold text-gray-900">Tableau {table.table}</span>
+                      <span className="block text-gray-600">{table.category}</span>
+                      <span className="block text-gray-500">Sur place : {table.onsitePayment}</span>
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
             <div className="flex justify-end gap-2">
               <button
                 type="button"
                 onClick={() => {
                   setEditingPlayer(null);
-                  setEngagementDraft("");
+                  setSelectedEditEventIds(new Set());
                 }}
+                disabled={editPending}
                 className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
               >
                 Annuler
@@ -342,9 +477,10 @@ export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
               <button
                 type="button"
                 onClick={saveEngagements}
+                disabled={editPending}
                 className="rounded-md border border-blue-200 bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-100"
               >
-                Enregistrer
+                {editPending ? "Enregistrement..." : "Enregistrer"}
               </button>
             </div>
           </div>

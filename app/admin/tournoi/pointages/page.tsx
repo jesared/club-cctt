@@ -28,7 +28,7 @@ export default async function AdminTournoiPointagesPage() {
         "Conservation du statut d'inscription comme repère administratif.",
       ]}
     >
-      <PointagesGrid players={adminPlayers} dayColumns={dayColumns} />
+      <PointagesGrid players={adminPlayers} dayColumns={dayColumns} tournamentTables={tournamentTables} />
     </TournamentAdminPage>
   );
 }

@@ -31,6 +31,7 @@ export type AdminPlayerRow = {
   table: string;
   payment: string;
   status: string;
+  engagedEventIds: string[];
   checkedDayKeys: string[];
   registrationEventIdsByDay: Record<string, string[]>;
 };
@@ -241,6 +242,7 @@ export async function getAdminPlayers(tournamentId: string): Promise<AdminPlayer
       table: registration.registrationEvents.map((entry) => entry.event.code).join(", ") || "—",
       payment: hasPaidPayment ? "Anticipé" : "Sur place",
       status: computedStatus,
+      engagedEventIds: registration.registrationEvents.map((entry) => entry.eventId),
       checkedDayKeys: Array.from(
         new Set(
           registration.registrationEvents
