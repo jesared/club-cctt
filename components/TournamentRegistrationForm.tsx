@@ -29,21 +29,21 @@ type TableOption = {
 };
 
 const TABLE_OPTIONS: TableOption[] = [
-  { value: "C", label: "Tableau C (800 à 1399 pts)", minPoints: 800, maxPoints: 1399 },
-  { value: "A", label: "Tableau A (500 à 799 pts)", minPoints: 500, maxPoints: 799 },
-  { value: "D", label: "Tableau D (1100 à 1699 pts)", minPoints: 1100, maxPoints: 1699 },
-  { value: "B", label: "Tableau B (500 à 1099 pts)", minPoints: 500, maxPoints: 1099 },
-  { value: "F", label: "Tableau F (500 à 1199 pts)", minPoints: 500, maxPoints: 1199 },
-  { value: "H", label: "Tableau H (1200 à 1799 pts)", minPoints: 1200, maxPoints: 1799 },
-  { value: "E", label: "Tableau E (500 à 899 pts)", minPoints: 500, maxPoints: 899 },
-  { value: "G", label: "Tableau G (900 à 1499 pts)", minPoints: 900, maxPoints: 1499 },
-  { value: "I", label: "Tableau I (500 à N°400)", minPoints: 500, maxPoints: null },
-  { value: "J", label: "Tableau J (Dames TC)", minPoints: null, maxPoints: null, womenOnly: true },
-  { value: "L", label: "Tableau L (500 à 1299 pts)", minPoints: 500, maxPoints: 1299 },
-  { value: "N", label: "Tableau N (1300 à 2099 pts)", minPoints: 1300, maxPoints: 2099 },
-  { value: "K", label: "Tableau K (500 à 999 pts)", minPoints: 500, maxPoints: 999 },
-  { value: "M", label: "Tableau M (1000 à 1599 pts)", minPoints: 1000, maxPoints: 1599 },
-  { value: "P", label: "Tableau P (Toutes catégories)", minPoints: null, maxPoints: null },
+  { value: "C", label: "C (800 à 1399 pts) - 10:30", minPoints: 800, maxPoints: 1399 },
+  { value: "A", label: "A (500 à 799 pts) - 11:30", minPoints: 500, maxPoints: 799 },
+  { value: "D", label: "D (1100 à 1699 pts) - 12:30", minPoints: 1100, maxPoints: 1699 },
+  { value: "B", label: "B (500 à 1099 pts) - 13:30", minPoints: 500, maxPoints: 1099 },
+  { value: "F", label: "F (500 à 1199 pts) - 08:30", minPoints: 500, maxPoints: 1199 },
+  { value: "H", label: "H (1200 à 1799 pts) - 09:30", minPoints: 1200, maxPoints: 1799 },
+  { value: "E", label: "E (500 à 899 pts) - 11:00", minPoints: 500, maxPoints: 899 },
+  { value: "G", label: "G (900 à 1499 pts) - 12:00", minPoints: 900, maxPoints: 1499 },
+  { value: "I", label: "I (500 à N°400) - 13:15", minPoints: 500, maxPoints: null },
+  { value: "J", label: "J (Dames TC) - 14:30", minPoints: null, maxPoints: null, womenOnly: true },
+  { value: "L", label: "L (500 à 1299 pts) - 08:30", minPoints: 500, maxPoints: 1299 },
+  { value: "N", label: "N (1300 à 2099 pts) - 09:30", minPoints: 1300, maxPoints: 2099 },
+  { value: "K", label: "K (500 à 999 pts) - 11:00", minPoints: 500, maxPoints: 999 },
+  { value: "M", label: "M (1000 à 1599 pts) - 12:00", minPoints: 1000, maxPoints: 1599 },
+  { value: "P", label: "P (Toutes catégories) - 13:15", minPoints: null, maxPoints: null },
 ] as const;
 
 const initialData: RegistrationPayload = {
