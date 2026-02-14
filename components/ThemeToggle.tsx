@@ -9,7 +9,7 @@ const THEME_STORAGE_KEY = "theme";
 
 function getPreferredTheme(): Theme {
   if (typeof window === "undefined") {
-    return "light";
+    return "cyberpunk";
   }
 
   const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
@@ -17,7 +17,7 @@ function getPreferredTheme(): Theme {
     return savedTheme;
   }
 
-  return "light";
+  return "cyberpunk";
 }
 
 function applyTheme(theme: Theme) {
@@ -29,7 +29,7 @@ function applyTheme(theme: Theme) {
 
 export default function ThemeToggle() {
   const [isMounted, setIsMounted] = useState(false);
-  const [theme, setTheme] = useState<Theme>("light");
+  const [theme, setTheme] = useState<Theme>("cyberpunk");
 
   useEffect(() => {
     const initialTheme = getPreferredTheme();
