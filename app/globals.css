@@ -162,6 +162,24 @@
 
 
 @layer components {
+  .cyberpunk .cyberpunk-home-grid {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cyberpunk .cyberpunk-home-grid::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(color-mix(in oklab, var(--accent) 10%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in oklab, var(--primary) 12%, transparent) 1px, transparent 1px);
+    background-size: 36px 36px;
+    opacity: 0.3;
+  }
+
+
   .cyberpunk .tournament-shell {
     position: relative;
   }
