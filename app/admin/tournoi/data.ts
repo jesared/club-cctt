@@ -43,7 +43,7 @@ export type AdminPaymentGroupRow = {
   totalAmountDueCents: number;
   totalPaidCents: number;
   totalPendingCents: number;
-  paymentStatus: "PAYÉ" | "PARTIEL" | "EN ATTENTE" | "SUR PLACE";
+  paymentStatus: "PAYÉ" | "PARTIEL" | "EN ATTENTE";
 };
 
 const DATE_FORMATTER = new Intl.DateTimeFormat("fr-FR", {
@@ -344,7 +344,7 @@ export async function getAdminPaymentGroups(tournamentId: string): Promise<Admin
         totalAmountDueCents: 0,
         totalPaidCents: 0,
         totalPendingCents: 0,
-        paymentStatus: "SUR PLACE",
+        paymentStatus: "EN ATTENTE",
       });
     }
 
@@ -357,13 +357,11 @@ export async function getAdminPaymentGroups(tournamentId: string): Promise<Admin
   }
 
   const rows = Array.from(groups.values()).map((group) => {
-    let paymentStatus: AdminPaymentGroupRow["paymentStatus"] = "SUR PLACE";
+    let paymentStatus: AdminPaymentGroupRow["paymentStatus"] = "EN ATTENTE";
     if (group.totalPaidCents >= group.totalAmountDueCents && group.totalAmountDueCents > 0) {
       paymentStatus = "PAYÉ";
     } else if (group.totalPaidCents > 0) {
       paymentStatus = "PARTIEL";
-    } else if (group.totalPendingCents > 0) {
-      paymentStatus = "EN ATTENTE";
     }
 
     return {
