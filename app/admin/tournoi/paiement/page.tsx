@@ -38,7 +38,6 @@ export default async function AdminTournoiPaiementPage() {
     (sum, group) => sum + Math.max(group.totalAmountDueCents - group.totalPaidCents, 0),
     0,
   );
-  const groupedPayments = paymentGroups.filter((group) => group.registrations > 1);
   const paymentsToValidate = paymentGroups
     .map((group) => {
       const remainingCents = Math.max(group.totalAmountDueCents - group.totalPaidCents, 0);
@@ -64,7 +63,7 @@ export default async function AdminTournoiPaiementPage() {
   return (
     <TournamentAdminPage
       title="Paiements"
-      description="Contrôle des paiements en ligne, avec suivi des paiements groupés par contact."
+      description="Contrôle des paiements en ligne et validation des dossiers en caisse."
       activeHref="/admin/tournoi/paiement"
     >
       <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -86,63 +85,6 @@ export default async function AdminTournoiPaiementPage() {
         </article>
       </section>
 
-      <section className="mt-8 rounded-xl border bg-white shadow-sm">
-        <header className="border-b p-4">
-          <h2 className="text-lg font-semibold text-gray-900">Paiements groupés</h2>
-          <p className="mt-1 text-sm text-gray-500">
-            Un groupe est construit automatiquement à partir du contact (email/téléphone) pour suivre les paiements de
-            plusieurs joueurs inscrits par la même personne.
-          </p>
-        </header>
-
-        {groupedPayments.length === 0 ? (
-          <p className="p-4 text-sm text-gray-500">Aucun paiement groupé détecté pour le moment.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 text-sm">
-              <thead className="bg-gray-50 text-left text-xs uppercase tracking-wide text-gray-500">
-                <tr>
-                  <th className="px-4 py-3">Payeur</th>
-                  <th className="px-4 py-3">Joueurs</th>
-                  <th className="px-4 py-3">Total dû</th>
-                  <th className="px-4 py-3">Déjà payé</th>
-                  <th className="px-4 py-3">En attente</th>
-                  <th className="px-4 py-3">Statut</th>
-                  <th className="px-4 py-3">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100 bg-white text-gray-700">
-                {groupedPayments.map((group) => (
-                  <tr key={group.groupKey}>
-                    <td className="px-4 py-3 font-medium text-gray-900">{group.payerLabel}</td>
-                    <td className="px-4 py-3">
-                      <p className="font-medium text-gray-900">{group.registrations} inscriptions</p>
-                      <p className="text-xs text-gray-500">{group.players.join(", ")}</p>
-                    </td>
-                    <td className="px-4 py-3 font-medium">{formatEuro(group.totalAmountDueCents)}</td>
-                    <td className="px-4 py-3">{formatEuro(group.totalPaidCents)}</td>
-                    <td className="px-4 py-3">{formatEuro(Math.max(group.totalAmountDueCents - group.totalPaidCents, 0))}</td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
-                          group.paymentStatus === "PAYÉ"
-                            ? "bg-emerald-100 text-emerald-700"
-                            : group.paymentStatus === "PARTIEL"
-                              ? "bg-amber-100 text-amber-700"
-                              : "bg-indigo-100 text-indigo-700"
-                        }`}
-                      >
-                        {formatPaymentStatus(group.paymentStatus)}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-gray-600">Traiter dans la fiche dossier</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
 
       <section className="mt-6 grid gap-6 lg:grid-cols-2">
         <article className="rounded-xl border bg-white p-5 shadow-sm lg:col-span-2">
