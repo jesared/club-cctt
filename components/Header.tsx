@@ -7,10 +7,14 @@ import { Menu, X } from "lucide-react";
 
 import ThemeToggle from "@/components/ThemeToggle";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
 import {
+  clubAdminMenuItems,
   mainMenuItems,
   primaryCta,
+  tournamentAdminMenuItems,
+  tournamentMenuItems,
 } from "@/components/navigation/menu-items";
 import {
   Sidebar,
@@ -28,6 +32,8 @@ function HeaderContent() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const isOpen = open;
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role === "ADMIN";
 
   useEffect(() => {
     if (!isOpen) return;
@@ -132,6 +138,9 @@ function HeaderContent() {
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu className="flex-1 overflow-y-auto text-lg font-medium">
+            <p className="px-2 pb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Site du club
+            </p>
             {mainMenuItems.map((item) => (
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
@@ -143,6 +152,55 @@ function HeaderContent() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
+
+            <p className="px-2 pb-2 pt-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Tournoi
+            </p>
+            {tournamentMenuItems.map((item) => (
+              <SidebarMenuItem key={item.href}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === item.href}
+                  onClick={() => setOpen(false)}
+                >
+                  <Link href={item.href}>{item.label}</Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+
+            {isAdmin && (
+              <>
+                <p className="px-2 pb-2 pt-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Admin club
+                </p>
+                {clubAdminMenuItems.map((item) => (
+                  <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === item.href}
+                      onClick={() => setOpen(false)}
+                    >
+                      <Link href={item.href}>{item.label}</Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+
+                <p className="px-2 pb-2 pt-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Tournoi admin
+                </p>
+                {tournamentAdminMenuItems.map((item) => (
+                  <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === item.href}
+                      onClick={() => setOpen(false)}
+                    >
+                      <Link href={item.href}>{item.label}</Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </>
+            )}
           </SidebarMenu>
           <div className="mt-auto px-6 pb-8">
             <Link
