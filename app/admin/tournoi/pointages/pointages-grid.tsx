@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { Pencil, Trash2 } from "lucide-react";
 
 type PointagesGridPlayer = {
   id: string;
@@ -24,6 +25,7 @@ type PointagesGridProps = {
 };
 
 export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
+  const [playersState, setPlayersState] = useState<PointagesGridPlayer[]>(players);
   const [checkedState, setCheckedState] = useState<Record<string, boolean>>(() => {
     return players.reduce<Record<string, boolean>>((acc, player) => {
       player.checkedDayKeys.forEach((dayKey) => {
@@ -35,15 +37,18 @@ export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
   const [pendingState, setPendingState] = useState<Record<string, boolean>>({});
   const [selectedClub, setSelectedClub] = useState<string>("all");
   const [selectedTable, setSelectedTable] = useState<string>("all");
+  const [editingPlayer, setEditingPlayer] = useState<PointagesGridPlayer | null>(null);
+  const [deletingPlayer, setDeletingPlayer] = useState<PointagesGridPlayer | null>(null);
+  const [engagementDraft, setEngagementDraft] = useState<string>("");
 
   const clubOptions = useMemo(() => {
-    return Array.from(new Set(players.map((player) => player.club))).sort((clubA, clubB) =>
+    return Array.from(new Set(playersState.map((player) => player.club))).sort((clubA, clubB) =>
       clubA.localeCompare(clubB, "fr"),
     );
-  }, [players]);
+  }, [playersState]);
 
   const tableOptions = useMemo(() => {
-    const extractedTables = players.flatMap((player) =>
+    const extractedTables = playersState.flatMap((player) =>
       player.table
         .split(",")
         .map((table) => table.trim())
@@ -53,7 +58,7 @@ export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
     return Array.from(new Set(extractedTables)).sort((tableA, tableB) =>
       tableA.localeCompare(tableB, "fr"),
     );
-  }, [players]);
+  }, [playersState]);
 
   const normalizedDayColumns = useMemo(() => {
     if (dayColumns.length >= 3) {
@@ -67,7 +72,7 @@ export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
   }, [dayColumns]);
 
   const filteredPlayers = useMemo(() => {
-    return players.filter((player) => {
+    return playersState.filter((player) => {
       const matchesClub = selectedClub === "all" || player.club === selectedClub;
       const playerTables = player.table
         .split(",")
@@ -77,7 +82,7 @@ export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
 
       return matchesClub && matchesTable;
     });
-  }, [players, selectedClub, selectedTable]);
+  }, [playersState, selectedClub, selectedTable]);
 
   async function toggleCheck(player: PointagesGridPlayer, dayKey: string) {
     const key = `${player.id}-${dayKey}`;
@@ -118,6 +123,55 @@ export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
     } finally {
       setPendingState((previousState) => ({ ...previousState, [key]: false }));
     }
+  }
+
+  function openEditPopup(player: PointagesGridPlayer) {
+    setEditingPlayer(player);
+    setEngagementDraft(player.table === "—" ? "" : player.table);
+  }
+
+  function saveEngagements() {
+    if (!editingPlayer) {
+      return;
+    }
+
+    const nextTableValue = engagementDraft
+      .split(",")
+      .map((value) => value.trim())
+      .filter(Boolean)
+      .join(", ");
+
+    setPlayersState((previousState) =>
+      previousState.map((player) =>
+        player.id === editingPlayer.id
+          ? {
+              ...player,
+              table: nextTableValue || "—",
+            }
+          : player,
+      ),
+    );
+
+    setEditingPlayer(null);
+    setEngagementDraft("");
+  }
+
+  function confirmDeletePlayer() {
+    if (!deletingPlayer) {
+      return;
+    }
+
+    setPlayersState((previousState) => previousState.filter((player) => player.id !== deletingPlayer.id));
+    setCheckedState((previousState) => {
+      const nextState = { ...previousState };
+      Object.keys(nextState).forEach((key) => {
+        if (key.startsWith(`${deletingPlayer.id}-`)) {
+          delete nextState[key];
+        }
+      });
+      return nextState;
+    });
+    setDeletingPlayer(null);
   }
 
   return (
@@ -209,15 +263,21 @@ export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
+                    onClick={() => openEditPopup(player)}
+                    title="Éditer le joueur"
+                    aria-label={`Éditer ${player.name}`}
                     className="rounded-md border border-gray-300 px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"
                   >
-                    Edit
+                    <Pencil className="h-3.5 w-3.5" />
                   </button>
                   <button
                     type="button"
+                    onClick={() => setDeletingPlayer(player)}
+                    title="Supprimer le joueur"
+                    aria-label={`Supprimer ${player.name}`}
                     className="rounded-md border border-red-200 px-2.5 py-1 text-xs font-medium text-red-700 hover:bg-red-50"
                   >
-                    Supprimer
+                    <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
               </td>
@@ -232,6 +292,75 @@ export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
           ) : null}
         </tbody>
       </table>
+
+      {editingPlayer ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4" role="dialog" aria-modal="true">
+          <div className="w-full max-w-lg space-y-4 rounded-lg bg-white p-6 shadow-lg">
+            <h3 className="text-lg font-semibold text-gray-900">Modifier les engagements</h3>
+            <p className="text-sm text-gray-600">
+              Mettez à jour les tableaux de <span className="font-medium">{editingPlayer.name}</span> (séparés par des virgules).
+            </p>
+            <textarea
+              rows={4}
+              value={engagementDraft}
+              onChange={(event) => setEngagementDraft(event.target.value)}
+              placeholder="Ex: Simple A, Double B"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-800"
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setEditingPlayer(null);
+                  setEngagementDraft("");
+                }}
+                className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                onClick={saveEngagements}
+                className="rounded-md border border-blue-200 bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-100"
+              >
+                Enregistrer
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {deletingPlayer ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4" role="dialog" aria-modal="true">
+          <div className="w-full max-w-lg space-y-4 rounded-lg bg-white p-6 shadow-lg">
+            <h3 className="text-lg font-semibold text-gray-900">Supprimer ce joueur du pointage ?</h3>
+            <p className="text-sm text-gray-600">
+              Vous allez retirer <span className="font-medium">{deletingPlayer.name}</span> de la liste de pointage.
+              Si vous souhaitez seulement ajuster ses tableaux, utilisez plutôt le bouton d&apos;édition.
+            </p>
+            <ul className="list-disc space-y-1 pl-5 text-sm text-gray-600">
+              <li>Proposition 1 : corriger ses engagements via l&apos;édition.</li>
+              <li>Proposition 2 : confirmer la suppression si l&apos;inscription est invalide.</li>
+            </ul>
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setDeletingPlayer(null)}
+                className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                onClick={confirmDeletePlayer}
+                className="rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-100"
+              >
+                Confirmer la suppression
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }
