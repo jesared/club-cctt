@@ -265,8 +265,8 @@ export default function TournamentRegistrationForm() {
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-4">
-        <div>
+      <div className="grid gap-4 sm:grid-cols-12">
+        <div className="sm:col-span-3">
           <label htmlFor="licenseNumber" className="block text-sm font-medium mb-1">
             N° licence FFTT
           </label>
@@ -285,7 +285,7 @@ export default function TournamentRegistrationForm() {
             placeholder="1234567"
           />
         </div>
-        <div>
+        <div className="sm:col-span-3">
           <label htmlFor="points" className="block text-sm font-medium mb-1">
             Points
           </label>
@@ -319,7 +319,7 @@ export default function TournamentRegistrationForm() {
             placeholder="1248"
           />
         </div>
-        <div>
+        <div className="sm:col-span-2">
           <label htmlFor="gender" className="block text-sm font-medium mb-1">
             Genre
           </label>
@@ -348,7 +348,7 @@ export default function TournamentRegistrationForm() {
             <option value="F">F</option>
           </select>
         </div>
-        <div>
+        <div className="sm:col-span-4">
           <label htmlFor="club" className="block text-sm font-medium mb-1">
             Club
           </label>
