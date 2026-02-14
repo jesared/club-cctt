@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { Pencil, Trash2 } from "lucide-react";
 
 type PointagesGridPlayer = {
   id: string;
@@ -35,6 +36,8 @@ export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
   const [pendingState, setPendingState] = useState<Record<string, boolean>>({});
   const [selectedClub, setSelectedClub] = useState<string>("all");
   const [selectedTable, setSelectedTable] = useState<string>("all");
+  const [editingPlayer, setEditingPlayer] = useState<PointagesGridPlayer | null>(null);
+  const [deletingPlayer, setDeletingPlayer] = useState<PointagesGridPlayer | null>(null);
 
   const clubOptions = useMemo(() => {
     return Array.from(new Set(players.map((player) => player.club))).sort((clubA, clubB) =>
@@ -209,15 +212,21 @@ export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
+                    onClick={() => setEditingPlayer(player)}
+                    title="Éditer le joueur"
+                    aria-label={`Éditer ${player.name}`}
                     className="rounded-md border border-gray-300 px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"
                   >
-                    Edit
+                    <Pencil className="h-3.5 w-3.5" />
                   </button>
                   <button
                     type="button"
+                    onClick={() => setDeletingPlayer(player)}
+                    title="Supprimer le joueur"
+                    aria-label={`Supprimer ${player.name}`}
                     className="rounded-md border border-red-200 px-2.5 py-1 text-xs font-medium text-red-700 hover:bg-red-50"
                   >
-                    Supprimer
+                    <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
               </td>
@@ -232,6 +241,46 @@ export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
           ) : null}
         </tbody>
       </table>
+
+      {editingPlayer ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4" role="dialog" aria-modal="true">
+          <div className="w-full max-w-md space-y-4 rounded-lg bg-white p-6 shadow-lg">
+            <h3 className="text-lg font-semibold text-gray-900">Édition du pointage</h3>
+            <p className="text-sm text-gray-600">
+              La modification de {editingPlayer.name} sera disponible prochainement.
+            </p>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => setEditingPlayer(null)}
+                className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Fermer
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {deletingPlayer ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4" role="dialog" aria-modal="true">
+          <div className="w-full max-w-md space-y-4 rounded-lg bg-white p-6 shadow-lg">
+            <h3 className="text-lg font-semibold text-gray-900">Suppression du joueur</h3>
+            <p className="text-sm text-gray-600">
+              La suppression de {deletingPlayer.name} sera disponible prochainement.
+            </p>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => setDeletingPlayer(null)}
+                className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Fermer
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }
