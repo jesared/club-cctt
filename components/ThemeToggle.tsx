@@ -3,7 +3,7 @@
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 
-type Theme = "light" | "dark";
+type Theme = "light" | "dark" | "cyberpunk";
 
 const THEME_STORAGE_KEY = "theme";
 
@@ -13,7 +13,7 @@ function getPreferredTheme(): Theme {
   }
 
   const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
-  if (savedTheme === "light" || savedTheme === "dark") {
+  if (savedTheme === "light" || savedTheme === "dark" || savedTheme === "cyberpunk") {
     return savedTheme;
   }
 
@@ -21,7 +21,10 @@ function getPreferredTheme(): Theme {
 }
 
 function applyTheme(theme: Theme) {
-  document.documentElement.classList.toggle("dark", theme === "dark");
+  document.documentElement.classList.remove("light", "dark", "cyberpunk");
+  if (theme !== "light") {
+    document.documentElement.classList.add(theme);
+  }
 }
 
 export default function ThemeToggle() {
@@ -36,7 +39,9 @@ export default function ThemeToggle() {
   }, []);
 
   const toggleTheme = () => {
-    const nextTheme: Theme = theme === "dark" ? "light" : "dark";
+    const cycle: Theme[] = ["light", "dark", "cyberpunk"];
+    const currentIndex = cycle.indexOf(theme);
+    const nextTheme = cycle[(currentIndex + 1) % cycle.length];
     setTheme(nextTheme);
     window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
     applyTheme(nextTheme);
@@ -47,8 +52,24 @@ export default function ThemeToggle() {
       type="button"
       onClick={toggleTheme}
       className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-background text-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-      aria-label={isMounted && theme === "dark" ? "Activer le thème clair" : "Activer le thème sombre"}
-      title={isMounted && theme === "dark" ? "Mode clair" : "Mode sombre"}
+      aria-label={
+        isMounted
+          ? theme === "light"
+            ? "Activer le thème sombre"
+            : theme === "dark"
+              ? "Activer le thème cyberpunk"
+              : "Activer le thème clair"
+          : "Basculer le thème"
+      }
+      title={
+        isMounted
+          ? theme === "light"
+            ? "Mode clair"
+            : theme === "dark"
+              ? "Mode sombre"
+              : "Mode cyberpunk"
+          : "Thème"
+      }
     >
       {isMounted && theme === "dark" ? (
         <Sun className="h-4 w-4" aria-hidden="true" />
