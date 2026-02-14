@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
+import { signIn, signOut } from "next-auth/react";
 
 import ThemeToggle from "@/components/ThemeToggle";
 import { useEffect, useState } from "react";
@@ -210,6 +211,39 @@ function HeaderContent() {
             >
               {primaryCta.label}
             </Link>
+
+            {!session ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setOpen(false);
+                  void signIn("google");
+                }}
+                className="mt-3 block w-full rounded-full bg-purple-600 px-4 py-2 text-center text-white transition-colors hover:bg-purple-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-purple-500"
+              >
+                Se connecter
+              </button>
+            ) : (
+              <div className="mt-3 flex flex-col gap-2">
+                <Link
+                  href="/espace"
+                  onClick={() => setOpen(false)}
+                  className="block rounded-full border border-border px-4 py-2 text-center text-sm font-medium transition-colors hover:bg-accent"
+                >
+                  Mon espace
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOpen(false);
+                    void signOut();
+                  }}
+                  className="block w-full rounded-full border border-border px-4 py-2 text-center text-sm font-medium transition-colors hover:bg-accent"
+                >
+                  Déconnexion
+                </button>
+              </div>
+            )}
           </div>
         </SidebarContent>
       </Sidebar>
