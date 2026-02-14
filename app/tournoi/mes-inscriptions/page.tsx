@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { CalendarClock, CircleDollarSign, ListChecks, UserRound } from "lucide-react";
 import { redirect } from "next/navigation";
 
 const DATE_FORMATTER = new Intl.DateTimeFormat("fr-FR", {
@@ -72,7 +73,7 @@ export default async function MesInscriptionsPage() {
 
   if (!tournament) {
     return (
-      <main className="mx-auto max-w-5xl px-4 py-12">
+      <main className="tournament-shell mx-auto max-w-5xl px-4 py-12">
         <h1 className="text-3xl font-semibold">Mes inscriptions tournoi</h1>
         <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-amber-900">
           Aucun tournoi actif n&apos;est disponible pour le moment.
@@ -168,40 +169,47 @@ export default async function MesInscriptionsPage() {
   const totalRemainingCents = Math.max(totalDueCents - totalPaidCents, 0);
 
   return (
-    <main className="mx-auto max-w-5xl space-y-8 px-4 py-12">
-      <header className="space-y-2">
-        <h1 className="text-3xl font-semibold">Mes inscriptions tournoi</h1>
-        <p className="text-gray-600">
-          Récapitulatif de vos joueurs inscrits sur <strong>{tournament.name}</strong> du{" "}
+    <main className="tournament-shell mx-auto max-w-5xl space-y-8 px-4 py-12">
+      <header className="cyberpunk-highlight rounded-2xl border px-6 py-8">
+        <p className="text-xs uppercase tracking-[0.25em] text-primary">Espace joueur</p>
+        <h1 className="mt-3 text-3xl font-semibold md:text-4xl">Mes inscriptions tournoi</h1>
+        <p className="cyberpunk-text-soft mt-3">
+          Récapitulatif de vos joueurs inscrits sur <strong>{tournament.name}</strong> du {" "}
           {DATE_FORMATTER.format(tournament.startDate)} au {DATE_FORMATTER.format(tournament.endDate)}.
         </p>
       </header>
 
       <section className="grid gap-4 sm:grid-cols-3">
-        <article className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <p className="text-sm text-gray-500">Joueurs inscrits</p>
+        <article className="tournament-panel rounded-xl border p-4 shadow-sm">
+          <p className="flex items-center gap-2 text-sm text-gray-500">
+            <UserRound className="h-4 w-4" /> Joueurs inscrits
+          </p>
           <p className="mt-2 text-3xl font-semibold">{registrations.length}</p>
         </article>
-        <article className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <p className="text-sm text-gray-500">Montant total</p>
+        <article className="tournament-panel rounded-xl border p-4 shadow-sm">
+          <p className="flex items-center gap-2 text-sm text-gray-500">
+            <CircleDollarSign className="h-4 w-4" /> Montant total
+          </p>
           <p className="mt-2 text-3xl font-semibold">{formatAmount(totalDueCents)}</p>
         </article>
-        <article className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <p className="text-sm text-gray-500">Déjà payé</p>
-          <p className="mt-2 text-3xl font-semibold text-green-700">{formatAmount(totalPaidCents)}</p>
+        <article className="tournament-panel rounded-xl border p-4 shadow-sm">
+          <p className="flex items-center gap-2 text-sm text-gray-500">
+            <ListChecks className="h-4 w-4" /> Déjà payé
+          </p>
+          <p className="mt-2 text-3xl font-semibold text-emerald-500">{formatAmount(totalPaidCents)}</p>
         </article>
       </section>
 
       {registrations.length > 0 ? (
         <section
           className={`rounded-xl border p-6 ${
-            totalRemainingCents > 0 ? "border-amber-200 bg-amber-50" : "border-emerald-200 bg-emerald-50"
+            totalRemainingCents > 0 ? "border-amber-300/50 bg-amber-500/10" : "border-emerald-300/50 bg-emerald-500/10"
           }`}
         >
-          <h2 className="text-xl font-semibold text-gray-900">Paiement côté joueur</h2>
+          <h2 className="text-xl font-semibold">Paiement côté joueur</h2>
           {totalRemainingCents > 0 ? (
             <>
-              <p className="mt-2 text-sm text-gray-700">
+              <p className="cyberpunk-text-soft mt-2 text-sm">
                 Il reste <strong>{formatAmount(totalRemainingCents)}</strong> à régler pour finaliser vos inscriptions.
               </p>
               <div className="mt-4 flex flex-wrap gap-3">
@@ -209,25 +217,25 @@ export default async function MesInscriptionsPage() {
                   href="https://tournoi.cctt.fr"
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex rounded-md bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700"
+                  className="inline-flex rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
                 >
                   Payer en ligne maintenant
                 </a>
                 <a
                   href="mailto:inscriptions-tournoi@cctt.fr?subject=Question%20paiement%20tournoi"
-                  className="inline-flex rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-100"
+                  className="inline-flex rounded-md border border-primary/30 bg-card px-4 py-2 text-sm font-medium text-foreground hover:bg-primary/10"
                 >
                   Contacter l&apos;organisation
                 </a>
               </div>
-              <ul className="mt-4 list-disc space-y-1 pl-5 text-sm text-gray-700">
+              <ul className="cyberpunk-text-soft mt-4 list-disc space-y-1 pl-5 text-sm">
                 <li>Priorité recommandée : paiement en ligne pour valider plus vite votre dossier.</li>
                 <li>En cas d&apos;empêchement, contactez le club pour convenir d&apos;une alternative.</li>
                 <li>Le jour J, prévoyez un justificatif si le paiement vient d&apos;être effectué.</li>
               </ul>
             </>
           ) : (
-            <p className="mt-2 text-sm text-emerald-900">
+            <p className="mt-2 text-sm text-emerald-300">
               Tout est réglé ✅ Vos inscriptions sont entièrement payées pour ce tournoi.
             </p>
           )}
@@ -235,14 +243,14 @@ export default async function MesInscriptionsPage() {
       ) : null}
 
       {registrations.length === 0 ? (
-        <section className="rounded-xl border border-purple-100 bg-purple-50 p-6 text-purple-900">
+        <section className="rounded-xl border border-primary/30 bg-primary/10 p-6">
           <p className="font-medium">Aucun joueur inscrit pour le moment.</p>
-          <p className="mt-2 text-sm">
+          <p className="cyberpunk-text-soft mt-2 text-sm">
             Vous pouvez ajouter votre premier joueur depuis le formulaire d&apos;inscription.
           </p>
           <a
             href="/tournoi/inscription"
-            className="mt-4 inline-flex rounded-md bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700"
+            className="mt-4 inline-flex rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
           >
             Inscrire un joueur
           </a>
@@ -261,38 +269,43 @@ export default async function MesInscriptionsPage() {
             const remainingCents = Math.max(dueCents - paidCents, 0);
 
             return (
-              <article key={registration.id} className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+              <article key={registration.id} className="tournament-panel rounded-xl border p-5 shadow-sm">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
                     <h2 className="text-xl font-semibold">{playerName}</h2>
-                    <p className="mt-1 text-sm text-gray-600">
+                    <p className="cyberpunk-text-soft mt-1 text-sm">
                       Licence {registration.player.licence}
                       {registration.player.club ? ` • ${registration.player.club}` : ""}
                       {registration.player.points !== null ? ` • ${registration.player.points} pts` : ""}
                     </p>
                   </div>
-                  <p className="rounded-full border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700">
+                  <p className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
                     {getRegistrationStatusLabel(registration.status)}
                   </p>
                 </div>
 
-                <div className="mt-4 overflow-x-auto">
+                <div className="mt-4 overflow-x-auto rounded-lg border border-primary/20">
                   <table className="min-w-full text-sm">
                     <thead>
-                      <tr className="border-b text-left text-gray-500">
-                        <th className="pb-2 pr-4 font-medium">Tableau</th>
-                        <th className="pb-2 pr-4 font-medium">Horaire</th>
-                        <th className="pb-2 pr-4 font-medium">Engagement</th>
-                        <th className="pb-2 pr-4 font-medium">Statut</th>
+                      <tr className="border-b border-primary/20 text-left text-gray-500">
+                        <th className="pb-2 pl-3 pr-4 pt-3 font-medium">Tableau</th>
+                        <th className="pb-2 pr-4 pt-3 font-medium">Horaire</th>
+                        <th className="pb-2 pr-4 pt-3 font-medium">Engagement</th>
+                        <th className="pb-2 pr-4 pt-3 font-medium">Statut</th>
                       </tr>
                     </thead>
                     <tbody>
                       {registration.registrationEvents.map((entry) => (
-                        <tr key={entry.id} className="border-b last:border-0">
-                          <td className="py-2 pr-4 text-gray-900">
+                        <tr key={entry.id} className="border-b border-primary/10 last:border-0">
+                          <td className="py-2 pl-3 pr-4 text-foreground">
                             {entry.event.code} - {entry.event.label}
                           </td>
-                          <td className="py-2 pr-4 text-gray-700">{DATE_TIME_FORMATTER.format(entry.event.startAt)}</td>
+                          <td className="py-2 pr-4 text-gray-700">
+                            <span className="inline-flex items-center gap-1">
+                              <CalendarClock className="h-3.5 w-3.5" />
+                              {DATE_TIME_FORMATTER.format(entry.event.startAt)}
+                            </span>
+                          </td>
                           <td className="py-2 pr-4 text-gray-700">{formatAmount(entry.event.feeOnlineCents)}</td>
                           <td className="py-2 pr-4 text-gray-700">{getEventStatusLabel(entry.status)}</td>
                         </tr>
@@ -305,9 +318,9 @@ export default async function MesInscriptionsPage() {
                   Paiement : <strong>{formatAmount(paidCents)}</strong> / {formatAmount(dueCents)}
                 </p>
                 {remainingCents > 0 ? (
-                  <p className="mt-1 text-sm text-amber-700">Reste à payer : {formatAmount(remainingCents)}</p>
+                  <p className="mt-1 text-sm text-amber-400">Reste à payer : {formatAmount(remainingCents)}</p>
                 ) : (
-                  <p className="mt-1 text-sm text-emerald-700">Dossier soldé</p>
+                  <p className="mt-1 text-sm text-emerald-400">Dossier soldé</p>
                 )}
               </article>
             );
