@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
+
+import ThemeToggle from "@/components/ThemeToggle";
 import { useEffect, useState } from "react";
 
 import {
@@ -67,7 +69,7 @@ function HeaderContent() {
     <header
       className={`sticky top-0 z-40 border-b transition-colors duration-200 lg:hidden ${
         isScrolled
-          ? "bg-white/95 backdrop-blur shadow-sm border-slate-200/80"
+          ? "bg-background/95 backdrop-blur shadow-sm border-border/80"
           : "bg-transparent border-transparent"
       }`}
     >
@@ -84,15 +86,18 @@ function HeaderContent() {
           />
           <div className="flex flex-col leading-tight">
             <span className="text-base font-semibold">CCTT</span>
-            <span className="text-[11px] text-gray-500">
+            <span className="text-[11px] text-muted-foreground">
               <span className="hidden md:inline">Châlons-en-Champagne</span>
               <span className="md:hidden">Châlons</span>
             </span>
           </div>
         </Link>
 
-        {/* BOUTON MOBILE */}
-        <SidebarTrigger asChild>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+
+          {/* BOUTON MOBILE */}
+          <SidebarTrigger asChild>
           <button
             className="lg:hidden text-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
             aria-label={isOpen ? "Fermer le menu" : "Ouvrir le menu"}
@@ -100,12 +105,13 @@ function HeaderContent() {
           >
             {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
-        </SidebarTrigger>
+          </SidebarTrigger>
+        </div>
       </div>
 
       {/* MENU MOBILE */}
-      <Sidebar side="right" className="bg-white" aria-label="Menu principal">
-        <SidebarHeader className="bg-white">
+      <Sidebar side="right" className="bg-background" aria-label="Menu principal">
+        <SidebarHeader className="bg-background">
           <div className="flex items-center gap-3">
             <Image
               src="/logo.jpg"
