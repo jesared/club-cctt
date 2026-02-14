@@ -165,6 +165,8 @@ export default async function MesInscriptionsPage() {
     0,
   );
 
+  const totalRemainingCents = Math.max(totalDueCents - totalPaidCents, 0);
+
   return (
     <main className="mx-auto max-w-5xl space-y-8 px-4 py-12">
       <header className="space-y-2">
@@ -190,6 +192,48 @@ export default async function MesInscriptionsPage() {
         </article>
       </section>
 
+      {registrations.length > 0 ? (
+        <section
+          className={`rounded-xl border p-6 ${
+            totalRemainingCents > 0 ? "border-amber-200 bg-amber-50" : "border-emerald-200 bg-emerald-50"
+          }`}
+        >
+          <h2 className="text-xl font-semibold text-gray-900">Paiement côté joueur</h2>
+          {totalRemainingCents > 0 ? (
+            <>
+              <p className="mt-2 text-sm text-gray-700">
+                Il reste <strong>{formatAmount(totalRemainingCents)}</strong> à régler pour finaliser vos inscriptions.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <a
+                  href="https://tournoi.cctt.fr"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex rounded-md bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700"
+                >
+                  Payer en ligne maintenant
+                </a>
+                <a
+                  href="mailto:inscriptions-tournoi@cctt.fr?subject=Question%20paiement%20tournoi"
+                  className="inline-flex rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-100"
+                >
+                  Contacter l&apos;organisation
+                </a>
+              </div>
+              <ul className="mt-4 list-disc space-y-1 pl-5 text-sm text-gray-700">
+                <li>Priorité recommandée : paiement en ligne pour valider plus vite votre dossier.</li>
+                <li>En cas d&apos;empêchement, contactez le club pour convenir d&apos;une alternative.</li>
+                <li>Le jour J, prévoyez un justificatif si le paiement vient d&apos;être effectué.</li>
+              </ul>
+            </>
+          ) : (
+            <p className="mt-2 text-sm text-emerald-900">
+              Tout est réglé ✅ Vos inscriptions sont entièrement payées pour ce tournoi.
+            </p>
+          )}
+        </section>
+      ) : null}
+
       {registrations.length === 0 ? (
         <section className="rounded-xl border border-purple-100 bg-purple-50 p-6 text-purple-900">
           <p className="font-medium">Aucun joueur inscrit pour le moment.</p>
@@ -214,6 +258,7 @@ export default async function MesInscriptionsPage() {
               (sum, entry) => sum + entry.event.feeOnlineCents,
               0,
             );
+            const remainingCents = Math.max(dueCents - paidCents, 0);
 
             return (
               <article key={registration.id} className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
@@ -259,6 +304,11 @@ export default async function MesInscriptionsPage() {
                 <p className="mt-4 text-sm text-gray-700">
                   Paiement : <strong>{formatAmount(paidCents)}</strong> / {formatAmount(dueCents)}
                 </p>
+                {remainingCents > 0 ? (
+                  <p className="mt-1 text-sm text-amber-700">Reste à payer : {formatAmount(remainingCents)}</p>
+                ) : (
+                  <p className="mt-1 text-sm text-emerald-700">Dossier soldé</p>
+                )}
               </article>
             );
           })}
