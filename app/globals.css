@@ -194,3 +194,38 @@
   }
 }
 
+
+@layer components {
+  .cyberpunk .tournament-shell {
+    position: relative;
+  }
+
+
+  .cyberpunk .tournament-shell > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .cyberpunk .tournament-shell::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 16% 18%, color-mix(in oklab, var(--primary) 45%, transparent) 0, transparent 32%),
+      radial-gradient(circle at 82% 12%, color-mix(in oklab, var(--accent) 35%, transparent) 0, transparent 30%),
+      linear-gradient(115deg, transparent 0%, color-mix(in oklab, var(--primary) 12%, transparent) 48%, transparent 100%);
+    opacity: 0.25;
+    z-index: 0;
+  }
+
+  .cyberpunk .tournament-panel {
+    position: relative;
+    border-color: color-mix(in oklab, var(--primary) 40%, var(--border));
+    background:
+      linear-gradient(155deg, color-mix(in oklab, var(--card) 92%, black), color-mix(in oklab, var(--card) 78%, black));
+    box-shadow:
+      inset 0 0 0 1px color-mix(in oklab, var(--accent) 22%, transparent),
+      0 0 30px color-mix(in oklab, var(--primary) 18%, transparent);
+  }
+}

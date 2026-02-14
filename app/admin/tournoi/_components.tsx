@@ -41,15 +41,15 @@ export function TournamentAdminPage({
   children,
 }: TournamentAdminPageProps) {
   return (
-    <div className="max-w-6xl mx-auto px-4 py-12 space-y-8">
+    <div className="tournament-shell max-w-6xl mx-auto px-4 py-12 space-y-8">
       <header className="space-y-3">
-        <p className="text-sm font-medium text-red-600">Administration tournoi</p>
+        <p className="text-sm font-medium text-primary">Administration tournoi</p>
         <h1 className="text-3xl font-bold">{title}</h1>
-        <p className="text-gray-600">{description}</p>
+        <p className="text-muted-foreground">{description}</p>
       </header>
 
-      <section className="rounded-xl border bg-white shadow-sm p-5">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-3">
+      <section className="tournament-panel rounded-xl border bg-card shadow-sm p-5">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">
           Navigation rapide
         </h2>
         <div className="flex flex-wrap gap-2">
@@ -62,8 +62,8 @@ export function TournamentAdminPage({
                 href={link.href}
                 className={`rounded-md border px-3 py-1.5 text-sm transition-colors ${
                   isActive
-                    ? "border-red-200 bg-red-50 text-red-700"
-                    : "hover:bg-gray-50"
+                    ? "border-primary/60 bg-primary/15 text-primary"
+                    : "hover:bg-secondary text-foreground"
                 }`}
               >
                 {link.label}
@@ -73,16 +73,16 @@ export function TournamentAdminPage({
         </div>
       </section>
 
-      <section className="rounded-xl border bg-white shadow-sm p-6">
+      <section className="tournament-panel rounded-xl border bg-card shadow-sm p-6">
         <h2 className="text-xl font-semibold mb-4">Contenu MVP</h2>
         {items && items.length > 0 ? (
-          <ul className="space-y-2 list-disc pl-5 text-gray-700">
+          <ul className="space-y-2 list-disc pl-5 text-muted-foreground">
             {items.map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ul>
         ) : (
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             Cette page est en place pour le menu MVP du tournoi et prête à être
             branchée à la base de données.
           </p>
