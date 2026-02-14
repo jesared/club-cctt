@@ -28,8 +28,24 @@ function formatEuro(cents: number) {
   return `${(cents / 100).toFixed(0)}€`;
 }
 
-function invertPriority(priority: PaymentDossier["priority"]): PaymentDossier["priority"] {
-  return priority === "HAUTE" ? "NORMALE" : "HAUTE";
+function formatPaymentStatus(status: PaymentStatus) {
+  if (status === "PARTIEL") {
+    return "À RÉGULARISER";
+  }
+
+  return status;
+}
+
+function getSuggestedAction(status: PaymentStatus) {
+  if (status === "PAYÉ") {
+    return "Aucune action";
+  }
+
+  if (status === "PARTIEL") {
+    return "Refuser le partiel et demander le règlement complet du solde";
+  }
+
+  return "Contrôler le paiement en ligne puis marquer le dossier comme réglé";
 }
 
 export function PaymentsToValidate({ initialPayments }: Props) {
@@ -101,17 +117,28 @@ export function PaymentsToValidate({ initialPayments }: Props) {
         return {
           ...group,
           paymentStatus: nextStatus,
-          statusLabel: nextStatus,
-          priority: invertPriority(group.priority),
-          remainingCents: nextStatus === "PAYÉ" ? 0 : group.totalAmountDueCents,
-          totalPaidCents: nextStatus === "PAYÉ" ? group.totalAmountDueCents : 0,
-          suggestedAction: nextStatus === "PAYÉ" ? "Aucune action" : "Vérifier le règlement reçu",
+          statusLabel: formatPaymentStatus(nextStatus),
+          remainingCents:
+            nextStatus === "PAYÉ"
+              ? 0
+              : nextStatus === "PARTIEL"
+                ? Math.max(group.totalAmountDueCents - Math.max(group.totalPaidCents, Math.floor(group.totalAmountDueCents / 2)), 0)
+                : group.totalAmountDueCents,
+          totalPaidCents:
+            nextStatus === "PAYÉ"
+              ? group.totalAmountDueCents
+              : nextStatus === "PARTIEL"
+                ? Math.max(group.totalPaidCents, Math.floor(group.totalAmountDueCents / 2))
+                : 0,
+          suggestedAction: getSuggestedAction(nextStatus),
         };
       }),
     );
 
     if (nextStatus === "PAYÉ") {
       setToastMessage(`Paiement validé pour ${selectedPayment.payerLabel}.`);
+    } else if (nextStatus === "PARTIEL") {
+      setToastMessage(`Le dossier de ${selectedPayment.payerLabel} est marqué à régulariser.`);
     } else {
       setToastMessage(`Le dossier de ${selectedPayment.payerLabel} a été remis en attente.`);
     }
@@ -123,6 +150,8 @@ export function PaymentsToValidate({ initialPayments }: Props) {
   const validatePayment = () => updatePaymentStatus("PAYÉ");
 
   const resetPaymentToPending = () => updatePaymentStatus("EN ATTENTE");
+
+  const markPaymentAsPartial = () => updatePaymentStatus("PARTIEL");
 
   return (
     <>
@@ -292,6 +321,15 @@ export function PaymentsToValidate({ initialPayments }: Props) {
                   className="rounded-lg border border-amber-500 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50"
                 >
                   Remettre en attente
+                </button>
+              ) : null}
+              {selectedPayment.paymentStatus !== "PARTIEL" ? (
+                <button
+                  type="button"
+                  onClick={markPaymentAsPartial}
+                  className="rounded-lg border border-amber-500 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50"
+                >
+                  Marquer partiel
                 </button>
               ) : null}
               <button
