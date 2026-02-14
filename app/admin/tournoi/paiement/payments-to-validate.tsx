@@ -27,6 +27,10 @@ function formatEuro(cents: number) {
   return `${(cents / 100).toFixed(0)}€`;
 }
 
+function invertPriority(priority: PaymentDossier["priority"]): PaymentDossier["priority"] {
+  return priority === "HAUTE" ? "NORMALE" : "HAUTE";
+}
+
 export function PaymentsToValidate({ initialPayments }: Props) {
   const [payments, setPayments] = useState(initialPayments);
   const [selectedGroupKey, setSelectedGroupKey] = useState<string | null>(null);
@@ -65,18 +69,20 @@ export function PaymentsToValidate({ initialPayments }: Props) {
 
     setPayments((current) =>
       current
-        .map((group) =>
-          group.groupKey === selectedPayment.groupKey
-            ? {
-                ...group,
-                paymentStatus: "PAYÉ",
-                statusLabel: "PAYÉ",
-                priority: group.priority === "HAUTE" ? "NORMALE" : "HAUTE",
-                remainingCents: 0,
-                totalPaidCents: group.totalAmountDueCents,
-              }
-            : group,
-        )
+        .map<PaymentDossier>((group): PaymentDossier => {
+          if (group.groupKey !== selectedPayment.groupKey) {
+            return group;
+          }
+
+          return {
+            ...group,
+            paymentStatus: "PAYÉ",
+            statusLabel: "PAYÉ",
+            priority: invertPriority(group.priority),
+            remainingCents: 0,
+            totalPaidCents: group.totalAmountDueCents,
+          };
+        })
         .filter((group) => group.paymentStatus !== "PAYÉ"),
     );
     closeModal();
