@@ -6,16 +6,35 @@ type RegistrationPayload = {
   email?: string;
   phone?: string;
   licenseNumber?: string;
-  ranking?: string;
+  points?: string;
+  gender?: string;
   club?: string;
   tables?: unknown;
-  notes?: string;
   website?: string;
 };
 
 const WINDOW_MS = 10 * 60 * 1000;
 const MAX_REQUESTS = 5;
 const requestTracker = new Map<string, number[]>();
+
+
+const TABLE_RULES: Record<string, { minPoints: number | null; maxPoints: number | null; womenOnly?: boolean }> = {
+  C: { minPoints: 800, maxPoints: 1399 },
+  A: { minPoints: 500, maxPoints: 799 },
+  D: { minPoints: 1100, maxPoints: 1699 },
+  B: { minPoints: 500, maxPoints: 1099 },
+  F: { minPoints: 500, maxPoints: 1199 },
+  H: { minPoints: 1200, maxPoints: 1799 },
+  E: { minPoints: 500, maxPoints: 899 },
+  G: { minPoints: 900, maxPoints: 1499 },
+  I: { minPoints: 500, maxPoints: null },
+  J: { minPoints: null, maxPoints: null, womenOnly: true },
+  L: { minPoints: 500, maxPoints: 1299 },
+  N: { minPoints: 1300, maxPoints: 2099 },
+  K: { minPoints: 500, maxPoints: 999 },
+  M: { minPoints: 1000, maxPoints: 1599 },
+  P: { minPoints: null, maxPoints: null },
+};
 
 function checkRateLimit(clientIp: string) {
   const now = Date.now();
@@ -36,6 +55,27 @@ function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+function isTableEligible(tableCode: string, points: number, gender: string) {
+  const rule = TABLE_RULES[tableCode];
+  if (!rule) {
+    return false;
+  }
+
+  if (rule.womenOnly && gender !== "F") {
+    return false;
+  }
+
+  if (rule.minPoints !== null && points < rule.minPoints) {
+    return false;
+  }
+
+  if (rule.maxPoints !== null && points > rule.maxPoints) {
+    return false;
+  }
+
+  return true;
+}
+
 function normalizeTables(tables: unknown) {
   if (!Array.isArray(tables)) {
     return [];
@@ -54,10 +94,10 @@ async function sendWithWebhook(payload: {
   email: string;
   phone: string;
   licenseNumber: string;
-  ranking: string;
+  points: string;
+  gender: string;
   club: string;
   tables: string[];
-  notes: string;
 }) {
   const webhookUrl = process.env.TOURNAMENT_REGISTRATION_WEBHOOK_URL;
 
@@ -86,10 +126,10 @@ async function sendWithResend(payload: {
   email: string;
   phone: string;
   licenseNumber: string;
-  ranking: string;
+  points: string;
+  gender: string;
   club: string;
   tables: string[];
-  notes: string;
 }) {
   const resendApiKey = process.env.RESEND_API_KEY;
   const to = process.env.TOURNAMENT_REGISTRATION_TO_EMAIL;
@@ -119,11 +159,10 @@ async function sendWithResend(payload: {
         `Email: ${payload.email}`,
         `Téléphone: ${payload.phone}`,
         `N° licence: ${payload.licenseNumber}`,
-        `Classement: ${payload.ranking || "Non renseigné"}`,
+        `Points: ${payload.points || "Non renseigné"}`,
+        `Genre: ${payload.gender || "Non renseigné"}`,
         `Club: ${payload.club}`,
         `Tableaux: ${payload.tables.join(", ")}`,
-        "",
-        `Remarques: ${payload.notes || "Aucune"}`,
       ].join("\n"),
     }),
   });
@@ -160,9 +199,9 @@ export async function POST(request: NextRequest) {
   const email = body.email?.trim() ?? "";
   const phone = body.phone?.trim() ?? "";
   const licenseNumber = body.licenseNumber?.trim() ?? "";
-  const ranking = body.ranking?.trim() ?? "";
+  const points = body.points?.trim() ?? "";
+  const gender = body.gender?.trim().toUpperCase() ?? "";
   const club = body.club?.trim() ?? "";
-  const notes = body.notes?.trim() ?? "";
   const website = body.website?.trim() ?? "";
   const tables = normalizeTables(body.tables);
 
@@ -217,6 +256,21 @@ export async function POST(request: NextRequest) {
     );
   }
 
+
+  if (!/^\d{1,5}$/.test(points)) {
+    return NextResponse.json(
+      { message: "Les points doivent être un nombre positif." },
+      { status: 400 }
+    );
+  }
+
+  if (!["M", "F"].includes(gender)) {
+    return NextResponse.json(
+      { message: "Le genre doit être M ou F." },
+      { status: 400 }
+    );
+  }
+
   if (tables.length === 0) {
     return NextResponse.json(
       { message: "Merci de sélectionner au moins un tableau." },
@@ -224,9 +278,14 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (notes.length > 1000) {
+  const numericPoints = Number.parseInt(points, 10);
+  const invalidTables = tables.filter((tableCode) => !isTableEligible(tableCode, numericPoints, gender));
+
+  if (invalidTables.length > 0) {
     return NextResponse.json(
-      { message: "Les remarques ne doivent pas dépasser 1000 caractères." },
+      {
+        message: `Les tableaux suivants ne sont pas accessibles avec votre profil: ${invalidTables.join(", ")}.`,
+      },
       { status: 400 }
     );
   }
@@ -237,10 +296,10 @@ export async function POST(request: NextRequest) {
     email,
     phone,
     licenseNumber,
-    ranking,
+    points,
+    gender,
     club,
     tables,
-    notes,
   };
 
   const sent =
