@@ -8,6 +8,10 @@ type PointagePayload = {
   checked?: unknown;
 };
 
+type DeletePlayerPayload = {
+  registrationId?: unknown;
+};
+
 export async function POST(request: Request) {
   const session = await auth();
 
@@ -60,6 +64,42 @@ export async function POST(request: Request) {
       }),
     ]);
   }
+
+  return NextResponse.json({ ok: true });
+}
+
+export async function DELETE(request: Request) {
+  const session = await auth();
+
+  if (!session || session.user.role !== "ADMIN") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const body = (await request.json()) as DeletePlayerPayload;
+  const registrationId = typeof body.registrationId === "string" ? body.registrationId : "";
+
+  if (!registrationId) {
+    return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
+  }
+
+  const registration = await prisma.tournamentRegistration.findUnique({
+    where: { id: registrationId },
+    select: { playerRefId: true },
+  });
+
+  if (!registration) {
+    return NextResponse.json({ error: "Registration not found" }, { status: 404 });
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.tournamentRegistration.deleteMany({
+      where: { playerRefId: registration.playerRefId },
+    });
+
+    await tx.player.delete({
+      where: { id: registration.playerRefId },
+    });
+  });
 
   return NextResponse.json({ ok: true });
 }
