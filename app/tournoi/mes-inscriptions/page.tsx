@@ -56,6 +56,11 @@ export default async function MesInscriptionsPage() {
   }
 
   const tournament = await prisma.tournament.findFirst({
+    where: {
+      status: {
+        in: ["PUBLISHED", "DRAFT"],
+      },
+    },
     orderBy: [{ startDate: "desc" }],
     select: {
       id: true,
