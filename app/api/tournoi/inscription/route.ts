@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { RegistrationSource } from "@prisma/client";
 
@@ -345,6 +346,8 @@ export async function POST(request: NextRequest) {
   }
 
   const ownerId = await ensureWebRegistrationOwnerId();
+  const session = await auth();
+  const sessionUserId = session?.user?.id ?? null;
 
   const existingPlayer = await prisma.player.findUnique({
     where: { licence: licenseNumber },
@@ -404,7 +407,8 @@ export async function POST(request: NextRequest) {
         licenseNumber,
         clubName: club,
         gender,
-        contactEmail: email,
+        userId: sessionUserId,
+        contactEmail: email.toLowerCase(),
         contactPhone: phone,
         source: RegistrationSource.WEB,
         registrationEvents: {
