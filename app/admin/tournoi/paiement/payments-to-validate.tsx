@@ -1,6 +1,7 @@
 "use client";
 
-import { ChangeEvent, useMemo, useState } from "react";
+import { ChangeEvent, useMemo, useState, useTransition } from "react";
+import { updatePaymentGroupStatus } from "./actions";
 
 type PaymentStatus = "PAYÉ" | "PARTIEL" | "EN ATTENTE";
 type FilterStatus = "TOUS" | Exclude<PaymentStatus, "PAYÉ">;
@@ -56,6 +57,7 @@ export function PaymentsToValidate({ initialPayments }: Props) {
   const [nameFilter, setNameFilter] = useState("");
   const [showPaidPayments, setShowPaidPayments] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const selectedPayment = useMemo(
     () => payments.find((group) => group.groupKey === selectedGroupKey) ?? null,
@@ -104,47 +106,60 @@ export function PaymentsToValidate({ initialPayments }: Props) {
   };
 
   const updatePaymentStatus = (nextStatus: PaymentStatus) => {
-    if (!selectedPayment) {
+    if (!selectedPayment || isPending) {
       return;
     }
 
-    setPayments((current) =>
-      current.map<PaymentDossier>((group): PaymentDossier => {
-        if (group.groupKey !== selectedPayment.groupKey) {
-          return group;
-        }
+    const targetGroupKey = selectedPayment.groupKey;
+    const targetPayerLabel = selectedPayment.payerLabel;
 
-        return {
-          ...group,
-          paymentStatus: nextStatus,
-          statusLabel: formatPaymentStatus(nextStatus),
-          remainingCents:
-            nextStatus === "PAYÉ"
-              ? 0
-              : nextStatus === "PARTIEL"
-                ? Math.max(group.totalAmountDueCents - Math.max(group.totalPaidCents, Math.floor(group.totalAmountDueCents / 2)), 0)
-                : group.totalAmountDueCents,
-          totalPaidCents:
-            nextStatus === "PAYÉ"
-              ? group.totalAmountDueCents
-              : nextStatus === "PARTIEL"
-                ? Math.max(group.totalPaidCents, Math.floor(group.totalAmountDueCents / 2))
-                : 0,
-          suggestedAction: getSuggestedAction(nextStatus),
-        };
-      }),
-    );
+    startTransition(async () => {
+      const result = await updatePaymentGroupStatus(targetGroupKey, nextStatus);
 
-    if (nextStatus === "PAYÉ") {
-      setToastMessage(`Paiement validé pour ${selectedPayment.payerLabel}.`);
-    } else if (nextStatus === "PARTIEL") {
-      setToastMessage(`Le dossier de ${selectedPayment.payerLabel} est marqué à régulariser.`);
-    } else {
-      setToastMessage(`Le dossier de ${selectedPayment.payerLabel} a été remis en attente.`);
-    }
+      if (!result.ok) {
+        setToastMessage(result.error ?? "La mise à jour du paiement a échoué.");
+        setTimeout(() => setToastMessage(null), 3000);
+        return;
+      }
 
-    setTimeout(() => setToastMessage(null), 3000);
-    closeModal();
+      setPayments((current) =>
+        current.map<PaymentDossier>((group): PaymentDossier => {
+          if (group.groupKey !== targetGroupKey) {
+            return group;
+          }
+
+          return {
+            ...group,
+            paymentStatus: nextStatus,
+            statusLabel: formatPaymentStatus(nextStatus),
+            remainingCents:
+              nextStatus === "PAYÉ"
+                ? 0
+                : nextStatus === "PARTIEL"
+                  ? Math.max(group.totalAmountDueCents - Math.max(group.totalPaidCents, Math.floor(group.totalAmountDueCents / 2)), 0)
+                  : group.totalAmountDueCents,
+            totalPaidCents:
+              nextStatus === "PAYÉ"
+                ? group.totalAmountDueCents
+                : nextStatus === "PARTIEL"
+                  ? Math.max(group.totalPaidCents, Math.floor(group.totalAmountDueCents / 2))
+                  : 0,
+            suggestedAction: getSuggestedAction(nextStatus),
+          };
+        }),
+      );
+
+      if (nextStatus === "PAYÉ") {
+        setToastMessage(`Paiement validé pour ${targetPayerLabel}.`);
+      } else if (nextStatus === "PARTIEL") {
+        setToastMessage(`Le dossier de ${targetPayerLabel} est marqué à régulariser.`);
+      } else {
+        setToastMessage(`Le dossier de ${targetPayerLabel} a été remis en attente.`);
+      }
+
+      setTimeout(() => setToastMessage(null), 3000);
+      closeModal();
+    });
   };
 
   const validatePayment = () => updatePaymentStatus("PAYÉ");
@@ -318,7 +333,8 @@ export function PaymentsToValidate({ initialPayments }: Props) {
                 <button
                   type="button"
                   onClick={resetPaymentToPending}
-                  className="rounded-lg border border-amber-500 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50"
+                  disabled={isPending}
+                  className="rounded-lg border border-amber-500 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   Remettre en attente
                 </button>
@@ -327,7 +343,8 @@ export function PaymentsToValidate({ initialPayments }: Props) {
                 <button
                   type="button"
                   onClick={markPaymentAsPartial}
-                  className="rounded-lg border border-amber-500 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50"
+                  disabled={isPending}
+                  className="rounded-lg border border-amber-500 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   Marquer partiel
                 </button>
@@ -336,9 +353,9 @@ export function PaymentsToValidate({ initialPayments }: Props) {
                 type="button"
                 onClick={validatePayment}
                 className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-indigo-300"
-                disabled={selectedPayment.paymentStatus === "PAYÉ"}
+                disabled={selectedPayment.paymentStatus === "PAYÉ" || isPending}
               >
-                Valider le paiement
+                {isPending ? "Mise à jour..." : "Valider le paiement"}
               </button>
             </div>
           </div>
