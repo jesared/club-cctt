@@ -16,14 +16,31 @@ export const metadata: Metadata = {
   },
 };
 
+const themeScript = `
+(() => {
+  try {
+    const storedTheme = localStorage.getItem("theme");
+    const resolvedTheme = storedTheme === "light" || storedTheme === "dark"
+      ? storedTheme
+      : window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+    document.documentElement.classList.toggle("dark", resolvedTheme === "dark");
+  } catch (_) {
+    document.documentElement.classList.remove("dark");
+  }
+})();
+`;
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr">
-      <body className="min-h-screen text-gray-800">
+    <html lang="fr" suppressHydrationWarning>
+      <body className="min-h-screen">
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <Providers>
           <SidebarProvider defaultOpen={false}>
             <div className="flex min-h-screen flex-col lg:flex-row">

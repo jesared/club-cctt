@@ -29,6 +29,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import AuthButton from "./AuthButton";
+import ThemeToggle from "./ThemeToggle";
 
 export default function DashboardSidebar() {
   const pathname = usePathname();
@@ -352,6 +353,10 @@ export default function DashboardSidebar() {
             </>
           )}
         </nav>
+        <div className="mt-4 flex items-center justify-between gap-3">
+          <span className="text-xs text-sidebar-foreground/70">Thème</span>
+          <ThemeToggle />
+        </div>
         <AuthButton />
       </div>
     </aside>
