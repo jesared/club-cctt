@@ -51,6 +51,7 @@ export default function DashboardSidebar() {
   const tournamentMenuItems: MenuItem[] = [
     { href: "/tournoi", label: "Accueil tournoi", icon: Trophy },
     { href: "/tournoi/inscription", label: "Inscription", icon: ClipboardPen },
+    { href: "/tournoi/mes-inscriptions", label: "Mes inscriptions", icon: CalendarCheck },
     { href: "/tournoi/reglement", label: "Règlement", icon: FileText },
   ];
 
