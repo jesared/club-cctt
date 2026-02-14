@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { ChangeEvent, useMemo, useState } from "react";
 
 type PaymentStatus = "PAYÉ" | "PARTIEL" | "EN ATTENTE";
 
@@ -27,6 +27,10 @@ function formatEuro(cents: number) {
   return `${(cents / 100).toFixed(0)}€`;
 }
 
+function invertPriority(priority: PaymentDossier["priority"]): PaymentDossier["priority"] {
+  return priority === "HAUTE" ? "NORMALE" : "HAUTE";
+}
+
 export function PaymentsToValidate({ initialPayments }: Props) {
   const [payments, setPayments] = useState(initialPayments);
   const [selectedGroupKey, setSelectedGroupKey] = useState<string | null>(null);
@@ -39,12 +43,48 @@ export function PaymentsToValidate({ initialPayments }: Props) {
 
   const closeModal = () => setSelectedGroupKey(null);
 
+  const updateSelectedPriority = (event: ChangeEvent<HTMLSelectElement>) => {
+    if (!selectedPayment) {
+      return;
+    }
+
+    const nextPriority = event.target.value as PaymentDossier["priority"];
+
+    setPayments((current) =>
+      current.map((group) =>
+        group.groupKey === selectedPayment.groupKey
+          ? {
+              ...group,
+              priority: nextPriority,
+            }
+          : group,
+      ),
+    );
+  };
+
   const validatePayment = () => {
     if (!selectedPayment) {
       return;
     }
 
-    setPayments((current) => current.filter((group) => group.groupKey !== selectedPayment.groupKey));
+    setPayments((current) =>
+      current
+        .map<PaymentDossier>((group): PaymentDossier => {
+          if (group.groupKey !== selectedPayment.groupKey) {
+            return group;
+          }
+
+          return {
+            ...group,
+            paymentStatus: "PAYÉ",
+            statusLabel: "PAYÉ",
+            priority: invertPriority(group.priority),
+            remainingCents: 0,
+            totalPaidCents: group.totalAmountDueCents,
+          };
+        })
+        .filter((group) => group.paymentStatus !== "PAYÉ"),
+    );
     closeModal();
   };
 
@@ -127,6 +167,19 @@ export function PaymentsToValidate({ initialPayments }: Props) {
               <li><span className="font-medium text-gray-900">Reste à encaisser :</span> {formatEuro(selectedPayment.remainingCents)}</li>
               <li><span className="font-medium text-gray-900">Joueurs :</span> {selectedPayment.players.join(", ")}</li>
             </ul>
+
+            <label className="mt-4 block text-sm font-medium text-gray-900" htmlFor="payment-priority">
+              Priorité
+            </label>
+            <select
+              id="payment-priority"
+              className="mt-2 w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-indigo-500 focus:outline-none"
+              value={selectedPayment.priority}
+              onChange={updateSelectedPriority}
+            >
+              <option value="NORMALE">NORMALE</option>
+              <option value="HAUTE">HAUTE</option>
+            </select>
 
             <label className="mt-4 block text-sm font-medium text-gray-900" htmlFor="payment-note">
               Note interne

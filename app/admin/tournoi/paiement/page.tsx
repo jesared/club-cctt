@@ -39,14 +39,11 @@ export default async function AdminTournoiPaiementPage() {
     0,
   );
   const groupedPayments = paymentGroups.filter((group) => group.registrations > 1);
-  const standardTablePriceCents = 800;
-
   const paymentsToValidate = paymentGroups
     .filter((group) => group.paymentStatus !== "PAYÉ")
     .map((group) => {
       const remainingCents = Math.max(group.totalAmountDueCents - group.totalPaidCents, 0);
-      const priority: "HAUTE" | "NORMALE" =
-        remainingCents >= standardTablePriceCents * 3 || group.registrations >= 3 ? "HAUTE" : "NORMALE";
+      const priority: "HAUTE" | "NORMALE" = "NORMALE";
       const dossierType = group.registrations > 1 ? "Dossier groupé" : "Dossier individuel";
       const statusLabel = formatPaymentStatus(group.paymentStatus);
 
