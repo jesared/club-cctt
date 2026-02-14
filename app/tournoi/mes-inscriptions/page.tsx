@@ -75,7 +75,7 @@ export default async function MesInscriptionsPage() {
     return (
       <main className="tournament-shell mx-auto max-w-5xl px-4 py-12">
         <h1 className="text-3xl font-semibold">Mes inscriptions tournoi</h1>
-        <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-amber-900">
+        <p className="tournament-panel mt-4 rounded-lg border p-4">
           Aucun tournoi actif n&apos;est disponible pour le moment.
         </p>
       </main>
@@ -201,11 +201,7 @@ export default async function MesInscriptionsPage() {
       </section>
 
       {registrations.length > 0 ? (
-        <section
-          className={`rounded-xl border p-6 ${
-            totalRemainingCents > 0 ? "border-amber-300/50 bg-amber-500/10" : "border-emerald-300/50 bg-emerald-500/10"
-          }`}
-        >
+        <section className="tournament-panel rounded-xl border p-6">
           <h2 className="text-xl font-semibold">Paiement côté joueur</h2>
           {totalRemainingCents > 0 ? (
             <>
@@ -235,7 +231,7 @@ export default async function MesInscriptionsPage() {
               </ul>
             </>
           ) : (
-            <p className="mt-2 text-sm text-emerald-300">
+            <p className="mt-2 text-sm text-emerald-500">
               Tout est réglé ✅ Vos inscriptions sont entièrement payées pour ce tournoi.
             </p>
           )}
@@ -243,7 +239,7 @@ export default async function MesInscriptionsPage() {
       ) : null}
 
       {registrations.length === 0 ? (
-        <section className="rounded-xl border border-primary/30 bg-primary/10 p-6">
+        <section className="tournament-panel rounded-xl border p-6">
           <p className="font-medium">Aucun joueur inscrit pour le moment.</p>
           <p className="cyberpunk-text-soft mt-2 text-sm">
             Vous pouvez ajouter votre premier joueur depuis le formulaire d&apos;inscription.
