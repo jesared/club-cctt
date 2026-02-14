@@ -24,12 +24,20 @@ export default function InscriptionsPage() {
               </a>
             </p>
           </div>
-          <a
-            href="/tournoi"
-            className="inline-flex justify-center border border-purple-600 text-purple-600 px-5 py-2 rounded-md hover:bg-purple-50 transition"
-          >
-            Retour à la page tournoi
-          </a>
+          <div className="flex flex-wrap gap-3">
+            <a
+              href="/tournoi"
+              className="inline-flex justify-center border border-purple-600 text-purple-600 px-5 py-2 rounded-md hover:bg-purple-50 transition"
+            >
+              Retour à la page tournoi
+            </a>
+            <a
+              href="/tournoi/mes-inscriptions"
+              className="inline-flex justify-center border border-gray-300 text-gray-700 px-5 py-2 rounded-md hover:bg-gray-50 transition"
+            >
+              Voir mes inscriptions
+            </a>
+          </div>
         </CardContent>
       </Card>
     </main>
