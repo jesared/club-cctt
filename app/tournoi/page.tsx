@@ -48,12 +48,12 @@ const tableaux = [
 export default function TournoiHomePage() {
   return (
     <main className="max-w-6xl mx-auto px-4 py-16 space-y-10">
-      <Card className="bg-purple-50 border-l-4 border-l-purple-500">
+      <Card className="border-l-4 border-l-primary bg-card cyberpunk-highlight">
         <CardHeader>
-          <p className="uppercase tracking-wide text-sm text-purple-600 mb-2">{informationsTournoi.organisateur}</p>
+          <p className="mb-2 text-sm uppercase tracking-wide text-primary">{informationsTournoi.organisateur}</p>
           <CardTitle className="text-3xl md:text-4xl">{informationsTournoi.nom}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6 text-gray-700">
+        <CardContent className="space-y-6 text-muted-foreground">
           <p>
             Tournoi homologué {informationsTournoi.homologation} sur {informationsTournoi.tables} tables,
             du samedi 4 au lundi 6 avril 2026.
@@ -62,13 +62,13 @@ export default function TournoiHomePage() {
           <div className="flex flex-col sm:flex-row gap-4">
             <a
               href={informationsTournoi.contact.paiement}
-              className="inline-flex justify-center bg-purple-600 text-white px-6 py-3 rounded-md hover:bg-purple-700 transition"
+              className="inline-flex justify-center rounded-md bg-primary px-6 py-3 text-primary-foreground transition hover:opacity-90"
             >
               S&apos;inscrire en ligne
             </a>
             <a
               href="/tournoi/reglement"
-              className="inline-flex justify-center border border-purple-600 text-purple-600 px-6 py-3 rounded-md hover:bg-purple-100 transition"
+              className="inline-flex justify-center rounded-md border border-primary px-6 py-3 text-primary transition hover:bg-primary/10"
             >
               Consulter le règlement 2026
             </a>

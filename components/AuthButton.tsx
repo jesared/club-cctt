@@ -68,14 +68,14 @@ export default function AuthButton({ collapsed = false }: AuthButtonProps) {
       <div className={cn("mt-3 flex flex-col gap-2", collapsed && "hidden")}>
         <Link
           href="/espace"
-          className="rounded-md border border-sidebar-border bg-background px-3 py-2 text-center text-xs font-medium text-foreground hover:bg-sidebar-accent"
+          className="rounded-md border border-sidebar-border bg-background px-3 py-2 text-center text-xs font-medium text-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
         >
           Mon espace
         </Link>
 
         <button
           onClick={() => signOut()}
-          className="rounded-md border px-3 py-2 text-xs hover:bg-sidebar-accent cursor-pointer"
+          className="cursor-pointer rounded-md border border-sidebar-border px-3 py-2 text-xs transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
         >
           Déconnexion
         </button>
