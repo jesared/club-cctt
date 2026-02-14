@@ -200,7 +200,7 @@ export default function TournamentRegistrationForm() {
             onChange={(event) =>
               setFormData((current) => ({ ...current, lastName: event.target.value }))
             }
-            className="w-full border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder="DUPONT"
           />
         </div>
@@ -219,7 +219,7 @@ export default function TournamentRegistrationForm() {
             onChange={(event) =>
               setFormData((current) => ({ ...current, firstName: event.target.value }))
             }
-            className="w-full border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder="Jean"
           />
         </div>
@@ -240,7 +240,7 @@ export default function TournamentRegistrationForm() {
             onChange={(event) =>
               setFormData((current) => ({ ...current, email: event.target.value }))
             }
-            className="w-full border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder="joueur@email.fr"
           />
         </div>
@@ -259,7 +259,7 @@ export default function TournamentRegistrationForm() {
             onChange={(event) =>
               setFormData((current) => ({ ...current, phone: event.target.value }))
             }
-            className="w-full border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder="06 12 34 56 78"
           />
         </div>
@@ -281,7 +281,7 @@ export default function TournamentRegistrationForm() {
             onChange={(event) =>
               setFormData((current) => ({ ...current, licenseNumber: event.target.value }))
             }
-            className="w-full border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder="1234567"
           />
         </div>
@@ -315,7 +315,7 @@ export default function TournamentRegistrationForm() {
                 };
               })
             }
-            className="w-full border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder="1248"
           />
         </div>
@@ -341,11 +341,11 @@ export default function TournamentRegistrationForm() {
                 };
               })
             }
-            className="w-full border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           >
-            <option value="">Sélectionner</option>
-            <option value="M">M</option>
-            <option value="F">F</option>
+            <option className="bg-card text-foreground" value="">Sélectionner</option>
+            <option className="bg-card text-foreground" value="M">M</option>
+            <option className="bg-card text-foreground" value="F">F</option>
           </select>
         </div>
         <div className="sm:col-span-4">
@@ -363,7 +363,7 @@ export default function TournamentRegistrationForm() {
             onChange={(event) =>
               setFormData((current) => ({ ...current, club: event.target.value }))
             }
-            className="w-full border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder="Nom du club"
           />
         </div>
@@ -372,15 +372,15 @@ export default function TournamentRegistrationForm() {
       <fieldset className="space-y-3">
         <legend className="text-sm font-medium">Tableaux souhaités</legend>
         <p className="text-sm text-gray-600">Vous pouvez sélectionner plusieurs tableaux.</p>
-        <p className="rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-800">{infoMessage}</p>
+        <p className="rounded-md border border-border bg-accent/25 px-3 py-2 text-xs text-foreground/80">{infoMessage}</p>
         <div className="grid gap-2 sm:grid-cols-2">
           {TABLE_OPTIONS.map((table) => (
             <label
               key={table.value}
               className={`flex items-start gap-2 rounded-md border px-3 py-2 ${
                 isEligible(parsedPoints, formData.gender, table)
-                  ? "border-gray-200"
-                  : "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400"
+                  ? "border-border"
+                  : "cursor-not-allowed border-border bg-muted/50 text-muted-foreground"
               }`}
             >
               <input
@@ -390,7 +390,7 @@ export default function TournamentRegistrationForm() {
                 onChange={() => toggleTable(table.value)}
                 className="mt-1"
               />
-              <span className="text-sm text-gray-800">{table.label}</span>
+              <span className="text-sm text-foreground">{table.label}</span>
             </label>
           ))}
         </div>
@@ -413,7 +413,7 @@ export default function TournamentRegistrationForm() {
 
       {feedback ? (
         <p
-          className={`text-sm ${feedback.type === "success" ? "text-green-700" : "text-red-700"}`}
+          className={`text-sm ${feedback.type === "success" ? "text-green-600" : "text-red-500"}`}
           role="status"
         >
           {feedback.message}
@@ -423,7 +423,7 @@ export default function TournamentRegistrationForm() {
       <button
         type="submit"
         disabled={isSubmitting || !canSubmit}
-        className="inline-flex bg-purple-600 text-white px-6 py-3 rounded-md hover:bg-purple-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
+        className="inline-flex rounded-md bg-primary px-6 py-3 text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isSubmitting ? "Envoi en cours..." : "Valider mon inscription"}
       </button>
