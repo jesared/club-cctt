@@ -39,6 +39,7 @@ export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
   const [selectedTable, setSelectedTable] = useState<string>("all");
   const [editingPlayer, setEditingPlayer] = useState<PointagesGridPlayer | null>(null);
   const [deletingPlayer, setDeletingPlayer] = useState<PointagesGridPlayer | null>(null);
+  const [deletePending, setDeletePending] = useState<boolean>(false);
   const [engagementDraft, setEngagementDraft] = useState<string>("");
 
   const clubOptions = useMemo(() => {
@@ -156,22 +157,42 @@ export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
     setEngagementDraft("");
   }
 
-  function confirmDeletePlayer() {
+  async function confirmDeletePlayer() {
     if (!deletingPlayer) {
       return;
     }
 
-    setPlayersState((previousState) => previousState.filter((player) => player.id !== deletingPlayer.id));
-    setCheckedState((previousState) => {
-      const nextState = { ...previousState };
-      Object.keys(nextState).forEach((key) => {
-        if (key.startsWith(`${deletingPlayer.id}-`)) {
-          delete nextState[key];
-        }
+    setDeletePending(true);
+
+    try {
+      const response = await fetch("/api/admin/tournoi/pointages", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          registrationId: deletingPlayer.id,
+        }),
       });
-      return nextState;
-    });
-    setDeletingPlayer(null);
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de la suppression du joueur");
+      }
+
+      setPlayersState((previousState) => previousState.filter((player) => player.id !== deletingPlayer.id));
+      setCheckedState((previousState) => {
+        const nextState = { ...previousState };
+        Object.keys(nextState).forEach((key) => {
+          if (key.startsWith(`${deletingPlayer.id}-`)) {
+            delete nextState[key];
+          }
+        });
+        return nextState;
+      });
+      setDeletingPlayer(null);
+    } finally {
+      setDeletePending(false);
+    }
   }
 
   return (
@@ -335,17 +356,14 @@ export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
           <div className="w-full max-w-lg space-y-4 rounded-lg bg-white p-6 shadow-lg">
             <h3 className="text-lg font-semibold text-gray-900">Supprimer ce joueur du pointage ?</h3>
             <p className="text-sm text-gray-600">
-              Vous allez retirer <span className="font-medium">{deletingPlayer.name}</span> de la liste de pointage.
-              Si vous souhaitez seulement ajuster ses tableaux, utilisez plutôt le bouton d&apos;édition.
+              Cette action va supprimer <span className="font-medium">{deletingPlayer.name}</span> ainsi que ses
+              engagements en base de données.
             </p>
-            <ul className="list-disc space-y-1 pl-5 text-sm text-gray-600">
-              <li>Proposition 1 : corriger ses engagements via l&apos;édition.</li>
-              <li>Proposition 2 : confirmer la suppression si l&apos;inscription est invalide.</li>
-            </ul>
             <div className="flex justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setDeletingPlayer(null)}
+                disabled={deletePending}
                 className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
               >
                 Annuler
@@ -353,9 +371,10 @@ export function PointagesGrid({ players, dayColumns }: PointagesGridProps) {
               <button
                 type="button"
                 onClick={confirmDeletePlayer}
+                disabled={deletePending}
                 className="rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-100"
               >
-                Confirmer la suppression
+                {deletePending ? "Suppression..." : "Confirmer la suppression"}
               </button>
             </div>
           </div>
