@@ -9,10 +9,6 @@ export default function HomePage() {
       <section className="bg-muted/40 dark:bg-[linear-gradient(160deg,color-mix(in_oklab,var(--background)_92%,black),color-mix(in_oklab,var(--background)_82%,var(--primary)))] dark:cyberpunk-home-grid">
         <div className="max-w-6xl mx-auto px-4 py-24">
           <div className="max-w-3xl">
-            <p className="mb-4 hidden dark:inline-flex items-center gap-2 rounded-full border border-primary/50 bg-card/60 px-3 py-1 text-xs uppercase tracking-[0.22em] text-accent">
-              CCTT // mode cyberpunk
-            </p>
-
             <h1 className="text-4xl md:text-5xl font-bold mb-6 dark:font-mono dark:uppercase dark:tracking-[0.08em] dark:[text-shadow:0_0_14px_color-mix(in_oklab,var(--primary)_38%,transparent)]">
               Châlons-en-Champagne
               <br />
