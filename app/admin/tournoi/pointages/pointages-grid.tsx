@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import { CircleCheckBig, Pencil, Trash2 } from "lucide-react";
+import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
@@ -54,29 +54,40 @@ function isEligible(points: number | null, table: TournamentTable) {
   return true;
 }
 
-export function PointagesGrid({ players, dayColumns, tournamentTables }: PointagesGridProps) {
-  const [playersState, setPlayersState] = useState<PointagesGridPlayer[]>(players);
-  const [checkedState, setCheckedState] = useState<Record<string, boolean>>(() => {
-    return players.reduce<Record<string, boolean>>((acc, player) => {
-      player.checkedDayKeys.forEach((dayKey) => {
-        acc[`${player.id}-${dayKey}`] = true;
-      });
-      return acc;
-    }, {});
-  });
+export function PointagesGrid({
+  players,
+  dayColumns,
+  tournamentTables,
+}: PointagesGridProps) {
+  const [playersState, setPlayersState] =
+    useState<PointagesGridPlayer[]>(players);
+  const [checkedState, setCheckedState] = useState<Record<string, boolean>>(
+    () => {
+      return players.reduce<Record<string, boolean>>((acc, player) => {
+        player.checkedDayKeys.forEach((dayKey) => {
+          acc[`${player.id}-${dayKey}`] = true;
+        });
+        return acc;
+      }, {});
+    },
+  );
   const [pendingState, setPendingState] = useState<Record<string, boolean>>({});
   const [selectedClub, setSelectedClub] = useState<string>("all");
   const [selectedTable, setSelectedTable] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [editingPlayer, setEditingPlayer] = useState<PointagesGridPlayer | null>(null);
-  const [deletingPlayer, setDeletingPlayer] = useState<PointagesGridPlayer | null>(null);
+  const [editingPlayer, setEditingPlayer] =
+    useState<PointagesGridPlayer | null>(null);
+  const [deletingPlayer, setDeletingPlayer] =
+    useState<PointagesGridPlayer | null>(null);
   const [deletePending, setDeletePending] = useState<boolean>(false);
-  const [selectedEditEventIds, setSelectedEditEventIds] = useState<Set<string>>(new Set());
+  const [selectedEditEventIds, setSelectedEditEventIds] = useState<Set<string>>(
+    new Set(),
+  );
   const [editPending, setEditPending] = useState<boolean>(false);
 
   const clubOptions = useMemo(() => {
-    return Array.from(new Set(playersState.map((player) => player.club))).sort((clubA, clubB) =>
-      clubA.localeCompare(clubB, "fr"),
+    return Array.from(new Set(playersState.map((player) => player.club))).sort(
+      (clubA, clubB) => clubA.localeCompare(clubB, "fr"),
     );
   }, [playersState]);
 
@@ -108,12 +119,14 @@ export function PointagesGrid({ players, dayColumns, tournamentTables }: Pointag
     const normalizedSearch = searchTerm.trim().toLocaleLowerCase("fr");
 
     return playersState.filter((player) => {
-      const matchesClub = selectedClub === "all" || player.club === selectedClub;
+      const matchesClub =
+        selectedClub === "all" || player.club === selectedClub;
       const playerTables = player.table
         .split(",")
         .map((table) => table.trim())
         .filter(Boolean);
-      const matchesTable = selectedTable === "all" || playerTables.includes(selectedTable);
+      const matchesTable =
+        selectedTable === "all" || playerTables.includes(selectedTable);
       const matchesSearch =
         normalizedSearch.length === 0 ||
         player.name.toLocaleLowerCase("fr").includes(normalizedSearch) ||
@@ -124,7 +137,11 @@ export function PointagesGrid({ players, dayColumns, tournamentTables }: Pointag
   }, [playersState, searchTerm, selectedClub, selectedTable]);
 
   const parsedEditingPoints = useMemo(() => {
-    if (!editingPlayer || !editingPlayer.ranking.trim() || editingPlayer.ranking === "—") {
+    if (
+      !editingPlayer ||
+      !editingPlayer.ranking.trim() ||
+      editingPlayer.ranking === "—"
+    ) {
       return null;
     }
 
@@ -230,7 +247,8 @@ export function PointagesGrid({ players, dayColumns, tournamentTables }: Pointag
                 ...player,
                 table: updatedPlayer.table,
                 engagedEventIds: updatedPlayer.engagedEventIds,
-                registrationEventIdsByDay: updatedPlayer.registrationEventIdsByDay,
+                registrationEventIdsByDay:
+                  updatedPlayer.registrationEventIdsByDay,
                 checkedDayKeys: updatedPlayer.checkedDayKeys,
               }
             : player,
@@ -282,7 +300,9 @@ export function PointagesGrid({ players, dayColumns, tournamentTables }: Pointag
         throw new Error("Erreur lors de la suppression du joueur");
       }
 
-      setPlayersState((previousState) => previousState.filter((player) => player.id !== deletingPlayer.id));
+      setPlayersState((previousState) =>
+        previousState.filter((player) => player.id !== deletingPlayer.id),
+      );
       setCheckedState((previousState) => {
         const nextState = { ...previousState };
         Object.keys(nextState).forEach((key) => {
@@ -303,7 +323,8 @@ export function PointagesGrid({ players, dayColumns, tournamentTables }: Pointag
       <header className="space-y-1">
         <h2 className="text-xl font-semibold">Pointage joueurs sur 3 jours</h2>
         <p className="text-sm text-muted-foreground">
-          Cochez la présence de chaque joueur par jour pour piloter l&apos;accueil rapidement.
+          Cochez la présence de chaque joueur par jour pour piloter
+          l&apos;accueil rapidement.
         </p>
       </header>
 
@@ -322,7 +343,9 @@ export function PointagesGrid({ players, dayColumns, tournamentTables }: Pointag
         </label>
 
         <label className="space-y-1">
-          <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Filtrer par club</span>
+          <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Filtrer par club
+          </span>
           <select
             className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground"
             value={selectedClub}
@@ -338,7 +361,9 @@ export function PointagesGrid({ players, dayColumns, tournamentTables }: Pointag
         </label>
 
         <label className="space-y-1">
-          <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Filtrer par tableau</span>
+          <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Filtrer par tableau
+          </span>
           <select
             className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground"
             value={selectedTable}
@@ -362,94 +387,116 @@ export function PointagesGrid({ players, dayColumns, tournamentTables }: Pointag
               <th className="py-2.5 pr-3 font-medium">Licence</th>
               <th className="py-2.5 pr-3 font-medium">Club</th>
               <th className="py-2.5 pr-3 font-medium">Tableau(x)</th>
-            {normalizedDayColumns.map((dayColumn) => (
-              <th key={dayColumn.key} className="py-2.5 pr-3 font-medium">{dayColumn.label}</th>
-            ))}
+              {normalizedDayColumns.map((dayColumn) => (
+                <th key={dayColumn.key} className="py-2.5 pr-3 font-medium">
+                  {dayColumn.label}
+                </th>
+              ))}
               <th className="py-2.5 pr-3 font-medium">Statut inscription</th>
               <th className="py-2.5 pr-3 font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
-          {filteredPlayers.map((player) => (
-            <tr key={player.id} className="border-b border-slate-800 last:border-0 bg-slate-950 hover:bg-slate-900/70">
-              <td className="py-3 pl-3 pr-3 font-medium text-slate-100">{player.name}</td>
-              <td className="py-3 pr-3 text-slate-300">{player.licence}</td>
-              <td className="py-3 pr-3 text-slate-300">{player.club}</td>
-              <td className="py-3 pr-3 text-slate-300">{player.table}</td>
-              {normalizedDayColumns.map((dayColumn) => {
-                const key = `${player.id}-${dayColumn.key}`;
-                const hasEventForDay = (player.registrationEventIdsByDay[dayColumn.key] ?? []).length > 0;
-                return (
-                  <td key={key} className="py-3 pr-3 text-slate-300">
-                    {hasEventForDay ? (
-                      <label className="inline-flex items-center gap-2 text-slate-300">
-                        <span className="relative inline-flex h-4 w-4 items-center justify-center">
-                          <input
-                            type="checkbox"
-                            className="peer h-4 w-4 cursor-pointer appearance-none rounded-full border border-slate-500 bg-white/90 align-middle transition checked:border-accent checked:bg-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-60"
-                            checked={checkedState[key] ?? false}
-                            disabled={pendingState[key]}
-                            onChange={() => toggleCheck(player, dayColumn.key)}
-                          />
-                          <CircleCheckBig className="pointer-events-none absolute h-3 w-3 scale-0 text-background transition-transform peer-checked:scale-100" />
-                        </span>
-                        <span className="text-xs text-slate-300">Présent</span>
-                      </label>
-                    ) : (
-                      <span className="text-xs text-slate-400">Non inscrit</span>
-                    )}
-                  </td>
-                );
-              })}
-              <td className="py-3 pr-3 text-slate-300">{player.status}</td>
-              <td className="py-3 pr-3 text-slate-300">
-                <div className="flex items-center gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => openEditPopup(player)}
-                    title="Éditer le joueur"
-                    aria-label={`Éditer ${player.name}`}
-                    className="h-8 w-8 border-slate-700 text-slate-200 hover:bg-slate-800"
-                  >
-                    <Pencil className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setDeletingPlayer(player)}
-                    title="Supprimer le joueur"
-                    aria-label={`Supprimer ${player.name}`}
-                    className="h-8 w-8 border-red-400/40 text-red-300 hover:bg-red-500/10"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-              </td>
-            </tr>
-          ))}
-          {filteredPlayers.length === 0 ? (
-            <tr>
-              <td
-                colSpan={8 + normalizedDayColumns.length}
-                className="py-6 text-center text-sm text-slate-300"
+            {filteredPlayers.map((player) => (
+              <tr
+                key={player.id}
+                className="border-b border-slate-800 last:border-0 dark:bg-sidebar-accent-foreground hover:bg-slate-900/70"
               >
-                Aucun joueur ne correspond aux filtres sélectionnés.
-              </td>
-            </tr>
-          ) : null}
+                <td className="py-3 pl-3 pr-3 font-medium text-slate-100">
+                  {player.name}
+                </td>
+                <td className="py-3 pr-3 text-slate-300">{player.licence}</td>
+                <td className="py-3 pr-3 text-slate-300">{player.club}</td>
+                <td className="py-3 pr-3 text-slate-300">{player.table}</td>
+                {normalizedDayColumns.map((dayColumn) => {
+                  const key = `${player.id}-${dayColumn.key}`;
+                  const hasEventForDay =
+                    (player.registrationEventIdsByDay[dayColumn.key] ?? [])
+                      .length > 0;
+                  return (
+                    <td key={key} className="py-3 pr-3 text-slate-300">
+                      {hasEventForDay ? (
+                        <label className="inline-flex items-center gap-2 text-slate-300">
+                          <span className="relative inline-flex h-4 w-4 items-center justify-center">
+                            <input
+                              type="checkbox"
+                              className="peer h-4 w-4 cursor-pointer appearance-none rounded-full border border-slate-500 bg-white/90 align-middle transition checked:border-accent checked:bg-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-60"
+                              checked={checkedState[key] ?? false}
+                              disabled={pendingState[key]}
+                              onChange={() =>
+                                toggleCheck(player, dayColumn.key)
+                              }
+                            />
+                            <CircleCheckBig className="pointer-events-none absolute h-3 w-3 scale-0 text-background transition-transform peer-checked:scale-100" />
+                          </span>
+                          <span className="text-xs text-slate-300">
+                            Présent
+                          </span>
+                        </label>
+                      ) : (
+                        <span className="text-xs text-slate-400">
+                          Non inscrit
+                        </span>
+                      )}
+                    </td>
+                  );
+                })}
+                <td className="py-3 pr-3 text-slate-300">{player.status}</td>
+                <td className="py-3 pr-3 text-slate-300">
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => openEditPopup(player)}
+                      title="Éditer le joueur"
+                      aria-label={`Éditer ${player.name}`}
+                      className="cursor-pointer rounded-full"
+                    >
+                      <Pencil size={16} />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setDeletingPlayer(player)}
+                      title="Supprimer le joueur"
+                      aria-label={`Supprimer ${player.name}`}
+                      className="cursor-pointer rounded-full text-red-600 hover:bg-red-100 focus-visible:outline-red-500"
+                    >
+                      <Trash2 size={16} />
+                    </Button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+            {filteredPlayers.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={8 + normalizedDayColumns.length}
+                  className="py-6 text-center text-sm text-slate-300"
+                >
+                  Aucun joueur ne correspond aux filtres sélectionnés.
+                </td>
+              </tr>
+            ) : null}
           </tbody>
         </table>
       </div>
 
       {editingPlayer ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" role="dialog" aria-modal="true">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+          role="dialog"
+          aria-modal="true"
+        >
           <div className="w-full max-w-2xl space-y-4 rounded-lg bg-card p-6 shadow-lg">
-            <h3 className="text-lg font-semibold text-foreground">Modifier les engagements</h3>
+            <h3 className="text-lg font-semibold text-foreground">
+              Modifier les engagements
+            </h3>
             <p className="text-sm text-muted-foreground">
-              Modifiez les tableaux de <span className="font-medium">{editingPlayer.name}</span>.
+              Modifiez les tableaux de{" "}
+              <span className="font-medium">{editingPlayer.name}</span>.
             </p>
             <p className="rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-800">
               {ineligibleTableCodes.length === 0
@@ -493,9 +540,15 @@ export function PointagesGrid({ players, dayColumns, tournamentTables }: Pointag
                       <CircleCheckBig className="pointer-events-none absolute h-3 w-3 scale-0 text-background transition-transform peer-checked:scale-100" />
                     </span>
                     <span>
-                      <span className="block font-semibold text-foreground">Tableau {table.table}</span>
-                      <span className="block text-muted-foreground">{table.category}</span>
-                      <span className="block text-muted-foreground">Sur place : {table.onsitePayment}</span>
+                      <span className="block font-semibold text-foreground">
+                        Tableau {table.table}
+                      </span>
+                      <span className="block text-muted-foreground">
+                        {table.category}
+                      </span>
+                      <span className="block text-muted-foreground">
+                        Sur place : {table.onsitePayment}
+                      </span>
                     </span>
                   </label>
                 );
@@ -527,12 +580,19 @@ export function PointagesGrid({ players, dayColumns, tournamentTables }: Pointag
       ) : null}
 
       {deletingPlayer ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" role="dialog" aria-modal="true">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+          role="dialog"
+          aria-modal="true"
+        >
           <div className="w-full max-w-lg space-y-4 rounded-lg bg-card p-6 shadow-lg">
-            <h3 className="text-lg font-semibold text-foreground">Supprimer ce joueur du pointage ?</h3>
+            <h3 className="text-lg font-semibold text-foreground">
+              Supprimer ce joueur du pointage ?
+            </h3>
             <p className="text-sm text-muted-foreground">
-              Cette action va supprimer <span className="font-medium">{deletingPlayer.name}</span> ainsi que ses
-              engagements en base de données.
+              Cette action va supprimer{" "}
+              <span className="font-medium">{deletingPlayer.name}</span> ainsi
+              que ses engagements en base de données.
             </p>
             <div className="flex justify-end gap-2">
               <button
