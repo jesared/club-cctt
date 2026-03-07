@@ -356,7 +356,7 @@ export function PointagesGrid({
       </header>
 
       <div className="grid gap-3 md:grid-cols-4">
-        <label className="space-y-1 md:col-span-4">
+        <label className="space-y-1">
           <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
             Rechercher un joueur
           </span>
