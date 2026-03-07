@@ -46,7 +46,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <Providers>
           <SidebarProvider defaultOpen={false}>
-            <div className="flex min-h-screen flex-col lg:flex-row">
+            <div className=" flex min-h-screen flex-col lg:flex-row">
               <DashboardSidebar />
               <div className="flex min-h-screen flex-1 flex-col">
                 <Header />

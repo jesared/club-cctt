@@ -4,9 +4,9 @@ import TournoiHero from "@/components/TournoiHero";
 
 export default function HomePage() {
   return (
-    <>
+    <div className="tournament-shell mx-auto max-w-6xl space-y-12 px-4 py-16">
       {/* HERO */}
-      <section className="bg-muted/40 dark:bg-[linear-gradient(160deg,color-mix(in_oklab,var(--background)_92%,black),color-mix(in_oklab,var(--background)_82%,var(--primary)))] dark:cyberpunk-home-grid">
+      <section className="dark:cyberpunk-home-grid">
         <div className="max-w-6xl mx-auto px-4 py-24">
           <div className="max-w-3xl">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 dark:font-mono dark:uppercase dark:tracking-[0.08em] dark:[text-shadow:0_0_14px_color-mix(in_oklab,var(--primary)_38%,transparent)]">
@@ -145,6 +145,6 @@ export default function HomePage() {
           <TournoiHero />
         </div>
       </section>
-    </>
+    </div>
   );
 }
