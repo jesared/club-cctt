@@ -29,7 +29,6 @@ type TournamentAdminPageProps = {
   title: string;
   description: string;
   activeHref: (typeof TOURNAMENT_ADMIN_LINKS)[number]["href"];
-  items?: readonly string[];
   children?: ReactNode;
 };
 
@@ -37,7 +36,6 @@ export function TournamentAdminPage({
   title,
   description,
   activeHref,
-  items,
   children,
 }: TournamentAdminPageProps) {
   return (
@@ -71,22 +69,6 @@ export function TournamentAdminPage({
             );
           })}
         </div>
-      </section>
-
-      <section className="rounded-xl border bg-card shadow-sm p-6">
-        <h2 className="text-xl font-semibold mb-4">Contenu MVP</h2>
-        {items && items.length > 0 ? (
-          <ul className="space-y-2 list-disc pl-5 text-muted-foreground">
-            {items.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-muted-foreground">
-            Cette page est en place pour le menu MVP du tournoi et prête à être
-            branchée à la base de données.
-          </p>
-        )}
       </section>
 
       {children}
