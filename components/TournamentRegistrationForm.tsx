@@ -466,7 +466,7 @@ export default function TournamentRegistrationForm({
                         !isEligible(parsedPoints, formData.gender, table)
                       }
                       onChange={() => toggleTable(table.value)}
-                      className="mt-1 checked:text-primary"
+                      className="mt-1 accent-primary"
                     />
                     <span className="text-sm text-foreground">
                       {table.label}
