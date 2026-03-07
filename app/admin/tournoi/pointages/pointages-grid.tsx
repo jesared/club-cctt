@@ -383,7 +383,7 @@ export function PointagesGrid({ players, dayColumns, tournamentTables }: Pointag
                       <label className="inline-flex items-center gap-2 text-slate-300">
                         <input
                           type="checkbox"
-                          className="h-4 w-4 rounded border-border"
+                          className="h-4 w-4 cursor-pointer rounded-full border-slate-500 accent-accent disabled:cursor-not-allowed disabled:opacity-60"
                           checked={checkedState[key] ?? false}
                           disabled={pendingState[key]}
                           onChange={() => toggleCheck(player, dayColumn.key)}
@@ -464,7 +464,7 @@ export function PointagesGrid({ players, dayColumns, tournamentTables }: Pointag
                     <input
                       type="checkbox"
                       value={table.id}
-                      className="mt-0.5"
+                      className="mt-0.5 h-4 w-4 cursor-pointer rounded-full border-border accent-accent disabled:cursor-not-allowed disabled:opacity-60"
                       disabled={!eligible || editPending}
                       checked={checked}
                       onChange={(event) => {
