@@ -101,10 +101,26 @@ export function PointagesGrid({
         .filter((table) => table && table !== "—"),
     );
 
-    return Array.from(new Set(extractedTables)).sort((tableA, tableB) =>
+    const uniqueTables = Array.from(new Set(extractedTables)).sort((tableA, tableB) =>
       tableA.localeCompare(tableB, "fr"),
     );
-  }, [playersState]);
+
+    return uniqueTables.map((tableCode) => {
+      const matchingTournamentTable = tournamentTables.find((table) => table.table === tableCode);
+
+      if (!matchingTournamentTable) {
+        return {
+          value: tableCode,
+          label: tableCode,
+        };
+      }
+
+      return {
+        value: tableCode,
+        label: `${tableCode} — ${matchingTournamentTable.category} (${matchingTournamentTable.date} · ${matchingTournamentTable.time})`,
+      };
+    });
+  }, [playersState, tournamentTables]);
 
   const normalizedDayColumns = useMemo(() => {
     if (dayColumns.length >= 3) {
@@ -397,9 +413,9 @@ export function PointagesGrid({
             onChange={(event) => setSelectedTable(event.target.value)}
           >
             <option value="all">Tous les tableaux</option>
-            {tableOptions.map((table) => (
-              <option key={table} value={table}>
-                {table}
+            {tableOptions.map((tableOption) => (
+              <option key={tableOption.value} value={tableOption.value}>
+                {tableOption.label}
               </option>
             ))}
           </select>
