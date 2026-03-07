@@ -4,6 +4,9 @@ import { useMemo, useState } from "react";
 
 type TournamentTable = {
   id: string;
+  dayKey: string;
+  date: string;
+  time: string;
   table: string;
   category: string;
   onsitePayment: string;
@@ -34,17 +37,47 @@ function isEligible(points: number | null, table: TournamentTable) {
 }
 
 export function AddPlayerForm({ tournamentId, tournamentTables, action }: Props) {
-  const [pointsInput, setPointsInput] = useState("");
-  const [selectedEventIds, setSelectedEventIds] = useState<Set<string>>(new Set());
+  const [formData, setFormData] = useState({
+    nom: "",
+    prenom: "",
+    licence: "",
+    points: "",
+    club: "",
+    contactEmail: "",
+    contactPhone: "",
+    notes: "",
+    eventIds: [] as string[],
+  });
 
   const parsedPoints = useMemo(() => {
-    if (!pointsInput.trim()) {
+    if (!formData.points.trim()) {
       return null;
     }
 
-    const numericPoints = Number.parseInt(pointsInput, 10);
+    const numericPoints = Number.parseInt(formData.points, 10);
     return Number.isNaN(numericPoints) ? null : numericPoints;
-  }, [pointsInput]);
+  }, [formData.points]);
+
+  const groupedTournamentTables = useMemo(() => {
+    const groups = new Map<string, { date: string; tables: TournamentTable[] }>();
+
+    for (const table of tournamentTables) {
+      const existingGroup = groups.get(table.dayKey);
+      if (existingGroup) {
+        existingGroup.tables.push(table);
+      } else {
+        groups.set(table.dayKey, { date: table.date, tables: [table] });
+      }
+    }
+
+    return Array.from(groups.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([dayKey, group]) => ({
+        dayKey,
+        date: group.date,
+        tables: group.tables,
+      }));
+  }, [tournamentTables]);
 
   const ineligibleTableCodes = useMemo(
     () => tournamentTables.filter((table) => !isEligible(parsedPoints, table)).map((table) => table.table),
@@ -52,7 +85,7 @@ export function AddPlayerForm({ tournamentId, tournamentTables, action }: Props)
   );
 
   const infoMessage = useMemo(() => {
-    if (!pointsInput.trim()) {
+    if (!formData.points.trim()) {
       return "Renseignez le classement pour filtrer automatiquement les tableaux disponibles.";
     }
 
@@ -65,7 +98,9 @@ export function AddPlayerForm({ tournamentId, tournamentTables, action }: Props)
     }
 
     return `Tableaux indisponibles pour ce classement : ${ineligibleTableCodes.join(", ")}.`;
-  }, [ineligibleTableCodes, parsedPoints, pointsInput]);
+  }, [formData.points, ineligibleTableCodes, parsedPoints]);
+
+  const canSubmit = formData.eventIds.length > 0;
 
   return (
     <form action={action} className="space-y-6">
@@ -73,146 +108,182 @@ export function AddPlayerForm({ tournamentId, tournamentTables, action }: Props)
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="space-y-1 text-sm">
-          <span className="font-medium text-muted-foreground">Nom *</span>
+          <span className="font-medium">Nom *</span>
           <input
             name="nom"
             required
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
+            value={formData.nom}
+            onChange={(event) => setFormData((current) => ({ ...current, nom: event.target.value }))}
+            className="w-full rounded-md border border-border bg-background px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            placeholder="DUPONT"
           />
         </label>
         <label className="space-y-1 text-sm">
-          <span className="font-medium text-muted-foreground">Prénom *</span>
+          <span className="font-medium">Prénom *</span>
           <input
             name="prenom"
             required
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
+            value={formData.prenom}
+            onChange={(event) => setFormData((current) => ({ ...current, prenom: event.target.value }))}
+            className="w-full rounded-md border border-border bg-background px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            placeholder="Jean"
           />
         </label>
         <label className="space-y-1 text-sm">
-          <span className="font-medium text-muted-foreground">Licence *</span>
+          <span className="font-medium">Licence *</span>
           <input
             name="licence"
             required
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
+            value={formData.licence}
+            onChange={(event) => setFormData((current) => ({ ...current, licence: event.target.value }))}
+            className="w-full rounded-md border border-border bg-background px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            placeholder="1234567"
           />
         </label>
         <label className="space-y-1 text-sm">
-          <span className="font-medium text-muted-foreground">Classement (points) *</span>
+          <span className="font-medium">Classement (points) *</span>
           <input
             name="points"
             type="number"
             min={0}
             required
-            value={pointsInput}
+            value={formData.points}
             onChange={(event) => {
               const nextValue = event.target.value;
-              setPointsInput(nextValue);
+              setFormData((current) => {
+                const nextPoints = Number.parseInt(nextValue, 10);
 
-              const nextPoints = Number.parseInt(nextValue, 10);
-              if (nextValue.trim() && !Number.isNaN(nextPoints)) {
-                setSelectedEventIds((currentSelection) => {
-                  const updatedSelection = new Set<string>();
-                  for (const table of tournamentTables) {
-                    if (currentSelection.has(table.id) && isEligible(nextPoints, table)) {
-                      updatedSelection.add(table.id);
-                    }
+                if (!nextValue.trim() || Number.isNaN(nextPoints)) {
+                  return { ...current, points: nextValue };
+                }
+
+                const nextEventIds: string[] = [];
+
+                for (const table of tournamentTables) {
+                  if (current.eventIds.includes(table.id) && isEligible(nextPoints, table)) {
+                    nextEventIds.push(table.id);
                   }
-                  return updatedSelection;
-                });
-              }
+                }
+
+                return {
+                  ...current,
+                  points: nextValue,
+                  eventIds: nextEventIds,
+                };
+              });
             }}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
+            className="w-full rounded-md border border-border bg-background px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            placeholder="1248"
           />
         </label>
         <label className="space-y-1 text-sm">
-          <span className="font-medium text-muted-foreground">Club *</span>
+          <span className="font-medium">Club *</span>
           <input
             name="club"
             required
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
+            value={formData.club}
+            onChange={(event) => setFormData((current) => ({ ...current, club: event.target.value }))}
+            className="w-full rounded-md border border-border bg-background px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            placeholder="Nom du club"
           />
         </label>
         <label className="space-y-1 text-sm">
-          <span className="font-medium text-muted-foreground">Email *</span>
+          <span className="font-medium">Email *</span>
           <input
             name="contactEmail"
             type="email"
             required
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
+            value={formData.contactEmail}
+            onChange={(event) => setFormData((current) => ({ ...current, contactEmail: event.target.value }))}
+            className="w-full rounded-md border border-border bg-background px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            placeholder="joueur@email.fr"
           />
         </label>
         <label className="space-y-1 text-sm sm:col-span-2">
-          <span className="font-medium text-muted-foreground">Téléphone *</span>
+          <span className="font-medium">Téléphone *</span>
           <input
             name="contactPhone"
             required
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
+            value={formData.contactPhone}
+            onChange={(event) => setFormData((current) => ({ ...current, contactPhone: event.target.value }))}
+            className="w-full rounded-md border border-border bg-background px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            placeholder="06 12 34 56 78"
           />
         </label>
       </div>
 
-      <div className="space-y-3">
-        <div className="flex flex-col gap-2">
-          <p className="text-sm font-medium text-muted-foreground">Tableaux à inscrire *</p>
-          <p className="rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-800">{infoMessage}</p>
-        </div>
-        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          {tournamentTables.map((table) => {
-            const eligible = isEligible(parsedPoints, table);
-            const checked = selectedEventIds.has(table.id);
+      <fieldset className="space-y-3">
+        <legend className="text-sm font-medium">Tableaux à inscrire *</legend>
+        <p className="text-sm text-muted-foreground">Sélectionnez un ou plusieurs tableaux compatibles avec le classement saisi.</p>
+        <p className="rounded-md border border-border bg-accent/25 px-3 py-2 text-xs text-foreground/80">{infoMessage}</p>
+        <div className="space-y-4">
+          {groupedTournamentTables.map((group) => (
+            <div key={group.dayKey} className="space-y-2">
+              <p className="text-sm font-semibold capitalize">{group.date}</p>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {group.tables.map((table) => {
+                  const eligible = isEligible(parsedPoints, table);
 
-            return (
-              <label
-                key={table.id}
-                className={`flex items-start gap-2 rounded-lg border p-3 text-sm transition ${
-                  eligible
-                    ? "border-border"
-                    : "cursor-not-allowed border-border bg-secondary text-muted-foreground"
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  name="eventIds"
-                  value={table.id}
-                  className="mt-0.5"
-                  disabled={!eligible}
-                  checked={checked}
-                  onChange={(event) => {
-                    const isChecked = event.target.checked;
-                    setSelectedEventIds((currentSelection) => {
-                      const nextSelection = new Set(currentSelection);
-                      if (isChecked) {
-                        nextSelection.add(table.id);
-                      } else {
-                        nextSelection.delete(table.id);
-                      }
-                      return nextSelection;
-                    });
-                  }}
-                />
-                <span>
-                  <span className="block font-semibold text-foreground">Tableau {table.table}</span>
-                  <span className="block text-muted-foreground">{table.category}</span>
-                  <span className="block text-muted-foreground">Sur place : {table.onsitePayment}</span>
-                </span>
-              </label>
-            );
-          })}
+                  return (
+                    <label
+                      key={table.id}
+                      className={`flex items-start gap-2 rounded-md border px-3 py-2 text-sm ${
+                        eligible
+                          ? "border-border"
+                          : "cursor-not-allowed border-border bg-muted/90 text-muted-foreground line-through"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        name="eventIds"
+                        value={table.id}
+                        checked={formData.eventIds.includes(table.id)}
+                        disabled={!eligible}
+                        onChange={(event) => {
+                          const isChecked = event.target.checked;
+                          setFormData((current) => {
+                            const nextEventIds = isChecked
+                              ? [...current.eventIds, table.id]
+                              : current.eventIds.filter((eventId) => eventId !== table.id);
+
+                            return {
+                              ...current,
+                              eventIds: nextEventIds,
+                            };
+                          });
+                        }}
+                        className="mt-1 accent-primary"
+                      />
+                      <span>
+                        <span className="block font-semibold text-foreground">Tableau {table.table}</span>
+                        <span className="block text-muted-foreground">{table.category}</span>
+                        <span className="block text-muted-foreground">{table.time} · Sur place : {table.onsitePayment}</span>
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
-      </div>
+      </fieldset>
 
       <label className="space-y-1 text-sm block">
-        <span className="font-medium text-muted-foreground">Notes internes</span>
+        <span className="font-medium">Notes internes</span>
         <textarea
           name="notes"
           rows={3}
-          className="w-full rounded-md border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
+          value={formData.notes}
+          onChange={(event) => setFormData((current) => ({ ...current, notes: event.target.value }))}
+          className="w-full rounded-md border border-border bg-background px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+          placeholder="Informations complémentaires (paiement, disponibilité, etc.)"
         />
       </label>
 
       <button
         type="submit"
-        className="inline-flex items-center rounded-md bg-[#ff00c8] px-4 py-2 text-sm font-medium text-white hover:bg-[#ff00c8]/90"
+        disabled={!canSubmit}
+        className="inline-flex items-center rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
       >
         Ajouter le joueur
       </button>
