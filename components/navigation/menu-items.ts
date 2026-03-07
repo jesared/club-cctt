@@ -1,15 +1,15 @@
 import {
+  BadgeEuro,
   Banknote,
   CalendarCheck,
-  BadgeEuro,
   CalendarClock,
   ClipboardPen,
   Download,
   FileText,
   Handshake,
   Home,
-  LayoutGrid,
   LayoutDashboard,
+  LayoutGrid,
   Mail,
   MessageSquare,
   Shield,
@@ -38,7 +38,11 @@ export const mainMenuItems: MenuItem[] = [
 export const tournamentMenuItems: MenuItem[] = [
   { href: "/tournoi", label: "Accueil tournoi", icon: Trophy },
   { href: "/tournoi/inscription", label: "Inscription", icon: ClipboardPen },
-  { href: "/tournoi/mes-inscriptions", label: "Mes inscriptions", icon: CalendarCheck },
+  {
+    href: "/tournoi/mes-inscriptions",
+    label: "Mes inscriptions",
+    icon: CalendarCheck,
+  },
   { href: "/tournoi/reglement", label: "Règlement", icon: FileText },
 ];
 
@@ -49,7 +53,7 @@ export const clubAdminMenuItems: MenuItem[] = [
 ];
 
 export const tournamentAdminMenuItems: MenuItem[] = [
-  { href: "/admin/tournoi", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin/tournoi", label: "Admin tournoi", icon: LayoutDashboard },
   {
     href: "/admin/tournoi/inscriptions",
     label: "Inscriptions",
