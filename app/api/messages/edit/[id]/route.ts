@@ -1,5 +1,6 @@
-import { auth } from "@/lib/auth";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
@@ -8,7 +9,7 @@ export async function PUT(
   req: NextRequest,
   context: { params: Promise<{ id: string }> },
 ) {
-  const session = await auth();
+  const session = await getServerSession(authOptions);
 
   if (!session || session.user.role !== "ADMIN") {
     return NextResponse.json({ error: "Non autorisé" }, { status: 401 });

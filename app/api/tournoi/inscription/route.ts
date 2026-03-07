@@ -1,6 +1,7 @@
-import { auth } from "@/lib/auth";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { RegistrationSource } from "@prisma/client";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 type RegistrationPayload = {
@@ -357,7 +358,7 @@ export async function POST(request: NextRequest) {
   }
 
   const ownerId = await ensureWebRegistrationOwnerId();
-  const session = await auth();
+  const session = await getServerSession(authOptions);
   const sessionUserId = session?.user?.id ?? null;
 
   const existingPlayer = await prisma.player.findUnique({
