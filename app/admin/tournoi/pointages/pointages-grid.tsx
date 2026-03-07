@@ -392,7 +392,6 @@ export function PointagesGrid({
                   {dayColumn.label}
                 </th>
               ))}
-              <th className="py-2.5 pr-3 font-medium">Statut inscription</th>
               <th className="py-2.5 pr-3 font-medium">Actions</th>
             </tr>
           </thead>
@@ -442,7 +441,6 @@ export function PointagesGrid({
                     </td>
                   );
                 })}
-                <td className="py-3 pr-3 ">{player.status}</td>
                 <td className="py-3 pr-3 ">
                   <div className="flex items-center gap-2">
                     <Button
@@ -474,7 +472,7 @@ export function PointagesGrid({
             {filteredPlayers.length === 0 ? (
               <tr>
                 <td
-                  colSpan={8 + normalizedDayColumns.length}
+                  colSpan={5 + normalizedDayColumns.length}
                   className="py-6 text-center text-sm text-slate-300"
                 >
                   Aucun joueur ne correspond aux filtres sélectionnés.
