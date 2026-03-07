@@ -5,7 +5,7 @@ import { Mail, MapPin, Sparkles, Users } from "lucide-react";
 export default function ContactPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-12 px-4 py-16">
-      <header className="cyberpunk-highlight rounded-2xl border px-6 py-10 md:px-8">
+      <header className="cyberpunk-highlight border px-6 py-10 md:px-8">
         <p className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.25em] text-primary">
           <Sparkles className="h-3.5 w-3.5" />
           Canal de contact
@@ -19,7 +19,7 @@ export default function ContactPage() {
 
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <section>
-          <Card className="tournament-panel h-full rounded-2xl border border-primary/25">
+          <Card className="tournament-panel h-full border border-primary/25">
             <CardHeader>
               <CardTitle className="text-2xl">Coordonnées du club</CardTitle>
             </CardHeader>
@@ -75,7 +75,7 @@ export default function ContactPage() {
         </section>
 
         <section>
-          <Card className="tournament-panel rounded-2xl border border-primary/25">
+          <Card className="tournament-panel border border-primary/25">
             <CardHeader>
               <CardTitle className="text-2xl">Formulaire de contact</CardTitle>
               <p className="cyberpunk-text-soft text-sm">
