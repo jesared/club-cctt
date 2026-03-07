@@ -25,26 +25,8 @@ type TableOption = {
   label: string;
   minPoints: number | null;
   maxPoints: number | null;
-  womenOnly?: boolean;
+  gender: "MIXED" | "M" | "F";
 };
-
-const TABLE_OPTIONS: TableOption[] = [
-  { value: "C", label: "C (800 à 1399 pts) - 10:30", minPoints: 800, maxPoints: 1399 },
-  { value: "A", label: "A (500 à 799 pts) - 11:30", minPoints: 500, maxPoints: 799 },
-  { value: "D", label: "D (1100 à 1699 pts) - 12:30", minPoints: 1100, maxPoints: 1699 },
-  { value: "B", label: "B (500 à 1099 pts) - 13:30", minPoints: 500, maxPoints: 1099 },
-  { value: "F", label: "F (500 à 1199 pts) - 08:30", minPoints: 500, maxPoints: 1199 },
-  { value: "H", label: "H (1200 à 1799 pts) - 09:30", minPoints: 1200, maxPoints: 1799 },
-  { value: "E", label: "E (500 à 899 pts) - 11:00", minPoints: 500, maxPoints: 899 },
-  { value: "G", label: "G (900 à 1499 pts) - 12:00", minPoints: 900, maxPoints: 1499 },
-  { value: "I", label: "I (500 à N°400) - 13:15", minPoints: 500, maxPoints: null },
-  { value: "J", label: "J (Dames TC) - 14:30", minPoints: null, maxPoints: null, womenOnly: true },
-  { value: "L", label: "L (500 à 1299 pts) - 08:30", minPoints: 500, maxPoints: 1299 },
-  { value: "N", label: "N (1300 à 2099 pts) - 09:30", minPoints: 1300, maxPoints: 2099 },
-  { value: "K", label: "K (500 à 999 pts) - 11:00", minPoints: 500, maxPoints: 999 },
-  { value: "M", label: "M (1000 à 1599 pts) - 12:00", minPoints: 1000, maxPoints: 1599 },
-  { value: "P", label: "P (Toutes catégories) - 13:15", minPoints: null, maxPoints: null },
-] as const;
 
 const initialData: RegistrationPayload = {
   firstName: "",
@@ -60,7 +42,11 @@ const initialData: RegistrationPayload = {
 };
 
 function isEligible(points: number | null, gender: "M" | "F" | "", table: TableOption) {
-  if (table.womenOnly && gender !== "F") {
+  if (table.gender === "F" && gender !== "F") {
+    return false;
+  }
+
+  if (table.gender === "M" && gender !== "M") {
     return false;
   }
 
@@ -79,7 +65,11 @@ function isEligible(points: number | null, gender: "M" | "F" | "", table: TableO
   return true;
 }
 
-export default function TournamentRegistrationForm() {
+type TournamentRegistrationFormProps = {
+  tableOptions: TableOption[];
+};
+
+export default function TournamentRegistrationForm({ tableOptions }: TournamentRegistrationFormProps) {
   const [formData, setFormData] = useState(initialData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<FeedbackState>(null);
@@ -94,15 +84,15 @@ export default function TournamentRegistrationForm() {
   }, [formData.points]);
 
   const ineligibleTableCodes = useMemo(
-    () => TABLE_OPTIONS.filter((table) => !isEligible(parsedPoints, formData.gender, table)).map((table) => table.value),
-    [formData.gender, parsedPoints],
+    () => tableOptions.filter((table) => !isEligible(parsedPoints, formData.gender, table)).map((table) => table.value),
+    [formData.gender, parsedPoints, tableOptions],
   );
 
   const canSubmit = useMemo(() => formData.tables.length > 0, [formData.tables.length]);
 
   const toggleTable = (tableCode: string) => {
     setFormData((current) => {
-      const table = TABLE_OPTIONS.find((option) => option.value === tableCode);
+      const table = tableOptions.find((option) => option.value === tableCode);
       if (!table || !isEligible(parsedPoints, current.gender, table)) {
         return current;
       }
@@ -309,7 +299,7 @@ export default function TournamentRegistrationForm() {
                   ...current,
                   points: nextValue,
                   tables: current.tables.filter((tableCode) => {
-                    const table = TABLE_OPTIONS.find((option) => option.value === tableCode);
+                    const table = tableOptions.find((option) => option.value === tableCode);
                     return table ? isEligible(nextPoints, current.gender, table) : false;
                   }),
                 };
@@ -335,7 +325,7 @@ export default function TournamentRegistrationForm() {
                   ...current,
                   gender: nextGender,
                   tables: current.tables.filter((tableCode) => {
-                    const table = TABLE_OPTIONS.find((option) => option.value === tableCode);
+                    const table = tableOptions.find((option) => option.value === tableCode);
                     return table ? isEligible(parsedPoints, nextGender, table) : false;
                   }),
                 };
@@ -374,7 +364,7 @@ export default function TournamentRegistrationForm() {
         <p className="text-sm text-gray-600">Vous pouvez sélectionner plusieurs tableaux.</p>
         <p className="rounded-md border border-border bg-accent/25 px-3 py-2 text-xs text-foreground/80">{infoMessage}</p>
         <div className="grid gap-2 sm:grid-cols-2">
-          {TABLE_OPTIONS.map((table) => (
+          {tableOptions.map((table) => (
             <label
               key={table.value}
               className={`flex items-start gap-2 rounded-md border px-3 py-2 ${

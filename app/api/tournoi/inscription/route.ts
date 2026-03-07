@@ -21,27 +21,6 @@ const WINDOW_MS = 10 * 60 * 1000;
 const MAX_REQUESTS = 5;
 const requestTracker = new Map<string, number[]>();
 
-const TABLE_RULES: Record<
-  string,
-  { minPoints: number | null; maxPoints: number | null; womenOnly?: boolean }
-> = {
-  C: { minPoints: 800, maxPoints: 1399 },
-  A: { minPoints: 500, maxPoints: 799 },
-  D: { minPoints: 1100, maxPoints: 1699 },
-  B: { minPoints: 500, maxPoints: 1099 },
-  F: { minPoints: 500, maxPoints: 1199 },
-  H: { minPoints: 1200, maxPoints: 1799 },
-  E: { minPoints: 500, maxPoints: 899 },
-  G: { minPoints: 900, maxPoints: 1499 },
-  I: { minPoints: 500, maxPoints: null },
-  J: { minPoints: null, maxPoints: null, womenOnly: true },
-  L: { minPoints: 500, maxPoints: 1299 },
-  N: { minPoints: 1300, maxPoints: 2099 },
-  K: { minPoints: 500, maxPoints: 999 },
-  M: { minPoints: 1000, maxPoints: 1599 },
-  P: { minPoints: null, maxPoints: null },
-};
-
 function checkRateLimit(clientIp: string) {
   const now = Date.now();
   const timestamps = requestTracker.get(clientIp) ?? [];
@@ -59,27 +38,6 @@ function checkRateLimit(clientIp: string) {
 
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-function isTableEligible(tableCode: string, points: number, gender: string) {
-  const rule = TABLE_RULES[tableCode];
-  if (!rule) {
-    return false;
-  }
-
-  if (rule.womenOnly && gender !== "F") {
-    return false;
-  }
-
-  if (rule.minPoints !== null && points < rule.minPoints) {
-    return false;
-  }
-
-  if (rule.maxPoints !== null && points > rule.maxPoints) {
-    return false;
-  }
-
-  return true;
 }
 
 function normalizeTables(tables: unknown) {
@@ -307,18 +265,6 @@ export async function POST(request: NextRequest) {
   }
 
   const numericPoints = Number.parseInt(points, 10);
-  const invalidTables = tables.filter(
-    (tableCode) => !isTableEligible(tableCode, numericPoints, gender),
-  );
-
-  if (invalidTables.length > 0) {
-    return NextResponse.json(
-      {
-        message: `Les tableaux suivants ne sont pas accessibles avec votre profil: ${invalidTables.join(", ")}.`,
-      },
-      { status: 400 },
-    );
-  }
 
   const normalizedPayload = {
     firstName,
@@ -379,6 +325,9 @@ export async function POST(request: NextRequest) {
     select: {
       id: true,
       code: true,
+      gender: true,
+      minPoints: true,
+      maxPoints: true,
     },
   });
 
@@ -387,6 +336,37 @@ export async function POST(request: NextRequest) {
       {
         message:
           "Un ou plusieurs tableaux ne sont pas disponibles sur ce tournoi.",
+      },
+      { status: 400 },
+    );
+  }
+
+  const invalidTables = selectedEvents
+    .filter((event) => {
+      if (event.gender === "F" && gender !== "F") {
+        return true;
+      }
+
+      if (event.gender === "M" && gender !== "M") {
+        return true;
+      }
+
+      if (event.minPoints !== null && numericPoints < event.minPoints) {
+        return true;
+      }
+
+      if (event.maxPoints !== null && numericPoints > event.maxPoints) {
+        return true;
+      }
+
+      return false;
+    })
+    .map((event) => event.code);
+
+  if (invalidTables.length > 0) {
+    return NextResponse.json(
+      {
+        message: `Les tableaux suivants ne sont pas accessibles avec votre profil: ${invalidTables.join(", ")}.`,
       },
       { status: 400 },
     );
