@@ -159,11 +159,6 @@ export default async function AdminTournoiAjoutPlayerPage({ searchParams }: Page
       title="Ajouter un joueur"
       description="Formulaire d'inscription sur place avec création immédiate du dossier joueur dans le tournoi courant."
       activeHref="/admin/tournoi/ajout-player"
-      items={[
-        "Saisie identité, licence, club et classement.",
-        "Sélection d'un ou plusieurs tableaux disponibles.",
-        "Création directe d'une inscription confirmée source ADMIN.",
-      ]}
     >
       {params.success ? (
         <p className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">

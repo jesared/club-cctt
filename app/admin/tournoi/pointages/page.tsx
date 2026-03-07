@@ -22,11 +22,6 @@ export default async function AdminTournoiPointagesPage() {
       title="Pointages"
       description="Suivi des présences joueurs avec une grille de pointage sur 3 jours."
       activeHref="/admin/tournoi/pointages"
-      items={[
-        "Une ligne par joueur pour valider la présence en un clic.",
-        "Trois colonnes jour pour suivre l'accueil pendant tout le week-end.",
-        "Conservation du statut d'inscription comme repère administratif.",
-      ]}
     >
       <PointagesGrid players={adminPlayers} dayColumns={dayColumns} tournamentTables={tournamentTables} />
     </TournamentAdminPage>

@@ -26,11 +26,6 @@ export default async function AdminTournoiInscriptionsPage() {
       title="Inscriptions"
       description="Suivi détaillé des engagements par tableau avec les données Player/TournamentRegistration."
       activeHref="/admin/tournoi/inscriptions"
-      items={[
-        "Pilotage des inscriptions par tableau avec focus capacité et attente.",
-        "Priorisation des dossiers à pointer et des paiements sur place.",
-        "Vue rapide des joueurs à relancer avant fermeture des séries.",
-      ]}
     >
       <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {[

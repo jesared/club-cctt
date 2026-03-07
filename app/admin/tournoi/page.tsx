@@ -35,11 +35,6 @@ export default async function AdminTournoiPage() {
       title="Dashboard tournoi"
       description={`Vue consolidée de ${tournament.name} avec les données réelles de la base.`}
       activeHref="/admin/tournoi"
-      items={[
-        "Planning chargé depuis TournamentEvent.",
-        "Inscriptions et listes d'attente issues des enregistrements joueurs.",
-        "Tarifs en ligne et sur place repris des événements du tournoi.",
-      ]}
     >
       <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <article className="rounded-xl border bg-card p-4 shadow-sm">

@@ -12,11 +12,6 @@ export default async function AdminTournoiJoueursPage() {
       title="Joueurs"
       description="Base joueurs consolidée depuis Player + TournamentRegistration."
       activeHref="/admin/tournoi/joueurs"
-      items={[
-        "Vision claire des licences réellement enregistrées.",
-        "Tableaux calculés depuis les inscriptions événements.",
-        "Statut et mode de paiement déduits des enregistrements.",
-      ]}
     >
       <section className="rounded-xl border bg-card p-6 shadow-sm overflow-x-auto">
         <table className="min-w-full text-sm">
