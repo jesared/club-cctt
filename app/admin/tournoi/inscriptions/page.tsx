@@ -20,6 +20,7 @@ export default async function AdminTournoiInscriptionsPage() {
   const totalWaitlist = registrationsByTable.reduce((sum, row) => sum + row.waitlist, 0);
   const totalCheckins = registrationsByTable.reduce((sum, row) => sum + row.checkins, 0);
   const toFollowUp = adminPlayers.filter((player) => player.status === "À confirmer").length;
+  const tableCapacity = 96;
 
   return (
     <TournamentAdminPage
@@ -56,19 +57,45 @@ export default async function AdminTournoiInscriptionsPage() {
                 <th className="py-2 pr-3 font-medium">Catégorie</th>
                 <th className="py-2 pr-3 font-medium">Inscrits</th>
                 <th className="py-2 pr-3 font-medium">Liste d'attente</th>
-                <th className="py-2 font-medium">Pointages</th>
+                <th className="py-2 font-medium">Remplissage</th>
               </tr>
             </thead>
             <tbody>
-              {registrationsByTable.map((table) => (
-                <tr key={table.table} className="border-b last:border-0">
-                  <td className="py-3 pr-3 font-semibold text-foreground">{table.table}</td>
-                  <td className="py-3 pr-3 text-muted-foreground">{table.category}</td>
-                  <td className="py-3 pr-3 text-muted-foreground">{table.registrations}</td>
-                  <td className="py-3 pr-3 text-muted-foreground">{table.waitlist}</td>
-                  <td className="py-3 text-muted-foreground">{table.checkins}</td>
-                </tr>
-              ))}
+              {registrationsByTable.map((table) => {
+                const fillPercent = Math.min(Math.round((table.registrations / tableCapacity) * 100), 100);
+                const gaugeColor =
+                  fillPercent >= 90
+                    ? "bg-red-500"
+                    : fillPercent >= 70
+                      ? "bg-amber-500"
+                      : "bg-emerald-500";
+
+                return (
+                  <tr key={table.table} className="border-b last:border-0">
+                    <td className="py-3 pr-3 font-semibold text-foreground">{table.table}</td>
+                    <td className="py-3 pr-3 text-muted-foreground">{table.category}</td>
+                    <td className="py-3 pr-3 text-muted-foreground">{table.registrations}</td>
+                    <td className="py-3 pr-3 text-muted-foreground">{table.waitlist}</td>
+                    <td className="py-3">
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                          <span>
+                            {table.registrations}/{tableCapacity}
+                          </span>
+                          <span className="font-medium text-foreground">{fillPercent}%</span>
+                        </div>
+                        <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                          <div
+                            className={`h-full rounded-full transition-all ${gaugeColor}`}
+                            style={{ width: `${fillPercent}%` }}
+                            aria-label={`Remplissage ${table.table}: ${fillPercent}%`}
+                          />
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
