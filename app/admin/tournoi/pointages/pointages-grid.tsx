@@ -352,10 +352,10 @@ export function PointagesGrid({ players, dayColumns, tournamentTables }: Pointag
         </label>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-border">
+      <div className="overflow-hidden rounded-lg border border-slate-800 bg-slate-950 text-slate-100">
         <table className="min-w-full text-sm">
-          <thead className="bg-muted/50">
-            <tr className="border-b text-left text-muted-foreground">
+          <thead className="bg-slate-900">
+            <tr className="border-b border-slate-800 text-left text-slate-300">
               <th className="py-2.5 pl-3 pr-3 font-medium">Joueur</th>
               <th className="py-2.5 pr-3 font-medium">Licence</th>
               <th className="py-2.5 pr-3 font-medium">Club</th>
@@ -369,18 +369,18 @@ export function PointagesGrid({ players, dayColumns, tournamentTables }: Pointag
           </thead>
           <tbody>
           {filteredPlayers.map((player) => (
-            <tr key={player.id} className="border-b last:border-0 odd:bg-background even:bg-muted/20 hover:bg-muted/40">
-              <td className="py-3 pl-3 pr-3 text-foreground font-medium">{player.name}</td>
-              <td className="py-3 pr-3 text-muted-foreground">{player.licence}</td>
-              <td className="py-3 pr-3 text-muted-foreground">{player.club}</td>
-              <td className="py-3 pr-3 text-muted-foreground">{player.table}</td>
+            <tr key={player.id} className="border-b border-slate-800 last:border-0 bg-slate-950 hover:bg-slate-900/70">
+              <td className="py-3 pl-3 pr-3 font-medium text-slate-100">{player.name}</td>
+              <td className="py-3 pr-3 text-slate-300">{player.licence}</td>
+              <td className="py-3 pr-3 text-slate-300">{player.club}</td>
+              <td className="py-3 pr-3 text-slate-300">{player.table}</td>
               {normalizedDayColumns.map((dayColumn) => {
                 const key = `${player.id}-${dayColumn.key}`;
                 const hasEventForDay = (player.registrationEventIdsByDay[dayColumn.key] ?? []).length > 0;
                 return (
-                  <td key={key} className="py-3 pr-3 text-muted-foreground">
+                  <td key={key} className="py-3 pr-3 text-slate-300">
                     {hasEventForDay ? (
-                      <label className="inline-flex items-center gap-2">
+                      <label className="inline-flex items-center gap-2 text-slate-300">
                         <input
                           type="checkbox"
                           className="h-4 w-4 rounded border-border"
@@ -388,23 +388,23 @@ export function PointagesGrid({ players, dayColumns, tournamentTables }: Pointag
                           disabled={pendingState[key]}
                           onChange={() => toggleCheck(player, dayColumn.key)}
                         />
-                        <span className="text-xs text-muted-foreground">Présent</span>
+                        <span className="text-xs text-slate-300">Présent</span>
                       </label>
                     ) : (
-                      <span className="text-xs text-muted-foreground">Non inscrit</span>
+                      <span className="text-xs text-slate-400">Non inscrit</span>
                     )}
                   </td>
                 );
               })}
-              <td className="py-3 pr-3 text-muted-foreground">{player.status}</td>
-              <td className="py-3 pr-3 text-muted-foreground">
+              <td className="py-3 pr-3 text-slate-300">{player.status}</td>
+              <td className="py-3 pr-3 text-slate-300">
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
                     onClick={() => openEditPopup(player)}
                     title="Éditer le joueur"
                     aria-label={`Éditer ${player.name}`}
-                    className="rounded-md border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-secondary"
+                    className="rounded-md border border-slate-700 px-2.5 py-1 text-xs font-medium text-slate-200 hover:bg-slate-800"
                   >
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
@@ -413,7 +413,7 @@ export function PointagesGrid({ players, dayColumns, tournamentTables }: Pointag
                     onClick={() => setDeletingPlayer(player)}
                     title="Supprimer le joueur"
                     aria-label={`Supprimer ${player.name}`}
-                    className="rounded-md border border-primary/40 px-2.5 py-1 text-xs font-medium text-primary hover:bg-primary/10"
+                    className="rounded-md border border-red-400/40 px-2.5 py-1 text-xs font-medium text-red-300 hover:bg-red-500/10"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -425,7 +425,7 @@ export function PointagesGrid({ players, dayColumns, tournamentTables }: Pointag
             <tr>
               <td
                 colSpan={8 + normalizedDayColumns.length}
-                className="py-6 text-center text-sm text-muted-foreground"
+                className="py-6 text-center text-sm text-slate-300"
               >
                 Aucun joueur ne correspond aux filtres sélectionnés.
               </td>
