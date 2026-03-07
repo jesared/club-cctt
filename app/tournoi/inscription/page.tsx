@@ -24,10 +24,17 @@ function formatEventLabel(event: {
           ? `${event.minPoints}+ pts`
           : `jusqu'à ${event.maxPoints} pts`;
 
-  const genderLabel =
-    event.gender === "F" ? "Dames" : event.gender === "M" ? "Messieurs" : "Mixte";
+  const genderLabel = event.gender === "M" ? "Messieurs" : "Dames";
 
   return `${event.code} (${event.label} - ${pointsRange} - ${genderLabel}) - ${startHour}`;
+}
+
+function formatEventDateLabel(startAt: Date) {
+  return new Intl.DateTimeFormat("fr-FR", {
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+  }).format(startAt);
 }
 
 export default async function InscriptionsPage() {
@@ -60,6 +67,8 @@ export default async function InscriptionsPage() {
   const tableOptions = (tournament?.events ?? []).map((event) => ({
     value: event.code,
     label: formatEventLabel(event),
+    dateLabel: formatEventDateLabel(event.startAt),
+    dateKey: event.startAt.toISOString().split("T")[0],
     minPoints: event.minPoints,
     maxPoints: event.maxPoints,
     gender: event.gender,
