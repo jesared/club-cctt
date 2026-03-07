@@ -379,10 +379,10 @@ export function PointagesGrid({
         </label>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-slate-800 bg-slate-950 text-slate-100">
+      <div className="overflow-hidden rounded-lg border border-border bg-card text-foreground">
         <table className="min-w-full text-sm">
-          <thead className="bg-slate-900">
-            <tr className="border-b border-slate-800 text-left text-slate-300">
+          <thead className="bg-sidebar-border">
+            <tr className="border-b border-slate-800 text-left text-xs uppercase text-muted-foreground">
               <th className="py-2.5 pl-3 pr-3 font-medium">Joueur</th>
               <th className="py-2.5 pr-3 font-medium">Licence</th>
               <th className="py-2.5 pr-3 font-medium">Club</th>
@@ -400,64 +400,62 @@ export function PointagesGrid({
             {filteredPlayers.map((player) => (
               <tr
                 key={player.id}
-                className="border-b border-slate-800 last:border-0 dark:bg-sidebar-accent-foreground hover:bg-slate-900/70"
+                className="border-b border-slate-800 last:border-0 bg-secondary hover:bg-secondary/80 transition-colors"
               >
-                <td className="py-3 pl-3 pr-3 font-medium text-slate-100">
+                <td className="py-3 pl-3 pr-3 font-medium text-foreground">
                   {player.name}
                 </td>
-                <td className="py-3 pr-3 text-slate-300">{player.licence}</td>
-                <td className="py-3 pr-3 text-slate-300">{player.club}</td>
-                <td className="py-3 pr-3 text-slate-300">{player.table}</td>
+                <td className="py-3 pr-3 text-foreground">{player.licence}</td>
+                <td className="py-3 pr-3 text-foreground">{player.club}</td>
+                <td className="py-3 pr-3 text-foreground">{player.table}</td>
                 {normalizedDayColumns.map((dayColumn) => {
                   const key = `${player.id}-${dayColumn.key}`;
                   const hasEventForDay =
                     (player.registrationEventIdsByDay[dayColumn.key] ?? [])
                       .length > 0;
                   return (
-                    <td key={key} className="py-3 pr-3 text-slate-300">
+                    <td key={key} className="py-3 pr-3 text-foreground">
                       {hasEventForDay ? (
-                        <label className="inline-flex items-center gap-2 text-slate-300">
+                        <label className="inline-flex items-center gap-2 ">
                           <span className="relative inline-flex h-4 w-4 items-center justify-center">
                             <input
                               type="checkbox"
-                              className="peer h-4 w-4 cursor-pointer appearance-none rounded-full border border-slate-500 bg-white/90 align-middle transition checked:border-accent checked:bg-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-60"
+                              className="peer h-4 w-4 cursor-pointer appearance-none rounded-full border border-slate-500 bg-background align-middle transition checked:border-accent checked:bg-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-60"
                               checked={checkedState[key] ?? false}
                               disabled={pendingState[key]}
                               onChange={() =>
                                 toggleCheck(player, dayColumn.key)
                               }
                             />
-                            <CircleCheckBig className="pointer-events-none absolute h-3 w-3 scale-0 text-background transition-transform peer-checked:scale-100" />
+                            <CircleCheckBig className="pointer-events-none absolute h-3 w-3 scale-0 dark:text-background transition-transform peer-checked:scale-100" />
                           </span>
-                          <span className="text-xs text-slate-300">
-                            Présent
-                          </span>
+                          <span className="text-xs ">Présent</span>
                         </label>
                       ) : (
-                        <span className="text-xs text-slate-400">
+                        <span className="text-xs text-muted-foreground">
                           Non inscrit
                         </span>
                       )}
                     </td>
                   );
                 })}
-                <td className="py-3 pr-3 text-slate-300">{player.status}</td>
-                <td className="py-3 pr-3 text-slate-300">
+                <td className="py-3 pr-3 ">{player.status}</td>
+                <td className="py-3 pr-3 ">
                   <div className="flex items-center gap-2">
                     <Button
                       type="button"
-                      variant="outline"
+                      variant="link"
                       size="icon"
                       onClick={() => openEditPopup(player)}
                       title="Éditer le joueur"
                       aria-label={`Éditer ${player.name}`}
-                      className="cursor-pointer rounded-full"
+                      className="cursor-pointer rounded-full text-cyan-500 hover:bg-cyan-100 focus-visible:outline-cyan-500"
                     >
                       <Pencil size={16} />
                     </Button>
                     <Button
                       type="button"
-                      variant="outline"
+                      variant="link"
                       size="icon"
                       onClick={() => setDeletingPlayer(player)}
                       title="Supprimer le joueur"
@@ -537,7 +535,7 @@ export function PointagesGrid({
                           });
                         }}
                       />
-                      <CircleCheckBig className="pointer-events-none absolute h-3 w-3 scale-0 text-background transition-transform peer-checked:scale-100" />
+                      <CircleCheckBig className="pointer-events-none absolute h-3 w-3 scale-0 text-muted-foreground transition-transform peer-checked:scale-100" />
                     </span>
                     <span>
                       <span className="block font-semibold text-foreground">
