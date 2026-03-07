@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import {
   CalendarClock,
@@ -6,6 +6,7 @@ import {
   ListChecks,
   UserRound,
 } from "lucide-react";
+import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
 const DATE_FORMATTER = new Intl.DateTimeFormat("fr-FR", {
@@ -58,7 +59,7 @@ function getEventStatusLabel(
 }
 
 export default async function MesInscriptionsPage() {
-  const session = await auth();
+  const session = await getServerSession(authOptions);
   const userEmail = session?.user?.email?.trim().toLowerCase();
 
   if (!session?.user?.id) {
