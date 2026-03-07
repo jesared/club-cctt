@@ -2,6 +2,7 @@ import DashboardSidebar from "@/components/DashboardSidebar";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import Providers from "@/components/Providers";
+import SiteBreadcrumb from "@/components/SiteBreadcrumb";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import type { Metadata } from "next";
 import "./globals.css";
@@ -49,7 +50,10 @@ export default function RootLayout({
               <DashboardSidebar />
               <div className="flex min-h-screen flex-1 flex-col">
                 <Header />
-                <main className="flex-1">{children}</main>
+                <main className="flex-1">
+                  <SiteBreadcrumb />
+                  {children}
+                </main>
                 <Footer />
               </div>
             </div>
