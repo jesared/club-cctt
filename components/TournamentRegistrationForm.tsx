@@ -456,7 +456,7 @@ export default function TournamentRegistrationForm({
                     className={`flex items-start gap-2 rounded-md border px-3 py-2 ${
                       isEligible(parsedPoints, formData.gender, table)
                         ? "border-border"
-                        : "cursor-not-allowed border-border bg-muted/50 text-muted-foreground"
+                        : "cursor-not-allowed border-border bg-muted/90 text-muted-foreground line-through"
                     }`}
                   >
                     <input
