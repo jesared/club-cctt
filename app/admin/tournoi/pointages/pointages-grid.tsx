@@ -379,7 +379,7 @@ export function PointagesGrid({
         </label>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-border bg-card text-foreground">
+      <div className="overflow-hidden rounded-lg border border-border  text-foreground">
         <table className="min-w-full text-sm">
           <thead className="bg-sidebar-border">
             <tr className="border-b border-slate-800 text-left text-xs uppercase text-muted-foreground">
@@ -400,7 +400,7 @@ export function PointagesGrid({
             {filteredPlayers.map((player) => (
               <tr
                 key={player.id}
-                className="border-b border-slate-800 last:border-0 bg-secondary hover:bg-secondary/80 transition-colors"
+                className="border-b border-slate-800 last:border-0 hover:bg-accent/10"
               >
                 <td className="py-3 pl-3 pr-3 font-medium text-foreground">
                   {player.name}
@@ -420,14 +420,17 @@ export function PointagesGrid({
                           <span className="relative inline-flex h-4 w-4 items-center justify-center">
                             <input
                               type="checkbox"
-                              className="peer h-4 w-4 cursor-pointer appearance-none rounded-full border border-slate-500 bg-background align-middle transition checked:border-accent checked:bg-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-60"
+                              className="peer h-4 w-4 cursor-pointer appearance-none rounded-full border border-slate-500 bg-background checked:border-transparent align-middle transition  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-60"
                               checked={checkedState[key] ?? false}
                               disabled={pendingState[key]}
                               onChange={() =>
                                 toggleCheck(player, dayColumn.key)
                               }
                             />
-                            <CircleCheckBig className="pointer-events-none absolute h-3 w-3 scale-0 dark:text-background transition-transform peer-checked:scale-100" />
+                            <CircleCheckBig
+                              size={18}
+                              className="pointer-events-none absolute scale-0 transition-transform peer-checked:scale-100 text-primary"
+                            />
                           </span>
                           <span className="text-xs ">Présent</span>
                         </label>
@@ -449,7 +452,7 @@ export function PointagesGrid({
                       onClick={() => openEditPopup(player)}
                       title="Éditer le joueur"
                       aria-label={`Éditer ${player.name}`}
-                      className="cursor-pointer rounded-full text-cyan-500 hover:bg-cyan-100 focus-visible:outline-cyan-500"
+                      className="cursor-pointer rounded-full dark:text-sidebar-accent hover:bg-primary/10 focus-visible:outline-accent"
                     >
                       <Pencil size={16} />
                     </Button>
