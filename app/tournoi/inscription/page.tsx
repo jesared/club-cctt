@@ -79,12 +79,13 @@ export default async function InscriptionsPage() {
       <Card className="shadow-sm border-border tournament-panel">
         <CardHeader className="space-y-3">
           <CardTitle>
-            Inscription {tournament?.name ? `au ${tournament.name}` : "au Tournoi"}
+            Inscription{" "}
+            {tournament?.name ? `au ${tournament.name}` : "au Tournoi"}
           </CardTitle>
           <p className="text-gray-700">
-            Complétez ce formulaire pour envoyer votre demande d&apos;inscription.
-            Une confirmation vous sera transmise après vérification des places
-            disponibles dans les tableaux sélectionnés.
+            Complétez ce formulaire pour envoyer votre demande
+            d&apos;inscription. Une confirmation vous sera transmise après
+            vérification des places disponibles dans les tableaux sélectionnés.
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -92,8 +93,8 @@ export default async function InscriptionsPage() {
           <div className="rounded-lg bg-purple-50 border border-purple-100 p-4 text-sm text-purple-900">
             <p>
               <strong>Besoin d&apos;aide&nbsp;?</strong> Contact inscriptions :{" "}
-              <a className="underline" href="mailto:inscriptions-tournoi@cctt.fr">
-                inscriptions-tournoi@cctt.fr
+              <a className="underline" href="mailto:communication@cctt.fr">
+                communication@cctt.fr
               </a>
             </p>
           </div>

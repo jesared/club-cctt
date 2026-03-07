@@ -179,7 +179,7 @@ export default async function MesInscriptionsPage() {
   const totalRemainingCents = Math.max(totalDueCents - totalPaidCents, 0);
 
   return (
-    <main className="tournament-shell mx-auto max-w-5xl space-y-8 px-4 py-12">
+    <main className="mx-auto max-w-5xl space-y-8 px-4 py-12">
       <header className="cyberpunk-highlight rounded-2xl border px-6 py-8">
         <p className="text-xs uppercase tracking-[0.25em] text-primary">
           Espace joueur

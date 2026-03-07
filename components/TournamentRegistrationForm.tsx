@@ -43,7 +43,11 @@ const initialData: RegistrationPayload = {
   website: "",
 };
 
-function isEligible(points: number | null, gender: "M" | "F" | "", table: TableOption) {
+function isEligible(
+  points: number | null,
+  gender: "M" | "F" | "",
+  table: TableOption,
+) {
   if (table.gender === "F" && gender !== "F") {
     return false;
   }
@@ -71,7 +75,9 @@ type TournamentRegistrationFormProps = {
   tableOptions: TableOption[];
 };
 
-export default function TournamentRegistrationForm({ tableOptions }: TournamentRegistrationFormProps) {
+export default function TournamentRegistrationForm({
+  tableOptions,
+}: TournamentRegistrationFormProps) {
   const [formData, setFormData] = useState(initialData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<FeedbackState>(null);
@@ -86,14 +92,23 @@ export default function TournamentRegistrationForm({ tableOptions }: TournamentR
   }, [formData.points]);
 
   const ineligibleTableCodes = useMemo(
-    () => tableOptions.filter((table) => !isEligible(parsedPoints, formData.gender, table)).map((table) => table.value),
+    () =>
+      tableOptions
+        .filter((table) => !isEligible(parsedPoints, formData.gender, table))
+        .map((table) => table.value),
     [formData.gender, parsedPoints, tableOptions],
   );
 
-  const canSubmit = useMemo(() => formData.tables.length > 0, [formData.tables.length]);
+  const canSubmit = useMemo(
+    () => formData.tables.length > 0,
+    [formData.tables.length],
+  );
 
   const groupedTableOptions = useMemo(() => {
-    const grouped = new Map<string, { dateLabel: string; tables: TableOption[] }>();
+    const grouped = new Map<
+      string,
+      { dateLabel: string; tables: TableOption[] }
+    >();
 
     for (const table of tableOptions) {
       const existing = grouped.get(table.dateKey);
@@ -214,7 +229,10 @@ export default function TournamentRegistrationForm({ tableOptions }: TournamentR
             maxLength={100}
             value={formData.lastName}
             onChange={(event) =>
-              setFormData((current) => ({ ...current, lastName: event.target.value }))
+              setFormData((current) => ({
+                ...current,
+                lastName: event.target.value,
+              }))
             }
             className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder="DUPONT"
@@ -233,7 +251,10 @@ export default function TournamentRegistrationForm({ tableOptions }: TournamentR
             maxLength={100}
             value={formData.firstName}
             onChange={(event) =>
-              setFormData((current) => ({ ...current, firstName: event.target.value }))
+              setFormData((current) => ({
+                ...current,
+                firstName: event.target.value,
+              }))
             }
             className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder="Jean"
@@ -254,7 +275,10 @@ export default function TournamentRegistrationForm({ tableOptions }: TournamentR
             maxLength={150}
             value={formData.email}
             onChange={(event) =>
-              setFormData((current) => ({ ...current, email: event.target.value }))
+              setFormData((current) => ({
+                ...current,
+                email: event.target.value,
+              }))
             }
             className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder="joueur@email.fr"
@@ -273,7 +297,10 @@ export default function TournamentRegistrationForm({ tableOptions }: TournamentR
             maxLength={20}
             value={formData.phone}
             onChange={(event) =>
-              setFormData((current) => ({ ...current, phone: event.target.value }))
+              setFormData((current) => ({
+                ...current,
+                phone: event.target.value,
+              }))
             }
             className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder="06 12 34 56 78"
@@ -283,7 +310,10 @@ export default function TournamentRegistrationForm({ tableOptions }: TournamentR
 
       <div className="grid gap-4 sm:grid-cols-12">
         <div className="sm:col-span-3">
-          <label htmlFor="licenseNumber" className="block text-sm font-medium mb-1">
+          <label
+            htmlFor="licenseNumber"
+            className="block text-sm font-medium mb-1"
+          >
             N° licence FFTT
           </label>
           <input
@@ -295,7 +325,10 @@ export default function TournamentRegistrationForm({ tableOptions }: TournamentR
             maxLength={20}
             value={formData.licenseNumber}
             onChange={(event) =>
-              setFormData((current) => ({ ...current, licenseNumber: event.target.value }))
+              setFormData((current) => ({
+                ...current,
+                licenseNumber: event.target.value,
+              }))
             }
             className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder="1234567"
@@ -325,8 +358,12 @@ export default function TournamentRegistrationForm({ tableOptions }: TournamentR
                   ...current,
                   points: nextValue,
                   tables: current.tables.filter((tableCode) => {
-                    const table = tableOptions.find((option) => option.value === tableCode);
-                    return table ? isEligible(nextPoints, current.gender, table) : false;
+                    const table = tableOptions.find(
+                      (option) => option.value === tableCode,
+                    );
+                    return table
+                      ? isEligible(nextPoints, current.gender, table)
+                      : false;
                   }),
                 };
               })
@@ -351,17 +388,27 @@ export default function TournamentRegistrationForm({ tableOptions }: TournamentR
                   ...current,
                   gender: nextGender,
                   tables: current.tables.filter((tableCode) => {
-                    const table = tableOptions.find((option) => option.value === tableCode);
-                    return table ? isEligible(parsedPoints, nextGender, table) : false;
+                    const table = tableOptions.find(
+                      (option) => option.value === tableCode,
+                    );
+                    return table
+                      ? isEligible(parsedPoints, nextGender, table)
+                      : false;
                   }),
                 };
               })
             }
             className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           >
-            <option className="bg-card text-foreground" value="">Sélectionner</option>
-            <option className="bg-card text-foreground" value="M">M</option>
-            <option className="bg-card text-foreground" value="F">F</option>
+            <option className="bg-card text-foreground" value="">
+              Sélectionner
+            </option>
+            <option className="bg-card text-foreground" value="M">
+              M
+            </option>
+            <option className="bg-card text-foreground" value="F">
+              F
+            </option>
           </select>
         </div>
         <div className="sm:col-span-4">
@@ -377,7 +424,10 @@ export default function TournamentRegistrationForm({ tableOptions }: TournamentR
             maxLength={120}
             value={formData.club}
             onChange={(event) =>
-              setFormData((current) => ({ ...current, club: event.target.value }))
+              setFormData((current) => ({
+                ...current,
+                club: event.target.value,
+              }))
             }
             className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder="Nom du club"
@@ -387,12 +437,18 @@ export default function TournamentRegistrationForm({ tableOptions }: TournamentR
 
       <fieldset className="space-y-3">
         <legend className="text-sm font-medium">Tableaux souhaités</legend>
-        <p className="text-sm text-gray-600">Vous pouvez sélectionner plusieurs tableaux.</p>
-        <p className="rounded-md border border-border bg-accent/25 px-3 py-2 text-xs text-foreground/80">{infoMessage}</p>
+        <p className="text-sm text-gray-600">
+          Vous pouvez sélectionner plusieurs tableaux.
+        </p>
+        <p className="rounded-md border border-border bg-accent/25 px-3 py-2 text-xs text-foreground/80">
+          {infoMessage}
+        </p>
         <div className="space-y-4">
           {groupedTableOptions.map((group) => (
             <div key={group.dateKey} className="space-y-2">
-              <p className="text-sm font-semibold capitalize text-foreground">{group.dateLabel}</p>
+              <p className="text-sm font-semibold capitalize text-foreground">
+                {group.dateLabel}
+              </p>
               <div className="grid gap-2 sm:grid-cols-2">
                 {group.tables.map((table) => (
                   <label
@@ -406,11 +462,15 @@ export default function TournamentRegistrationForm({ tableOptions }: TournamentR
                     <input
                       type="checkbox"
                       checked={formData.tables.includes(table.value)}
-                      disabled={!isEligible(parsedPoints, formData.gender, table)}
+                      disabled={
+                        !isEligible(parsedPoints, formData.gender, table)
+                      }
                       onChange={() => toggleTable(table.value)}
-                      className="mt-1"
+                      className="mt-1 checked:text-primary"
                     />
-                    <span className="text-sm text-foreground">{table.label}</span>
+                    <span className="text-sm text-foreground">
+                      {table.label}
+                    </span>
                   </label>
                 ))}
               </div>
@@ -429,7 +489,10 @@ export default function TournamentRegistrationForm({ tableOptions }: TournamentR
           autoComplete="off"
           value={formData.website}
           onChange={(event) =>
-            setFormData((current) => ({ ...current, website: event.target.value }))
+            setFormData((current) => ({
+              ...current,
+              website: event.target.value,
+            }))
           }
         />
       </div>
@@ -446,7 +509,7 @@ export default function TournamentRegistrationForm({ tableOptions }: TournamentR
       <button
         type="submit"
         disabled={isSubmitting || !canSubmit}
-        className="inline-flex rounded-md bg-primary px-6 py-3 text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+        className="cursor-pointer inline-flex rounded-md bg-primary px-6 py-3 text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isSubmitting ? "Envoi en cours..." : "Valider mon inscription"}
       </button>
