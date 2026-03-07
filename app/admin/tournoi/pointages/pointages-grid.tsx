@@ -26,6 +26,8 @@ type DayColumn = {
 type TournamentTable = {
   id: string;
   table: string;
+  date: string;
+  time: string;
   category: string;
   onsitePayment: string;
   minPoints: number | null;
