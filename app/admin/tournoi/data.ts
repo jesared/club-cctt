@@ -47,6 +47,15 @@ export type AdminPaymentGroupRow = {
   paymentStatus: "PAYÉ" | "PARTIEL" | "EN ATTENTE";
 };
 
+export type TournamentDashboardStats = {
+  totalPlayers: number;
+  paidPlayers: number;
+  pendingPayments: number;
+  totalTables: number;
+  fullTables: number;
+  registrationsToday: number;
+};
+
 const DATE_FORMATTER = new Intl.DateTimeFormat("fr-FR", {
   day: "numeric",
   month: "long",
@@ -87,6 +96,76 @@ export async function getCurrentTournament() {
       endDate: true,
     },
   });
+}
+
+export async function getTournamentDashboardStats(
+  tournamentId: string,
+): Promise<TournamentDashboardStats> {
+  const now = new Date();
+  const startOfToday = new Date(now);
+  startOfToday.setHours(0, 0, 0, 0);
+  const startOfTomorrow = new Date(startOfToday);
+  startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
+
+  const [totalPlayers, paidPlayers, registrationsToday, tables] = await Promise.all([
+    prisma.tournamentRegistration.count({
+      where: { tournamentId },
+    }),
+    prisma.tournamentRegistration.count({
+      where: {
+        tournamentId,
+        payments: {
+          some: {
+            status: "PAID",
+          },
+        },
+      },
+    }),
+    prisma.tournamentRegistration.count({
+      where: {
+        tournamentId,
+        createdAt: {
+          gte: startOfToday,
+          lt: startOfTomorrow,
+        },
+      },
+    }),
+    prisma.tournamentEvent.findMany({
+      where: { tournamentId },
+      select: {
+        maxPlayers: true,
+        _count: {
+          select: {
+            registrationEvents: {
+              where: {
+                status: {
+                  in: [
+                    RegistrationEventStatus.REGISTERED,
+                    RegistrationEventStatus.CHECKED_IN,
+                    RegistrationEventStatus.NO_SHOW,
+                    RegistrationEventStatus.FORFEIT,
+                  ],
+                },
+              },
+            },
+          },
+        },
+      },
+    }),
+  ]);
+
+  const totalTables = tables.length;
+  const fullTables = tables.filter((table) => table._count.registrationEvents >= table.maxPlayers).length;
+  const pendingPayments = Math.max(totalPlayers - paidPlayers, 0);
+
+  return {
+    totalPlayers,
+    paidPlayers,
+    pendingPayments,
+    totalTables,
+    fullTables,
+    registrationsToday,
+  };
 }
 
 export async function getTournamentTables(tournamentId: string): Promise<TournamentTable[]> {

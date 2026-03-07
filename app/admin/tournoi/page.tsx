@@ -1,5 +1,11 @@
 import { requireAdminSession, TournamentAdminPage } from "./_components";
-import { getCurrentTournament, getRegistrationsByTable, getTournamentTables } from "./data";
+import {
+  getCurrentTournament,
+  getRegistrationsByTable,
+  getTournamentDashboardStats,
+  getTournamentTables,
+} from "./data";
+import { TournamentDashboard } from "./tournament-dashboard";
 
 export default async function AdminTournoiPage() {
   await requireAdminSession();
@@ -16,9 +22,10 @@ export default async function AdminTournoiPage() {
     );
   }
 
-  const [tournamentTables, registrationsByTable] = await Promise.all([
+  const [tournamentTables, registrationsByTable, dashboardStats] = await Promise.all([
     getTournamentTables(tournament.id),
     getRegistrationsByTable(tournament.id),
+    getTournamentDashboardStats(tournament.id),
   ]);
 
   const totalEarlyRevenue = tournamentTables.reduce(
@@ -36,6 +43,8 @@ export default async function AdminTournoiPage() {
       description={`Vue consolidée de ${tournament.name} avec les données réelles de la base.`}
       activeHref="/admin/tournoi"
     >
+      <TournamentDashboard tournamentName={tournament.name} stats={dashboardStats} />
+
       <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <article className="rounded-xl border bg-card p-4 shadow-sm">
           <p className="text-sm text-muted-foreground">Tableaux programmés</p>
