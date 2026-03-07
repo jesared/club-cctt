@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { RegistrationSource, RegistrationStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
@@ -34,17 +34,19 @@ async function createPlayerRegistration(formData: FormData) {
     .filter(Boolean);
 
   if (
-    !tournamentId
-    || !licence
-    || !nom
-    || !prenom
-    || !pointsValue
-    || !club
-    || !contactEmail
-    || !contactPhone
-    || selectedEvents.length === 0
+    !tournamentId ||
+    !licence ||
+    !nom ||
+    !prenom ||
+    !pointsValue ||
+    !club ||
+    !contactEmail ||
+    !contactPhone ||
+    selectedEvents.length === 0
   ) {
-    redirect("/admin/tournoi/ajout-player?error=Veuillez+remplir+les+champs+obligatoires");
+    redirect(
+      "/admin/tournoi/ajout-player?error=Veuillez+remplir+les+champs+obligatoires",
+    );
   }
 
   const points = Number.parseInt(pointsValue, 10);
@@ -85,7 +87,9 @@ async function createPlayerRegistration(formData: FormData) {
   });
 
   if (selectedTournamentEvents.length !== selectedEvents.length) {
-    redirect("/admin/tournoi/ajout-player?error=Tableaux+invalides+ou+indisponibles");
+    redirect(
+      "/admin/tournoi/ajout-player?error=Tableaux+invalides+ou+indisponibles",
+    );
   }
 
   const ineligibleTables = selectedTournamentEvents
@@ -104,20 +108,26 @@ async function createPlayerRegistration(formData: FormData) {
 
   if (ineligibleTables.length > 0) {
     const tables = encodeURIComponent(ineligibleTables.join(", "));
-    redirect(`/admin/tournoi/ajout-player?error=Le+classement+ne+permet+pas+les+tableaux+${tables}`);
+    redirect(
+      `/admin/tournoi/ajout-player?error=Le+classement+ne+permet+pas+les+tableaux+${tables}`,
+    );
   }
 
-  const playerRefId = existingPlayer?.id ?? (await prisma.player.create({
-    data: {
-      licence,
-      nom,
-      prenom,
-      points,
-      club,
-      ownerId: session.user.id,
-    },
-    select: { id: true },
-  })).id;
+  const playerRefId =
+    existingPlayer?.id ??
+    (
+      await prisma.player.create({
+        data: {
+          licence,
+          nom,
+          prenom,
+          points,
+          club,
+          ownerId: session.user.id,
+        },
+        select: { id: true },
+      })
+    ).id;
 
   try {
     await prisma.tournamentRegistration.create({
@@ -139,20 +149,28 @@ async function createPlayerRegistration(formData: FormData) {
       },
     });
   } catch {
-    redirect("/admin/tournoi/ajout-player?error=Ce+joueur+est+d%C3%A9j%C3%A0+inscrit+sur+ce+tournoi");
+    redirect(
+      "/admin/tournoi/ajout-player?error=Ce+joueur+est+d%C3%A9j%C3%A0+inscrit+sur+ce+tournoi",
+    );
   }
 
   revalidatePath("/admin/tournoi/inscriptions");
   revalidatePath("/admin/tournoi/joueurs");
-  redirect("/admin/tournoi/ajout-player?success=Joueur+ajout%C3%A9+avec+succ%C3%A8s");
+  redirect(
+    "/admin/tournoi/ajout-player?success=Joueur+ajout%C3%A9+avec+succ%C3%A8s",
+  );
 }
 
-export default async function AdminTournoiAjoutPlayerPage({ searchParams }: PageProps) {
+export default async function AdminTournoiAjoutPlayerPage({
+  searchParams,
+}: PageProps) {
   await requireAdminSession();
 
   const params = (await searchParams) ?? {};
   const tournament = await getCurrentTournament();
-  const tournamentTables = tournament ? await getTournamentTables(tournament.id) : [];
+  const tournamentTables = tournament
+    ? await getTournamentTables(tournament.id)
+    : [];
 
   return (
     <TournamentAdminPage
@@ -175,7 +193,8 @@ export default async function AdminTournoiAjoutPlayerPage({ searchParams }: Page
         <div>
           <h2 className="text-xl font-semibold">Formulaire d'ajout joueur</h2>
           <p className="text-sm text-muted-foreground">
-            Tous les champs marqués d'un * sont obligatoires. Le joueur sera inscrit en statut confirmé.
+            Tous les champs marqués d'un * sont obligatoires. Le joueur sera
+            inscrit en statut confirmé.
           </p>
         </div>
 
@@ -187,7 +206,8 @@ export default async function AdminTournoiAjoutPlayerPage({ searchParams }: Page
           />
         ) : (
           <p className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            Aucun tournoi actif n'a été trouvé. Créez d'abord un tournoi avant d'ajouter un joueur.
+            Aucun tournoi actif n'a été trouvé. Créez d'abord un tournoi avant
+            d'ajouter un joueur.
           </p>
         )}
       </section>

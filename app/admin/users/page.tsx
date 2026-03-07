@@ -1,7 +1,8 @@
-import { auth } from "@/auth";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 const MANAGED_ROLES = ["USER", "JOUEUR", "COACH", "BUREAU"] as const;
 
@@ -10,7 +11,7 @@ type ManagedRole = (typeof MANAGED_ROLES)[number];
 async function updateUserRole(formData: FormData) {
   "use server";
 
-  const session = await auth();
+  const session = await getServerSession(authOptions);
 
   if (!session || session.user.role !== "ADMIN") {
     redirect("/");
@@ -36,7 +37,7 @@ async function updateUserRole(formData: FormData) {
 }
 
 export default async function AdminUsersPage() {
-  const session = await auth();
+  const session = await getServerSession(authOptions);
 
   if (!session) {
     redirect("/api/auth/signin");
@@ -106,7 +107,10 @@ export default async function AdminUsersPage() {
                     <td className="px-4 py-3">{user.players.length}</td>
                     <td className="px-4 py-3">
                       <div className="flex flex-col md:flex-row gap-2">
-                        <form action={updateUserRole} className="flex items-center gap-2">
+                        <form
+                          action={updateUserRole}
+                          className="flex items-center gap-2"
+                        >
                           <input type="hidden" name="userId" value={user.id} />
                           <select
                             name="role"
@@ -128,7 +132,6 @@ export default async function AdminUsersPage() {
                             Changer rôle
                           </button>
                         </form>
-
                       </div>
                     </td>
                   </tr>

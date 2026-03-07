@@ -1,4 +1,5 @@
-import { auth } from "@/auth";
+import { authOptions } from "@/lib/auth";
+import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
@@ -14,15 +15,17 @@ const TOURNAMENT_ADMIN_LINKS = [
 ] as const;
 
 export async function requireAdminSession() {
-  const session = await auth();
+  const session = await getServerSession(authOptions);
 
   if (!session) {
     redirect("/api/auth/signin");
   }
 
-  if (session.user.role !== "ADMIN") {
+  if ((session.user as any)?.role !== "ADMIN") {
     redirect("/");
   }
+
+  return session;
 }
 
 type TournamentAdminPageProps = {
@@ -41,7 +44,9 @@ export function TournamentAdminPage({
   return (
     <div className="tournament-shell max-w-6xl mx-auto px-4 py-12 space-y-8">
       <header className="space-y-3">
-        <p className="text-sm font-medium text-foreground">Administration tournoi</p>
+        <p className="text-sm font-medium text-foreground">
+          Administration tournoi
+        </p>
         <h1 className="text-3xl font-bold">{title}</h1>
         <p className="text-muted-foreground">{description}</p>
       </header>
@@ -50,6 +55,7 @@ export function TournamentAdminPage({
         <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">
           Navigation rapide
         </h2>
+
         <div className="flex flex-wrap gap-2">
           {TOURNAMENT_ADMIN_LINKS.map((link) => {
             const isActive = link.href === activeHref;

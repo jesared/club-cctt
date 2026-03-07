@@ -1,9 +1,9 @@
-import { auth } from "@/auth";
+import { authOptions } from "@/lib/auth";
+import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
 export default async function AdminPage() {
-  const session = await auth();
-
+  const session = await getServerSession(authOptions);
   // 🔒 PAS CONNECTÉ
   if (!session) {
     redirect("/api/auth/signin");
@@ -24,9 +24,9 @@ export default async function AdminPage() {
         </p>
 
         <p className="text-sm text-muted-foreground mt-2">
-          Cet espace est séparé en deux blocs&nbsp;: l&apos;administration du club
-          (messages et utilisateurs) et l&apos;administration tournoi (dashboard,
-          inscriptions, paiements, pointages, joueurs et exports).
+          Cet espace est séparé en deux blocs&nbsp;: l&apos;administration du
+          club (messages et utilisateurs) et l&apos;administration tournoi
+          (dashboard, inscriptions, paiements, pointages, joueurs et exports).
         </p>
       </div>
     </div>

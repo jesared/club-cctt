@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { RegistrationSource } from "@prisma/client";
+import { NextRequest, NextResponse } from "next/server";
 
 type RegistrationPayload = {
   firstName?: string;
@@ -20,8 +20,10 @@ const WINDOW_MS = 10 * 60 * 1000;
 const MAX_REQUESTS = 5;
 const requestTracker = new Map<string, number[]>();
 
-
-const TABLE_RULES: Record<string, { minPoints: number | null; maxPoints: number | null; womenOnly?: boolean }> = {
+const TABLE_RULES: Record<
+  string,
+  { minPoints: number | null; maxPoints: number | null; womenOnly?: boolean }
+> = {
   C: { minPoints: 800, maxPoints: 1399 },
   A: { minPoints: 500, maxPoints: 799 },
   D: { minPoints: 1100, maxPoints: 1699 },
@@ -87,7 +89,10 @@ function normalizeTables(tables: unknown) {
   return tables
     .filter((value): value is string => typeof value === "string")
     .map((value) => value.trim().toUpperCase())
-    .filter((value, index, current) => value.length > 0 && current.indexOf(value) === index)
+    .filter(
+      (value, index, current) =>
+        value.length > 0 && current.indexOf(value) === index,
+    )
     .slice(0, 6);
 }
 
@@ -200,7 +205,7 @@ export async function POST(request: NextRequest) {
         message:
           "Trop de tentatives depuis votre adresse IP. Merci de réessayer dans quelques minutes.",
       },
-      { status: 429 }
+      { status: 429 },
     );
   }
 
@@ -228,83 +233,89 @@ export async function POST(request: NextRequest) {
       {
         message: "Votre demande d'inscription a bien été prise en compte.",
       },
-      { status: 200 }
+      { status: 200 },
     );
   }
 
   if (firstName.length < 2 || firstName.length > 100) {
     return NextResponse.json(
       { message: "Le prénom doit contenir entre 2 et 100 caractères." },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (lastName.length < 2 || lastName.length > 100) {
     return NextResponse.json(
       { message: "Le nom doit contenir entre 2 et 100 caractères." },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (!isValidEmail(email) || email.length > 150) {
     return NextResponse.json(
       { message: "Adresse email invalide." },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (phone.length < 10 || phone.length > 20) {
     return NextResponse.json(
-      { message: "Le numéro de téléphone doit contenir entre 10 et 20 caractères." },
-      { status: 400 }
+      {
+        message:
+          "Le numéro de téléphone doit contenir entre 10 et 20 caractères.",
+      },
+      { status: 400 },
     );
   }
 
   if (licenseNumber.length < 6 || licenseNumber.length > 20) {
     return NextResponse.json(
-      { message: "Le numéro de licence doit contenir entre 6 et 20 caractères." },
-      { status: 400 }
+      {
+        message: "Le numéro de licence doit contenir entre 6 et 20 caractères.",
+      },
+      { status: 400 },
     );
   }
 
   if (club.length < 2 || club.length > 120) {
     return NextResponse.json(
       { message: "Le nom du club doit contenir entre 2 et 120 caractères." },
-      { status: 400 }
+      { status: 400 },
     );
   }
-
 
   if (!/^\d{1,5}$/.test(points)) {
     return NextResponse.json(
       { message: "Les points doivent être un nombre positif." },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (!["M", "F"].includes(gender)) {
     return NextResponse.json(
       { message: "Le genre doit être M ou F." },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (tables.length === 0) {
     return NextResponse.json(
       { message: "Merci de sélectionner au moins un tableau." },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   const numericPoints = Number.parseInt(points, 10);
-  const invalidTables = tables.filter((tableCode) => !isTableEligible(tableCode, numericPoints, gender));
+  const invalidTables = tables.filter(
+    (tableCode) => !isTableEligible(tableCode, numericPoints, gender),
+  );
 
   if (invalidTables.length > 0) {
     return NextResponse.json(
       {
         message: `Les tableaux suivants ne sont pas accessibles avec votre profil: ${invalidTables.join(", ")}.`,
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -341,7 +352,7 @@ export async function POST(request: NextRequest) {
       {
         message: "Aucun tournoi actif n'est disponible pour le moment.",
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -373,9 +384,10 @@ export async function POST(request: NextRequest) {
   if (selectedEvents.length !== tables.length) {
     return NextResponse.json(
       {
-        message: "Un ou plusieurs tableaux ne sont pas disponibles sur ce tournoi.",
+        message:
+          "Un ou plusieurs tableaux ne sont pas disponibles sur ce tournoi.",
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -386,17 +398,19 @@ export async function POST(request: NextRequest) {
 
   const playerRefId =
     existingPlayer?.id ??
-    (await prisma.player.create({
-      data: {
-        licence: licenseNumber,
-        nom: lastName,
-        prenom: firstName,
-        points: numericPoints,
-        club,
-        ownerId,
-      },
-      select: { id: true },
-    })).id;
+    (
+      await prisma.player.create({
+        data: {
+          licence: licenseNumber,
+          nom: lastName,
+          prenom: firstName,
+          points: numericPoints,
+          club,
+          ownerId,
+        },
+        select: { id: true },
+      })
+    ).id;
 
   try {
     await prisma.tournamentRegistration.create({
@@ -424,7 +438,7 @@ export async function POST(request: NextRequest) {
       {
         message: "Ce joueur est déjà inscrit sur ce tournoi.",
       },
-      { status: 409 }
+      { status: 409 },
     );
   }
 
@@ -434,7 +448,7 @@ export async function POST(request: NextRequest) {
       {
         email,
         licenseNumber,
-      }
+      },
     );
 
     return NextResponse.json(
@@ -442,7 +456,7 @@ export async function POST(request: NextRequest) {
         message:
           "Inscription reçue. Le service de notification est en maintenance: contactez inscriptions-tournoi@cctt.fr si vous ne recevez pas de confirmation sous 48h.",
       },
-      { status: 200 }
+      { status: 200 },
     );
   }
 
@@ -451,6 +465,6 @@ export async function POST(request: NextRequest) {
       message:
         "Inscription envoyée avec succès. Vous recevrez un email de confirmation après validation.",
     },
-    { status: 200 }
+    { status: 200 },
   );
 }

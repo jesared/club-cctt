@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { RegistrationEventStatus } from "@prisma/client";
 import { NextResponse } from "next/server";
@@ -11,7 +11,6 @@ type PointagePayload = {
 type DeletePlayerPayload = {
   registrationId?: unknown;
 };
-
 
 type UpdateEngagementsPayload = {
   registrationId?: unknown;
@@ -74,7 +73,6 @@ export async function POST(request: Request) {
   return NextResponse.json({ ok: true });
 }
 
-
 export async function PATCH(request: Request) {
   const session = await auth();
 
@@ -83,9 +81,12 @@ export async function PATCH(request: Request) {
   }
 
   const body = (await request.json()) as UpdateEngagementsPayload;
-  const registrationId = typeof body.registrationId === "string" ? body.registrationId : "";
+  const registrationId =
+    typeof body.registrationId === "string" ? body.registrationId : "";
   const eventIds = Array.isArray(body.eventIds)
-    ? body.eventIds.filter((id: unknown): id is string => typeof id === "string" && id.length > 0)
+    ? body.eventIds.filter(
+        (id: unknown): id is string => typeof id === "string" && id.length > 0,
+      )
     : [];
 
   if (!registrationId) {
@@ -119,7 +120,10 @@ export async function PATCH(request: Request) {
   });
 
   if (!registration) {
-    return NextResponse.json({ error: "Registration not found" }, { status: 404 });
+    return NextResponse.json(
+      { error: "Registration not found" },
+      { status: 404 },
+    );
   }
 
   const allowedEvents = await prisma.tournamentEvent.findMany({
@@ -133,16 +137,23 @@ export async function PATCH(request: Request) {
   });
 
   if (allowedEvents.length !== eventIds.length) {
-    return NextResponse.json({ error: "Some events are invalid" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Some events are invalid" },
+      { status: 400 },
+    );
   }
 
-  const existingEventIds = new Set(registration.registrationEvents.map((entry) => entry.eventId));
+  const existingEventIds = new Set(
+    registration.registrationEvents.map((entry) => entry.eventId),
+  );
   const nextEventIds = new Set(eventIds);
 
   const eventIdsToDelete = registration.registrationEvents
     .filter((entry) => !nextEventIds.has(entry.eventId))
     .map((entry) => entry.eventId);
-  const eventIdsToCreate = eventIds.filter((eventId) => !existingEventIds.has(eventId));
+  const eventIdsToCreate = eventIds.filter(
+    (eventId) => !existingEventIds.has(eventId),
+  );
 
   await prisma.$transaction(async (tx) => {
     if (eventIdsToDelete.length > 0) {
@@ -194,35 +205,48 @@ export async function PATCH(request: Request) {
   });
 
   if (!updatedRegistration) {
-    return NextResponse.json({ error: "Registration not found" }, { status: 404 });
+    return NextResponse.json(
+      { error: "Registration not found" },
+      { status: 404 },
+    );
   }
 
   const checkedDayKeys = Array.from(
     new Set(
       updatedRegistration.registrationEvents
-        .filter((entry) => entry.checkIn !== null || entry.status === RegistrationEventStatus.CHECKED_IN)
+        .filter(
+          (entry) =>
+            entry.checkIn !== null ||
+            entry.status === RegistrationEventStatus.CHECKED_IN,
+        )
         .map((entry) => entry.event.startAt.toISOString().slice(0, 10)),
     ),
   );
 
-  const registrationEventIdsByDay = updatedRegistration.registrationEvents.reduce<Record<string, string[]>>(
-    (acc, entry) => {
-      const dayKey = entry.event.startAt.toISOString().slice(0, 10);
-      if (!acc[dayKey]) {
-        acc[dayKey] = [];
-      }
-      acc[dayKey].push(entry.id);
-      return acc;
-    },
-    {},
-  );
+  const registrationEventIdsByDay =
+    updatedRegistration.registrationEvents.reduce<Record<string, string[]>>(
+      (acc, entry) => {
+        const dayKey = entry.event.startAt.toISOString().slice(0, 10);
+        if (!acc[dayKey]) {
+          acc[dayKey] = [];
+        }
+        acc[dayKey].push(entry.id);
+        return acc;
+      },
+      {},
+    );
 
   return NextResponse.json({
     ok: true,
     player: {
       registrationId: updatedRegistration.id,
-      table: updatedRegistration.registrationEvents.map((entry) => entry.event.code).join(", ") || "—",
-      engagedEventIds: updatedRegistration.registrationEvents.map((entry) => entry.eventId),
+      table:
+        updatedRegistration.registrationEvents
+          .map((entry) => entry.event.code)
+          .join(", ") || "—",
+      engagedEventIds: updatedRegistration.registrationEvents.map(
+        (entry) => entry.eventId,
+      ),
       checkedDayKeys,
       registrationEventIdsByDay,
     },
@@ -237,7 +261,8 @@ export async function DELETE(request: Request) {
   }
 
   const body = (await request.json()) as DeletePlayerPayload;
-  const registrationId = typeof body.registrationId === "string" ? body.registrationId : "";
+  const registrationId =
+    typeof body.registrationId === "string" ? body.registrationId : "";
 
   if (!registrationId) {
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
@@ -249,7 +274,10 @@ export async function DELETE(request: Request) {
   });
 
   if (!registration) {
-    return NextResponse.json({ error: "Registration not found" }, { status: 404 });
+    return NextResponse.json(
+      { error: "Registration not found" },
+      { status: 404 },
+    );
   }
 
   await prisma.$transaction(async (tx) => {

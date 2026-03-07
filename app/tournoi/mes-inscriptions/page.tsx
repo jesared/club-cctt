@@ -1,6 +1,11 @@
-import { auth } from "@/auth";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { CalendarClock, CircleDollarSign, ListChecks, UserRound } from "lucide-react";
+import {
+  CalendarClock,
+  CircleDollarSign,
+  ListChecks,
+  UserRound,
+} from "lucide-react";
 import { redirect } from "next/navigation";
 
 const DATE_FORMATTER = new Intl.DateTimeFormat("fr-FR", {
@@ -20,7 +25,9 @@ function formatAmount(cents: number) {
   return `${(cents / 100).toFixed(2)} €`;
 }
 
-function getRegistrationStatusLabel(status: "PENDING" | "CONFIRMED" | "CANCELLED") {
+function getRegistrationStatusLabel(
+  status: "PENDING" | "CONFIRMED" | "CANCELLED",
+) {
   switch (status) {
     case "CONFIRMED":
       return "Confirmée";
@@ -32,7 +39,9 @@ function getRegistrationStatusLabel(status: "PENDING" | "CONFIRMED" | "CANCELLED
   }
 }
 
-function getEventStatusLabel(status: "REGISTERED" | "WAITLISTED" | "CHECKED_IN" | "NO_SHOW" | "FORFEIT") {
+function getEventStatusLabel(
+  status: "REGISTERED" | "WAITLISTED" | "CHECKED_IN" | "NO_SHOW" | "FORFEIT",
+) {
   switch (status) {
     case "WAITLISTED":
       return "Liste d'attente";
@@ -171,11 +180,17 @@ export default async function MesInscriptionsPage() {
   return (
     <main className="tournament-shell mx-auto max-w-5xl space-y-8 px-4 py-12">
       <header className="cyberpunk-highlight rounded-2xl border px-6 py-8">
-        <p className="text-xs uppercase tracking-[0.25em] text-primary">Espace joueur</p>
-        <h1 className="mt-3 text-3xl font-semibold md:text-4xl">Mes inscriptions tournoi</h1>
+        <p className="text-xs uppercase tracking-[0.25em] text-primary">
+          Espace joueur
+        </p>
+        <h1 className="mt-3 text-3xl font-semibold md:text-4xl">
+          Mes inscriptions tournoi
+        </h1>
         <p className="cyberpunk-text-soft mt-3">
-          Récapitulatif de vos joueurs inscrits sur <strong>{tournament.name}</strong> du {" "}
-          {DATE_FORMATTER.format(tournament.startDate)} au {DATE_FORMATTER.format(tournament.endDate)}.
+          Récapitulatif de vos joueurs inscrits sur{" "}
+          <strong>{tournament.name}</strong> du{" "}
+          {DATE_FORMATTER.format(tournament.startDate)} au{" "}
+          {DATE_FORMATTER.format(tournament.endDate)}.
         </p>
       </header>
 
@@ -190,13 +205,17 @@ export default async function MesInscriptionsPage() {
           <p className="flex items-center gap-2 text-sm text-gray-500">
             <CircleDollarSign className="h-4 w-4" /> Montant total
           </p>
-          <p className="mt-2 text-3xl font-semibold">{formatAmount(totalDueCents)}</p>
+          <p className="mt-2 text-3xl font-semibold">
+            {formatAmount(totalDueCents)}
+          </p>
         </article>
         <article className="tournament-panel rounded-xl border p-4 shadow-sm">
           <p className="flex items-center gap-2 text-sm text-gray-500">
             <ListChecks className="h-4 w-4" /> Déjà payé
           </p>
-          <p className="mt-2 text-3xl font-semibold text-emerald-500">{formatAmount(totalPaidCents)}</p>
+          <p className="mt-2 text-3xl font-semibold text-emerald-500">
+            {formatAmount(totalPaidCents)}
+          </p>
         </article>
       </section>
 
@@ -206,7 +225,8 @@ export default async function MesInscriptionsPage() {
           {totalRemainingCents > 0 ? (
             <>
               <p className="cyberpunk-text-soft mt-2 text-sm">
-                Il reste <strong>{formatAmount(totalRemainingCents)}</strong> à régler pour finaliser vos inscriptions.
+                Il reste <strong>{formatAmount(totalRemainingCents)}</strong> à
+                régler pour finaliser vos inscriptions.
               </p>
               <div className="mt-4 flex flex-wrap gap-3">
                 <a
@@ -225,14 +245,24 @@ export default async function MesInscriptionsPage() {
                 </a>
               </div>
               <ul className="cyberpunk-text-soft mt-4 list-disc space-y-1 pl-5 text-sm">
-                <li>Priorité recommandée : paiement en ligne pour valider plus vite votre dossier.</li>
-                <li>En cas d&apos;empêchement, contactez le club pour convenir d&apos;une alternative.</li>
-                <li>Le jour J, prévoyez un justificatif si le paiement vient d&apos;être effectué.</li>
+                <li>
+                  Priorité recommandée : paiement en ligne pour valider plus
+                  vite votre dossier.
+                </li>
+                <li>
+                  En cas d&apos;empêchement, contactez le club pour convenir
+                  d&apos;une alternative.
+                </li>
+                <li>
+                  Le jour J, prévoyez un justificatif si le paiement vient
+                  d&apos;être effectué.
+                </li>
               </ul>
             </>
           ) : (
             <p className="mt-2 text-sm text-emerald-500">
-              Tout est réglé ✅ Vos inscriptions sont entièrement payées pour ce tournoi.
+              Tout est réglé ✅ Vos inscriptions sont entièrement payées pour ce
+              tournoi.
             </p>
           )}
         </section>
@@ -242,7 +272,8 @@ export default async function MesInscriptionsPage() {
         <section className="tournament-panel rounded-xl border p-6">
           <p className="font-medium">Aucun joueur inscrit pour le moment.</p>
           <p className="cyberpunk-text-soft mt-2 text-sm">
-            Vous pouvez ajouter votre premier joueur depuis le formulaire d&apos;inscription.
+            Vous pouvez ajouter votre premier joueur depuis le formulaire
+            d&apos;inscription.
           </p>
           <a
             href="/tournoi/inscription"
@@ -265,14 +296,21 @@ export default async function MesInscriptionsPage() {
             const remainingCents = Math.max(dueCents - paidCents, 0);
 
             return (
-              <article key={registration.id} className="tournament-panel rounded-xl border p-5 shadow-sm">
+              <article
+                key={registration.id}
+                className="tournament-panel rounded-xl border p-5 shadow-sm"
+              >
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
                     <h2 className="text-xl font-semibold">{playerName}</h2>
                     <p className="cyberpunk-text-soft mt-1 text-sm">
                       Licence {registration.player.licence}
-                      {registration.player.club ? ` • ${registration.player.club}` : ""}
-                      {registration.player.points !== null ? ` • ${registration.player.points} pts` : ""}
+                      {registration.player.club
+                        ? ` • ${registration.player.club}`
+                        : ""}
+                      {registration.player.points !== null
+                        ? ` • ${registration.player.points} pts`
+                        : ""}
                     </p>
                   </div>
                   <p className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
@@ -284,15 +322,22 @@ export default async function MesInscriptionsPage() {
                   <table className="min-w-full text-sm">
                     <thead>
                       <tr className="border-b border-primary/20 text-left text-gray-500">
-                        <th className="pb-2 pl-3 pr-4 pt-3 font-medium">Tableau</th>
+                        <th className="pb-2 pl-3 pr-4 pt-3 font-medium">
+                          Tableau
+                        </th>
                         <th className="pb-2 pr-4 pt-3 font-medium">Horaire</th>
-                        <th className="pb-2 pr-4 pt-3 font-medium">Engagement</th>
+                        <th className="pb-2 pr-4 pt-3 font-medium">
+                          Engagement
+                        </th>
                         <th className="pb-2 pr-4 pt-3 font-medium">Statut</th>
                       </tr>
                     </thead>
                     <tbody>
                       {registration.registrationEvents.map((entry) => (
-                        <tr key={entry.id} className="border-b border-primary/10 last:border-0">
+                        <tr
+                          key={entry.id}
+                          className="border-b border-primary/10 last:border-0"
+                        >
                           <td className="py-2 pl-3 pr-4 text-foreground">
                             {entry.event.code} - {entry.event.label}
                           </td>
@@ -302,8 +347,12 @@ export default async function MesInscriptionsPage() {
                               {DATE_TIME_FORMATTER.format(entry.event.startAt)}
                             </span>
                           </td>
-                          <td className="py-2 pr-4 text-gray-700">{formatAmount(entry.event.feeOnlineCents)}</td>
-                          <td className="py-2 pr-4 text-gray-700">{getEventStatusLabel(entry.status)}</td>
+                          <td className="py-2 pr-4 text-gray-700">
+                            {formatAmount(entry.event.feeOnlineCents)}
+                          </td>
+                          <td className="py-2 pr-4 text-gray-700">
+                            {getEventStatusLabel(entry.status)}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -311,10 +360,13 @@ export default async function MesInscriptionsPage() {
                 </div>
 
                 <p className="mt-4 text-sm text-gray-700">
-                  Paiement : <strong>{formatAmount(paidCents)}</strong> / {formatAmount(dueCents)}
+                  Paiement : <strong>{formatAmount(paidCents)}</strong> /{" "}
+                  {formatAmount(dueCents)}
                 </p>
                 {remainingCents > 0 ? (
-                  <p className="mt-1 text-sm text-amber-400">Reste à payer : {formatAmount(remainingCents)}</p>
+                  <p className="mt-1 text-sm text-amber-400">
+                    Reste à payer : {formatAmount(remainingCents)}
+                  </p>
                 ) : (
                   <p className="mt-1 text-sm text-emerald-400">Dossier soldé</p>
                 )}

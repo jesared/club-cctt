@@ -1,10 +1,10 @@
-import { auth } from "@/auth";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const session = await auth();
-
+  const session = await getServerSession(authOptions);
   // 🔒 sécurité admin
   if (!session || session.user.role !== "ADMIN") {
     return NextResponse.json({ error: "Non autorisé" }, { status: 403 });

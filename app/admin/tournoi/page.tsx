@@ -22,11 +22,12 @@ export default async function AdminTournoiPage() {
     );
   }
 
-  const [tournamentTables, registrationsByTable, dashboardStats] = await Promise.all([
-    getTournamentTables(tournament.id),
-    getRegistrationsByTable(tournament.id),
-    getTournamentDashboardStats(tournament.id),
-  ]);
+  const [tournamentTables, registrationsByTable, dashboardStats] =
+    await Promise.all([
+      getTournamentTables(tournament.id),
+      getRegistrationsByTable(tournament.id),
+      getTournamentDashboardStats(tournament.id),
+    ]);
 
   const totalEarlyRevenue = tournamentTables.reduce(
     (sum, table) => sum + Number.parseInt(table.earlyPayment, 10),
@@ -43,38 +44,19 @@ export default async function AdminTournoiPage() {
       description={`Vue consolidée de ${tournament.name} avec les données réelles de la base.`}
       activeHref="/admin/tournoi"
     >
-      <TournamentDashboard tournamentName={tournament.name} stats={dashboardStats} />
-
-      <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <article className="rounded-xl border bg-card p-4 shadow-sm">
-          <p className="text-sm text-muted-foreground">Tableaux programmés</p>
-          <p className="mt-2 text-3xl font-bold text-foreground">{tournamentTables.length}</p>
-          <p className="mt-1 text-sm text-muted-foreground">Depuis la base tournoi</p>
-        </article>
-        <article className="rounded-xl border bg-card p-4 shadow-sm">
-          <p className="text-sm text-muted-foreground">Inscriptions suivies</p>
-          <p className="mt-2 text-3xl font-bold text-foreground">
-            {registrationsByTable.reduce((sum, row) => sum + row.registrations, 0)}
-          </p>
-          <p className="mt-1 text-sm text-muted-foreground">Tous tableaux confondus</p>
-        </article>
-        <article className="rounded-xl border bg-card p-4 shadow-sm">
-          <p className="text-sm text-muted-foreground">Recette mini anticipée</p>
-          <p className="mt-2 text-3xl font-bold text-foreground">{totalEarlyRevenue}€</p>
-          <p className="mt-1 text-sm text-muted-foreground">Base 1 joueur par tableau</p>
-        </article>
-        <article className="rounded-xl border bg-card p-4 shadow-sm">
-          <p className="text-sm text-muted-foreground">Recette mini sur place</p>
-          <p className="mt-2 text-3xl font-bold text-foreground">{totalOnsiteRevenue}€</p>
-          <p className="mt-1 text-sm text-muted-foreground">Base 1 joueur par tableau</p>
-        </article>
-      </section>
+      <TournamentDashboard
+        tournamentName={tournament.name}
+        stats={dashboardStats}
+      />
 
       <section className="rounded-xl border bg-card p-6 shadow-sm space-y-4">
         <div>
-          <h2 className="text-xl font-semibold text-foreground">Programme officiel des tableaux</h2>
+          <h2 className="text-xl font-semibold text-foreground">
+            Programme officiel des tableaux
+          </h2>
           <p className="text-sm text-muted-foreground">
-            Horaires, catégories et tarifs alimentés depuis la base `Tournament` / `TournamentEvent`.
+            Horaires, catégories et tarifs alimentés depuis la base `Tournament`
+            / `TournamentEvent`.
           </p>
         </div>
 
@@ -93,12 +75,24 @@ export default async function AdminTournoiPage() {
             <tbody>
               {tournamentTables.map((table) => (
                 <tr key={table.id} className="border-b last:border-0">
-                  <td className="py-3 pr-3 text-muted-foreground">{table.date}</td>
-                  <td className="py-3 pr-3 text-muted-foreground">{table.time}</td>
-                  <td className="py-3 pr-3 font-semibold text-foreground">{table.table}</td>
-                  <td className="py-3 pr-3 text-muted-foreground">{table.category}</td>
-                  <td className="py-3 pr-3 text-muted-foreground">{table.earlyPayment}</td>
-                  <td className="py-3 text-muted-foreground">{table.onsitePayment}</td>
+                  <td className="py-3 pr-3 text-muted-foreground">
+                    {table.date}
+                  </td>
+                  <td className="py-3 pr-3 text-muted-foreground">
+                    {table.time}
+                  </td>
+                  <td className="py-3 pr-3 font-semibold text-foreground">
+                    {table.table}
+                  </td>
+                  <td className="py-3 pr-3 text-muted-foreground">
+                    {table.category}
+                  </td>
+                  <td className="py-3 pr-3 text-muted-foreground">
+                    {table.earlyPayment}
+                  </td>
+                  <td className="py-3 text-muted-foreground">
+                    {table.onsitePayment}
+                  </td>
                 </tr>
               ))}
             </tbody>

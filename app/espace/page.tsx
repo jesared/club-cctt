@@ -1,5 +1,6 @@
-import { auth } from "@/auth";
 import LiveMessages from "@/components/messages/LiveMessages";
+import { authOptions } from "@/lib/auth";
+import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -34,7 +35,7 @@ function formatDate(date: string | undefined) {
 }
 
 export default async function EspacePage() {
-  const session = await auth();
+  const session = await getServerSession(authOptions);
 
   // 🔒 pas connecté → dehors
   if (!session) redirect("/");
@@ -48,8 +49,8 @@ export default async function EspacePage() {
       <header className="space-y-3">
         <h1 className="text-4xl font-bold">Espace licencié</h1>
         <p className="text-gray-600">
-          Retrouvez les infos clés du club et des suggestions d&apos;actions pour ne
-          rien manquer de la vie de l&apos;association.
+          Retrouvez les infos clés du club et des suggestions d&apos;actions
+          pour ne rien manquer de la vie de l&apos;association.
         </p>
       </header>
 
@@ -60,20 +61,33 @@ export default async function EspacePage() {
         </article>
         <article className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
           <p className="text-sm text-gray-500">Alertes importantes</p>
-          <p className="mt-2 text-3xl font-semibold text-red-600">{importantCount}</p>
+          <p className="mt-2 text-3xl font-semibold text-red-600">
+            {importantCount}
+          </p>
         </article>
         <article className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
           <p className="text-sm text-gray-500">Dernière publication</p>
-          <p className="mt-2 text-lg font-semibold">{formatDate(latestMessage?.createdAt)}</p>
+          <p className="mt-2 text-lg font-semibold">
+            {formatDate(latestMessage?.createdAt)}
+          </p>
         </article>
       </section>
 
       <section className="rounded-xl border border-blue-100 bg-blue-50 p-6">
-        <h2 className="text-xl font-semibold text-blue-900">Nos suggestions pour vous</h2>
+        <h2 className="text-xl font-semibold text-blue-900">
+          Nos suggestions pour vous
+        </h2>
         <ul className="mt-4 space-y-3 text-blue-900">
-          <li>✅ Consultez les messages importants en priorité pour les convocations.</li>
-          <li>🏓 Vérifiez les horaires chaque semaine avant l&apos;entraînement.</li>
-          <li>📅 Anticipez votre inscription au tournoi pour garantir votre place.</li>
+          <li>
+            ✅ Consultez les messages importants en priorité pour les
+            convocations.
+          </li>
+          <li>
+            🏓 Vérifiez les horaires chaque semaine avant l&apos;entraînement.
+          </li>
+          <li>
+            📅 Anticipez votre inscription au tournoi pour garantir votre place.
+          </li>
         </ul>
         <div className="mt-5 flex flex-wrap gap-3">
           <Link

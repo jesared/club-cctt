@@ -134,6 +134,7 @@ enum RegistrationSource {
 }
 
 enum EventGender {
+  MIXED
   M
   F
 }
