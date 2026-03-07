@@ -74,6 +74,8 @@ export function PointagesGrid({
   const [pendingState, setPendingState] = useState<Record<string, boolean>>({});
   const [selectedClub, setSelectedClub] = useState<string>("all");
   const [selectedTable, setSelectedTable] = useState<string>("all");
+  const [selectedPointageFilter, setSelectedPointageFilter] =
+    useState<string>("all");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [editingPlayer, setEditingPlayer] =
     useState<PointagesGridPlayer | null>(null);
@@ -127,14 +129,39 @@ export function PointagesGrid({
         .filter(Boolean);
       const matchesTable =
         selectedTable === "all" || playerTables.includes(selectedTable);
+      const matchesPointage =
+        selectedPointageFilter === "all" ||
+        (() => {
+          const [status, dayKey] = selectedPointageFilter.split(":");
+          if (!dayKey) {
+            return true;
+          }
+
+          const hasEventForDay =
+            (player.registrationEventIdsByDay[dayKey] ?? []).length > 0;
+
+          if (!hasEventForDay) {
+            return false;
+          }
+
+          const isChecked = checkedState[`${player.id}-${dayKey}`] ?? false;
+          return status === "checked" ? isChecked : !isChecked;
+        })();
       const matchesSearch =
         normalizedSearch.length === 0 ||
         player.name.toLocaleLowerCase("fr").includes(normalizedSearch) ||
         player.licence.toLocaleLowerCase("fr").includes(normalizedSearch);
 
-      return matchesClub && matchesTable && matchesSearch;
+      return matchesClub && matchesTable && matchesPointage && matchesSearch;
     });
-  }, [playersState, searchTerm, selectedClub, selectedTable]);
+  }, [
+    checkedState,
+    playersState,
+    searchTerm,
+    selectedClub,
+    selectedPointageFilter,
+    selectedTable,
+  ]);
 
   const parsedEditingPoints = useMemo(() => {
     if (
@@ -328,8 +355,8 @@ export function PointagesGrid({
         </p>
       </header>
 
-      <div className="grid gap-3 md:grid-cols-3">
-        <label className="space-y-1 md:col-span-3">
+      <div className="grid gap-3 md:grid-cols-4">
+        <label className="space-y-1 md:col-span-4">
           <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
             Rechercher un joueur
           </span>
@@ -374,6 +401,27 @@ export function PointagesGrid({
               <option key={table} value={table}>
                 {table}
               </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="space-y-1">
+          <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Filtrer par pointage
+          </span>
+          <select
+            className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground"
+            value={selectedPointageFilter}
+            onChange={(event) => setSelectedPointageFilter(event.target.value)}
+          >
+            <option value="all">Tous les pointages</option>
+            {normalizedDayColumns.map((dayColumn) => (
+              <optgroup key={dayColumn.key} label={dayColumn.label}>
+                <option value={`unchecked:${dayColumn.key}`}>
+                  Non pointés
+                </option>
+                <option value={`checked:${dayColumn.key}`}>Pointés</option>
+              </optgroup>
             ))}
           </select>
         </label>
