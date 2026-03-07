@@ -42,7 +42,7 @@ export function TournamentAdminPage({
   children,
 }: TournamentAdminPageProps) {
   return (
-    <div className="tournament-shell max-w-6xl mx-auto px-4 py-12 space-y-8">
+    <div className="max-w-6xl mx-auto px-4 py-12 space-y-8">
       <header className="space-y-3">
         <p className="text-sm font-medium text-foreground">
           Administration tournoi

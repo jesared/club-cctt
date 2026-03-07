@@ -4,7 +4,7 @@ import TournoiHero from "@/components/TournoiHero";
 
 export default function HomePage() {
   return (
-    <div className="tournament-shell mx-auto max-w-6xl space-y-12 px-4 py-16">
+    <main className="mx-auto max-w-6xl space-y-12 px-4 py-16">
       {/* HERO */}
       <section className="dark:cyberpunk-home-grid">
         <div className="max-w-6xl mx-auto px-4 py-24">
@@ -145,6 +145,6 @@ export default function HomePage() {
           <TournoiHero />
         </div>
       </section>
-    </div>
+    </main>
   );
 }

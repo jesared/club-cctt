@@ -83,7 +83,7 @@ export default async function MesInscriptionsPage() {
 
   if (!tournament) {
     return (
-      <main className="tournament-shell mx-auto max-w-5xl px-4 py-12">
+      <main className="mx-auto max-w-5xl px-4 py-12">
         <h1 className="text-3xl font-semibold">Mes inscriptions tournoi</h1>
         <p className="tournament-panel mt-4 rounded-lg border p-4">
           Aucun tournoi actif n&apos;est disponible pour le moment.
