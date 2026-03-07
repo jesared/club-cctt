@@ -1,7 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Pencil, Trash2 } from "lucide-react";
+import { CircleCheckBig, Pencil, Trash2 } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 
 type PointagesGridPlayer = {
   id: string;
@@ -381,13 +383,16 @@ export function PointagesGrid({ players, dayColumns, tournamentTables }: Pointag
                   <td key={key} className="py-3 pr-3 text-slate-300">
                     {hasEventForDay ? (
                       <label className="inline-flex items-center gap-2 text-slate-300">
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 cursor-pointer appearance-none rounded-full border border-slate-500 bg-white/90 align-middle transition checked:border-accent checked:bg-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-60"
-                          checked={checkedState[key] ?? false}
-                          disabled={pendingState[key]}
-                          onChange={() => toggleCheck(player, dayColumn.key)}
-                        />
+                        <span className="relative inline-flex h-4 w-4 items-center justify-center">
+                          <input
+                            type="checkbox"
+                            className="peer h-4 w-4 cursor-pointer appearance-none rounded-full border border-slate-500 bg-white/90 align-middle transition checked:border-accent checked:bg-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-60"
+                            checked={checkedState[key] ?? false}
+                            disabled={pendingState[key]}
+                            onChange={() => toggleCheck(player, dayColumn.key)}
+                          />
+                          <CircleCheckBig className="pointer-events-none absolute h-3 w-3 scale-0 text-background transition-transform peer-checked:scale-100" />
+                        </span>
                         <span className="text-xs text-slate-300">Présent</span>
                       </label>
                     ) : (
@@ -399,24 +404,28 @@ export function PointagesGrid({ players, dayColumns, tournamentTables }: Pointag
               <td className="py-3 pr-3 text-slate-300">{player.status}</td>
               <td className="py-3 pr-3 text-slate-300">
                 <div className="flex items-center gap-2">
-                  <button
+                  <Button
                     type="button"
+                    variant="outline"
+                    size="icon"
                     onClick={() => openEditPopup(player)}
                     title="Éditer le joueur"
                     aria-label={`Éditer ${player.name}`}
-                    className="rounded-md border border-slate-700 px-2.5 py-1 text-xs font-medium text-slate-200 hover:bg-slate-800"
+                    className="h-8 w-8 border-slate-700 text-slate-200 hover:bg-slate-800"
                   >
                     <Pencil className="h-3.5 w-3.5" />
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="button"
+                    variant="outline"
+                    size="icon"
                     onClick={() => setDeletingPlayer(player)}
                     title="Supprimer le joueur"
                     aria-label={`Supprimer ${player.name}`}
-                    className="rounded-md border border-red-400/40 px-2.5 py-1 text-xs font-medium text-red-300 hover:bg-red-500/10"
+                    className="h-8 w-8 border-red-400/40 text-red-300 hover:bg-red-500/10"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
-                  </button>
+                  </Button>
                 </div>
               </td>
             </tr>
@@ -461,25 +470,28 @@ export function PointagesGrid({ players, dayColumns, tournamentTables }: Pointag
                         : "cursor-not-allowed border-border bg-secondary text-muted-foreground"
                     }`}
                   >
-                    <input
-                      type="checkbox"
-                      value={table.id}
-                      className="mt-0.5 h-4 w-4 cursor-pointer appearance-none rounded-full border border-border bg-background align-middle transition checked:border-accent checked:bg-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-60"
-                      disabled={!eligible || editPending}
-                      checked={checked}
-                      onChange={(event) => {
-                        const isChecked = event.target.checked;
-                        setSelectedEditEventIds((currentSelection) => {
-                          const nextSelection = new Set(currentSelection);
-                          if (isChecked) {
-                            nextSelection.add(table.id);
-                          } else {
-                            nextSelection.delete(table.id);
-                          }
-                          return nextSelection;
-                        });
-                      }}
-                    />
+                    <span className="relative mt-0.5 inline-flex h-4 w-4 items-center justify-center">
+                      <input
+                        type="checkbox"
+                        value={table.id}
+                        className="peer h-4 w-4 cursor-pointer appearance-none rounded-full border border-border bg-background align-middle transition checked:border-accent checked:bg-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-60"
+                        disabled={!eligible || editPending}
+                        checked={checked}
+                        onChange={(event) => {
+                          const isChecked = event.target.checked;
+                          setSelectedEditEventIds((currentSelection) => {
+                            const nextSelection = new Set(currentSelection);
+                            if (isChecked) {
+                              nextSelection.add(table.id);
+                            } else {
+                              nextSelection.delete(table.id);
+                            }
+                            return nextSelection;
+                          });
+                        }}
+                      />
+                      <CircleCheckBig className="pointer-events-none absolute h-3 w-3 scale-0 text-background transition-transform peer-checked:scale-100" />
+                    </span>
                     <span>
                       <span className="block font-semibold text-foreground">Tableau {table.table}</span>
                       <span className="block text-muted-foreground">{table.category}</span>
