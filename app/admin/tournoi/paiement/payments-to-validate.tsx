@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useMemo, useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { updatePaymentGroupStatus } from "./actions";
 
 type PaymentStatus = "PAYÉ" | "PARTIEL" | "EN ATTENTE";
@@ -91,25 +91,6 @@ export function PaymentsToValidate({ initialPayments }: Props) {
   }, [payments, statusFilter, nameFilter, showPaidPayments]);
 
   const closeModal = () => setSelectedGroupKey(null);
-
-  const updateSelectedPriority = (event: ChangeEvent<HTMLSelectElement>) => {
-    if (!selectedPayment) {
-      return;
-    }
-
-    const nextPriority = event.target.value as PaymentDossier["priority"];
-
-    setPayments((current) =>
-      current.map((group) =>
-        group.groupKey === selectedPayment.groupKey
-          ? {
-              ...group,
-              priority: nextPriority,
-            }
-          : group,
-      ),
-    );
-  };
 
   const updatePaymentStatus = (nextStatus: PaymentStatus) => {
     if (!selectedPayment || isPending) {
@@ -218,7 +199,6 @@ export function PaymentsToValidate({ initialPayments }: Props) {
         <table className="min-w-full divide-y divide-border/70 text-sm">
           <thead className="bg-secondary/80 text-left text-[11px] uppercase tracking-wide text-muted-foreground">
             <tr>
-              <th className="px-3 py-2.5">Priorité</th>
               <th className="px-3 py-2.5">Payeur</th>
               <th className="px-3 py-2.5">Inscriptions</th>
               <th className="px-3 py-2.5">Reste</th>
@@ -229,15 +209,6 @@ export function PaymentsToValidate({ initialPayments }: Props) {
           <tbody className="divide-y divide-border/60 bg-card text-muted-foreground">
             {filteredPayments.map((group) => (
               <tr key={group.groupKey} className="transition-colors hover:bg-secondary/70">
-                <td className="px-3 py-2.5 align-top">
-                  <span
-                    className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-                      group.priority === "HAUTE" ? "bg-rose-100 text-rose-700" : "bg-sky-100 text-sky-700"
-                    }`}
-                  >
-                    {group.priority}
-                  </span>
-                </td>
                 <td className="px-3 py-2.5 align-top font-medium text-foreground">
                   <button
                     type="button"
@@ -259,7 +230,7 @@ export function PaymentsToValidate({ initialPayments }: Props) {
                 <td className="px-3 py-2.5 align-top font-semibold text-foreground">{formatEuro(group.remainingCents)}</td>
                 <td className="px-3 py-2.5 align-top">
                   <span
-                    className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                    className={`inline-flex rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${
                       group.paymentStatus === "PAYÉ"
                         ? "bg-emerald-100 text-emerald-700"
                         : group.paymentStatus === "PARTIEL"
@@ -313,19 +284,6 @@ export function PaymentsToValidate({ initialPayments }: Props) {
               <li><span className="font-medium text-foreground">Reste à encaisser :</span> {formatEuro(selectedPayment.remainingCents)}</li>
               <li><span className="font-medium text-foreground">Joueurs :</span> {selectedPayment.players.join(", ")}</li>
             </ul>
-
-            <label className="mt-4 block text-sm font-medium text-foreground" htmlFor="payment-priority">
-              Priorité
-            </label>
-            <select
-              id="payment-priority"
-              className="mt-2 w-full rounded-lg border border-border bg-card p-3 text-sm focus:border-ring focus:outline-none"
-              value={selectedPayment.priority}
-              onChange={updateSelectedPriority}
-            >
-              <option value="NORMALE">NORMALE</option>
-              <option value="HAUTE">HAUTE</option>
-            </select>
 
             <label className="mt-4 block text-sm font-medium text-foreground" htmlFor="payment-note">
               Note interne
