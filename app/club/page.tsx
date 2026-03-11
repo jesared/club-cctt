@@ -2,9 +2,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function ClubPage() {
   return (
-    <div className="max-w-6xl mx-auto px-4 py-16 space-y-16">
+    <div className="max-w-6xl mx-auto px-4 py-12 space-y-12">
       {/* TITRE PAGE */}
-      <header className="rounded-xl border bg-card/70 p-8 shadow-sm dark:rounded-none dark:border-primary/40 dark:bg-[linear-gradient(155deg,color-mix(in_oklab,var(--card)_90%,black),color-mix(in_oklab,var(--primary)_16%,var(--card)))] dark:shadow-[0_0_24px_color-mix(in_oklab,var(--primary)_20%,transparent)]">
+      <header className="rounded-xl border bg-card/70 p-8 shadow-sm dark:rounded-none dark:border-primary/40 dark:bg-card dark:shadow-[0_0_24px_color-mix(in_oklab,var(--primary)_20%,transparent)]">
         <p className="mb-3 inline-flex items-center rounded-full border border-primary/60 bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-primary dark:font-mono dark:text-accent">
           Club CCTT
         </p>
@@ -17,7 +17,7 @@ export default function ClubPage() {
 
       {/* PRÉSENTATION */}
       <section>
-        <Card className="bg-purple-50 cyberpunk-highlight dark:rounded-none dark:border-primary/50 dark:bg-[linear-gradient(145deg,color-mix(in_oklab,var(--card)_90%,black),color-mix(in_oklab,var(--primary)_14%,var(--card)))]">
+        <Card className="bg-muted/40 cyberpunk-highlight dark:rounded-none dark:border-primary/50 dark:bg-card">
           <CardHeader>
             <CardTitle className="dark:font-mono dark:uppercase dark:tracking-[0.08em]">Présentation</CardTitle>
           </CardHeader>
@@ -35,7 +35,7 @@ export default function ClubPage() {
 
       {/* VALEURS */}
       <section>
-        <h2 className="text-2xl font-semibold mb-8 dark:font-mono dark:uppercase dark:tracking-[0.08em]">Nos valeurs</h2>
+        <h2 className="text-2xl font-semibold mb-6 dark:font-mono dark:uppercase dark:tracking-[0.08em]">Nos valeurs</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl">
           {/* ACCESSIBILITÉ */}
