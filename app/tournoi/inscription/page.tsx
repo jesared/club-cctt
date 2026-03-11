@@ -24,9 +24,27 @@ function formatEventLabel(event: {
           ? `${event.minPoints}+ pts`
           : `jusqu'à ${event.maxPoints} pts`;
 
-  const genderLabel = event.gender === "M" ? "Messieurs" : "Dames";
+  const genderLabel =
+    event.gender === "M" ? "Messieurs" : event.gender === "F" ? "Dames" : "Mixte";
 
-  return `${event.code} (${event.label} - ${pointsRange} - ${genderLabel}) - ${startHour}`;
+  const labelParts = [event.label.trim()];
+
+  if (
+    pointsRange &&
+    event.label.trim().toLowerCase() !== pointsRange.trim().toLowerCase()
+  ) {
+    labelParts.push(pointsRange);
+  }
+
+  if (event.gender !== "MIXED") {
+    const normalizedLabel = event.label.trim().toLowerCase();
+    const normalizedGenderLabel = genderLabel.toLowerCase();
+    if (!normalizedLabel.includes(normalizedGenderLabel)) {
+      labelParts.push(genderLabel);
+    }
+  }
+
+  return `${event.code} (${labelParts.join(" - ")}) - ${startHour}`;
 }
 
 function formatEventDateLabel(startAt: Date) {
@@ -82,7 +100,7 @@ export default async function InscriptionsPage() {
             Inscription{" "}
             {tournament?.name ? `au ${tournament.name}` : "au Tournoi"}
           </CardTitle>
-          <p className="text-gray-700">
+          <p className="text-muted-foreground">
             Complétez ce formulaire pour envoyer votre demande
             d&apos;inscription. Une confirmation vous sera transmise après
             vérification des places disponibles dans les tableaux sélectionnés.
@@ -90,7 +108,7 @@ export default async function InscriptionsPage() {
         </CardHeader>
         <CardContent className="space-y-6">
           <TournamentRegistrationForm tableOptions={tableOptions} />
-          <div className="rounded-lg bg-purple-50 border border-purple-100 p-4 text-sm text-purple-900">
+          <div className="rounded-lg border border-primary/20 bg-primary/10 p-4 text-sm text-foreground">
             <p>
               <strong>Besoin d&apos;aide&nbsp;?</strong> Contact inscriptions :{" "}
               <a className="underline" href="mailto:communication@cctt.fr">
