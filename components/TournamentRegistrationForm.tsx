@@ -28,6 +28,8 @@ type TableOption = {
   minPoints: number | null;
   maxPoints: number | null;
   gender: "MIXED" | "M" | "F";
+  onlinePriceLabel: string;
+  onsitePriceLabel: string;
 };
 
 const initialData: RegistrationPayload = {
@@ -470,7 +472,10 @@ export default function TournamentRegistrationForm({
                         className="mt-1 accent-primary"
                       />
                       <span className="text-sm text-foreground">
-                        {table.label}
+                        <span className="block">{table.label}</span>
+                        <span className="block text-muted-foreground">
+                          En ligne : {table.onlinePriceLabel} · Sur place : {table.onsitePriceLabel}
+                        </span>
                       </span>
                     </label>
                   ))}
