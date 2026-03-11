@@ -199,7 +199,7 @@ export default function TournamentRegistrationForm({
 
   const infoMessage = useMemo(() => {
     if (!formData.points.trim()) {
-      return "Renseignez vos points pour filtrer automatiquement les tableaux disponibles.";
+      return "Renseignez vos points pour afficher les tableaux disponibles.";
     }
 
     if (parsedPoints === null || parsedPoints < 0) {
@@ -443,40 +443,42 @@ export default function TournamentRegistrationForm({
         <p className="rounded-md border border-border bg-accent/25 px-3 py-2 text-xs text-foreground/80">
           {infoMessage}
         </p>
-        <div className="space-y-4">
-          {groupedTableOptions.map((group) => (
-            <div key={group.dateKey} className="space-y-2">
-              <p className="text-sm font-semibold capitalize text-foreground">
-                {group.dateLabel}
-              </p>
-              <div className="grid gap-2 sm:grid-cols-2">
-                {group.tables.map((table) => (
-                  <label
-                    key={table.value}
-                    className={`flex items-start gap-2 rounded-md border px-3 py-2 ${
-                      isEligible(parsedPoints, formData.gender, table)
-                        ? "border-border"
-                        : "cursor-not-allowed border-border bg-muted/90 text-muted-foreground line-through"
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={formData.tables.includes(table.value)}
-                      disabled={
-                        !isEligible(parsedPoints, formData.gender, table)
-                      }
-                      onChange={() => toggleTable(table.value)}
-                      className="mt-1 accent-primary"
-                    />
-                    <span className="text-sm text-foreground">
-                      {table.label}
-                    </span>
-                  </label>
-                ))}
+        {formData.points.trim() ? (
+          <div className="space-y-4">
+            {groupedTableOptions.map((group) => (
+              <div key={group.dateKey} className="space-y-2">
+                <p className="text-sm font-semibold capitalize text-foreground">
+                  {group.dateLabel}
+                </p>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {group.tables.map((table) => (
+                    <label
+                      key={table.value}
+                      className={`flex items-start gap-2 rounded-md border px-3 py-2 ${
+                        isEligible(parsedPoints, formData.gender, table)
+                          ? "border-border"
+                          : "cursor-not-allowed border-border bg-muted/90 text-muted-foreground line-through"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={formData.tables.includes(table.value)}
+                        disabled={
+                          !isEligible(parsedPoints, formData.gender, table)
+                        }
+                        onChange={() => toggleTable(table.value)}
+                        className="mt-1 accent-primary"
+                      />
+                      <span className="text-sm text-foreground">
+                        {table.label}
+                      </span>
+                    </label>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : null}
       </fieldset>
 
       <div className="hidden" aria-hidden="true">
