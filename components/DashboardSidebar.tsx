@@ -65,18 +65,21 @@ export default function DashboardSidebar() {
     >
       <div
         className={cn(
-          "flex h-20 items-center gap-3 border-b border-sidebar-border px-6",
+          "flex h-20 items-center gap-3 px-6",
+          !isCollapsed && "border-b border-sidebar-border",
           isCollapsed && "justify-center px-3",
         )}
       >
-        <Image
-          src="/logo.jpg"
-          alt="CCTT"
-          width={40}
-          height={40}
-          className="object-contain"
-          priority
-        />
+        {!isCollapsed && (
+          <Image
+            src="/logo.jpg"
+            alt="CCTT"
+            width={40}
+            height={40}
+            className="object-contain"
+            priority
+          />
+        )}
         <div className={cn("flex flex-col", isCollapsed && "sr-only")}>
           <span className="text-sm font-semibold">CCTT</span>
           <span className="text-xs text-sidebar-foreground/60">
