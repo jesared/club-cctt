@@ -77,6 +77,8 @@ export default async function InscriptionsPage() {
           minPoints: true,
           maxPoints: true,
           startAt: true,
+          feeOnlineCents: true,
+          feeOnsiteCents: true,
         },
       },
     },
@@ -90,6 +92,8 @@ export default async function InscriptionsPage() {
     minPoints: event.minPoints,
     maxPoints: event.maxPoints,
     gender: event.gender,
+    onlinePriceLabel: `${(event.feeOnlineCents / 100).toFixed(0)}€`,
+    onsitePriceLabel: `${(event.feeOnsiteCents / 100).toFixed(0)}€`,
   }));
 
   return (
