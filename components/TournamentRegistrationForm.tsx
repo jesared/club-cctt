@@ -469,6 +469,9 @@ export default function TournamentRegistrationForm({
                         onChange={() => toggleTable(table.value)}
                         className="mt-1 accent-primary"
                       />
+                      <span className="text-sm text-foreground">
+                        {table.label}
+                      </span>
                     </label>
                   ))}
                 </div>
