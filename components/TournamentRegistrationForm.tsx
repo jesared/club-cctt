@@ -436,15 +436,15 @@ export default function TournamentRegistrationForm({
       </div>
 
       <fieldset className="space-y-3">
-        <legend className="text-sm font-medium">Tableaux souhaités</legend>
-        <p className="text-sm text-gray-600">
-          Vous pouvez sélectionner plusieurs tableaux.
-        </p>
         <p className="rounded-md border border-border bg-accent/25 px-3 py-2 text-xs text-foreground/80">
           {infoMessage}
         </p>
         {formData.points.trim() ? (
           <div className="space-y-4">
+            <legend className="text-sm font-medium">Tableaux souhaités</legend>
+            <p className="text-sm text-gray-600">
+              Vous pouvez sélectionner plusieurs tableaux.
+            </p>
             {groupedTableOptions.map((group) => (
               <div key={group.dateKey} className="space-y-2">
                 <p className="text-sm font-semibold capitalize text-foreground">
