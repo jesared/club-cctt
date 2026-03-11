@@ -22,7 +22,7 @@ function CardPartenaire({ partenaire }: { partenaire: Partenaire }) {
 
   const content = (
     <div className="flex items-center gap-4">
-      <div className="flex h-20 w-32 items-center justify-center rounded-xl border border-gray-100 bg-gray-50 dark:rounded-none dark:border-primary/30 dark:bg-[linear-gradient(135deg,color-mix(in_oklab,var(--card)_85%,black),color-mix(in_oklab,var(--card)_70%,black))]">
+      <div className="flex h-20 w-32 items-center justify-center rounded-xl border border-gray-100 bg-gray-50 dark:rounded-none dark:border-primary/30 dark:bg-card">
         <Image
           className="max-h-16 max-w-28 object-contain"
           src={
@@ -53,7 +53,7 @@ function CardPartenaire({ partenaire }: { partenaire: Partenaire }) {
         href={partenaire.url}
         target="_blank"
         rel="noreferrer"
-        className="group flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white px-6 py-5 shadow-sm transition hover:-translate-y-0.5 hover:border-purple-200 hover:shadow-md dark:rounded-none dark:border-primary/35 dark:bg-[linear-gradient(145deg,color-mix(in_oklab,var(--card)_92%,black),color-mix(in_oklab,var(--card)_74%,black))] dark:shadow-[0_0_24px_color-mix(in_oklab,var(--primary)_16%,transparent)] dark:hover:border-accent/60 dark:hover:shadow-[0_0_28px_color-mix(in_oklab,var(--accent)_20%,transparent)]"
+        className="group flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white px-6 py-5 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md dark:rounded-none dark:border-primary/35 dark:bg-card dark:shadow-[0_0_24px_color-mix(in_oklab,var(--primary)_16%,transparent)] dark:hover:border-accent/60 dark:hover:shadow-[0_0_28px_color-mix(in_oklab,var(--accent)_20%,transparent)]"
       >
         {content}
       </a>
@@ -61,7 +61,7 @@ function CardPartenaire({ partenaire }: { partenaire: Partenaire }) {
   }
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white px-6 py-5 shadow-sm dark:rounded-none dark:border-primary/35 dark:bg-[linear-gradient(145deg,color-mix(in_oklab,var(--card)_92%,black),color-mix(in_oklab,var(--card)_74%,black))] dark:shadow-[0_0_24px_color-mix(in_oklab,var(--primary)_16%,transparent)]">
+    <div className="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white px-6 py-5 shadow-sm dark:rounded-none dark:border-primary/35 dark:bg-card dark:shadow-[0_0_24px_color-mix(in_oklab,var(--primary)_16%,transparent)]">
       {content}
     </div>
   );
@@ -74,8 +74,8 @@ export default async function PartenairesPage() {
   const prives = data.prives ?? [];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-16 space-y-16 dark:space-y-12">
-      <header className="rounded-2xl border border-transparent bg-transparent dark:rounded-none dark:border-primary/35 dark:bg-[linear-gradient(145deg,color-mix(in_oklab,var(--card)_88%,black),color-mix(in_oklab,var(--card)_72%,black))] dark:px-8 dark:py-10 dark:shadow-[0_0_28px_color-mix(in_oklab,var(--primary)_20%,transparent)]">
+    <div className="max-w-6xl mx-auto px-4 py-12 space-y-12 dark:space-y-10">
+      <header className="rounded-2xl border border-transparent bg-transparent dark:rounded-none dark:border-primary/35 dark:bg-card dark:px-8 dark:py-8 dark:shadow-[0_0_28px_color-mix(in_oklab,var(--primary)_20%,transparent)]">
         <p className="hidden text-xs font-mono uppercase tracking-[0.2em] text-accent dark:block">
           CCTT / Partners Network
         </p>
@@ -119,8 +119,8 @@ export default async function PartenairesPage() {
         </div>
       </section>
 
-      <section className="rounded-lg bg-gray-50 dark:rounded-none dark:border dark:border-primary/20 dark:bg-[linear-gradient(140deg,color-mix(in_oklab,var(--card)_90%,black),color-mix(in_oklab,var(--card)_78%,black))] dark:shadow-[0_0_26px_color-mix(in_oklab,var(--primary)_15%,transparent)]">
-        <div className="px-6 py-10 md:px-12">
+      <section className="rounded-lg bg-muted/40 dark:rounded-none dark:border dark:border-primary/20 dark:bg-card dark:shadow-[0_0_26px_color-mix(in_oklab,var(--primary)_15%,transparent)]">
+        <div className="px-6 py-8 md:px-12">
           <h2 className="mb-4 text-2xl font-semibold dark:font-mono dark:uppercase dark:tracking-[0.08em]">
             Merci à nos partenaires
           </h2>
@@ -134,7 +134,7 @@ export default async function PartenairesPage() {
       </section>
 
       <section>
-        <div className="border-l-4 border-purple-500 pl-6 dark:border-l-accent">
+        <div className="border-l-4 border-primary pl-6 dark:border-l-accent">
           <h2 className="mb-2 text-xl font-semibold dark:font-mono dark:uppercase dark:tracking-[0.08em]">
             Devenir partenaire
           </h2>

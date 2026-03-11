@@ -4,10 +4,10 @@ import TournoiHero from "@/components/TournoiHero";
 
 export default function HomePage() {
   return (
-    <main className="mx-auto max-w-6xl space-y-12 px-4 py-16">
+    <main className="mx-auto max-w-6xl space-y-10 px-4 py-12">
       {/* HERO */}
       <section className="dark:cyberpunk-home-grid">
-        <div className="max-w-6xl mx-auto px-4 py-24">
+        <div className="max-w-6xl mx-auto px-4 py-16">
           <div className="max-w-3xl">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 dark:font-mono dark:uppercase dark:tracking-[0.08em] dark:[text-shadow:0_0_14px_color-mix(in_oklab,var(--primary)_38%,transparent)]">
               Châlons-en-Champagne
@@ -23,14 +23,14 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row gap-4">
               <a
                 href="/horaires"
-                className="inline-flex justify-center rounded-md bg-purple-600 px-6 py-3 text-white transition hover:bg-purple-700 dark:rounded-none dark:border dark:border-primary/70 dark:bg-primary dark:px-7 dark:font-mono dark:uppercase dark:tracking-[0.12em] dark:shadow-[0_0_20px_color-mix(in_oklab,var(--primary)_42%,transparent)] dark:hover:translate-y-[-1px] dark:hover:bg-[color-mix(in_oklab,var(--primary)_88%,white)]"
+                className="inline-flex justify-center rounded-md bg-primary px-6 py-3 text-primary-foreground transition hover:opacity-90 dark:rounded-none dark:border dark:border-primary/70 dark:bg-primary dark:px-7 dark:font-mono dark:uppercase dark:tracking-[0.12em] dark:shadow-[0_0_20px_color-mix(in_oklab,var(--primary)_42%,transparent)] dark:hover:translate-y-[-1px] dark:hover:bg-[color-mix(in_oklab,var(--primary)_88%,white)]"
               >
                 Voir les horaires
               </a>
 
               <a
                 href="/contact"
-                className="inline-flex justify-center rounded-md border border-purple-600 px-6 py-3 text-purple-600 transition hover:bg-muted/40 dark:rounded-none dark:border-accent dark:px-7 dark:font-mono dark:uppercase dark:tracking-[0.12em] dark:text-accent dark:hover:bg-accent/10"
+                className="inline-flex justify-center rounded-md border border-primary px-6 py-3 text-primary transition hover:bg-muted/40 dark:rounded-none dark:border-accent dark:px-7 dark:font-mono dark:uppercase dark:tracking-[0.12em] dark:text-accent dark:hover:bg-accent/10"
               >
                 Nous contacter
               </a>
@@ -40,7 +40,7 @@ export default function HomePage() {
       </section>
 
       {/* PRÉSENTATION */}
-      <section className="max-w-6xl mx-auto px-4 py-20">
+      <section className="max-w-6xl mx-auto px-4 py-14">
         <Card className="max-w-4xl">
           <CardHeader>
             <CardTitle>Bienvenue au CCTT</CardTitle>
@@ -65,8 +65,8 @@ export default function HomePage() {
 
       {/* MISE EN VALEUR */}
       <section className="bg-muted/40">
-        <div className="max-w-6xl mx-auto px-4 py-20">
-          <h2 className="text-3xl font-semibold mb-12 dark:font-mono dark:uppercase dark:tracking-[0.08em]">
+        <div className="max-w-6xl mx-auto px-4 py-14">
+          <h2 className="text-3xl font-semibold mb-8 dark:font-mono dark:uppercase dark:tracking-[0.08em]">
             Le club en quelques mots
           </h2>
 
@@ -113,9 +113,9 @@ export default function HomePage() {
       {/* APPEL À L’ACTION */}
       <section>
         <div className="max-w-6xl mx-auto px-4 py-8">
-          <Card className="bg-purple-600 text-white dark:rounded-none dark:border dark:border-primary/70 dark:bg-[linear-gradient(145deg,color-mix(in_oklab,var(--card)_86%,black),color-mix(in_oklab,var(--primary)_20%,var(--card)))] dark:shadow-[0_0_30px_color-mix(in_oklab,var(--primary)_25%,transparent)]">
+          <Card className="border border-primary/20 bg-card text-foreground dark:rounded-none dark:border dark:border-primary/70 dark:bg-card dark:shadow-[0_0_30px_color-mix(in_oklab,var(--primary)_25%,transparent)]">
             <CardHeader>
-              <CardTitle className="text-white dark:font-mono dark:uppercase dark:tracking-[0.08em]">
+              <CardTitle className="text-foreground dark:font-mono dark:uppercase dark:tracking-[0.08em]">
                 Envie de nous rejoindre ?
               </CardTitle>
             </CardHeader>
@@ -139,7 +139,7 @@ export default function HomePage() {
       </section>
 
       <section className="bg-muted/40">
-        <div className="max-w-6xl mx-auto px-4 py-24">
+        <div className="max-w-6xl mx-auto px-4 py-16">
           <h2 className="text-3xl font-semibold mb-12">Événement du club</h2>
 
           <TournoiHero />

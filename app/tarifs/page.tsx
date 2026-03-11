@@ -41,8 +41,8 @@ const tarifs = [
 
 export default function TarifsPage() {
   return (
-    <div className="max-w-6xl mx-auto px-4 py-16 space-y-16 dark:space-y-12">
-      <header className="rounded-2xl border border-transparent bg-transparent dark:rounded-none dark:border-primary/35 dark:bg-[linear-gradient(145deg,color-mix(in_oklab,var(--card)_88%,black),color-mix(in_oklab,var(--card)_70%,black))] dark:px-8 dark:py-10 dark:shadow-[0_0_28px_color-mix(in_oklab,var(--primary)_20%,transparent)]">
+    <div className="max-w-6xl mx-auto px-4 py-12 space-y-12 dark:space-y-10">
+      <header className="rounded-2xl border border-transparent bg-transparent dark:rounded-none dark:border-primary/35 dark:bg-card dark:px-8 dark:py-8 dark:shadow-[0_0_28px_color-mix(in_oklab,var(--primary)_20%,transparent)]">
         <p className="hidden text-xs font-mono uppercase tracking-[0.2em] text-accent dark:block">
           CCTT / Pricing Console
         </p>
@@ -64,7 +64,7 @@ export default function TarifsPage() {
           {tarifs.map((bloc) => (
             <Card
               key={bloc.categorie}
-              className="border-l-4 border-l-purple-500 dark:rounded-none dark:border-l-accent dark:border-y-primary/25 dark:border-r-primary/25 dark:bg-[linear-gradient(140deg,color-mix(in_oklab,var(--card)_92%,black),color-mix(in_oklab,var(--card)_74%,black))] dark:shadow-[0_0_24px_color-mix(in_oklab,var(--primary)_18%,transparent)]"
+              className="border-l-4 border-l-primary dark:rounded-none dark:border-l-accent dark:border-y-primary/25 dark:border-r-primary/25 dark:bg-card dark:shadow-[0_0_24px_color-mix(in_oklab,var(--primary)_18%,transparent)]"
             >
               <CardHeader>
                 <CardTitle className="dark:font-mono dark:uppercase dark:tracking-[0.08em]">
@@ -82,7 +82,7 @@ export default function TarifsPage() {
                       key={ligne.nom}
                       className={`flex justify-between ${
                         ligne.highlight
-                          ? "font-semibold text-purple-600 dark:text-accent"
+                          ? "font-semibold text-primary dark:text-accent"
                           : ""
                       }`}
                     >
@@ -102,7 +102,7 @@ export default function TarifsPage() {
           Modalités de paiement
         </h2>
 
-        <Card className="max-w-4xl border-l-4 border-l-purple-600 dark:rounded-none dark:border-l-accent dark:border-y-primary/20 dark:border-r-primary/20 dark:bg-[linear-gradient(145deg,color-mix(in_oklab,var(--card)_92%,black),color-mix(in_oklab,var(--card)_80%,black))] dark:shadow-[0_0_22px_color-mix(in_oklab,var(--accent)_16%,transparent)]">
+        <Card className="max-w-4xl border-l-4 border-l-primary dark:rounded-none dark:border-l-accent dark:border-y-primary/20 dark:border-r-primary/20 dark:bg-card dark:shadow-[0_0_22px_color-mix(in_oklab,var(--accent)_16%,transparent)]">
           <CardHeader>
             <CardTitle className="dark:font-mono dark:uppercase dark:tracking-[0.08em]">
               Moyens de paiement acceptés
@@ -133,27 +133,27 @@ export default function TarifsPage() {
         </Card>
       </section>
 
-      <section className="rounded-lg bg-gray-50 dark:rounded-none dark:border dark:border-primary/20 dark:bg-[linear-gradient(140deg,color-mix(in_oklab,var(--card)_90%,black),color-mix(in_oklab,var(--card)_78%,black))] dark:shadow-[0_0_26px_color-mix(in_oklab,var(--primary)_15%,transparent)]">
-        <div className="px-6 py-10 md:px-12">
+      <section className="rounded-lg bg-muted/40 dark:rounded-none dark:border dark:border-primary/20 dark:bg-card dark:shadow-[0_0_26px_color-mix(in_oklab,var(--primary)_15%,transparent)]">
+        <div className="px-6 py-8 md:px-12">
           <h2 className="mb-6 text-2xl font-semibold dark:font-mono dark:uppercase dark:tracking-[0.08em]">
             La cotisation comprend
           </h2>
 
           <ul className="grid max-w-4xl grid-cols-1 gap-4 sm:grid-cols-2">
             <li className="flex items-start gap-3">
-              <span className="font-bold text-purple-600 dark:text-accent">•</span>
+              <span className="font-bold text-primary dark:text-accent">•</span>
               <span>La licence FFTT</span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="font-bold text-purple-600 dark:text-accent">•</span>
+              <span className="font-bold text-primary dark:text-accent">•</span>
               <span>L’accès aux entraînements</span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="font-bold text-purple-600 dark:text-accent">•</span>
+              <span className="font-bold text-primary dark:text-accent">•</span>
               <span>L’encadrement sportif</span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="font-bold text-purple-600 dark:text-accent">•</span>
+              <span className="font-bold text-primary dark:text-accent">•</span>
               <span>La participation à la vie du club</span>
             </li>
           </ul>
@@ -161,7 +161,7 @@ export default function TarifsPage() {
       </section>
 
       <section>
-        <div className="mb-4 border-l-4 border-purple-500 pl-6 dark:border-l-accent">
+        <div className="mb-4 border-l-4 border-primary pl-6 dark:border-l-accent">
           <h2 className="mb-2 text-xl font-semibold dark:font-mono dark:uppercase dark:tracking-[0.08em]">
             Modalités d’inscription
           </h2>
@@ -173,7 +173,7 @@ export default function TarifsPage() {
         </div>
         <a
           href="/contact"
-          className="inline-flex justify-center rounded-md border border-purple-600 px-6 py-3 text-purple-600 transition hover:bg-purple-50 dark:rounded-none dark:border-accent dark:px-7 dark:font-mono dark:uppercase dark:tracking-[0.1em] dark:text-accent dark:hover:bg-accent/10"
+          className="inline-flex justify-center rounded-md border border-primary px-6 py-3 text-primary transition hover:bg-muted/40 dark:rounded-none dark:border-accent dark:px-7 dark:font-mono dark:uppercase dark:tracking-[0.1em] dark:text-accent dark:hover:bg-accent/10"
         >
           Nous contacter
         </a>
