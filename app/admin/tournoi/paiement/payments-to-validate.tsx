@@ -210,47 +210,46 @@ export function PaymentsToValidate({ initialPayments }: Props) {
 
       <div className="mt-4 overflow-x-auto rounded-lg border border-border">
         <table className="min-w-full divide-y divide-gray-200 text-sm">
-          <thead className="bg-secondary text-left text-xs uppercase tracking-wide text-muted-foreground">
+          <thead className="bg-secondary/80 text-left text-[11px] uppercase tracking-wide text-muted-foreground">
             <tr>
-              <th className="px-4 py-3">Priorité</th>
-              <th className="px-4 py-3">Type</th>
-              <th className="px-4 py-3">Payeur</th>
-              <th className="px-4 py-3">Joueurs</th>
-              <th className="px-4 py-3">Reste à encaisser</th>
-              <th className="px-4 py-3">Statut</th>
-              <th className="px-4 py-3">Action suggérée</th>
+              <th className="px-3 py-2.5">Priorité</th>
+              <th className="px-3 py-2.5">Payeur</th>
+              <th className="px-3 py-2.5">Inscriptions</th>
+              <th className="px-3 py-2.5">Reste</th>
+              <th className="px-3 py-2.5">Statut</th>
+              <th className="px-3 py-2.5 text-right">Traitement</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 bg-card text-muted-foreground">
             {filteredPayments.map((group) => (
               <tr key={group.groupKey} className="hover:bg-secondary">
-                <td className="px-4 py-3">
+                <td className="px-3 py-2.5 align-top">
                   <span
-                    className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
+                    className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${
                       group.priority === "HAUTE" ? "bg-rose-100 text-rose-700" : "bg-sky-100 text-sky-700"
                     }`}
                   >
                     {group.priority}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-xs text-muted-foreground">{group.dossierType}</td>
-                <td className="px-4 py-3 font-medium text-foreground">
+                <td className="px-3 py-2.5 align-top font-medium text-foreground">
                   <button
                     type="button"
-                    className="underline decoration-dotted underline-offset-2 hover:text-indigo-700"
+                    className="text-left underline decoration-dotted underline-offset-2 hover:text-indigo-700"
                     onClick={() => setSelectedGroupKey(group.groupKey)}
                   >
                     {group.payerLabel}
                   </button>
+                  <p className="mt-1 text-xs text-muted-foreground">{group.dossierType}</p>
                 </td>
-                <td className="px-4 py-3">
-                  <p className="font-medium text-foreground">{group.registrations} inscriptions</p>
-                  <p className="text-xs text-muted-foreground">{group.players.join(", ")}</p>
+                <td className="px-3 py-2.5 align-top">
+                  <p className="font-medium text-foreground">{group.registrations}</p>
+                  <p className="line-clamp-1 text-xs text-muted-foreground">{group.players.join(", ")}</p>
                 </td>
-                <td className="px-4 py-3 font-semibold text-foreground">{formatEuro(group.remainingCents)}</td>
-                <td className="px-4 py-3">
+                <td className="px-3 py-2.5 align-top font-semibold text-foreground">{formatEuro(group.remainingCents)}</td>
+                <td className="px-3 py-2.5 align-top">
                   <span
-                    className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
+                    className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${
                       group.paymentStatus === "PAYÉ"
                         ? "bg-emerald-100 text-emerald-700"
                         : group.paymentStatus === "PARTIEL"
@@ -261,7 +260,15 @@ export function PaymentsToValidate({ initialPayments }: Props) {
                     {group.statusLabel}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-muted-foreground">{group.suggestedAction}</td>
+                <td className="px-3 py-2.5 text-right align-top">
+                  <button
+                    type="button"
+                    className="rounded-md border border-border px-2.5 py-1 text-xs font-medium text-foreground transition-colors hover:bg-secondary"
+                    onClick={() => setSelectedGroupKey(group.groupKey)}
+                  >
+                    Ouvrir
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
