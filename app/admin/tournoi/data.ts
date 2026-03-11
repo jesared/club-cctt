@@ -38,6 +38,9 @@ export type AdminPlayerRow = {
 
 export type AdminPaymentGroupRow = {
   groupKey: string;
+  payerName: string;
+  payerEmail: string | null;
+  payerPhone: string | null;
   payerLabel: string;
   registrations: number;
   players: string[];
@@ -418,8 +421,12 @@ export async function getAdminPaymentGroups(tournamentId: string): Promise<Admin
       .reduce((acc, payment) => acc + payment.amountCents, 0);
 
     if (!groups.has(groupKey)) {
+      const payerName = `${registration.player.prenom} ${registration.player.nom}`.trim() || "Payeur inconnu";
       groups.set(groupKey, {
         groupKey,
+        payerName,
+        payerEmail: registration.contactEmail,
+        payerPhone: registration.contactPhone,
         payerLabel: buildPayerLabel(registration.contactEmail, registration.contactPhone),
         registrations: 0,
         players: [],

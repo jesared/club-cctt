@@ -8,6 +8,9 @@ type FilterStatus = "TOUS" | Exclude<PaymentStatus, "PAYÉ">;
 
 type PaymentDossier = {
   groupKey: string;
+  payerName: string;
+  payerEmail: string | null;
+  payerPhone: string | null;
   payerLabel: string;
   registrations: number;
   players: string[];
@@ -80,7 +83,10 @@ export function PaymentsToValidate({ initialPayments }: Props) {
         return true;
       }
 
-      return group.payerLabel.toLowerCase().includes(normalizedNameFilter);
+      return (
+        group.payerName.toLowerCase().includes(normalizedNameFilter) ||
+        group.payerLabel.toLowerCase().includes(normalizedNameFilter)
+      );
     });
   }, [payments, statusFilter, nameFilter, showPaidPayments]);
 
@@ -209,7 +215,7 @@ export function PaymentsToValidate({ initialPayments }: Props) {
       </div>
 
       <div className="mt-4 overflow-x-auto rounded-lg border border-border">
-        <table className="min-w-full divide-y divide-gray-200 text-sm">
+        <table className="min-w-full divide-y divide-border/70 text-sm">
           <thead className="bg-secondary/80 text-left text-[11px] uppercase tracking-wide text-muted-foreground">
             <tr>
               <th className="px-3 py-2.5">Priorité</th>
@@ -220,9 +226,9 @@ export function PaymentsToValidate({ initialPayments }: Props) {
               <th className="px-3 py-2.5 text-right">Traitement</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 bg-card text-muted-foreground">
+          <tbody className="divide-y divide-border/60 bg-card text-muted-foreground">
             {filteredPayments.map((group) => (
-              <tr key={group.groupKey} className="hover:bg-secondary">
+              <tr key={group.groupKey} className="transition-colors hover:bg-secondary/70">
                 <td className="px-3 py-2.5 align-top">
                   <span
                     className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${
@@ -238,9 +244,13 @@ export function PaymentsToValidate({ initialPayments }: Props) {
                     className="text-left underline decoration-dotted underline-offset-2 hover:text-indigo-700"
                     onClick={() => setSelectedGroupKey(group.groupKey)}
                   >
-                    {group.payerLabel}
+                    {group.payerName}
                   </button>
-                  <p className="mt-1 text-xs text-muted-foreground">{group.dossierType}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {group.payerEmail || group.payerPhone
+                      ? [group.payerEmail, group.payerPhone].filter(Boolean).join(" / ")
+                      : "Contact manquant"}
+                  </p>
                 </td>
                 <td className="px-3 py-2.5 align-top">
                   <p className="font-medium text-foreground">{group.registrations}</p>
@@ -282,19 +292,20 @@ export function PaymentsToValidate({ initialPayments }: Props) {
       ) : null}
 
       {selectedPayment ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" role="dialog" aria-modal="true">
-          <div className="w-full max-w-2xl rounded-xl bg-card p-6 shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/70 p-4 backdrop-blur-sm" role="dialog" aria-modal="true">
+          <div className="w-full max-w-2xl rounded-xl border border-border bg-card p-6 shadow-xl">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h3 className="text-lg font-semibold text-foreground">Traitement du dossier</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{selectedPayment.payerLabel}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{selectedPayment.payerName}</p>
               </div>
-              <button type="button" onClick={closeModal} className="rounded-md border px-2 py-1 text-sm text-muted-foreground hover:bg-secondary">
+              <button type="button" onClick={closeModal} className="rounded-md border border-border px-2 py-1 text-sm text-muted-foreground transition-colors hover:bg-secondary">
                 Fermer
               </button>
             </div>
 
-            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+            <ul className="mt-4 space-y-2 rounded-lg border border-border bg-secondary/30 p-4 text-sm text-muted-foreground">
+              <li><span className="font-medium text-foreground">Contact :</span> {selectedPayment.payerEmail || "—"} · {selectedPayment.payerPhone || "—"}</li>
               <li><span className="font-medium text-foreground">Type :</span> {selectedPayment.dossierType}</li>
               <li><span className="font-medium text-foreground">Statut :</span> {selectedPayment.statusLabel}</li>
               <li><span className="font-medium text-foreground">Montant dû :</span> {formatEuro(selectedPayment.totalAmountDueCents)}</li>
@@ -308,7 +319,7 @@ export function PaymentsToValidate({ initialPayments }: Props) {
             </label>
             <select
               id="payment-priority"
-              className="mt-2 w-full rounded-lg border border-border p-3 text-sm focus:border-indigo-500 focus:outline-none"
+              className="mt-2 w-full rounded-lg border border-border bg-card p-3 text-sm focus:border-ring focus:outline-none"
               value={selectedPayment.priority}
               onChange={updateSelectedPriority}
             >
@@ -321,7 +332,7 @@ export function PaymentsToValidate({ initialPayments }: Props) {
             </label>
             <textarea
               id="payment-note"
-              className="mt-2 min-h-28 w-full rounded-lg border border-border p-3 text-sm focus:border-indigo-500 focus:outline-none"
+              className="mt-2 min-h-28 w-full rounded-lg border border-border bg-card p-3 text-sm focus:border-ring focus:outline-none"
               placeholder="Ajouter une note sur le dossier..."
               value={noteByGroup[selectedPayment.groupKey] ?? ""}
               onChange={(event) =>
@@ -333,7 +344,7 @@ export function PaymentsToValidate({ initialPayments }: Props) {
             />
 
             <div className="mt-5 flex justify-end gap-3">
-              <button type="button" onClick={closeModal} className="rounded-lg border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary">
+              <button type="button" onClick={closeModal} className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary">
                 Annuler
               </button>
               {selectedPayment.paymentStatus === "PAYÉ" ? (
@@ -341,7 +352,7 @@ export function PaymentsToValidate({ initialPayments }: Props) {
                   type="button"
                   onClick={resetPaymentToPending}
                   disabled={isPending}
-                  className="rounded-lg border border-amber-500 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="rounded-lg border border-amber-500/60 bg-amber-500/10 px-4 py-2 text-sm font-semibold text-amber-700 transition-colors hover:bg-amber-500/20 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   Remettre en attente
                 </button>
@@ -351,7 +362,7 @@ export function PaymentsToValidate({ initialPayments }: Props) {
                   type="button"
                   onClick={markPaymentAsPartial}
                   disabled={isPending}
-                  className="rounded-lg border border-amber-500 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="rounded-lg border border-amber-500/60 bg-amber-500/10 px-4 py-2 text-sm font-semibold text-amber-700 transition-colors hover:bg-amber-500/20 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   Marquer partiel
                 </button>
@@ -359,7 +370,7 @@ export function PaymentsToValidate({ initialPayments }: Props) {
               <button
                 type="button"
                 onClick={validatePayment}
-                className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-indigo-300"
+                className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
                 disabled={selectedPayment.paymentStatus === "PAYÉ" || isPending}
               >
                 {isPending ? "Mise à jour..." : "Valider le paiement"}
