@@ -1,13 +1,55 @@
-import localData from "@/data/horaires.json";
 import { NextResponse } from "next/server";
 
-// 👉 colle ici l’ID du fichier Google Drive
-const FILE_ID = process.env.HORAIRES_JSON_ID!;
+type BadgeVariant = "jeunes" | "elite" | "loisir" | "libre";
+
+type HorairesData = {
+  jours: Array<{
+    jour: string;
+    seances: Array<{
+      type: BadgeVariant[];
+      label: string;
+      horaire: string;
+    }>;
+  }>;
+};
+
+const fallbackHoraires: HorairesData = {
+  jours: [],
+};
+
+function isValidHorairesData(value: unknown): value is HorairesData {
+  if (!value || typeof value !== "object") return false;
+
+  const data = value as Partial<HorairesData>;
+
+  return (
+    Array.isArray(data.jours) &&
+    data.jours.every(
+      (jour) =>
+        typeof jour?.jour === "string" &&
+        Array.isArray(jour?.seances) &&
+        jour.seances.every(
+          (seance) =>
+            Array.isArray(seance?.type) &&
+            seance.type.every((type) =>
+              ["jeunes", "elite", "loisir", "libre"].includes(type),
+            ) &&
+            typeof seance?.label === "string" &&
+            typeof seance?.horaire === "string",
+        ),
+    )
+  );
+}
 
 export async function GET() {
+  const fileId = process.env.HORAIRES_JSON_ID;
+
+  if (!fileId) {
+    return NextResponse.json(fallbackHoraires);
+  }
+
   try {
-    // URL spéciale de téléchargement Drive
-    const url = `https://drive.google.com/uc?export=download&id=${FILE_ID}`;
+    const url = `https://drive.google.com/uc?export=download&id=${fileId}`;
 
     const response = await fetch(url, {
       cache: "no-store",
@@ -17,11 +59,14 @@ export async function GET() {
       throw new Error("Drive inaccessible");
     }
 
-    const data = await response.json();
+    const data: unknown = await response.json();
+
+    if (!isValidHorairesData(data)) {
+      throw new Error("Format JSON invalide");
+    }
 
     return NextResponse.json(data);
-  } catch (error) {
-    console.log("⚠️ Drive indisponible → fallback local utilisé");
-    return NextResponse.json(localData);
+  } catch {
+    return NextResponse.json(fallbackHoraires);
   }
 }
