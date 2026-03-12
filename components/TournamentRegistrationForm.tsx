@@ -156,7 +156,7 @@ export default function TournamentRegistrationForm({
     if (!canSubmit) {
       setFeedback({
         type: "error",
-        message: "Merci de sélectionner au moins un tableau.",
+        message: "Étape 2 : sélectionnez au moins un tableau pour continuer.",
       });
       return;
     }
@@ -183,7 +183,7 @@ export default function TournamentRegistrationForm({
         type: "success",
         message:
           payload.message ??
-          "Votre demande d'inscription a bien été envoyée. Nous vous confirmerons par email.",
+          "Demande envoyée ✅ Vous recevrez un email de confirmation sous 48 h maximum (après vérification des places).",
       });
       setFormData(initialData);
     } catch (error) {
@@ -192,7 +192,7 @@ export default function TournamentRegistrationForm({
         message:
           error instanceof Error
             ? error.message
-            : "Impossible d'envoyer votre inscription pour le moment.",
+            : "Envoi impossible pour le moment. Vérifiez vos informations, puis réessayez dans quelques minutes.",
       });
     } finally {
       setIsSubmitting(false);
@@ -201,7 +201,7 @@ export default function TournamentRegistrationForm({
 
   const infoMessage = useMemo(() => {
     if (!formData.points.trim()) {
-      return "Renseignez vos points pour afficher les tableaux disponibles.";
+      return "Étape 1 : indiquez vos points pour afficher vos tableaux disponibles.";
     }
 
     if (parsedPoints === null || parsedPoints < 0) {
@@ -209,10 +209,10 @@ export default function TournamentRegistrationForm({
     }
 
     if (ineligibleTableCodes.length === 0) {
-      return "Tous les tableaux sont disponibles avec ces informations.";
+      return "Parfait : tous les tableaux sont disponibles avec ces informations.";
     }
 
-    return `Tableaux indisponibles : ${ineligibleTableCodes.join(", ")}.`;
+    return `Selon vos informations, ces tableaux ne sont pas accessibles : ${ineligibleTableCodes.join(", ")}.`;
   }, [formData.points, ineligibleTableCodes, parsedPoints]);
 
   return (
@@ -445,7 +445,7 @@ export default function TournamentRegistrationForm({
           <div className="space-y-4">
             <legend className="text-sm font-medium">Tableaux souhaités</legend>
             <p className="text-sm text-gray-600">
-              Vous pouvez sélectionner plusieurs tableaux.
+              Étape 2 : vous pouvez sélectionner un ou plusieurs tableaux.
             </p>
             {groupedTableOptions.map((group) => (
               <div key={group.dateKey} className="space-y-2">
@@ -518,7 +518,9 @@ export default function TournamentRegistrationForm({
         disabled={isSubmitting || !canSubmit}
         className="cursor-pointer inline-flex rounded-md bg-primary px-6 py-3 text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {isSubmitting ? "Envoi en cours..." : "Valider mon inscription"}
+        {isSubmitting
+          ? "Étape 3 : envoi en cours..."
+          : "Étape 3 : envoyer ma demande"}
       </button>
     </form>
   );

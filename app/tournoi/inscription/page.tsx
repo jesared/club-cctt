@@ -105,9 +105,9 @@ export default async function InscriptionsPage() {
             {tournament?.name ? `au ${tournament.name}` : "au Tournoi"}
           </CardTitle>
           <p className="text-muted-foreground">
-            Complétez ce formulaire pour envoyer votre demande
-            d&apos;inscription. Une confirmation vous sera transmise après
-            vérification des places disponibles dans les tableaux sélectionnés.
+            Suivez les 3 étapes du formulaire pour envoyer votre demande
+            d&apos;inscription. Nous vous confirmons votre place par email sous 48 h maximum,
+            après vérification des disponibilités dans les tableaux sélectionnés.
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
