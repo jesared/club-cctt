@@ -1,4 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import KpiPageViewTracker from "@/components/KpiPageViewTracker";
+import TrackedLink from "@/components/TrackedLink";
 import { tournamentRegistrationContent } from "@/lib/tournament-registration-content";
 
 const informationsTournoi = {
@@ -49,6 +51,7 @@ const tableaux = [
 export default function TournoiHomePage() {
   return (
     <main className="max-w-6xl mx-auto px-4 py-16 space-y-10">
+      <KpiPageViewTracker page="tournoi" label="tournoi-page" />
       <Card className="border-l-4 border-l-primary bg-card cyberpunk-highlight">
         <CardHeader>
           <p className="mb-2 text-sm uppercase tracking-wide text-primary">{informationsTournoi.organisateur}</p>
@@ -63,12 +66,14 @@ export default function TournoiHomePage() {
           <p>{tournamentRegistrationContent.message}</p>
 
           <div className="flex flex-col sm:flex-row gap-4">
-            <a
+            <TrackedLink
+              kpiPage="tournoi"
+              kpiLabel="cta-inscription"
               href={tournamentRegistrationContent.cta.href}
               className="inline-flex justify-center rounded-md bg-primary px-6 py-3 text-primary-foreground transition hover:opacity-90"
             >
               {tournamentRegistrationContent.cta.label}
-            </a>
+            </TrackedLink>
             <a
               href="/tournoi/reglement"
               className="inline-flex justify-center rounded-md border border-primary px-6 py-3 text-primary transition hover:bg-primary/10"

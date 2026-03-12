@@ -1,3 +1,4 @@
+import KpiPageViewTracker from "@/components/KpiPageViewTracker";
 import TournamentRegistrationForm from "@/components/TournamentRegistrationForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
@@ -98,6 +99,7 @@ export default async function InscriptionsPage() {
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-16">
+      <KpiPageViewTracker page="tournoi-inscription" label="inscription-page" />
       <Card className="shadow-sm border-border tournament-panel">
         <CardHeader className="space-y-3">
           <CardTitle>
