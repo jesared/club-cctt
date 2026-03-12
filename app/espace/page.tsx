@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { tournamentRegistrationContent } from "@/lib/tournament-registration-content";
 
 type Message = {
   id: string;
@@ -86,7 +87,7 @@ export default async function EspacePage() {
             🏓 Vérifiez les horaires chaque semaine avant l&apos;entraînement.
           </li>
           <li>
-            📅 Anticipez votre inscription au tournoi pour garantir votre place.
+            📅 {tournamentRegistrationContent.message}
           </li>
         </ul>
         <div className="mt-5 flex flex-wrap gap-3">
@@ -97,10 +98,10 @@ export default async function EspacePage() {
             Voir les horaires
           </Link>
           <Link
-            href="/tournoi/inscription"
+            href={tournamentRegistrationContent.cta.href}
             className="rounded-lg border border-blue-700 px-4 py-2 text-sm font-medium text-blue-800 hover:bg-blue-100"
           >
-            M&apos;inscrire au tournoi
+            {tournamentRegistrationContent.cta.label}
           </Link>
         </div>
       </section>

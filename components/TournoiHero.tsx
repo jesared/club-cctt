@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
+import { tournamentRegistrationContent } from "@/lib/tournament-registration-content";
 
 export default function TournoiHero() {
   return (
@@ -37,6 +38,10 @@ export default function TournoiHero() {
                 compétiteurs dans une ambiance conviviale et sportive.
               </p>
               <p className="text-sm text-gray-600 cyberpunk-text-soft">
+                {tournamentRegistrationContent.message}
+              </p>
+
+              <p className="text-sm text-gray-600 cyberpunk-text-soft">
                 Avril 2026 – Châlons-en-Champagne
               </p>
 
@@ -49,10 +54,10 @@ export default function TournoiHero() {
                 </a>
 
                 <a
-                  href="/tournoi/inscription"
+                  href={tournamentRegistrationContent.cta.href}
                   className="inline-flex justify-center border border-purple-600 text-purple-600 px-6 py-3 rounded-md hover:bg-purple-100 transition"
                 >
-                  S’inscrire
+                  {tournamentRegistrationContent.cta.label}
                 </a>
               </div>
             </CardContent>
