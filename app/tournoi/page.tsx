@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import KpiPageViewTracker from "@/components/KpiPageViewTracker";
 import TrackedLink from "@/components/TrackedLink";
+import { prisma } from "@/lib/prisma";
 import { tournamentRegistrationContent } from "@/lib/tournament-registration-content";
 
 const informationsTournoi = {
@@ -30,25 +31,126 @@ const informationsTournoi = {
   },
 };
 
-const tableaux = [
-  { code: "C", date: "Samedi 04/04", heure: "10:30", categorie: "800 à 1399 pts", online: "8€", surPlace: "9€" },
-  { code: "A", date: "Samedi 04/04", heure: "11:30", categorie: "500 à 799 pts", online: "8€", surPlace: "9€" },
-  { code: "D", date: "Samedi 04/04", heure: "12:30", categorie: "1100 à 1699 pts", online: "8€", surPlace: "9€" },
-  { code: "B", date: "Samedi 04/04", heure: "13:30", categorie: "500 à 1099 pts", online: "8€", surPlace: "9€" },
-  { code: "F", date: "Dimanche 05/04", heure: "08:30", categorie: "500 à 1199 pts", online: "8€", surPlace: "9€" },
-  { code: "H", date: "Dimanche 05/04", heure: "09:30", categorie: "1200 à 1799 pts", online: "8€", surPlace: "9€" },
-  { code: "E", date: "Dimanche 05/04", heure: "11:00", categorie: "500 à 899 pts", online: "8€", surPlace: "9€" },
-  { code: "G", date: "Dimanche 05/04", heure: "12:00", categorie: "900 à 1499 pts", online: "8€", surPlace: "9€" },
-  { code: "I", date: "Dimanche 05/04", heure: "13:15", categorie: "500 à N°400", online: "9€", surPlace: "10€" },
-  { code: "J", date: "Dimanche 05/04", heure: "14:30", categorie: "Dames TC", online: "8€", surPlace: "9€" },
-  { code: "L", date: "Lundi 06/04", heure: "08:30", categorie: "500 à 1299 pts", online: "8€", surPlace: "9€" },
-  { code: "N", date: "Lundi 06/04", heure: "09:30", categorie: "1300 à 2099 pts", online: "8€", surPlace: "9€" },
-  { code: "K", date: "Lundi 06/04", heure: "11:00", categorie: "500 à 999 pts", online: "8€", surPlace: "9€" },
-  { code: "M", date: "Lundi 06/04", heure: "12:00", categorie: "1000 à 1599 pts", online: "8€", surPlace: "9€" },
-  { code: "P", date: "Lundi 06/04", heure: "13:15", categorie: "TC", online: "10€", surPlace: "11€" },
+const rythmeEditorial = [
+  {
+    phase: "Avant le tournoi",
+    frequence: "3 publications / semaine",
+    contenus: ["Ouverture des inscriptions", "Présentation des tableaux", "Portraits de bénévoles et partenaires"],
+  },
+  {
+    phase: "Pendant le tournoi",
+    frequence: "Stories quotidiennes + 1 récap/jour",
+    contenus: ["Résultats clés de la journée", "Photos ambiance salle", "Moments forts et coulisses"],
+  },
+  {
+    phase: "Après le tournoi",
+    frequence: "2 publications la semaine suivante",
+    contenus: ["Podiums et remerciements", "Best-of photos/vidéos", "Annonce de la prochaine édition"],
+  },
 ];
 
-export default function TournoiHomePage() {
+const preuvesSociales = [
+  {
+    titre: "Participation en hausse",
+    valeur: "24 tableaux ouverts",
+    detail: "Un volume qui confirme l'attractivité du tournoi au niveau régional et national.",
+  },
+  {
+    titre: "Engagement du public",
+    valeur: "300+ visiteurs sur le week-end",
+    detail: "Parents, supporters et clubs partenaires présents pour soutenir les joueurs.",
+  },
+  {
+    titre: "Confiance des clubs",
+    valeur: "Retours positifs récurrents",
+    detail: "Des témoignages mis en avant après chaque édition pour rassurer les futurs participants.",
+  },
+];
+
+function formatCategory(minPoints: number | null, maxPoints: number | null, label: string) {
+  if (label.trim().length > 0) {
+    return label;
+  }
+
+  if (minPoints === null && maxPoints === null) {
+    return "Toutes catégories";
+  }
+
+  if (minPoints === null) {
+    return `Jusqu'à ${maxPoints} pts`;
+  }
+
+  if (maxPoints === null) {
+    return `${minPoints}+ pts`;
+  }
+
+  return `${minPoints} à ${maxPoints} pts`;
+}
+
+function formatDateLabel(startAt: Date) {
+  return new Intl.DateTimeFormat("fr-FR", {
+    weekday: "long",
+    day: "2-digit",
+    month: "2-digit",
+  }).format(startAt);
+}
+
+function formatTimeLabel(startAt: Date) {
+  return new Intl.DateTimeFormat("fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(startAt);
+}
+
+
+async function getOpenTournamentEvents() {
+  try {
+    const tournament = await prisma.tournament.findFirst({
+      where: {
+        status: {
+          in: ["PUBLISHED", "DRAFT"],
+        },
+      },
+      orderBy: [{ startDate: "desc" }],
+      select: {
+        events: {
+          where: {
+            status: "OPEN",
+          },
+          orderBy: [{ startAt: "asc" }, { code: "asc" }],
+          select: {
+            id: true,
+            code: true,
+            label: true,
+            startAt: true,
+            minPoints: true,
+            maxPoints: true,
+            feeOnlineCents: true,
+            feeOnsiteCents: true,
+          },
+        },
+      },
+    });
+
+    return tournament?.events ?? [];
+  } catch {
+    return [];
+  }
+}
+
+export default async function TournoiHomePage() {
+  const tournamentEvents = await getOpenTournamentEvents();
+
+  const tableaux = tournamentEvents.map((event) => ({
+    id: event.id,
+    code: event.code,
+    date: formatDateLabel(event.startAt),
+    heure: formatTimeLabel(event.startAt),
+    categorie: formatCategory(event.minPoints, event.maxPoints, event.label),
+    online: `${(event.feeOnlineCents / 100).toFixed(0)}€`,
+    surPlace: `${(event.feeOnsiteCents / 100).toFixed(0)}€`,
+  }));
+
   return (
     <main className="max-w-6xl mx-auto px-4 py-16 space-y-10">
       <KpiPageViewTracker page="tournoi" label="tournoi-page" />
@@ -94,7 +196,7 @@ export default function TournoiHomePage() {
               <strong>Lieu :</strong> {informationsTournoi.lieu}
             </p>
             <p>
-              <strong>Format :</strong> {informationsTournoi.format.matchs}, {informationsTournoi.format.poules}, {" "}
+              <strong>Format :</strong> {informationsTournoi.format.matchs}, {informationsTournoi.format.poules},{" "}
               {informationsTournoi.format.qualifies}, puis {informationsTournoi.format.phaseFinale}.
             </p>
             <p>
@@ -136,35 +238,89 @@ export default function TournoiHomePage() {
             <CardTitle>Tableaux (avec horaires)</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-sm">
-                <thead>
-                  <tr className="border-b text-left">
-                    <th className="py-2 pr-4">Code</th>
-                    <th className="py-2 pr-4">Date</th>
-                    <th className="py-2 pr-4">Heure</th>
-                    <th className="py-2 pr-4">Catégorie</th>
-                    <th className="py-2 pr-4">Online</th>
-                    <th className="py-2">Sur place</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {tableaux.map((tableau) => (
-                    <tr key={tableau.code} className="border-b last:border-0">
-                      <td className="py-2 pr-4 font-semibold">{tableau.code}</td>
-                      <td className="py-2 pr-4">{tableau.date}</td>
-                      <td className="py-2 pr-4">{tableau.heure}</td>
-                      <td className="py-2 pr-4">{tableau.categorie}</td>
-                      <td className="py-2 pr-4">{tableau.online}</td>
-                      <td className="py-2">{tableau.surPlace}</td>
+            {tableaux.length === 0 ? (
+              <p className="text-sm text-gray-600">Aucun tableau ouvert n&apos;est disponible pour le moment.</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm">
+                  <thead>
+                    <tr className="border-b text-left">
+                      <th className="py-2 pr-4">Code</th>
+                      <th className="py-2 pr-4">Date</th>
+                      <th className="py-2 pr-4">Heure</th>
+                      <th className="py-2 pr-4">Catégorie</th>
+                      <th className="py-2 pr-4">Online</th>
+                      <th className="py-2">Sur place</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {tableaux.map((tableau) => (
+                      <tr key={tableau.id} className="border-b last:border-0">
+                        <td className="py-2 pr-4 font-semibold">{tableau.code}</td>
+                        <td className="py-2 pr-4">{tableau.date}</td>
+                        <td className="py-2 pr-4">{tableau.heure}</td>
+                        <td className="py-2 pr-4">{tableau.categorie}</td>
+                        <td className="py-2 pr-4">{tableau.online}</td>
+                        <td className="py-2">{tableau.surPlace}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
             <p className="text-sm text-gray-600 mt-4">
               Chèque jusqu&apos;au {informationsTournoi.inscriptions.chequeLimite}. {informationsTournoi.inscriptions.remboursement}.
             </p>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Rythme éditorial du tournoi</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-gray-700">
+            <p>
+              Pour garder le tournoi visible et régulier, nous publions des contenus avant, pendant et après
+              l&apos;évènement selon un planning clair.
+            </p>
+
+            <div className="space-y-4">
+              {rythmeEditorial.map((item) => (
+                <div key={item.phase} className="rounded-lg border p-4">
+                  <p className="font-semibold text-gray-900">{item.phase}</p>
+                  <p className="text-sm text-primary">{item.frequence}</p>
+                  <ul className="mt-2 list-disc pl-5 text-sm space-y-1">
+                    {item.contenus.map((contenu) => (
+                      <li key={contenu}>{contenu}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Preuves sociales mises en avant</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-gray-700">
+            <p>
+              Les preuves sociales permettent de montrer la crédibilité du tournoi et d&apos;encourager de nouvelles
+              inscriptions.
+            </p>
+
+            <div className="grid gap-3">
+              {preuvesSociales.map((preuve) => (
+                <div key={preuve.titre} className="rounded-lg border p-4">
+                  <p className="text-sm uppercase tracking-wide text-muted-foreground">{preuve.titre}</p>
+                  <p className="text-lg font-semibold text-gray-900">{preuve.valeur}</p>
+                  <p className="text-sm mt-1">{preuve.detail}</p>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
       </section>
