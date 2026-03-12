@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { tournamentRegistrationContent } from "@/lib/tournament-registration-content";
 
 const informationsTournoi = {
   nom: "Tournoi National Chalons en Champagne TT",
@@ -59,12 +60,14 @@ export default function TournoiHomePage() {
             du samedi 4 au lundi 6 avril 2026.
           </p>
 
+          <p>{tournamentRegistrationContent.message}</p>
+
           <div className="flex flex-col sm:flex-row gap-4">
             <a
-              href={informationsTournoi.contact.paiement}
+              href={tournamentRegistrationContent.cta.href}
               className="inline-flex justify-center rounded-md bg-primary px-6 py-3 text-primary-foreground transition hover:opacity-90"
             >
-              S&apos;inscrire en ligne
+              {tournamentRegistrationContent.cta.label}
             </a>
             <a
               href="/tournoi/reglement"
