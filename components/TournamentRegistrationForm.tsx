@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
+import { trackKpiEvent } from "@/lib/kpi";
 
 type FeedbackState =
   | { type: "success"; message: string }
@@ -83,6 +84,20 @@ export default function TournamentRegistrationForm({
   const [formData, setFormData] = useState(initialData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<FeedbackState>(null);
+  const [hasStarted, setHasStarted] = useState(false);
+
+  const trackStartIfNeeded = () => {
+    if (hasStarted) {
+      return;
+    }
+
+    setHasStarted(true);
+    trackKpiEvent({
+      eventType: "START",
+      page: "tournoi-inscription",
+      label: "form-start",
+    });
+  };
 
   const parsedPoints = useMemo(() => {
     if (!formData.points.trim()) {
@@ -185,7 +200,13 @@ export default function TournamentRegistrationForm({
           payload.message ??
           "Demande envoyée ✅ Vous recevrez un email de confirmation sous 48 h maximum (après vérification des places).",
       });
+      trackKpiEvent({
+        eventType: "SUBMIT",
+        page: "tournoi-inscription",
+        label: "registration-submitted",
+      });
       setFormData(initialData);
+      setHasStarted(false);
     } catch (error) {
       setFeedback({
         type: "error",
@@ -236,6 +257,7 @@ export default function TournamentRegistrationForm({
                 lastName: event.target.value,
               }))
             }
+            onFocus={trackStartIfNeeded}
             className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder="DUPONT"
           />
@@ -258,6 +280,7 @@ export default function TournamentRegistrationForm({
                 firstName: event.target.value,
               }))
             }
+            onFocus={trackStartIfNeeded}
             className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder="Jean"
           />
@@ -282,6 +305,7 @@ export default function TournamentRegistrationForm({
                 email: event.target.value,
               }))
             }
+            onFocus={trackStartIfNeeded}
             className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder="joueur@email.fr"
           />
@@ -304,6 +328,7 @@ export default function TournamentRegistrationForm({
                 phone: event.target.value,
               }))
             }
+            onFocus={trackStartIfNeeded}
             className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder="06 12 34 56 78"
           />
@@ -332,6 +357,7 @@ export default function TournamentRegistrationForm({
                 licenseNumber: event.target.value,
               }))
             }
+            onFocus={trackStartIfNeeded}
             className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder="1234567"
           />
@@ -370,6 +396,7 @@ export default function TournamentRegistrationForm({
                 };
               })
             }
+            onFocus={trackStartIfNeeded}
             className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder="1248"
           />
@@ -400,6 +427,7 @@ export default function TournamentRegistrationForm({
                 };
               })
             }
+            onFocus={trackStartIfNeeded}
             className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           >
             <option className="bg-card text-foreground" value="">
@@ -431,6 +459,7 @@ export default function TournamentRegistrationForm({
                 club: event.target.value,
               }))
             }
+            onFocus={trackStartIfNeeded}
             className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder="Nom du club"
           />

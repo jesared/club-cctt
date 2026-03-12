@@ -1,6 +1,7 @@
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
 
 const quickWins = [
   "Sécuriser les fallbacks de contenu (horaires/comité/partenaires).",
@@ -47,6 +48,23 @@ export default async function AdminAuditUxPage() {
     redirect("/");
   }
 
+  const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+  const [views, clicks, starts, submits] = await Promise.all([
+    prisma.kpiEvent.count({
+      where: { eventType: "VIEW", createdAt: { gte: since } },
+    }),
+    prisma.kpiEvent.count({
+      where: { eventType: "CLICK", createdAt: { gte: since } },
+    }),
+    prisma.kpiEvent.count({
+      where: { eventType: "START", createdAt: { gte: since } },
+    }),
+    prisma.kpiEvent.count({
+      where: { eventType: "SUBMIT", createdAt: { gte: since } },
+    }),
+  ]);
+
   return (
     <main className="mx-auto max-w-5xl space-y-8 px-4 py-12">
       <header className="rounded-xl border bg-card p-6 shadow-sm">
@@ -57,6 +75,32 @@ export default async function AdminAuditUxPage() {
           et plan d’action à 30/60/90 jours pour augmenter les inscriptions.
         </p>
       </header>
+
+
+      <section className="rounded-xl border bg-card p-6 shadow-sm">
+        <h2 className="text-xl font-semibold">KPI essentiels (7 derniers jours)</h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Indicateurs d&apos;activation du tunnel d&apos;inscription : vues, clics CTA, démarrages de formulaire et soumissions.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <article className="rounded-lg border p-4">
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">Vues</p>
+            <p className="mt-2 text-3xl font-semibold">{views}</p>
+          </article>
+          <article className="rounded-lg border p-4">
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">Clics</p>
+            <p className="mt-2 text-3xl font-semibold">{clicks}</p>
+          </article>
+          <article className="rounded-lg border p-4">
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">Démarrages</p>
+            <p className="mt-2 text-3xl font-semibold">{starts}</p>
+          </article>
+          <article className="rounded-lg border p-4">
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">Soumissions</p>
+            <p className="mt-2 text-3xl font-semibold">{submits}</p>
+          </article>
+        </div>
+      </section>
 
       <section className="grid gap-6 md:grid-cols-2">
         <article className="rounded-xl border bg-card p-6 shadow-sm">

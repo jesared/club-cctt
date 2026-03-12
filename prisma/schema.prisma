@@ -190,6 +190,18 @@ model TournamentCheckIn {
   registrationEvent   TournamentRegistrationEvent @relation(fields: [registrationEventId], references: [id], onDelete: Cascade)
 }
 
+
+model KpiEvent {
+  id        String       @id @default(cuid())
+  eventType KpiEventType
+  page      String
+  label     String?
+  createdAt DateTime     @default(now())
+
+  @@index([createdAt])
+  @@index([eventType, page])
+}
+
 model MessageRead {
   id        String   @id @default(cuid())
   userId    String
@@ -258,4 +270,12 @@ enum EventGender {
   MIXED
   M
   F
+}
+
+
+enum KpiEventType {
+  VIEW
+  CLICK
+  START
+  SUBMIT
 }
