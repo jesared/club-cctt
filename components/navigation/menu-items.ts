@@ -50,6 +50,7 @@ export const clubAdminMenuItems: MenuItem[] = [
   { href: "/admin", label: "Administration", icon: Shield },
   { href: "/admin/messages", label: "Messages", icon: MessageSquare },
   { href: "/admin/users", label: "Utilisateurs", icon: Users },
+  { href: "/admin/audit-ux", label: "Audit UX", icon: FileText },
 ];
 
 export const tournamentAdminMenuItems: MenuItem[] = [
