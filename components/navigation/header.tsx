@@ -60,7 +60,7 @@ function UserMenu() {
         <>
           <button
             type="button"
-            className="fixed inset-0 z-40"
+            className="fixed inset-0 z-40 bg-background/20"
             aria-label="Fermer le menu utilisateur"
             onClick={() => setOpen(false)}
           />
@@ -106,8 +106,8 @@ export default function Header() {
   const closeMobileMenu = () => setOpen(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b bg-background shadow-sm">
-      <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4">
+    <header className="sticky top-0 z-50 border-b border-border/80 bg-background/95 shadow-sm backdrop-blur">
+      <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-4 px-4">
         <Link href="/" className="flex items-center gap-2">
           <Image src="/logo.jpg" alt="Logo du club" width={36} height={36} className="rounded-sm" />
           <span className="hidden text-sm font-semibold md:inline">CCTT</span>

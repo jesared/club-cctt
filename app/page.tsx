@@ -1,150 +1,90 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
 
 import TournoiHero from "@/components/TournoiHero";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function HomePage() {
+export default function Home() {
   return (
-    <main className="mx-auto max-w-6xl space-y-10 px-4 py-12">
-      {/* HERO */}
-      <section className="dark:cyberpunk-home-grid">
-        <div className="max-w-6xl mx-auto px-4 py-16">
-          <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 dark:font-mono dark:uppercase dark:tracking-[0.08em] dark:[text-shadow:0_0_14px_color-mix(in_oklab,var(--primary)_38%,transparent)]">
-              Châlons-en-Champagne
-              <br />
-              Tennis de Table
-            </h1>
-
-            <p className="text-lg text-muted-foreground mb-8 dark:text-foreground/85 dark:max-w-2xl">
-              Club de tennis de table à Châlons-en-Champagne – loisirs et
-              compétition, jeunes et adultes.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4">
-              <a
-                href="/horaires"
-                className="inline-flex justify-center rounded-md bg-primary px-6 py-3 text-primary-foreground transition hover:opacity-90 dark:rounded-none dark:border dark:border-primary/70 dark:bg-primary dark:px-7 dark:font-mono dark:uppercase dark:tracking-[0.12em] dark:shadow-[0_0_20px_color-mix(in_oklab,var(--primary)_42%,transparent)] dark:hover:translate-y-[-1px] dark:hover:bg-[color-mix(in_oklab,var(--primary)_88%,white)]"
-              >
-                Voir les horaires
-              </a>
-
-              <a
-                href="/contact"
-                className="inline-flex justify-center rounded-md border border-primary px-6 py-3 text-primary transition hover:bg-muted/40 dark:rounded-none dark:border-accent dark:px-7 dark:font-mono dark:uppercase dark:tracking-[0.12em] dark:text-accent dark:hover:bg-accent/10"
-              >
-                Nous contacter
-              </a>
-            </div>
+    <div className="space-y-12">
+      <section className="rounded-2xl border border-border bg-card p-6">
+        <div className="max-w-3xl space-y-6">
+          <h1 className="text-3xl font-bold">Châlons-en-Champagne Tennis de Table</h1>
+          <p className="text-sm text-muted-foreground">
+            Club de tennis de table à Châlons-en-Champagne – loisirs et compétition, jeunes et adultes.
+          </p>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Button asChild>
+              <Link href="/horaires">Voir les horaires</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/contact">Nous contacter</Link>
+            </Button>
           </div>
         </div>
       </section>
 
-      {/* PRÉSENTATION */}
-      <section className="max-w-6xl mx-auto px-4 py-14">
-        <Card className="max-w-4xl">
+      <section className="py-12">
+        <Card>
           <CardHeader>
-            <CardTitle>Bienvenue au CCTT</CardTitle>
+            <CardTitle className="text-xl font-semibold">Bienvenue au CCTT</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-8">
-            <p className="text-muted-foreground leading-relaxed mb-6">
-              Le <strong>Châlons-en-Champagne Tennis de Table (CCTT)</strong>{" "}
-              accueille joueurs débutants comme confirmés dans un cadre
-              convivial et structuré. Que vous souhaitiez pratiquer le tennis de
-              table en loisir ou en compétition, notre club propose des
-              entraînements adaptés à tous les niveaux et à tous les âges.
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Le <strong>Châlons-en-Champagne Tennis de Table (CCTT)</strong> accueille joueurs débutants
+              comme confirmés dans un cadre convivial et structuré.
             </p>
-
-            <p className="text-muted-foreground leading-relaxed">
-              Encadré par un équipe d&apos;entraineurs professionnels diplômés,
-              le club met l’accent sur la progression, le respect et le plaisir
-              du jeu.
+            <p className="text-sm text-muted-foreground">
+              Encadré par une équipe d&apos;entraineurs diplômés, le club met l’accent sur la progression,
+              le respect et le plaisir du jeu.
             </p>
           </CardContent>
         </Card>
       </section>
 
-      {/* MISE EN VALEUR */}
-      <section className="bg-muted/40">
-        <div className="max-w-6xl mx-auto px-4 py-14">
-          <h2 className="text-3xl font-semibold mb-8 dark:font-mono dark:uppercase dark:tracking-[0.08em]">
-            Le club en quelques mots
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="hover:shadow-md transition">
-              <CardHeader>
-                <CardTitle>Tous les niveaux</CardTitle>
+      <section className="py-12">
+        <h2 className="text-3xl font-bold">Le club en quelques mots</h2>
+        <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3">
+          {[
+            ["Tous les niveaux", "Enfants, adultes, débutants ou joueurs confirmés : chacun trouve sa place au CCTT."],
+            ["Loisir & compétition", "Une pratique adaptée à vos objectifs, du loisir à la compétition officielle."],
+            ["Esprit club", "Convivialité, respect et engagement sont au cœur de la vie du club."],
+          ].map(([title, description]) => (
+            <Card key={title} className="p-6">
+              <CardHeader className="px-0 pt-0">
+                <CardTitle className="text-xl font-semibold">{title}</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground text-sm">
-                  Enfants, adultes, débutants ou joueurs confirmés : chacun
-                  trouve sa place au CCTT.
-                </p>
+              <CardContent className="px-0 pb-0">
+                <p className="text-sm text-muted-foreground">{description}</p>
               </CardContent>
             </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Loisir & compétition</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground text-sm">
-                  Une pratique adaptée à vos objectifs, du loisir à la
-                  compétition officielle.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Esprit club</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground text-sm">
-                  Convivialité, respect et engagement sont au cœur de la vie du
-                  club.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+          ))}
         </div>
       </section>
 
-      {/* APPEL À L’ACTION */}
-      <section>
-        <div className="max-w-6xl mx-auto px-4 py-8">
-          <Card className="border border-primary/20 bg-card text-foreground dark:rounded-none dark:border dark:border-primary/70 dark:bg-card dark:shadow-[0_0_30px_color-mix(in_oklab,var(--primary)_25%,transparent)]">
-            <CardHeader>
-              <CardTitle className="text-foreground dark:font-mono dark:uppercase dark:tracking-[0.08em]">
-                Envie de nous rejoindre ?
-              </CardTitle>
-            </CardHeader>
-
-            <CardContent className="space-y-8">
-              <p className="max-w-2xl">
-                Venez essayer le tennis de table au sein du Châlons-en-Champagne
-                Tennis de Table. Les essais sont possibles avant toute
-                inscription.
-              </p>
-
-              <a
-                href="/contact"
-                className="inline-block rounded-md bg-background px-6 py-3 font-medium text-primary transition hover:bg-muted dark:rounded-none dark:border dark:border-accent/80 dark:bg-accent/95 dark:font-mono dark:uppercase dark:tracking-[0.1em] dark:text-accent-foreground dark:hover:bg-accent"
-              >
-                Nous contacter
-              </a>
-            </CardContent>
-          </Card>
-        </div>
+      <section className="py-12">
+        <Card className="border-primary/30">
+          <CardHeader>
+            <CardTitle className="text-xl font-semibold">Envie de nous rejoindre ?</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <p className="text-sm text-muted-foreground">
+              Venez essayer le tennis de table au sein du club. Les essais sont possibles avant toute
+              inscription.
+            </p>
+            <Button asChild>
+              <Link href="/contact">Nous contacter</Link>
+            </Button>
+          </CardContent>
+        </Card>
       </section>
 
-      <section className="bg-muted/40">
-        <div className="max-w-6xl mx-auto px-4 py-16">
-          <h2 className="text-3xl font-semibold mb-12">Événement du club</h2>
-
+      <section className="py-12">
+        <h2 className="text-3xl font-bold">Événement du club</h2>
+        <div className="mt-6">
           <TournoiHero />
         </div>
       </section>
-    </main>
+    </div>
   );
 }

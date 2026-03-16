@@ -1,5 +1,6 @@
-import Footer from "@/components/Footer";
-import Header from "@/components/navigation/header";
+import Footer from "@/components/layout/footer";
+import Header from "@/components/layout/header";
+import Container from "@/components/layout/container";
 import Providers from "@/components/Providers";
 import SiteBreadcrumb from "@/components/SiteBreadcrumb";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -16,24 +17,6 @@ export const metadata: Metadata = {
   },
 };
 
-const themeScript = `
-(() => {
-  try {
-    const storedTheme = localStorage.getItem("theme");
-    const resolvedTheme = storedTheme === "light" || storedTheme === "cyberpunk"
-      ? storedTheme
-      : "cyberpunk";
-    document.documentElement.classList.remove("light", "cyberpunk");
-    if (resolvedTheme !== "light") {
-      document.documentElement.classList.add(resolvedTheme);
-    }
-  } catch (_) {
-    document.documentElement.classList.remove("light", "cyberpunk");
-    document.documentElement.classList.add("cyberpunk");
-  }
-})();
-`;
-
 export default function RootLayout({
   children,
 }: {
@@ -41,15 +24,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" suppressHydrationWarning>
-      <body className="min-h-screen">
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      <body className="min-h-screen bg-background text-foreground antialiased">
         <Providers>
           <SidebarProvider defaultOpen={false}>
             <div className="flex min-h-screen flex-col">
               <Header />
-              <main className="flex-1">
-                <SiteBreadcrumb />
-                {children}
+              <main className="flex-1 py-12">
+                <Container className="space-y-6">
+                  <SiteBreadcrumb />
+                  {children}
+                </Container>
               </main>
               <Footer />
             </div>
