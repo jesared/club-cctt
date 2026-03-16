@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, User } from "lucide-react";
+import { Home, Menu, User } from "lucide-react";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 import ThemeToggle from "@/components/ThemeToggle";
@@ -20,15 +20,9 @@ import {
 import { cn } from "@/lib/utils";
 
 const mainNavItems = [
-  { href: "/", label: "Accueil" },
-  { href: "/actualites", label: "Actualités" },
-  { href: "/competitions", label: "Compétitions" },
-  { href: "/horaires", label: "Horaires" },
-  { href: "/tarifs", label: "Tarifs" },
-  { href: "/partenaires", label: "Partenaires" },
+  { href: "/home", label: "Home", icon: Home },
   { href: "/club", label: "Club" },
-  { href: "/evenements", label: "Événements" },
-  { href: "/contact", label: "Contact" },
+  { href: "/tournoi", label: "Tournoi" },
 ];
 
 function UserMenu() {
@@ -110,7 +104,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border/80 bg-background/95 shadow-sm backdrop-blur">
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-4 px-4">
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/home" className="flex items-center gap-2">
           <Image src="/logo.jpg" alt="Logo du club" width={36} height={36} className="rounded-sm" />
           <span className="hidden text-sm font-semibold md:inline">CCTT</span>
         </Link>
@@ -118,17 +112,17 @@ export default function Header() {
         <nav className="hidden flex-1 items-center justify-center md:flex">
           <ul className="flex items-center gap-6 text-sm font-medium">
             {mainNavItems.map((item) => {
-              const active = pathname === item.href;
+              const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
               return (
                 <li key={item.href}>
                   <Link
                     href={item.href}
                     className={cn(
-                      "transition-colors hover:text-primary",
+                      "flex items-center gap-2 transition-colors hover:text-primary",
                       active ? "text-primary" : "text-muted-foreground"
                     )}
                   >
-                    {item.label}
+                    {item.icon ? <item.icon className="h-4 w-4" /> : null}<span>{item.label}</span>
                   </Link>
                 </li>
               );
@@ -151,7 +145,7 @@ export default function Header() {
             <SheetContent side="left" className="w-[86vw] max-w-sm p-0" aria-label="Navigation mobile">
               <SheetHeader className="border-b px-5 py-4 text-left">
                 <SheetTitle className="text-base">
-                  <Link href="/" className="flex items-center gap-3">
+                  <Link href="/home" className="flex items-center gap-3">
                     <Image
                       src="/logo.jpg"
                       alt="Logo du club"
@@ -167,7 +161,7 @@ export default function Header() {
               <nav className="px-3 py-4" aria-label="Menu principal mobile">
                 <ul className="flex flex-col gap-1">
                   {mainNavItems.map((item) => {
-                    const isActive = pathname === item.href;
+                    const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
 
                     return (
                       <li key={item.href}>
@@ -175,13 +169,13 @@ export default function Header() {
                           <Link
                             href={item.href}
                             className={cn(
-                              "block rounded-md px-3 py-2.5 text-base font-medium transition-colors",
+                              "flex items-center gap-2 rounded-md px-3 py-2.5 text-base font-medium transition-colors",
                               isActive
                                 ? "bg-primary/10 text-primary"
                                 : "text-foreground/90 hover:bg-muted"
                             )}
                           >
-                            {item.label}
+                            {item.icon ? <item.icon className="h-4 w-4" /> : null}<span>{item.label}</span>
                           </Link>
                         </SheetClose>
                       </li>
