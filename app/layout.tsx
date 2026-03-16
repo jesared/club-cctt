@@ -1,6 +1,5 @@
-import DashboardSidebar from "@/components/DashboardSidebar";
 import Footer from "@/components/Footer";
-import Header from "@/components/Header";
+import Header from "@/components/navigation/header";
 import Providers from "@/components/Providers";
 import SiteBreadcrumb from "@/components/SiteBreadcrumb";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -46,16 +45,13 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <Providers>
           <SidebarProvider defaultOpen={false}>
-            <div className=" flex min-h-screen flex-col lg:flex-row">
-              <DashboardSidebar />
-              <div className="flex min-h-screen flex-1 flex-col">
-                <Header />
-                <main className="flex-1">
-                  <SiteBreadcrumb />
-                  {children}
-                </main>
-                <Footer />
-              </div>
+            <div className="flex min-h-screen flex-col">
+              <Header />
+              <main className="flex-1">
+                <SiteBreadcrumb />
+                {children}
+              </main>
+              <Footer />
             </div>
           </SidebarProvider>
         </Providers>
