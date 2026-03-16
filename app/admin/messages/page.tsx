@@ -132,7 +132,7 @@ export default function AdminMessagesPage() {
           <button
             type="submit"
             disabled={loading || !title.trim() || !content.trim()}
-            className="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700 disabled:opacity-50"
+            className="bg-primary text-primary-foreground px-6 py-2 rounded hover:bg-primary/90 disabled:opacity-50"
           >
             {loading ? "Publication..." : "Publier"}
           </button>
@@ -171,7 +171,7 @@ export default function AdminMessagesPage() {
                 <div className="flex flex-col gap-2 min-w-[120px]">
                   <button
                     onClick={() => setEditing(m)}
-                    className="inline-flex cursor-pointer items-center justify-center rounded-md border border-blue-200 bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-700 transition-colors hover:bg-blue-100 hover:border-blue-300"
+                    className="inline-flex cursor-pointer items-center justify-center rounded-md border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
                   >
                     Modifier
                   </button>
@@ -192,7 +192,7 @@ export default function AdminMessagesPage() {
       {/* ================= MODAL EDITION ================= */}
 
       {editing && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-background/80 flex items-center justify-center z-50">
           <div className="bg-card rounded-lg p-6 w-full max-w-lg space-y-4">
             <h2 className="text-xl font-semibold">Modifier le message</h2>
 
@@ -243,7 +243,7 @@ export default function AdminMessagesPage() {
                   setEditing(null);
                   loadMessages();
                 }}
-                className="bg-purple-600 text-white px-4 py-2 rounded"
+                className="bg-primary text-primary-foreground px-4 py-2 rounded"
               >
                 Sauvegarder
               </button>

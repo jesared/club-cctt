@@ -246,8 +246,8 @@ export default function DashboardSidebar() {
                         href={item.href}
                         className={cn(
                           "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                          "hover:bg-[#ff00c8]/90 hover:text-white",
-                          isActive && "bg-[#ff00c8] text-white",
+                          "hover:bg-primary/90 hover:text-primary-foreground",
+                          isActive && "bg-primary text-primary-foreground",
                           isCollapsed ? "w-12 justify-center px-0" : "w-full",
                         )}
                       >
@@ -295,8 +295,8 @@ export default function DashboardSidebar() {
                         href={item.href}
                         className={cn(
                           "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                          "hover:bg-[#ff00c8]/90 hover:text-white",
-                          isActive && "bg-[#ff00c8] text-white",
+                          "hover:bg-primary/90 hover:text-primary-foreground",
+                          isActive && "bg-primary text-primary-foreground",
                           isCollapsed ? "w-12 justify-center px-0" : "w-full",
                         )}
                       >

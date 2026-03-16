@@ -61,7 +61,7 @@ export default function LiveMessages() {
           className={`border rounded-lg p-4 transition ${
             m.important
               ? "border-primary/60 bg-primary/10"
-              : "border-gray-200 bg-white"
+              : "border-border bg-card"
           }`}
         >
           <div className="flex justify-between items-center mb-2">
@@ -72,9 +72,9 @@ export default function LiveMessages() {
             )}
           </div>
 
-          <p className="text-gray-700 whitespace-pre-line">{m.content}</p>
+          <p className="text-muted-foreground whitespace-pre-line">{m.content}</p>
 
-          <p className="text-xs text-gray-500 mt-2">
+          <p className="text-xs text-muted-foreground mt-2">
             {m.author?.name ?? "Club"} —{" "}
             {new Date(m.createdAt).toLocaleString("fr-FR")}
           </p>
