@@ -99,7 +99,6 @@ export default async function HorairesPage() {
               <CardHeader>
                 <CardTitle>{jour.jour}</CardTitle>
               </CardHeader>
-
               <CardContent>
                 <ul className="space-y-2">
                   {jour.seances.map((seance, i) => (
