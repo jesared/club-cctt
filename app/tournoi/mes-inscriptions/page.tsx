@@ -197,13 +197,13 @@ export default async function MesInscriptionsPage() {
 
       <section className="grid gap-4 sm:grid-cols-3">
         <article className="tournament-panel rounded-xl border p-4 shadow-sm">
-          <p className="flex items-center gap-2 text-sm text-gray-500">
+          <p className="flex items-center gap-2 text-sm text-muted-foreground">
             <UserRound className="h-4 w-4" /> Joueurs inscrits
           </p>
           <p className="mt-2 text-3xl font-semibold">{registrations.length}</p>
         </article>
         <article className="tournament-panel rounded-xl border p-4 shadow-sm">
-          <p className="flex items-center gap-2 text-sm text-gray-500">
+          <p className="flex items-center gap-2 text-sm text-muted-foreground">
             <CircleDollarSign className="h-4 w-4" /> Montant total
           </p>
           <p className="mt-2 text-3xl font-semibold">
@@ -211,7 +211,7 @@ export default async function MesInscriptionsPage() {
           </p>
         </article>
         <article className="tournament-panel rounded-xl border p-4 shadow-sm">
-          <p className="flex items-center gap-2 text-sm text-gray-500">
+          <p className="flex items-center gap-2 text-sm text-muted-foreground">
             <ListChecks className="h-4 w-4" /> Déjà payé
           </p>
           <p className="mt-2 text-3xl font-semibold text-emerald-500">
@@ -322,7 +322,7 @@ export default async function MesInscriptionsPage() {
                 <div className="mt-4 overflow-x-auto rounded-lg border border-primary/20">
                   <table className="min-w-full text-sm">
                     <thead>
-                      <tr className="border-b border-primary/20 text-left text-gray-500">
+                      <tr className="border-b border-primary/20 text-left text-muted-foreground">
                         <th className="pb-2 pl-3 pr-4 pt-3 font-medium">
                           Tableau
                         </th>
@@ -342,16 +342,16 @@ export default async function MesInscriptionsPage() {
                           <td className="py-2 pl-3 pr-4 text-foreground">
                             {entry.event.code} - {entry.event.label}
                           </td>
-                          <td className="py-2 pr-4 text-gray-700">
+                          <td className="py-2 pr-4 text-muted-foreground">
                             <span className="inline-flex items-center gap-1">
                               <CalendarClock className="h-3.5 w-3.5" />
                               {DATE_TIME_FORMATTER.format(entry.event.startAt)}
                             </span>
                           </td>
-                          <td className="py-2 pr-4 text-gray-700">
+                          <td className="py-2 pr-4 text-muted-foreground">
                             {formatAmount(entry.event.feeOnlineCents)}
                           </td>
-                          <td className="py-2 pr-4 text-gray-700">
+                          <td className="py-2 pr-4 text-muted-foreground">
                             {getEventStatusLabel(entry.status)}
                           </td>
                         </tr>
@@ -360,7 +360,7 @@ export default async function MesInscriptionsPage() {
                   </table>
                 </div>
 
-                <p className="mt-4 text-sm text-gray-700">
+                <p className="mt-4 text-sm text-muted-foreground">
                   Paiement : <strong>{formatAmount(paidCents)}</strong> /{" "}
                   {formatAmount(dueCents)}
                 </p>

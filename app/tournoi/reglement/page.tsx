@@ -16,7 +16,7 @@ export default function ReglementPage() {
           <CardTitle>Règlement du tournoi 2026 (synthèse)</CardTitle>
         </CardHeader>
 
-        <CardContent className="space-y-5 text-gray-700">
+        <CardContent className="space-y-5 text-muted-foreground">
           <p>
             Cette page reprend les points essentiels du règlement 2026 pour vous
             aider à préparer votre participation. Les modalités détaillées

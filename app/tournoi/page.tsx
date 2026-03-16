@@ -152,7 +152,7 @@ export default async function TournoiHomePage() {
   }));
 
   return (
-    <main className="max-w-6xl mx-auto px-4 py-16 space-y-10">
+    <main className="max-w-7xl mx-auto px-4 py-8 space-y-6">
       <KpiPageViewTracker page="tournoi" label="tournoi-page" />
       <Card className="border-l-4 border-l-primary bg-card cyberpunk-highlight">
         <CardHeader>
@@ -191,7 +191,7 @@ export default async function TournoiHomePage() {
           <CardHeader>
             <CardTitle>Informations pratiques</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3 text-gray-700">
+          <CardContent className="space-y-3 text-muted-foreground">
             <p>
               <strong>Lieu :</strong> {informationsTournoi.lieu}
             </p>
@@ -210,7 +210,7 @@ export default async function TournoiHomePage() {
           <CardHeader>
             <CardTitle>Contact organisation</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3 text-gray-700">
+          <CardContent className="space-y-3 text-muted-foreground">
             <p>
               <strong>Responsable :</strong> {informationsTournoi.contact.nom}
             </p>
@@ -239,7 +239,7 @@ export default async function TournoiHomePage() {
           </CardHeader>
           <CardContent>
             {tableaux.length === 0 ? (
-              <p className="text-sm text-gray-600">Aucun tableau ouvert n&apos;est disponible pour le moment.</p>
+              <p className="text-sm text-muted-foreground">Aucun tableau ouvert n&apos;est disponible pour le moment.</p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="min-w-full text-sm">
@@ -268,7 +268,7 @@ export default async function TournoiHomePage() {
                 </table>
               </div>
             )}
-            <p className="text-sm text-gray-600 mt-4">
+            <p className="text-sm text-muted-foreground mt-4">
               Chèque jusqu&apos;au {informationsTournoi.inscriptions.chequeLimite}. {informationsTournoi.inscriptions.remboursement}.
             </p>
           </CardContent>
@@ -280,7 +280,7 @@ export default async function TournoiHomePage() {
           <CardHeader>
             <CardTitle>Rythme éditorial du tournoi</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4 text-gray-700">
+          <CardContent className="space-y-4 text-muted-foreground">
             <p>
               Pour garder le tournoi visible et régulier, nous publions des contenus avant, pendant et après
               l&apos;évènement selon un planning clair.
@@ -289,7 +289,7 @@ export default async function TournoiHomePage() {
             <div className="space-y-4">
               {rythmeEditorial.map((item) => (
                 <div key={item.phase} className="rounded-lg border p-4">
-                  <p className="font-semibold text-gray-900">{item.phase}</p>
+                  <p className="font-semibold text-foreground">{item.phase}</p>
                   <p className="text-sm text-primary">{item.frequence}</p>
                   <ul className="mt-2 list-disc pl-5 text-sm space-y-1">
                     {item.contenus.map((contenu) => (
@@ -306,7 +306,7 @@ export default async function TournoiHomePage() {
           <CardHeader>
             <CardTitle>Preuves sociales mises en avant</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4 text-gray-700">
+          <CardContent className="space-y-4 text-muted-foreground">
             <p>
               Les preuves sociales permettent de montrer la crédibilité du tournoi et d&apos;encourager de nouvelles
               inscriptions.
@@ -316,7 +316,7 @@ export default async function TournoiHomePage() {
               {preuvesSociales.map((preuve) => (
                 <div key={preuve.titre} className="rounded-lg border p-4">
                   <p className="text-sm uppercase tracking-wide text-muted-foreground">{preuve.titre}</p>
-                  <p className="text-lg font-semibold text-gray-900">{preuve.valeur}</p>
+                  <p className="text-lg font-semibold text-foreground">{preuve.valeur}</p>
                   <p className="text-sm mt-1">{preuve.detail}</p>
                 </div>
               ))}
