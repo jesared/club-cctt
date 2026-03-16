@@ -1,1 +1,5 @@
-export { default } from "../mes-inscriptions/page";
+import { redirect } from "next/navigation";
+
+export default function LegacyListeRedirectPage() {
+  redirect("/tournoi/liste-inscrits");
+}
