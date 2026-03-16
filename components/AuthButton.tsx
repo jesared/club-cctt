@@ -4,6 +4,7 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 type AuthButtonProps = {
   collapsed?: boolean;
@@ -23,15 +24,9 @@ export default function AuthButton({ collapsed = false }: AuthButtonProps) {
   if (!session) {
     return (
       <div className="mt-6">
-        <button
-          onClick={() => signIn("google")}
-          className={cn(
-            "cursor-pointer w-full rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700 transition",
-            collapsed && "px-2 text-xs",
-          )}
-        >
+        <Button onClick={() => signIn("google")} className={cn("w-full", collapsed && "px-2 text-xs")}>
           {collapsed ? "Login" : "Se connecter"}
-        </button>
+        </Button>
       </div>
     );
   }
