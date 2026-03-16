@@ -10,16 +10,13 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarTrigger,
-  useSidebar,
-} from "@/components/ui/sidebar";
-import { tournamentMenuItems } from "@/components/navigation/menu-items";
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
 const mainNavItems = [
@@ -103,13 +100,12 @@ function UserMenu() {
 
 export default function Header() {
   const pathname = usePathname();
-  const { setOpen } = useSidebar();
+  const { data: session } = useSession();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    setOpen(false);
-  }, [pathname, setOpen]);
-
-  const closeMobileMenu = () => setOpen(false);
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/80 bg-background/95 shadow-sm backdrop-blur">
@@ -146,48 +142,77 @@ export default function Header() {
             <UserMenu />
           </div>
 
-          <SidebarTrigger asChild>
-            <Button variant="ghost" size="icon" className="md:hidden" aria-label="Ouvrir le menu">
-              <Menu className="h-5 w-5" />
-            </Button>
-          </SidebarTrigger>
+          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden" aria-label="Ouvrir le menu">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[86vw] max-w-sm p-0" aria-label="Navigation mobile">
+              <SheetHeader className="border-b px-5 py-4 text-left">
+                <SheetTitle className="text-base">
+                  <Link href="/" className="flex items-center gap-3">
+                    <Image
+                      src="/logo.jpg"
+                      alt="Logo du club"
+                      width={34}
+                      height={34}
+                      className="rounded-sm"
+                    />
+                    <span>CCTT</span>
+                  </Link>
+                </SheetTitle>
+              </SheetHeader>
+
+              <nav className="px-3 py-4" aria-label="Menu principal mobile">
+                <ul className="flex flex-col gap-1">
+                  {mainNavItems.map((item) => {
+                    const isActive = pathname === item.href;
+
+                    return (
+                      <li key={item.href}>
+                        <SheetClose asChild>
+                          <Link
+                            href={item.href}
+                            className={cn(
+                              "block rounded-md px-3 py-2.5 text-base font-medium transition-colors",
+                              isActive
+                                ? "bg-primary/10 text-primary"
+                                : "text-foreground/90 hover:bg-muted"
+                            )}
+                          >
+                            {item.label}
+                          </Link>
+                        </SheetClose>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </nav>
+
+              <div className="mt-auto border-t px-4 py-4">
+                {!session ? (
+                  <Button
+                    className="w-full"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      void signIn("google");
+                    }}
+                  >
+                    Connexion
+                  </Button>
+                ) : (
+                  <SheetClose asChild>
+                    <Link href="/espace" className="block">
+                      <Button className="w-full">Mon compte</Button>
+                    </Link>
+                  </SheetClose>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
-
-      <Sidebar
-        side="right"
-        className="border-l border-border bg-background"
-        aria-label="Navigation mobile"
-      >
-        <SidebarHeader>
-          <span className="text-sm font-semibold">Menu</span>
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarMenu className="gap-2 py-5">
-            {mainNavItems.map((item) => (
-              <SidebarMenuItem key={item.href}>
-                <SidebarMenuButton asChild isActive={pathname === item.href}>
-                  <Link href={item.href} onClick={closeMobileMenu}>{item.label}</Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-
-            <p className="px-3 pt-4 text-xs font-semibold uppercase tracking-wide text-foreground/70">
-              Menu tournoi
-            </p>
-            {tournamentMenuItems.map((item) => (
-              <SidebarMenuItem key={item.href}>
-                <SidebarMenuButton asChild isActive={pathname === item.href}>
-                  <Link href={item.href} onClick={closeMobileMenu}>{item.label}</Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-          <div className="border-t p-4">
-            <UserMenu />
-          </div>
-        </SidebarContent>
-      </Sidebar>
     </header>
   );
 }
