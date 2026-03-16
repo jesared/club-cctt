@@ -106,7 +106,7 @@ export default function Header() {
   const closeMobileMenu = () => setOpen(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b bg-background shadow-sm">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4">
         <Link href="/" className="flex items-center gap-2">
           <Image src="/logo.jpg" alt="Logo du club" width={36} height={36} className="rounded-sm" />
@@ -148,12 +148,16 @@ export default function Header() {
         </div>
       </div>
 
-      <Sidebar side="right" className="bg-background" aria-label="Navigation mobile">
+      <Sidebar
+        side="right"
+        className="border-l border-border bg-background"
+        aria-label="Navigation mobile"
+      >
         <SidebarHeader>
           <span className="text-sm font-semibold">Menu</span>
         </SidebarHeader>
         <SidebarContent>
-          <SidebarMenu>
+          <SidebarMenu className="gap-2 py-5">
             {mainNavItems.map((item) => (
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton asChild isActive={pathname === item.href}>
@@ -162,7 +166,7 @@ export default function Header() {
               </SidebarMenuItem>
             ))}
 
-            <p className="px-3 pt-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="px-3 pt-4 text-xs font-semibold uppercase tracking-wide text-foreground/70">
               Menu tournoi
             </p>
             {tournamentMenuItems.map((item) => (
