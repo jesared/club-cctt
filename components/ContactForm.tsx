@@ -2,6 +2,8 @@
 
 import { FormEvent, useState } from "react";
 
+import { Button } from "@/components/ui/button";
+
 type FeedbackState =
   | { type: "success"; message: string }
   | { type: "error"; message: string }
@@ -144,7 +146,7 @@ export default function ContactForm() {
       {feedback ? (
         <p
           className={`text-sm ${
-            feedback.type === "success" ? "text-green-700" : "text-red-700"
+            feedback.type === "success" ? "text-primary" : "text-destructive"
           }`}
           role="status"
         >
@@ -152,13 +154,9 @@ export default function ContactForm() {
         </p>
       ) : null}
 
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="inline-flex bg-purple-600 text-white px-6 py-3 rounded-md hover:bg-purple-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
-      >
+      <Button type="submit" disabled={isSubmitting}>
         {isSubmitting ? "Envoi en cours..." : "Envoyer le message"}
-      </button>
+      </Button>
     </form>
   );
 }
