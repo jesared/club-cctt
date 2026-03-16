@@ -207,7 +207,7 @@ function HeaderContent() {
             <Link
               href={primaryCta.href}
               onClick={() => setOpen(false)}
-              className="block rounded-full bg-blue-700 px-4 py-2 text-center text-white transition-colors hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
+              className="block rounded-full bg-primary px-4 py-2 text-center text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
             >
               {primaryCta.label}
             </Link>
@@ -219,7 +219,7 @@ function HeaderContent() {
                   setOpen(false);
                   void signIn("google");
                 }}
-                className="mt-3 block w-full rounded-full bg-purple-600 px-4 py-2 text-center text-white transition-colors hover:bg-purple-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-purple-500"
+                className="mt-3 block w-full rounded-full bg-secondary px-4 py-2 text-center text-secondary-foreground transition-colors hover:bg-secondary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
               >
                 Se connecter
               </button>

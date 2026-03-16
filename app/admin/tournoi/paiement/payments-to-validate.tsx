@@ -339,7 +339,7 @@ export function PaymentsToValidate({ initialPayments }: Props) {
       ) : null}
 
       {toastMessage ? (
-        <div className="fixed bottom-4 right-4 z-[60] rounded-lg bg-emerald-600 px-4 py-3 text-sm font-medium text-white shadow-lg">
+        <div className="fixed bottom-4 right-4 z-[60] rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground shadow-lg">
           {toastMessage}
         </div>
       ) : null}

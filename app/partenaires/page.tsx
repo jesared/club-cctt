@@ -22,7 +22,7 @@ function CardPartenaire({ partenaire }: { partenaire: Partenaire }) {
 
   const content = (
     <div className="flex items-center gap-4">
-      <div className="flex h-20 w-32 items-center justify-center rounded-xl border border-gray-100 bg-gray-50 dark:rounded-none dark:border-primary/30 dark:bg-card">
+      <div className="flex h-20 w-32 items-center justify-center rounded-xl border border-border bg-muted dark:rounded-none dark:border-primary/30 dark:bg-card">
         <Image
           className="max-h-16 max-w-28 object-contain"
           src={
@@ -37,10 +37,10 @@ function CardPartenaire({ partenaire }: { partenaire: Partenaire }) {
       </div>
 
       <div>
-        <p className="text-lg font-semibold text-gray-900 dark:font-mono dark:uppercase dark:tracking-[0.08em]">
+        <p className="text-lg font-semibold text-foreground dark:font-mono dark:uppercase dark:tracking-[0.08em]">
           {partenaire.nom}
         </p>
-        <p className="text-sm text-gray-500 dark:text-foreground/65">
+        <p className="text-sm text-muted-foreground dark:text-foreground/65">
           {partenaire.description}
         </p>
       </div>
@@ -53,7 +53,7 @@ function CardPartenaire({ partenaire }: { partenaire: Partenaire }) {
         href={partenaire.url}
         target="_blank"
         rel="noreferrer"
-        className="group flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white px-6 py-5 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md dark:rounded-none dark:border-primary/35 dark:bg-card dark:shadow-[0_0_24px_color-mix(in_oklab,var(--primary)_16%,transparent)] dark:hover:border-accent/60 dark:hover:shadow-[0_0_28px_color-mix(in_oklab,var(--accent)_20%,transparent)]"
+        className="group flex flex-col gap-4 rounded-2xl border border-border bg-card px-6 py-5 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md dark:rounded-none dark:border-primary/35 dark:bg-card dark:shadow-[0_0_24px_color-mix(in_oklab,var(--primary)_16%,transparent)] dark:hover:border-accent/60 dark:hover:shadow-[0_0_28px_color-mix(in_oklab,var(--accent)_20%,transparent)]"
       >
         {content}
       </a>
@@ -61,7 +61,7 @@ function CardPartenaire({ partenaire }: { partenaire: Partenaire }) {
   }
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white px-6 py-5 shadow-sm dark:rounded-none dark:border-primary/35 dark:bg-card dark:shadow-[0_0_24px_color-mix(in_oklab,var(--primary)_16%,transparent)]">
+    <div className="flex flex-col gap-4 rounded-2xl border border-border bg-card px-6 py-5 shadow-sm dark:rounded-none dark:border-primary/35 dark:bg-card dark:shadow-[0_0_24px_color-mix(in_oklab,var(--primary)_16%,transparent)]">
       {content}
     </div>
   );
@@ -82,7 +82,7 @@ export default async function PartenairesPage() {
         <h1 className="mb-4 text-4xl font-bold dark:font-mono dark:uppercase dark:tracking-[0.1em] dark:[text-shadow:0_0_15px_color-mix(in_oklab,var(--primary)_42%,transparent)]">
           Partenaires
         </h1>
-        <p className="max-w-3xl text-gray-600 dark:text-foreground/85">
+        <p className="max-w-3xl text-muted-foreground dark:text-foreground/85">
           Le Châlons-en-Champagne Tennis de Table remercie l’ensemble de ses
           partenaires pour leur soutien et leur engagement auprès du club.
         </p>

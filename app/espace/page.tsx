@@ -49,36 +49,36 @@ export default async function EspacePage() {
     <div className="max-w-5xl mx-auto px-4 py-12 space-y-8">
       <header className="space-y-3">
         <h1 className="text-4xl font-bold">Espace licencié</h1>
-        <p className="text-gray-600">
+        <p className="text-muted-foreground">
           Retrouvez les infos clés du club et des suggestions d&apos;actions
           pour ne rien manquer de la vie de l&apos;association.
         </p>
       </header>
 
       <section className="grid gap-4 sm:grid-cols-3">
-        <article className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <p className="text-sm text-gray-500">Messages publiés</p>
+        <article className="rounded-xl border border-border bg-card p-4 shadow-sm">
+          <p className="text-sm text-muted-foreground">Messages publiés</p>
           <p className="mt-2 text-3xl font-semibold">{messages.length}</p>
         </article>
-        <article className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <p className="text-sm text-gray-500">Alertes importantes</p>
+        <article className="rounded-xl border border-border bg-card p-4 shadow-sm">
+          <p className="text-sm text-muted-foreground">Alertes importantes</p>
           <p className="mt-2 text-3xl font-semibold text-red-600">
             {importantCount}
           </p>
         </article>
-        <article className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <p className="text-sm text-gray-500">Dernière publication</p>
+        <article className="rounded-xl border border-border bg-card p-4 shadow-sm">
+          <p className="text-sm text-muted-foreground">Dernière publication</p>
           <p className="mt-2 text-lg font-semibold">
             {formatDate(latestMessage?.createdAt)}
           </p>
         </article>
       </section>
 
-      <section className="rounded-xl border border-blue-100 bg-blue-50 p-6">
-        <h2 className="text-xl font-semibold text-blue-900">
+      <section className="rounded-xl border border-border bg-card p-6">
+        <h2 className="text-xl font-semibold text-foreground">
           Nos suggestions pour vous
         </h2>
-        <ul className="mt-4 space-y-3 text-blue-900">
+        <ul className="mt-4 space-y-3 text-foreground">
           <li>
             ✅ Consultez les messages importants en priorité pour les
             convocations.
@@ -93,13 +93,13 @@ export default async function EspacePage() {
         <div className="mt-5 flex flex-wrap gap-3">
           <Link
             href="/horaires"
-            className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800"
+            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
             Voir les horaires
           </Link>
           <Link
             href={tournamentRegistrationContent.cta.href}
-            className="rounded-lg border border-blue-700 px-4 py-2 text-sm font-medium text-blue-800 hover:bg-blue-100"
+            className="rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-accent"
           >
             {tournamentRegistrationContent.cta.label}
           </Link>
