@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Home() {
   return (
-    <div className="space-y-4">
+    <main className="max-w-7xl mx-auto px-4 py-8 space-y-6">
       <section className="rounded-2xl border border-border bg-card p-6">
         <div className="max-w-3xl space-y-6">
           <h1 className="text-3xl font-bold">
@@ -102,6 +102,6 @@ export default function Home() {
           <TournoiHero />
         </div>
       </section>
-    </div>
+    </main>
   );
 }
