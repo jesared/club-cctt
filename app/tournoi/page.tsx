@@ -1,8 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import KpiPageViewTracker from "@/components/KpiPageViewTracker";
 import TrackedLink from "@/components/TrackedLink";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { tournamentRegistrationContent } from "@/lib/tournament-registration-content";
+import { getServerSession } from "next-auth";
 
 const informationsTournoi = {
   nom: "Tournoi National Chalons en Champagne TT",
@@ -139,7 +141,41 @@ async function getOpenTournamentEvents() {
 }
 
 export default async function TournoiHomePage() {
+  const session = await getServerSession(authOptions);
+  const userEmail = session?.user?.email?.trim().toLowerCase();
   const tournamentEvents = await getOpenTournamentEvents();
+
+  const tournament = await prisma.tournament.findFirst({
+    where: {
+      status: {
+        in: ["PUBLISHED", "DRAFT"],
+      },
+    },
+    orderBy: [{ startDate: "desc" }],
+    select: { id: true },
+  });
+
+  const hasUserRegistration = tournament && session?.user?.id
+    ?
+      (await prisma.tournamentRegistration.count({
+        where: {
+          tournamentId: tournament.id,
+          OR: [
+            { userId: session.user.id },
+            ...(userEmail
+              ? [
+                  {
+                    contactEmail: {
+                      equals: userEmail,
+                      mode: "insensitive" as const,
+                    },
+                  },
+                ]
+              : []),
+          ],
+        },
+      })) > 0
+    : false;
 
   const tableaux = tournamentEvents.map((event) => ({
     id: event.id,
@@ -182,6 +218,14 @@ export default async function TournoiHomePage() {
             >
               Consulter le règlement 2026
             </a>
+            {hasUserRegistration ? (
+              <a
+                href="/user/inscriptions"
+                className="inline-flex justify-center rounded-md border border-border px-6 py-3 text-foreground transition hover:bg-accent/40"
+              >
+                Voir mes inscriptions
+              </a>
+            ) : null}
           </div>
         </CardContent>
       </Card>

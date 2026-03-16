@@ -62,10 +62,10 @@ export default function AuthButton({ collapsed = false }: AuthButtonProps) {
 
       <div className={cn("mt-3 flex flex-col gap-2", collapsed && "hidden")}>
         <Link
-          href="/espace"
+          href="/user"
           className="rounded-md border border-sidebar-border bg-background px-3 py-2 text-center text-xs font-medium text-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
         >
-          Mon espace
+          Espace utilisateur
         </Link>
 
         <button
