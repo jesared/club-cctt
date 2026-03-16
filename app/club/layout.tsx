@@ -29,7 +29,7 @@ export default function ClubLayout({ children }: { children: ReactNode }) {
 
   return (
     <section className="mx-auto w-full max-w-7xl px-4 py-8">
-      <div className="flex min-w-0 gap-6">
+      <div className="flex min-h-screen min-w-0 gap-6">
         <Sidebar
           items={clubMenu}
           title="Menu club"
