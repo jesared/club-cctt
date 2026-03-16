@@ -14,7 +14,8 @@ export default function TournoiSidebar({
   const pathname = usePathname();
 
   return (
-    <nav className="flex h-full flex-col p-4" aria-label="Navigation club">
+    <nav className="flex h-full flex-col p-4" aria-label="Navigation tournoi">
+      <p className="mb-4 pb-3 text-sm font-semibold">Espace tournoi</p>
       <div className="flex flex-1 flex-col gap-1">
         {tournamentMenuItems.map((item) => {
           const isTournoiHome = item.href === "/tournoi";

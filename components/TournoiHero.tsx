@@ -19,7 +19,7 @@ export default function TournoiHero() {
       </section>
       <section>
         <div className="mx-auto py-8">
-          <Card className="border-l-4 border-l-primary cyberpunk-highlight">
+          <Card className="border-l-4 border-l-primary  bg-accent-foreground">
             <CardHeader>
               <p className="uppercase tracking-wide text-sm text-primary mb-2">
                 Tournoi annuel du club

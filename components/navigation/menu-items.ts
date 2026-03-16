@@ -7,7 +7,6 @@ import {
   Download,
   FileText,
   Handshake,
-  Home,
   LayoutDashboard,
   LayoutGrid,
   Mail,
@@ -30,22 +29,23 @@ export type MenuItem = {
 };
 
 export const mainMenuItems: MenuItem[] = [
-  { href: "/", label: "Home", icon: Home },
   { href: "/club", label: "Club", icon: LayoutGrid },
-  { href: "/tournoi", label: "Tournoi", icon: Trophy },
-  { href: "/user", label: "User", icon: User },
-  { href: "/contact", label: "Contact", icon: Mail },
-  { href: "/horaires", label: "Horaires", icon: CalendarClock },
-  { href: "/tarifs", label: "Tarifs", icon: BadgeEuro },
-  { href: "/partenaires", label: "Partenaires", icon: Handshake },
-  { href: "/comite-directeur", label: "Comité directeur", icon: Users },
+  { href: "/club/comite-directeur", label: "Comité directeur", icon: Users },
+  { href: "/club/horaires", label: "Horaires", icon: CalendarClock },
+  { href: "/club/tarifs", label: "Tarifs", icon: BadgeEuro },
+  { href: "/club/partenaires", label: "Partenaires", icon: Handshake },
+  { href: "/club/contact", label: "Contact", icon: Mail },
 ];
 
 export const tournamentMenuItems: MenuItem[] = [
   { href: "/tournoi", label: "Présentation", icon: FileText },
   { href: "/tournoi/tableaux", label: "Tableaux", icon: Table2 },
   { href: "/tournoi/inscription", label: "Inscriptions", icon: ClipboardPen },
-  { href: "/tournoi/liste-inscrits", label: "Liste des inscrits", icon: CalendarCheck },
+  {
+    href: "/tournoi/liste-inscrits",
+    label: "Liste des inscrits",
+    icon: CalendarCheck,
+  },
   { href: "/tournoi/resultats", label: "Résultats", icon: Trophy },
   { href: "/tournoi/classements", label: "Classements", icon: CalendarCheck },
 ];

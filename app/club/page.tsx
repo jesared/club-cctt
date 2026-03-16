@@ -52,7 +52,7 @@ export default function ClubPage() {
           </Card>
 
           {/* CONVIVIALITÉ */}
-          <Card className="dark:rounded-none">
+          <Card>
             <CardHeader>
               <CardTitle>Convivialité</CardTitle>
             </CardHeader>

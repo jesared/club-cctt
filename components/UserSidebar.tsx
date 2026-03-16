@@ -1,28 +1,10 @@
 "use client";
+import { userMenuItems } from "@/components/navigation/menu-items";
 
-import {
-  ClipboardList,
-  FileText,
-  House,
-  Receipt,
-  Settings,
-} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
-
-const userMenu = [
-  { label: "Dashboard", href: "/user", icon: House },
-  {
-    label: "Mes inscriptions",
-    href: "/user/inscriptions",
-    icon: ClipboardList,
-  },
-  { label: "Paiements", href: "/user/paiements", icon: Receipt },
-  { label: "Documents", href: "/user/documents", icon: FileText },
-  { label: "Paramètres", href: "/user/parametres", icon: Settings },
-];
 
 export default function UserSidebar({
   onNavigate,
@@ -38,7 +20,7 @@ export default function UserSidebar({
     >
       <p className="mb-4 pb-3 text-sm font-semibold">Espace utilisateur</p>
       <div className="flex flex-1 flex-col gap-1">
-        {userMenu.map((item) => {
+        {userMenuItems.map((item) => {
           const isActive =
             pathname === item.href || pathname.startsWith(`${item.href}/`);
           const Icon = item.icon;
