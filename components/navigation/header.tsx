@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Menu, User } from "lucide-react";
+import { Home, Menu, Shield, User } from "lucide-react";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 import ThemeToggle from "@/components/ThemeToggle";
@@ -96,6 +96,7 @@ function UserMenu() {
 export default function Header() {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const isAdmin = session?.user?.role === "ADMIN";
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -144,6 +145,14 @@ export default function Header() {
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
+          {isAdmin ? (
+            <Link href="/admin" className="hidden md:inline-flex">
+              <Button variant="outline" size="sm" className="gap-2">
+                <Shield className="h-4 w-4" />
+                Administration
+              </Button>
+            </Link>
+          ) : null}
           <ThemeToggle />
           <div className="hidden md:block">
             <UserMenu />
@@ -195,6 +204,25 @@ export default function Header() {
                       </li>
                     );
                   })}
+
+                  {isAdmin ? (
+                    <li>
+                      <SheetClose asChild>
+                        <Link
+                          href="/admin"
+                          className={cn(
+                            "flex items-center gap-2 rounded-md px-3 py-2.5 text-base font-medium transition-colors",
+                            pathname.startsWith("/admin")
+                              ? "bg-primary/10 text-primary"
+                              : "text-foreground/90 hover:bg-muted",
+                          )}
+                        >
+                          <Shield className="h-4 w-4" />
+                          <span>Administration</span>
+                        </Link>
+                      </SheetClose>
+                    </li>
+                  ) : null}
 
                   <li>
                     <SheetClose asChild>

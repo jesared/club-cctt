@@ -30,14 +30,14 @@ export default function TournoiLayout({ children }: { children: ReactNode }) {
 
   return (
     <section className="mx-auto w-full max-w-7xl px-4 py-8">
-      <div className="flex min-h-screen min-w-0 gap-6">
+      <div className="flex min-h-[calc(100vh-16rem)] min-w-0 gap-6">
         <Sidebar
           items={tournoiMenu}
           title="Menu tournoi"
           collapsed={collapsed}
           onToggleCollapsed={() => setCollapsed(!collapsed)}
         />
-        <div className="min-w-0 flex-1 space-y-6">
+        <div className="min-w-0 flex-1 space-y-6 rounded-xl border bg-card p-6 shadow-sm">
           <header className="mb-6 flex items-center justify-between">
             <div>
               <h1 className="flex items-center gap-2 text-2xl font-semibold">
