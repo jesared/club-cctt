@@ -98,12 +98,9 @@ export default async function ComiteDirecteurPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {data.salaries.map((salarie) => (
-            <Card
-              key={salarie.nom}
-              className="dark:rounded-none dark:border-primary/45 dark:bg-card/90 dark:shadow-[0_0_16px_color-mix(in_oklab,var(--primary)_16%,transparent)]"
-            >
+            <Card key={salarie.nom}>
               <CardHeader className="flex flex-row items-center gap-3">
-                <Users className="w-5 h-5 text-primary dark:text-accent" />
+                <Users className="w-5 h-5 text-primary" />
                 <CardTitle>Salarié diplômé</CardTitle>
               </CardHeader>
               <CardContent>

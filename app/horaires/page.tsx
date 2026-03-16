@@ -31,17 +31,15 @@ export default async function HorairesPage() {
   const data: HorairesData = await res.json();
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-12 space-y-12 dark:space-y-10">
+    <div className="max-w-6xl mx-auto px-4 py-12 space-y-12 ">
       {/* TITRE */}
-      <header className="space-y-4 rounded-2xl border border-transparent bg-transparent dark:rounded-none dark:border-primary/35 dark:bg-card dark:px-8 dark:py-8 dark:shadow-[0_0_28px_color-mix(in_oklab,var(--primary)_20%,transparent)]">
-        <p className="hidden text-xs font-mono uppercase tracking-[0.2em] text-accent dark:block">
+      <header className="space-y-4 rounded-2xl border border-transparent bg-transparent ">
+        <p className="hidden text-xs font-mono uppercase tracking-[0.2em] text-accent ">
           CCTT / Training Matrix
         </p>
-        <h1 className="text-4xl font-bold mb-2 dark:font-mono dark:uppercase dark:tracking-[0.1em] dark:[text-shadow:0_0_15px_color-mix(in_oklab,var(--primary)_40%,transparent)]">
-          Horaires d’entraînement
-        </h1>
+        <h1 className="text-4xl font-bold mb-2">Horaires d’entraînement</h1>
 
-        <p className="text-gray-600 max-w-3xl dark:text-foreground/85">
+        <p className="text-gray-600 max-w-3xl ">
           Retrouvez ci-dessous l’ensemble des créneaux d’entraînement du
           Châlons-en-Champagne Tennis de Table.
         </p>
@@ -64,11 +62,9 @@ export default async function HorairesPage() {
       {/* HORAIRES */}
       <section className="space-y-8">
         {/* LÉGENDE */}
-        <Card className="bg-muted/40 dark:rounded-none dark:border-primary/35 dark:bg-card dark:shadow-[0_0_20px_color-mix(in_oklab,var(--accent)_14%,transparent)]">
+        <Card className="bg-muted/40 ">
           <CardHeader>
-            <CardTitle className="dark:font-mono dark:uppercase dark:tracking-[0.1em]">
-              Légende
-            </CardTitle>
+            <CardTitle>Légende</CardTitle>
           </CardHeader>
 
           <CardContent className="text-sm text-gray-700">
@@ -99,14 +95,9 @@ export default async function HorairesPage() {
         {/* JOURS DYNAMIQUES */}
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {data.jours.map((jour) => (
-            <Card
-              key={jour.jour}
-              className="dark:rounded-none dark:border-primary/35 dark:bg-card dark:shadow-[0_0_24px_color-mix(in_oklab,var(--primary)_15%,transparent)]"
-            >
+            <Card key={jour.jour} className="">
               <CardHeader>
-                <CardTitle className="dark:font-mono dark:uppercase dark:tracking-[0.12em]">
-                  {jour.jour}
-                </CardTitle>
+                <CardTitle>{jour.jour}</CardTitle>
               </CardHeader>
 
               <CardContent>
@@ -141,11 +132,9 @@ export default async function HorairesPage() {
       </section>
 
       {/* ESSAI */}
-      <Card className="border-l-4 border-l-primary dark:rounded-none dark:border-l-accent dark:border-y-accent/20 dark:border-r-accent/20 dark:bg-card dark:shadow-[0_0_30px_color-mix(in_oklab,var(--accent)_20%,transparent)]">
+      <Card className="border-l-4 border-l-primary ">
         <CardHeader>
-          <CardTitle className="dark:font-mono dark:uppercase dark:tracking-[0.08em]">
-            Essai gratuit
-          </CardTitle>
+          <CardTitle>Essai gratuit</CardTitle>
         </CardHeader>
 
         <CardContent>
@@ -156,7 +145,7 @@ export default async function HorairesPage() {
 
           <Link
             href="/contact"
-            className="text-primary font-medium hover:underline dark:text-accent"
+            className="text-primary font-medium hover:underline "
           >
             Demander un essai gratuit
           </Link>
