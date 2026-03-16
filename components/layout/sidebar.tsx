@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronLeft, ChevronRight, PanelLeft } from "lucide-react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -43,23 +44,27 @@ export default function Sidebar({
   onToggleCollapsed,
   userSection,
 }: SidebarProps) {
+  const [mobileOpen, setMobileOpen] = useState(false);
   const groupedItems = groupItemsBySection(items);
 
   return (
     <>
       <div className="mb-3 md:hidden">
-        <Sheet>
+        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
           <SheetTrigger asChild>
-            <Button variant="outline" size="sm" className="gap-2">
+            <Button variant="outline" size="sm" className="gap-2 transition-all duration-300 ease-in-out">
               <PanelLeft className="h-4 w-4" />
               {title}
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-[280px] p-4">
+          <SheetContent
+            side="left"
+            className="fixed inset-y-0 left-0 z-50 w-[280px] translate-x-0 p-4 transition-all duration-300 ease-in-out"
+          >
             <SheetHeader>
               <SheetTitle>{title}</SheetTitle>
             </SheetHeader>
-            <MobileSidebarNav title={title} groupedItems={groupedItems} />
+            <MobileSidebarNav title={title} groupedItems={groupedItems} onNavigate={() => setMobileOpen(false)} />
             {userSection ? <div className="mt-4 border-t pt-4">{userSection}</div> : null}
           </SheetContent>
         </Sheet>
@@ -67,10 +72,13 @@ export default function Sidebar({
 
       <aside
         className={cn(
-          "relative hidden h-screen border-r bg-card p-4 md:flex md:flex-col",
+          "relative hidden h-screen overflow-hidden border-r bg-card p-4 transition-all duration-300 ease-in-out md:flex md:flex-col",
           collapsed ? "w-[84px]" : "w-[240px]",
         )}
       >
+        <div className="mb-4 border-b pb-3">
+          <p className={cn("text-sm font-semibold", collapsed && "sr-only")}>{title}</p>
+        </div>
         <Button
           type="button"
           variant="outline"
@@ -91,30 +99,34 @@ export default function Sidebar({
 function MobileSidebarNav({
   title,
   groupedItems,
+  onNavigate,
 }: {
   title: string;
   groupedItems: Array<{ section: string; items: SidebarItem[] }>;
+  onNavigate: () => void;
 }) {
   const pathname = usePathname();
 
   return (
-    <nav className="mt-4 flex flex-col gap-4" aria-label={title}>
+    <nav className="mt-4 flex flex-1 flex-col gap-4 overflow-y-auto" aria-label={title}>
       {groupedItems.map((group) => (
         <div key={group.section} className="space-y-1">
           <p className="px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             {group.section}
           </p>
           {group.items.map((item) => {
-            const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+            const isActive = pathname.startsWith(item.href);
 
             return (
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={onNavigate}
                 className={cn(
-                  "flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors duration-200 hover:bg-accent",
+                  "flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-all duration-300 ease-in-out hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring",
                   isActive && "bg-primary text-primary-foreground",
                 )}
+                aria-current={isActive ? "page" : undefined}
               >
                 <span className="shrink-0">{item.icon}</span>
                 <span>{item.label}</span>
@@ -140,7 +152,7 @@ function DesktopSidebarNav({
 
   return (
     <TooltipProvider delayDuration={100}>
-      <nav className="flex flex-1 flex-col gap-4" aria-label={title}>
+      <nav className="flex flex-1 flex-col gap-4 overflow-y-auto" aria-label={title}>
         {groupedItems.map((group) => (
           <div key={group.section} className="space-y-1">
             <p
@@ -152,14 +164,14 @@ function DesktopSidebarNav({
               <span className={collapsed ? "sr-only" : ""}>{group.section}</span>
             </p>
             {group.items.map((item) => {
-              const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+              const isActive = pathname.startsWith(item.href);
 
               const link = (
                 <Link
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors duration-200 hover:bg-accent",
+                    "flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-all duration-300 ease-in-out hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring",
                     isActive && "bg-primary text-primary-foreground",
                     collapsed && "justify-center px-2",
                   )}
