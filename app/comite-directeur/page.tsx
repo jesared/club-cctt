@@ -38,7 +38,7 @@ export default async function ComiteDirecteurPage() {
           Gouvernance CCTT
         </p>
         <h1 className="text-4xl font-bold mb-4 ">Comité directeur</h1>
-        <p className="text-gray-600 max-w-3xl ">
+        <p className="text-primary max-w-3xl ">
           Le comité directeur du Châlons-en-Champagne Tennis de Table assure la
           gestion, l’organisation et le développement du club.
         </p>
@@ -50,12 +50,9 @@ export default async function ComiteDirecteurPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {data.bureau.map((personne) => (
-            <Card
-              key={personne.nom}
-              className="border-l-4 border-l-primary dark:rounded-none dark:border-primary/45 dark:border-l-primary dark:bg-card/90 dark:shadow-[0_0_18px_color-mix(in_oklab,var(--primary)_18%,transparent)]"
-            >
+            <Card key={personne.nom} className="border-l-4 border-l-primary">
               <CardHeader className="flex flex-col items-center text-center gap-4">
-                <div className="relative w-28 h-28 overflow-hidden rounded-lg dark:rounded-none dark:border dark:border-primary/45">
+                <div className="relative w-28 h-28 overflow-hidden rounded-lg ">
                   <Image
                     src={personne.photo}
                     alt={`${personne.nom} – ${personne.poste}`}
@@ -64,16 +61,12 @@ export default async function ComiteDirecteurPage() {
                   />
                 </div>
 
-                <CardTitle className="dark:font-mono dark:uppercase dark:tracking-[0.06em]">
-                  {personne.poste}
-                </CardTitle>
+                <CardTitle className="">{personne.poste}</CardTitle>
               </CardHeader>
 
               <CardContent className="text-center">
                 <p className="font-medium">{personne.nom}</p>
-                <p className="text-sm text-gray-500 dark:text-foreground/70">
-                  {personne.description}
-                </p>
+                <p className="text-sm text-gray-500 ">{personne.description}</p>
               </CardContent>
             </Card>
           ))}
@@ -82,18 +75,13 @@ export default async function ComiteDirecteurPage() {
 
       {/* MEMBRES */}
       <section>
-        <h2 className="text-3xl font-semibold mb-8 dark:font-mono dark:uppercase dark:tracking-[0.08em]">
-          Membres du comité
-        </h2>
+        <h2 className="text-3xl font-semibold mb-8 ">Membres du comité</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {data.membres.map((membre) => (
-            <Card
-              key={membre.nom}
-              className="dark:rounded-none dark:border-primary/45 dark:bg-card/90 dark:shadow-[0_0_16px_color-mix(in_oklab,var(--primary)_16%,transparent)]"
-            >
+            <Card key={membre.nom} className="">
               <CardHeader className="flex flex-row items-center gap-3">
-                <Users className="w-5 h-5 text-primary dark:text-accent" />
+                <Users className="w-5 h-5 text-primary " />
                 <CardTitle>Membre</CardTitle>
               </CardHeader>
               <CardContent>
@@ -106,9 +94,7 @@ export default async function ComiteDirecteurPage() {
 
       {/* SALARIÉS */}
       <section>
-        <h2 className="text-3xl font-semibold mb-8 dark:font-mono dark:uppercase dark:tracking-[0.08em]">
-          Salariés diplômés
-        </h2>
+        <h2 className="text-3xl font-semibold mb-8 ">Salariés diplômés</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {data.salaries.map((salarie) => (
