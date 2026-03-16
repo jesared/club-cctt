@@ -1,7 +1,9 @@
 import KpiPageViewTracker from "@/components/KpiPageViewTracker";
 import TournamentRegistrationForm from "@/components/TournamentRegistrationForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
 
 function formatEventLabel(event: {
   code: string;
@@ -57,6 +59,9 @@ function formatEventDateLabel(startAt: Date) {
 }
 
 export default async function InscriptionsPage() {
+  const session = await getServerSession(authOptions);
+  const userEmail = session?.user?.email?.trim().toLowerCase();
+
   const tournament = await prisma.tournament.findFirst({
     where: {
       status: {
@@ -65,6 +70,7 @@ export default async function InscriptionsPage() {
     },
     orderBy: [{ startDate: "desc" }],
     select: {
+      id: true,
       name: true,
       events: {
         where: {
@@ -96,6 +102,28 @@ export default async function InscriptionsPage() {
     onlinePriceLabel: `${(event.feeOnlineCents / 100).toFixed(0)}€`,
     onsitePriceLabel: `${(event.feeOnsiteCents / 100).toFixed(0)}€`,
   }));
+
+  const hasUserRegistration = tournament && session?.user?.id
+    ?
+      (await prisma.tournamentRegistration.count({
+        where: {
+          tournamentId: tournament.id,
+          OR: [
+            { userId: session.user.id },
+            ...(userEmail
+              ? [
+                  {
+                    contactEmail: {
+                      equals: userEmail,
+                      mode: "insensitive" as const,
+                    },
+                  },
+                ]
+              : []),
+          ],
+        },
+      })) > 0
+    : false;
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-16">
@@ -129,12 +157,14 @@ export default async function InscriptionsPage() {
             >
               Retour à la page tournoi
             </a>
-            <a
-              href="/tournoi/mes-inscriptions"
-              className="inline-flex justify-center rounded-md border border-border px-5 py-2 text-foreground transition hover:bg-accent/40"
-            >
-              Voir mes inscriptions
-            </a>
+            {hasUserRegistration ? (
+              <a
+                href="/user/inscriptions"
+                className="inline-flex justify-center rounded-md border border-border px-5 py-2 text-foreground transition hover:bg-accent/40"
+              >
+                Voir mes inscriptions
+              </a>
+            ) : null}
           </div>
         </CardContent>
       </Card>

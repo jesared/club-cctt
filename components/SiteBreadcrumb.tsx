@@ -8,6 +8,7 @@ import {
   clubAdminMenuItems,
   mainMenuItems,
   tournamentAdminMenuItems,
+  userMenuItems,
   tournamentMenuItems,
 } from "@/components/navigation/menu-items";
 import {
@@ -24,6 +25,7 @@ const routeLabels = new Map<string, string>([
   ...tournamentMenuItems,
   ...clubAdminMenuItems,
   ...tournamentAdminMenuItems,
+  ...userMenuItems,
 ].map((item) => [item.href, item.label]));
 
 const formatSegmentLabel = (segment: string) => {

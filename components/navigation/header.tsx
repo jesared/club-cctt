@@ -19,8 +19,8 @@ import {
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
-const mainNavItems = [
-  { href: "/home", label: "Home", icon: Home },
+const publicNavItems = [
+  { href: "/", label: "Home", icon: Home },
   { href: "/club", label: "Club" },
   { href: "/tournoi", label: "Tournoi" },
 ];
@@ -32,7 +32,7 @@ function UserMenu() {
   if (!session) {
     return (
       <Button size="sm" onClick={() => signIn("google")}>
-        Se connecter
+        Connexion
       </Button>
     );
   }
@@ -42,15 +42,16 @@ function UserMenu() {
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border bg-muted/40"
+        className="flex h-9 items-center justify-center gap-2 rounded-full border bg-muted/40 px-3"
         aria-expanded={open}
         aria-label="Ouvrir le menu utilisateur"
       >
         {session.user?.image ? (
-          <Image src={session.user.image} alt="Avatar" width={36} height={36} />
+          <Image src={session.user.image} alt="Avatar" width={22} height={22} className="rounded-full" />
         ) : (
           <User className="h-4 w-4" />
         )}
+        <span className="text-xs font-medium">User</span>
       </button>
 
       {open && (
@@ -68,11 +69,11 @@ function UserMenu() {
             </div>
             <div className="mt-1 flex flex-col gap-1">
               <Link
-                href="/espace"
+                href="/user"
                 className="rounded-sm px-2 py-1.5 text-sm hover:bg-accent"
                 onClick={() => setOpen(false)}
               >
-                Mon espace
+                Mon espace utilisateur
               </Link>
               <button
                 type="button"
@@ -104,14 +105,14 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border/80 bg-background/95 shadow-sm backdrop-blur">
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-4 px-4">
-        <Link href="/home" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2">
           <Image src="/logo.jpg" alt="Logo du club" width={36} height={36} className="rounded-sm" />
           <span className="hidden text-sm font-semibold md:inline">CCTT</span>
         </Link>
 
         <nav className="hidden flex-1 items-center justify-center md:flex">
           <ul className="flex items-center gap-6 text-sm font-medium">
-            {mainNavItems.map((item) => {
+            {publicNavItems.map((item) => {
               const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
               return (
                 <li key={item.href}>
@@ -119,14 +120,26 @@ export default function Header() {
                     href={item.href}
                     className={cn(
                       "flex items-center gap-2 transition-colors hover:text-primary",
-                      active ? "text-primary" : "text-muted-foreground"
+                      active ? "text-primary" : "text-muted-foreground",
                     )}
                   >
-                    {item.icon ? <item.icon className="h-4 w-4" /> : null}<span>{item.label}</span>
+                    {item.icon ? <item.icon className="h-4 w-4" /> : null}
+                    <span>{item.label}</span>
                   </Link>
                 </li>
               );
             })}
+            <li>
+              <Link
+                href={session ? "/user" : "/api/auth/signin"}
+                className={cn(
+                  "transition-colors hover:text-primary",
+                  pathname.startsWith("/user") ? "text-primary" : "text-muted-foreground",
+                )}
+              >
+                {session ? "User" : "Connexion"}
+              </Link>
+            </li>
           </ul>
         </nav>
 
@@ -145,7 +158,7 @@ export default function Header() {
             <SheetContent side="left" className="w-[86vw] max-w-sm p-0" aria-label="Navigation mobile">
               <SheetHeader className="border-b px-5 py-4 text-left">
                 <SheetTitle className="text-base">
-                  <Link href="/home" className="flex items-center gap-3">
+                  <Link href="/" className="flex items-center gap-3">
                     <Image
                       src="/logo.jpg"
                       alt="Logo du club"
@@ -160,7 +173,7 @@ export default function Header() {
 
               <nav className="px-3 py-4" aria-label="Menu principal mobile">
                 <ul className="flex flex-col gap-1">
-                  {mainNavItems.map((item) => {
+                  {publicNavItems.map((item) => {
                     const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
 
                     return (
@@ -172,37 +185,35 @@ export default function Header() {
                               "flex items-center gap-2 rounded-md px-3 py-2.5 text-base font-medium transition-colors",
                               isActive
                                 ? "bg-primary/10 text-primary"
-                                : "text-foreground/90 hover:bg-muted"
+                                : "text-foreground/90 hover:bg-muted",
                             )}
                           >
-                            {item.icon ? <item.icon className="h-4 w-4" /> : null}<span>{item.label}</span>
+                            {item.icon ? <item.icon className="h-4 w-4" /> : null}
+                            <span>{item.label}</span>
                           </Link>
                         </SheetClose>
                       </li>
                     );
                   })}
+
+                  <li>
+                    <SheetClose asChild>
+                      <Link
+                        href={session ? "/user" : "/api/auth/signin"}
+                        className={cn(
+                          "flex items-center gap-2 rounded-md px-3 py-2.5 text-base font-medium transition-colors",
+                          pathname.startsWith("/user")
+                            ? "bg-primary/10 text-primary"
+                            : "text-foreground/90 hover:bg-muted",
+                        )}
+                      >
+                        <User className="h-4 w-4" />
+                        <span>{session ? "User" : "Connexion"}</span>
+                      </Link>
+                    </SheetClose>
+                  </li>
                 </ul>
               </nav>
-
-              <div className="mt-auto border-t px-4 py-4">
-                {!session ? (
-                  <Button
-                    className="w-full"
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      void signIn("google");
-                    }}
-                  >
-                    Connexion
-                  </Button>
-                ) : (
-                  <SheetClose asChild>
-                    <Link href="/espace" className="block">
-                      <Button className="w-full">Mon compte</Button>
-                    </Link>
-                  </SheetClose>
-                )}
-              </div>
             </SheetContent>
           </Sheet>
         </div>
