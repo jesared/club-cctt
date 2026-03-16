@@ -10,9 +10,9 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 
 export default function UserLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="relative left-1/2 right-1/2 w-screen -translate-x-1/2">
-      <div className="flex min-h-full flex-col">
-        <div className="flex flex-1">
+    <section className="mx-auto w-full max-w-7xl px-4 py-8">
+      <div className="flex min-h-[calc(100vh-16rem)] min-w-0 flex-col">
+        <div className="flex min-w-0 flex-1 gap-6">
           <aside className="hidden w-[240px] flex-col border-r bg-card md:flex">
             <UserSidebar />
             <div className="mt-auto border-t p-4">
@@ -20,7 +20,7 @@ export default function UserLayout({ children }: { children: ReactNode }) {
             </div>
           </aside>
 
-          <main className="min-w-0 flex-1 px-4 py-6 md:px-8">
+          <main className="min-w-0 flex-1 rounded-xl border bg-card px-4 py-6 shadow-sm md:px-8">
             <div className="mb-4 flex items-center justify-between md:hidden">
               <Sheet>
                 <SheetTrigger asChild>
@@ -43,6 +43,6 @@ export default function UserLayout({ children }: { children: ReactNode }) {
           </main>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
