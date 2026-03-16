@@ -4,12 +4,12 @@ export default function ClubPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
       {/* TITRE PAGE */}
-      <header className="rounded-xl border bg-card/70 p-8 shadow-sm dark:rounded-none dark:border-primary/40 dark:bg-card dark:shadow-[0_0_24px_color-mix(in_oklab,var(--primary)_20%,transparent)]">
-        <p className="mb-3 inline-flex items-center rounded-full border border-primary/60 bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-primary dark:font-mono dark:text-accent">
+      <header className="rounded-xl border bg-card/70 p-8 shadow-sm ">
+        <p className="mb-3 inline-flex items-center rounded-full border border-primary/60 bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-primary dark:font-mono ">
           Club CCTT
         </p>
-        <h1 className="text-4xl font-bold mb-4 dark:font-mono dark:uppercase dark:tracking-[0.08em]">Le Club</h1>
-        <p className="text-muted-foreground max-w-3xl dark:text-foreground/80">
+        <h1 className="text-4xl font-bold mb-4 ">Le Club</h1>
+        <p className="text-muted-foreground max-w-3xl ">
           Découvrez le Châlons-en-Champagne Tennis de Table, ses valeurs et son
           engagement au service de la pratique du tennis de table.
         </p>
@@ -17,12 +17,12 @@ export default function ClubPage() {
 
       {/* PRÉSENTATION */}
       <section>
-        <Card className="bg-muted/40 cyberpunk-highlight dark:rounded-none dark:border-primary/50 dark:bg-card">
+        <Card className="bg-muted/40 ">
           <CardHeader>
-            <CardTitle className="dark:font-mono dark:uppercase dark:tracking-[0.08em]">Présentation</CardTitle>
+            <CardTitle>Présentation</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground leading-relaxed max-w-4xl cyberpunk-text-soft">
+            <p className="text-muted-foreground leading-relaxed max-w-4xl">
               Fondé à Châlons-en-Champagne, le <strong>CCTT</strong> est un club
               affilié à la Fédération Française de Tennis de Table. Le club a
               pour objectif de promouvoir la pratique du tennis de table, aussi
@@ -35,16 +35,16 @@ export default function ClubPage() {
 
       {/* VALEURS */}
       <section>
-        <h2 className="text-2xl font-semibold mb-6 dark:font-mono dark:uppercase dark:tracking-[0.08em]">Nos valeurs</h2>
+        <h2 className="text-2xl font-semibold mb-6 ">Nos valeurs</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl">
           {/* ACCESSIBILITÉ */}
-          <Card className="dark:rounded-none dark:border-primary/45 dark:bg-card/90 dark:shadow-[0_0_16px_color-mix(in_oklab,var(--primary)_16%,transparent)]">
+          <Card>
             <CardHeader>
               <CardTitle>Accessibilité</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground dark:text-foreground/75">
+              <p className="text-sm text-muted-foreground ">
                 Un club ouvert à tous les publics, quel que soit l’âge ou le
                 niveau.
               </p>
@@ -52,36 +52,36 @@ export default function ClubPage() {
           </Card>
 
           {/* CONVIVIALITÉ */}
-          <Card className="dark:rounded-none dark:border-primary/45 dark:bg-card/90 dark:shadow-[0_0_16px_color-mix(in_oklab,var(--primary)_16%,transparent)]">
+          <Card className="dark:rounded-none">
             <CardHeader>
               <CardTitle>Convivialité</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground dark:text-foreground/75">
+              <p className="text-sm text-muted-foreground ">
                 Un esprit d’équipe et une ambiance conviviale au cœur du club.
               </p>
             </CardContent>
           </Card>
 
           {/* ENCADREMENT */}
-          <Card className="dark:rounded-none dark:border-primary/45 dark:bg-card/90 dark:shadow-[0_0_16px_color-mix(in_oklab,var(--primary)_16%,transparent)]">
+          <Card>
             <CardHeader>
               <CardTitle>Encadrement</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground dark:text-foreground/75">
+              <p className="text-sm text-muted-foreground">
                 Des entraînements encadrés avec sérieux et pédagogie.
               </p>
             </CardContent>
           </Card>
 
           {/* RESPECT */}
-          <Card className="dark:rounded-none dark:border-primary/45 dark:bg-card/90 dark:shadow-[0_0_16px_color-mix(in_oklab,var(--primary)_16%,transparent)]">
+          <Card>
             <CardHeader>
               <CardTitle>Respect & fair-play</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground dark:text-foreground/75">
+              <p className="text-sm text-muted-foreground ">
                 Des valeurs sportives essentielles dans la pratique et la
                 compétition.
               </p>

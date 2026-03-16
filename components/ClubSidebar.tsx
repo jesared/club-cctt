@@ -1,30 +1,32 @@
 "use client";
 
 import {
-  ClipboardList,
-  FileText,
+  CalendarClock,
+  Handshake,
   House,
-  Receipt,
-  Settings,
+  Mail,
+  ReceiptText,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 
-const userMenu = [
-  { label: "Dashboard", href: "/user", icon: House },
+const clubMenu = [
+  { label: "Accueil", href: "/club", icon: House },
   {
-    label: "Mes inscriptions",
-    href: "/user/inscriptions",
-    icon: ClipboardList,
+    label: "Comité directeur",
+    href: "/club/comite",
+    icon: Users,
   },
-  { label: "Paiements", href: "/user/paiements", icon: Receipt },
-  { label: "Documents", href: "/user/documents", icon: FileText },
-  { label: "Paramètres", href: "/user/parametres", icon: Settings },
+  { label: "Horaires", href: "/club/horaires", icon: CalendarClock },
+  { label: "Tarifs", href: "/club/tarifs", icon: ReceiptText },
+  { label: "Contact", href: "/club/contact", icon: Mail },
+  { label: "Partenaires", href: "/club/partenaires", icon: Handshake },
 ];
 
-export default function UserSidebar({
+export default function ClubSidebar({
   onNavigate,
 }: {
   onNavigate?: () => void;
@@ -32,13 +34,10 @@ export default function UserSidebar({
   const pathname = usePathname();
 
   return (
-    <nav
-      className="flex h-full flex-col p-4"
-      aria-label="Navigation utilisateur"
-    >
-      <p className="mb-4 pb-3 text-sm font-semibold">Espace utilisateur</p>
+    <nav className="flex h-full flex-col p-4" aria-label="Navigation club">
+      <p className="mb-4 pb-3 text-sm font-semibold">Espace club</p>
       <div className="flex flex-1 flex-col gap-1">
-        {userMenu.map((item) => {
+        {clubMenu.map((item) => {
           const isActive =
             pathname === item.href || pathname.startsWith(`${item.href}/`);
           const Icon = item.icon;

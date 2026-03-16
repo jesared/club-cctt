@@ -1,9 +1,9 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { PanelLeft } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronLeft, ChevronRight, PanelLeft } from "lucide-react";
+import type { ReactNode } from "react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -14,12 +14,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 export type SidebarItem = {
@@ -32,16 +26,12 @@ export type SidebarItem = {
 type SidebarProps = {
   items: SidebarItem[];
   title?: string;
-  collapsed: boolean;
-  onToggleCollapsed: () => void;
   userSection?: ReactNode;
 };
 
 export default function Sidebar({
   items,
   title = "Navigation",
-  collapsed,
-  onToggleCollapsed,
   userSection,
 }: SidebarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -49,48 +39,44 @@ export default function Sidebar({
 
   return (
     <>
+      {/* MOBILE BURGER */}
       <div className="mb-3 md:hidden">
-        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+        <Sheet>
           <SheetTrigger asChild>
-            <Button variant="outline" size="sm" className="gap-2 transition-all duration-300 ease-in-out">
+            <Button variant="outline" size="sm" className="gap-2">
               <PanelLeft className="h-4 w-4" />
               {title}
             </Button>
           </SheetTrigger>
+
           <SheetContent
             side="left"
-            className="fixed inset-y-0 left-0 z-50 w-[280px] translate-x-0 p-4 transition-all duration-300 ease-in-out"
+            className="fixed inset-y-0 left-0 z-50 w-[260px] p-4"
           >
             <SheetHeader>
               <SheetTitle>{title}</SheetTitle>
             </SheetHeader>
-            <MobileSidebarNav title={title} groupedItems={groupedItems} onNavigate={() => setMobileOpen(false)} />
-            {userSection ? <div className="mt-4 border-t pt-4">{userSection}</div> : null}
+
+            <MobileSidebarNav
+              title={title}
+              groupedItems={groupedItems}
+              onNavigate={() => setMobileOpen(false)}
+            />
+
+            {userSection && (
+              <div className="mt-4 border-t pt-4">{userSection}</div>
+            )}
           </SheetContent>
         </Sheet>
       </div>
 
-      <aside
-        className={cn(
-          "relative hidden h-screen overflow-hidden border-r bg-card p-4 transition-all duration-300 ease-in-out md:flex md:flex-col",
-          collapsed ? "w-[84px]" : "w-[240px]",
+      {/* DESKTOP SIDEBAR */}
+      <aside className="hidden h-screen w-[260px] flex-col border-r p-4 md:flex ">
+        <DesktopSidebarNav groupedItems={groupedItems} title={title} />
+
+        {userSection && (
+          <div className="mt-auto border-t pt-4">{userSection}</div>
         )}
-      >
-        <div className="mb-4 border-b pb-3">
-          <p className={cn("text-sm font-semibold", collapsed && "sr-only")}>{title}</p>
-        </div>
-        <Button
-          type="button"
-          variant="outline"
-          size="icon"
-          className="absolute right-[-12px] top-4 z-10 hidden h-7 w-7 rounded-full md:inline-flex"
-          onClick={onToggleCollapsed}
-          aria-label={collapsed ? "Ouvrir la sidebar" : "Replier la sidebar"}
-        >
-          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-        </Button>
-        <DesktopSidebarNav groupedItems={groupedItems} collapsed={collapsed} title={title} />
-        {userSection ? <div className="mt-auto border-t pt-4">{userSection}</div> : null}
       </aside>
     </>
   );
@@ -108,12 +94,13 @@ function MobileSidebarNav({
   const pathname = usePathname();
 
   return (
-    <nav className="mt-4 flex flex-1 flex-col gap-4 overflow-y-auto" aria-label={title}>
+    <nav className="mt-4 flex flex-1 flex-col gap-4 overflow-y-auto">
       {groupedItems.map((group) => (
         <div key={group.section} className="space-y-1">
           <p className="px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             {group.section}
           </p>
+
           {group.items.map((item) => {
             const isActive = pathname.startsWith(item.href);
 
@@ -123,13 +110,12 @@ function MobileSidebarNav({
                 href={item.href}
                 onClick={onNavigate}
                 className={cn(
-                  "flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-all duration-300 ease-in-out hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring",
+                  "flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-accent",
                   isActive && "bg-primary text-primary-foreground",
                 )}
-                aria-current={isActive ? "page" : undefined}
               >
-                <span className="shrink-0">{item.icon}</span>
-                <span>{item.label}</span>
+                {item.icon}
+                {item.label}
               </Link>
             );
           })}
@@ -141,62 +127,41 @@ function MobileSidebarNav({
 
 function DesktopSidebarNav({
   groupedItems,
-  collapsed,
   title,
 }: {
   groupedItems: Array<{ section: string; items: SidebarItem[] }>;
-  collapsed: boolean;
   title: string;
 }) {
   const pathname = usePathname();
 
   return (
-    <TooltipProvider delayDuration={100}>
-      <nav className="flex flex-1 flex-col gap-4 overflow-y-auto" aria-label={title}>
-        {groupedItems.map((group) => (
-          <div key={group.section} className="space-y-1">
-            <p
-              className={cn(
-                "px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground",
-                collapsed && "text-center",
-              )}
-            >
-              <span className={collapsed ? "sr-only" : ""}>{group.section}</span>
-            </p>
-            {group.items.map((item) => {
-              const isActive = pathname.startsWith(item.href);
+    <nav className="flex flex-1 flex-col gap-4 overflow-y-auto">
+      {groupedItems.map((group) => (
+        <div key={group.section} className="space-y-3">
+          <p className="px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            {group.section}
+          </p>
 
-              const link = (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-all duration-300 ease-in-out hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring",
-                    isActive && "bg-primary text-primary-foreground",
-                    collapsed && "justify-center px-2",
-                  )}
-                  aria-current={isActive ? "page" : undefined}
-                >
-                  <span className="shrink-0">{item.icon}</span>
-                  <span className={collapsed ? "hidden" : "block"}>{item.label}</span>
-                </Link>
-              );
+          {group.items.map((item) => {
+            const isActive = pathname.startsWith(item.href);
 
-              if (!collapsed) {
-                return link;
-              }
-
-              return (
-                <Tooltip key={item.href}>
-                  <TooltipTrigger asChild>{link}</TooltipTrigger>
-                  <TooltipContent side="right">{item.label}</TooltipContent>
-                </Tooltip>
-              );
-            })}
-          </div>
-        ))}
-      </nav>
-    </TooltipProvider>
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-accent",
+                  isActive && "bg-primary text-primary-foreground",
+                )}
+              >
+                {item.icon}
+                {item.label}
+              </Link>
+            );
+          })}
+        </div>
+      ))}
+    </nav>
   );
 }
 

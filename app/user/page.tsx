@@ -2,7 +2,13 @@ import { ArrowRight, CalendarDays, CreditCard, FileText } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 const quickActions = [
   {
@@ -27,12 +33,13 @@ const quickActions = [
 
 export default function UserProfilePage() {
   return (
-    <main className="space-y-6">
-      <header className="mb-6 flex items-center justify-between">
+    <main className="max-w-7xl mx-auto px-4 py-8 space-y-6">
+      <header className="mb-6 flex items-center justify-between ">
         <div>
           <h1 className="text-2xl font-semibold">Dashboard utilisateur</h1>
           <p className="text-sm text-muted-foreground">
-            Gérez vos inscriptions, paiements et documents depuis un seul espace.
+            Gérez vos inscriptions, paiements et documents depuis un seul
+            espace.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -50,7 +57,10 @@ export default function UserProfilePage() {
           const Icon = action.icon;
 
           return (
-            <Card key={action.href} className="border-border bg-card shadow-sm transition-colors duration-200 hover:shadow-md">
+            <Card
+              key={action.href}
+              className="border-border bg-card shadow-sm transition-colors duration-200 hover:shadow-md"
+            >
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Icon className="h-4 w-4 text-primary" />
@@ -60,7 +70,10 @@ export default function UserProfilePage() {
               </CardHeader>
               <CardContent>
                 <Button asChild variant="ghost" className="px-0">
-                  <Link href={action.href} className="inline-flex items-center gap-2">
+                  <Link
+                    href={action.href}
+                    className="inline-flex items-center gap-2"
+                  >
                     Ouvrir
                     <ArrowRight className="h-4 w-4" />
                   </Link>

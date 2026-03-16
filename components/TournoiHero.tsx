@@ -1,12 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Image from "next/image";
 import { tournamentRegistrationContent } from "@/lib/tournament-registration-content";
+import Image from "next/image";
 
 export default function TournoiHero() {
   return (
     <>
       <section className="relative">
-        <div className="max-w-6xl mx-auto px-4 py-12">
+        <div className="mx-auto">
           <Image
             src="/couv-facebook.jpg"
             alt="Tournoi de Pâques 2026 – Châlons-en-Champagne Tennis de Table"
@@ -18,7 +18,7 @@ export default function TournoiHero() {
         </div>
       </section>
       <section>
-        <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="mx-auto py-8">
           <Card className="border-l-4 border-l-primary cyberpunk-highlight">
             <CardHeader>
               <p className="uppercase tracking-wide text-sm text-primary mb-2">

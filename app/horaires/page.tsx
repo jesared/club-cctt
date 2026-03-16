@@ -39,12 +39,12 @@ export default async function HorairesPage() {
         </p>
         <h1 className="text-4xl font-bold mb-2">Horaires d’entraînement</h1>
 
-        <p className="text-gray-600 max-w-3xl ">
+        <p className=" max-w-3xl ">
           Retrouvez ci-dessous l’ensemble des créneaux d’entraînement du
           Châlons-en-Champagne Tennis de Table.
         </p>
 
-        <div className="text-sm text-gray-500 max-w-3xl space-y-2">
+        <div className="text-sm  max-w-3xl space-y-2">
           <p>
             Ces horaires sont donnés à titre indicatif. Ils peuvent évoluer
             pendant les vacances scolaires ou lors des jours fériés.
@@ -67,7 +67,7 @@ export default async function HorairesPage() {
             <CardTitle>Légende</CardTitle>
           </CardHeader>
 
-          <CardContent className="text-sm text-gray-700">
+          <CardContent className="text-sm ">
             <div className="flex flex-wrap gap-x-6 gap-y-2">
               <div className="flex items-center gap-2">
                 <Badge variant="jeunes">Jeunes</Badge>

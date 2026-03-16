@@ -1,10 +1,10 @@
+import type { Metadata } from "next";
+
 import Footer from "@/components/layout/footer";
 import Header from "@/components/layout/header";
-import Container from "@/components/layout/container";
 import Providers from "@/components/Providers";
 import SiteBreadcrumb from "@/components/SiteBreadcrumb";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import type { Metadata } from "next";
+
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -26,18 +26,21 @@ export default function RootLayout({
     <html lang="fr" suppressHydrationWarning>
       <body className="min-h-screen bg-background text-foreground antialiased">
         <Providers>
-          <SidebarProvider defaultOpen={false}>
-            <div className="flex min-h-screen flex-col">
-              <Header />
-              <main className="flex-1 py-12">
-                <Container className="space-y-6">
-                  <SiteBreadcrumb />
-                  {children}
-                </Container>
-              </main>
-              <Footer />
-            </div>
-          </SidebarProvider>
+          <div className="flex min-h-screen flex-col">
+            {/* HEADER */}
+            <Header />
+
+            {/* PAGE CONTENT */}
+            <main className="flex-1">
+              <div className="px-4 py-6">
+                <SiteBreadcrumb />
+                {children}
+              </div>
+            </main>
+
+            {/* FOOTER */}
+            <Footer />
+          </div>
         </Providers>
       </body>
     </html>

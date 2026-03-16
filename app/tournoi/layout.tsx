@@ -1,57 +1,58 @@
 "use client";
 
+import { Menu } from "lucide-react";
 import type { ReactNode } from "react";
-import { ClipboardList, FileText, Medal, Table2, Trophy, UserPlus } from "lucide-react";
-import { useState } from "react";
 
-import Sidebar, { type SidebarItem } from "@/components/layout/sidebar";
+import AuthButton from "@/components/AuthButton";
+import TournoiSidebar from "@/components/TournoiSidebar";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
-const tournoiMenu: SidebarItem[] = [
-  { label: "Présentation", href: "/tournoi", icon: <FileText className="h-4 w-4" />, section: "Tournoi" },
-  { label: "Tableaux", href: "/tournoi/tableaux", icon: <Table2 className="h-4 w-4" />, section: "Tournoi" },
-  {
-    label: "Inscriptions",
-    href: "/tournoi/inscription",
-    icon: <UserPlus className="h-4 w-4" />,
-    section: "Tournoi",
-  },
-  {
-    label: "Liste des inscrits",
-    href: "/tournoi/liste-inscrits",
-    icon: <ClipboardList className="h-4 w-4" />,
-    section: "Tournoi",
-  },
-  { label: "Résultats", href: "/tournoi/resultats", icon: <ClipboardList className="h-4 w-4" />, section: "Tournoi" },
-  { label: "Classements", href: "/tournoi/classements", icon: <Medal className="h-4 w-4" />, section: "Tournoi" },
-];
-
-export default function TournoiLayout({ children }: { children: ReactNode }) {
-  const [collapsed, setCollapsed] = useState(false);
-
+export default function UserLayout({ children }: { children: ReactNode }) {
   return (
-    <section className="mx-auto w-full max-w-7xl px-4 py-8">
-      <div className="flex min-h-screen min-w-0 gap-6">
-        <Sidebar
-          items={tournoiMenu}
-          title="Menu tournoi"
-          collapsed={collapsed}
-          onToggleCollapsed={() => setCollapsed(!collapsed)}
-        />
-        <div className="min-w-0 flex-1 space-y-6">
-          <header className="mb-6 flex items-center justify-between">
-            <div>
-              <h1 className="flex items-center gap-2 text-2xl font-semibold">
-                <Trophy className="h-6 w-6 text-primary" />
-                Tournoi
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Informations publiques et suivi du tournoi.
-              </p>
+    <div className="relative left-1/2 right-1/2 w-screen -translate-x-1/2">
+      <div className="flex min-h-full flex-col">
+        <div className="flex flex-1">
+          <aside className="hidden w-[240px] flex-col border-r  md:flex">
+            <TournoiSidebar />
+            <div className="mt-auto border-t p-4">
+              <AuthButton />
             </div>
-          </header>
-          {children}
+          </aside>
+
+          <main className="min-w-0 flex-1 px-4 md:px-8">
+            <div className="mb-4 flex items-center justify-between md:hidden">
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    aria-label="Ouvrir la navigation utilisateur"
+                  >
+                    <Menu className="h-5 w-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-[280px] p-0">
+                  <SheetHeader className="px-4 py-3 text-left">
+                    <SheetTitle>Espace tournoi</SheetTitle>
+                  </SheetHeader>
+                  <TournoiSidebar />
+                  <div className="border-t p-4">
+                    <AuthButton />
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
+            {children}
+          </main>
         </div>
       </div>
-    </section>
+    </div>
   );
 }
