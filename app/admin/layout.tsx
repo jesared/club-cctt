@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 
 import AppLayout from "@/components/layout/app-layout";
-import TournoiSidebar from "@/components/sidebar/tournoi-sidebar";
+import AdminSidebar from "@/components/sidebar/admin-sidebar";
 
 export default function Layout({ children }: { children: ReactNode }) {
-  return <AppLayout sidebar={<TournoiSidebar />}>{children}</AppLayout>;
+  return <AppLayout sidebar={<AdminSidebar />}>{children}</AppLayout>;
 }
