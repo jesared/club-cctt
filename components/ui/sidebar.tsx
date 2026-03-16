@@ -90,7 +90,7 @@ const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
           aria-label="Fermer le menu"
           onClick={() => setOpen(false)}
           className={cn(
-            "absolute inset-0 bg-slate-900/40 transition-opacity",
+            "absolute inset-0 bg-slate-950 transition-opacity",
             open ? "opacity-100" : "opacity-0"
           )}
         />
