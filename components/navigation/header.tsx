@@ -24,8 +24,14 @@ import { cn } from "@/lib/utils";
 
 const mainNavItems = [
   { href: "/", label: "Accueil" },
-  { href: "/tournoi", label: "Tournoi" },
+  { href: "/actualites", label: "Actualités" },
+  { href: "/competitions", label: "Compétitions" },
+  { href: "/horaires", label: "Horaires" },
+  { href: "/tarifs", label: "Tarifs" },
+  { href: "/partenaires", label: "Partenaires" },
   { href: "/club", label: "Club" },
+  { href: "/evenements", label: "Événements" },
+  { href: "/contact", label: "Contact" },
 ];
 
 function UserMenu() {
