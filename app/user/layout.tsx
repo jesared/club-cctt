@@ -1,55 +1,48 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { ClipboardList, FileText, House, Receipt, Settings } from "lucide-react";
-import { useState } from "react";
+import { Menu } from "lucide-react";
 
 import AuthButton from "@/components/AuthButton";
-import Sidebar, { type SidebarItem } from "@/components/layout/sidebar";
-
-const userMenu: SidebarItem[] = [
-  { label: "Dashboard", href: "/user", icon: <House className="h-4 w-4" />, section: "User" },
-  {
-    label: "Mes inscriptions",
-    href: "/user/inscriptions",
-    icon: <ClipboardList className="h-4 w-4" />,
-    section: "User",
-  },
-  {
-    label: "Paiements",
-    href: "/user/paiements",
-    icon: <Receipt className="h-4 w-4" />,
-    section: "User",
-  },
-  {
-    label: "Documents",
-    href: "/user/documents",
-    icon: <FileText className="h-4 w-4" />,
-    section: "User",
-  },
-  {
-    label: "Paramètres",
-    href: "/user/parametres",
-    icon: <Settings className="h-4 w-4" />,
-    section: "User",
-  },
-];
+import UserSidebar from "@/components/UserSidebar";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 export default function UserLayout({ children }: { children: ReactNode }) {
-  const [collapsed, setCollapsed] = useState(false);
-
   return (
-    <section className="mx-auto w-full max-w-7xl px-4 py-8">
-      <div className="flex min-h-screen min-w-0 gap-6">
-        <Sidebar
-          items={userMenu}
-          title="Espace utilisateur"
-          collapsed={collapsed}
-          onToggleCollapsed={() => setCollapsed(!collapsed)}
-          userSection={<AuthButton />}
-        />
-        <div className="min-w-0 flex-1 space-y-6">{children}</div>
+    <div className="relative left-1/2 right-1/2 w-screen -translate-x-1/2">
+      <div className="flex min-h-full flex-col">
+        <div className="flex flex-1">
+          <aside className="hidden w-[240px] flex-col border-r bg-card md:flex">
+            <UserSidebar />
+            <div className="mt-auto border-t p-4">
+              <AuthButton />
+            </div>
+          </aside>
+
+          <main className="min-w-0 flex-1 px-4 py-6 md:px-8">
+            <div className="mb-4 flex items-center justify-between md:hidden">
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="outline" size="icon" aria-label="Ouvrir la navigation utilisateur">
+                    <Menu className="h-5 w-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-[280px] p-0">
+                  <SheetHeader className="border-b px-4 py-3 text-left">
+                    <SheetTitle>Espace utilisateur</SheetTitle>
+                  </SheetHeader>
+                  <UserSidebar />
+                  <div className="border-t p-4">
+                    <AuthButton />
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
+            {children}
+          </main>
+        </div>
       </div>
-    </section>
+    </div>
   );
 }
