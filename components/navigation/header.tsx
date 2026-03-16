@@ -19,14 +19,13 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { tournamentMenuItems } from "@/components/navigation/menu-items";
 import { cn } from "@/lib/utils";
 
 const mainNavItems = [
   { href: "/", label: "Accueil" },
-  { href: "/actualites", label: "Actualités" },
-  { href: "/tournoi", label: "Compétitions" },
+  { href: "/tournoi", label: "Tournoi" },
   { href: "/club", label: "Club" },
-  { href: "/evenements", label: "Événements" },
 ];
 
 function UserMenu() {
@@ -104,6 +103,8 @@ export default function Header() {
     setOpen(false);
   }, [pathname, setOpen]);
 
+  const closeMobileMenu = () => setOpen(false);
+
   return (
     <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4">
@@ -156,7 +157,18 @@ export default function Header() {
             {mainNavItems.map((item) => (
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton asChild isActive={pathname === item.href}>
-                  <Link href={item.href}>{item.label}</Link>
+                  <Link href={item.href} onClick={closeMobileMenu}>{item.label}</Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+
+            <p className="px-3 pt-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Menu tournoi
+            </p>
+            {tournamentMenuItems.map((item) => (
+              <SidebarMenuItem key={item.href}>
+                <SidebarMenuButton asChild isActive={pathname === item.href}>
+                  <Link href={item.href} onClick={closeMobileMenu}>{item.label}</Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
