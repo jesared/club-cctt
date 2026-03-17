@@ -5,11 +5,13 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import ThemeToggle from "@/components/ThemeToggle";
 import { getVisibleSections } from "@/components/navigation/menu-items";
 import { cn } from "@/lib/utils";
+
+const SIDEBAR_KEY = "app.sidebar.state";
 
 export default function Header() {
   const pathname = usePathname();
