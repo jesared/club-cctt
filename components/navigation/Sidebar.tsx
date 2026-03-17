@@ -23,7 +23,8 @@ const SECTIONS_KEY = "app.sidebar.sections";
 type SidebarState = "expanded" | "collapsed" | "hidden";
 
 type SidebarProps = {
-  onOpen?: () => void; // 👉 utilisé par le header
+  mobile?: boolean;
+  onOpen?: () => void;
 };
 
 function buildSectionState(sections: MenuSection[], pathname: string) {
