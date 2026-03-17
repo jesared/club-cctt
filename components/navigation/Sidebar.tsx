@@ -126,7 +126,7 @@ export default function Sidebar({}: SidebarProps) {
           <div className="flex h-14 items-center justify-between border-b px-3">
             {!collapsed && <p className="text-sm font-semibold">Navigation</p>}
 
-            <div className="flex items-center gap-1">
+            <div className="hidden md:flex items-center gap-1">
               <Button
                 size="icon"
                 variant="ghost"

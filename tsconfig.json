@@ -33,7 +33,8 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts",
     "types/**/*.d.ts",
-    "app/(dashboard)/tournoi/layout.tsx.bak"
+    "app/(dashboard)/tournoi/layout.tsx.bak",
+    "app/(dashboard)/layout.tsx.bak"
   ],
   "exclude": ["node_modules"]
 }
