@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, X } from "lucide-react";
+import { ChevronLeft, PanelLeftOpen, X } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -92,64 +92,84 @@ export default function Sidebar({}: SidebarProps) {
     );
   };
 
+  const reopenSidebar = () => {
+    setSidebarState("expanded");
+  };
+
   return (
-    <div
-      className={cn(
-        "transition-all duration-300",
-        sidebarState === "expanded" && "w-[260px]",
-        sidebarState === "collapsed" && "w-[72px]",
-        sidebarState === "hidden" && "w-0 overflow-hidden",
+    <>
+      {sidebarState === "hidden" && (
+        <Button
+          type="button"
+          variant="secondary"
+          size="sm"
+          className="fixed left-3 top-20 z-50 gap-2 shadow-md"
+          aria-label="Rouvrir la sidebar"
+          onClick={reopenSidebar}
+        >
+          <PanelLeftOpen className="h-4 w-4" />
+          <span className="hidden lg:inline">Rouvrir le menu</span>
+        </Button>
       )}
-    >
-      <aside className="mt-14 flex h-full flex-col border-r bg-card">
-        <div className="flex h-14 items-center justify-between border-b px-3">
-          {!collapsed && <p className="text-sm font-semibold">Navigation</p>}
 
-          <div className="flex items-center gap-1">
-            <Button size="icon" variant="ghost" onClick={toggleCollapse}>
-              <ChevronLeft
-                className={cn(
-                  "h-4 w-4 transition-transform",
-                  collapsed && "rotate-180",
-                )}
-              />
-            </Button>
+      <div
+        className={cn(
+          "transition-all duration-300",
+          sidebarState === "expanded" && "w-[260px]",
+          sidebarState === "collapsed" && "w-[72px]",
+          sidebarState === "hidden" && "w-0 overflow-hidden",
+        )}
+      >
+        <aside className="mt-14 flex h-full flex-col border-r bg-card">
+          <div className="flex h-14 items-center justify-between border-b px-3">
+            {!collapsed && <p className="text-sm font-semibold">Navigation</p>}
 
-            <Button
-              size="icon"
-              variant="ghost"
-              aria-label="Masquer la sidebar"
-              onClick={() => setSidebarState("hidden")}
-            >
-              <X className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button size="icon" variant="ghost" onClick={toggleCollapse}>
+                <ChevronLeft
+                  className={cn(
+                    "h-4 w-4 transition-transform",
+                    collapsed && "rotate-180",
+                  )}
+                />
+              </Button>
+
+              <Button
+                size="icon"
+                variant="ghost"
+                aria-label="Masquer la sidebar"
+                onClick={() => setSidebarState("hidden")}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
-        </div>
 
-        <div className="flex-1 space-y-5 overflow-y-auto px-2 py-4">
-          {sections.map((section) => (
-            <SidebarSection
-              key={section.title}
-              section={section}
-              collapsed={collapsed}
-              open={!!openSections[section.title]}
-              onToggle={() => toggleSection(section.title)}
-            />
-          ))}
-        </div>
+          <div className="flex-1 space-y-5 overflow-y-auto px-2 py-4">
+            {sections.map((section) => (
+              <SidebarSection
+                key={section.title}
+                section={section}
+                collapsed={collapsed}
+                open={!!openSections[section.title]}
+                onToggle={() => toggleSection(section.title)}
+              />
+            ))}
+          </div>
 
-        <div className="space-y-3 border-t p-3">
-          {!collapsed && (
-            <Link
-              href={primaryCta.href}
-              className="block rounded-lg border px-3 py-2 text-center text-sm hover:bg-muted"
-            >
-              {primaryCta.label}
-            </Link>
-          )}
-          <AuthButton collapsed={collapsed} />
-        </div>
-      </aside>
-    </div>
+          <div className="space-y-3 border-t p-3">
+            {!collapsed && (
+              <Link
+                href={primaryCta.href}
+                className="block rounded-lg border px-3 py-2 text-center text-sm hover:bg-muted"
+              >
+                {primaryCta.label}
+              </Link>
+            )}
+            <AuthButton collapsed={collapsed} />
+          </div>
+        </aside>
+      </div>
+    </>
   );
 }
