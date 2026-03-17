@@ -112,8 +112,8 @@ export default function Sidebar({ mobile = false }: SidebarProps) {
             <SheetTitle>Navigation</SheetTitle>
           </SheetHeader>
 
-          <div className="flex h-full flex-col">
-            <div className="flex-1 space-y-5 overflow-y-auto px-3 py-4">
+          <div className="flex h-full min-h-0 flex-col">
+            <div className="app-scroll flex-1 space-y-5 overflow-y-auto px-3 py-4">
               {sections.map((section) => (
                 <SidebarSection
                   key={section.title}
@@ -145,9 +145,9 @@ export default function Sidebar({ mobile = false }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "hidden h-screen shrink-0 border-r bg-background/95 md:flex md:flex-col",
+        "hidden h-full shrink-0 border-r bg-card md:flex md:flex-col",
         "transition-[width] duration-200",
-        collapsed ? "w-[72px]" : "w-[240px]",
+        collapsed ? "w-[72px]" : "w-[260px]",
       )}
     >
       <div className="flex h-14 items-center justify-between border-b px-3">
@@ -162,7 +162,7 @@ export default function Sidebar({ mobile = false }: SidebarProps) {
         </Button>
       </div>
 
-      <div className="flex-1 space-y-5 overflow-y-auto px-2 py-4">
+      <div className="app-scroll flex-1 space-y-5 overflow-y-auto px-2 py-4">
         {sections.map((section) => (
           <SidebarSection
             key={section.title}
