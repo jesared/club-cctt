@@ -58,10 +58,7 @@ export default function TarifsPage() {
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
           {tarifs.map((bloc) => (
-            <Card
-              key={bloc.categorie}
-              className="bg-accent-foreground border-l-4 border-l-primary "
-            >
+            <Card key={bloc.categorie} className="border-l-4 border-l-primary ">
               <CardHeader>
                 <CardTitle>
                   {bloc.categorie}{" "}

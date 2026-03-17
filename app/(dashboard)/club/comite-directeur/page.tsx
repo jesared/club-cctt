@@ -34,11 +34,11 @@ export default async function ComiteDirecteurPage() {
     <div className="max-w-6xl mx-auto px-4 py-12 space-y-14">
       {/* TITRE */}
       <header className="rounded-xl border bg-card/70 p-8 shadow-sm ">
-        <p className="mb-3 inline-flex items-center rounded-full border border-primary/60 bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-primary dark:font-mono dark:text-accent">
+        <p className="mb-3 inline-flex items-center rounded-full border border-primary/60 bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em]  ">
           Gouvernance CCTT
         </p>
         <h1 className="text-4xl font-bold mb-4 ">Comité directeur</h1>
-        <p className="text-primary max-w-3xl ">
+        <p className=" max-w-3xl ">
           Le comité directeur du Châlons-en-Champagne Tennis de Table assure la
           gestion, l’organisation et le développement du club.
         </p>
