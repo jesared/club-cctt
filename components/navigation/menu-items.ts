@@ -95,7 +95,7 @@ export const navigation: MenuSection[] = [
     title: "Tournoi",
     roles: ["user", "admin"],
     items: [
-      { href: "/tournoi", label: "Présentation", icon: FileText },
+      { href: "/tournoi", label: "Tournoi", icon: FileText },
       { href: "/tournoi/tableaux", label: "Tableaux", icon: Table2 },
       {
         href: "/tournoi/inscription",
@@ -158,7 +158,7 @@ export const navigation: MenuSection[] = [
     items: [
       {
         href: "/admin/tournoi",
-        label: "Vue générale",
+        label: "Admin tournoi",
         icon: LayoutDashboard,
       },
       {
