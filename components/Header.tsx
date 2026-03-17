@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import ThemeToggle from "@/components/ThemeToggle";
-import { navigation } from "@/components/navigation/menu-items";
+import { getVisibleSections } from "@/components/navigation/menu-items";
 
 import {
   Sidebar,
@@ -22,15 +22,6 @@ import {
 } from "@/components/ui/sidebar";
 
 /* =========================
-   ROLE UTILS
-========================= */
-
-function normalizeRole(role: any): "user" | "admin" {
-  if (!role) return "user";
-  return role.toString().toLowerCase() === "admin" ? "admin" : "user";
-}
-
-/* =========================
    HEADER
 ========================= */
 
@@ -39,7 +30,10 @@ function HeaderContent() {
   const pathname = usePathname();
   const { data: session } = useSession();
 
-  const role = normalizeRole((session?.user as any)?.role);
+  const visibleSections = getVisibleSections({
+    role: (session?.user as { role?: string } | undefined)?.role,
+    session: session ?? null,
+  });
 
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -105,9 +99,7 @@ function HeaderContent() {
 
         <SidebarContent>
           <SidebarMenu className="flex-1 overflow-y-auto">
-            {navigation
-              .filter((section) => section.roles.includes(role))
-              .map((section) => (
+            {visibleSections.map((section) => (
                 <div key={section.title} className="mb-4">
                   <p className="px-2 pb-2 text-xs font-semibold uppercase text-muted-foreground">
                     {section.title}
