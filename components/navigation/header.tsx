@@ -36,10 +36,6 @@ export default function Header() {
   const pathname = usePathname();
   const { data: session } = useSession();
 
-  if (pathname !== "/") {
-    return null;
-  }
-
   const visibleSections = useMemo(
     () =>
       getVisibleSections({
@@ -63,6 +59,10 @@ export default function Header() {
     ],
     [visibleSections],
   );
+
+  if (pathname !== "/") {
+    return null;
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur">

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import Providers from "@/components/Providers";
+import Header from "@/components/layout/header";
 
 import "./globals.css";
 
@@ -24,7 +25,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-background text-foreground antialiased ">
         <Providers>
           <div className="flex min-h-screen flex-col">
-            {/* HEADER */}
+            <Header />
 
             {/* PAGE CONTENT */}
             <main className="flex-1">{children}</main>
