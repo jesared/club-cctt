@@ -108,7 +108,6 @@ export default function Sidebar({}: SidebarProps) {
           onClick={reopenSidebar}
         >
           <PanelLeftOpen className="h-4 w-4" />
-          <span className="hidden lg:inline">Rouvrir le menu</span>
         </Button>
       )}
 
@@ -120,7 +119,7 @@ export default function Sidebar({}: SidebarProps) {
           sidebarState === "hidden" && "w-0 overflow-hidden",
         )}
       >
-        <aside className="mt-14 flex h-full flex-col border-r bg-card">
+        <aside className="pt-14 flex h-full flex-col border-r bg-card">
           <div className="flex h-14 items-center justify-between border-b px-3">
             {!collapsed && <p className="text-sm font-semibold">Navigation</p>}
 
