@@ -20,6 +20,7 @@ import {
   Users,
   type LucideIcon,
 } from "lucide-react";
+import type { Session } from "next-auth";
 
 export type Role = "user" | "admin";
 
@@ -33,14 +34,39 @@ export type MenuItem = {
 export type MenuSection = {
   title: string;
   roles: Role[];
+  auth?: boolean;
   items: MenuItem[];
 };
 
+export function normalizeRole(role: unknown): Role {
+  if (typeof role !== "string") {
+    return "user";
+  }
+
+  return role.toLowerCase() === "admin" ? "admin" : "user";
+}
+
+export function getVisibleSections({
+  role,
+  session,
+}: {
+  role: unknown;
+  session: Session | null;
+}) {
+  const normalizedRole = normalizeRole(role);
+
+  return navigation.filter((section) => {
+    if (!section.roles.includes(normalizedRole)) return false;
+    if (section.auth && !session) return false;
+    return true;
+  });
+}
+
 export const navigation: MenuSection[] = [
-  // ===== USER =====
   {
     title: "Mon espace",
     roles: ["user", "admin"],
+    auth: true,
     items: [
       { href: "/user", label: "Mon profil", icon: User },
       {
@@ -65,8 +91,6 @@ export const navigation: MenuSection[] = [
       },
     ],
   },
-
-  // ===== TOURNOI =====
   {
     title: "Tournoi",
     roles: ["user", "admin"],
@@ -91,8 +115,6 @@ export const navigation: MenuSection[] = [
       },
     ],
   },
-
-  // ===== CLUB =====
   {
     title: "Club",
     roles: ["user", "admin"],
@@ -113,23 +135,26 @@ export const navigation: MenuSection[] = [
       { href: "/club/contact", label: "Contact", icon: Mail },
     ],
   },
-
-  // ===== ADMIN CLUB =====
   {
     title: "Administration",
     roles: ["admin"],
+    auth: true,
     items: [
       { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-      { href: "/admin/messages", label: "Messages", icon: MessageSquare, badge: "3" },
+      {
+        href: "/admin/messages",
+        label: "Messages",
+        icon: MessageSquare,
+        badge: "3",
+      },
       { href: "/admin/users", label: "Utilisateurs", icon: Users },
       { href: "/admin/audit-ux", label: "Audit UX", icon: FileText },
     ],
   },
-
-  // ===== ADMIN TOURNOI =====
   {
     title: "Admin tournoi",
     roles: ["admin"],
+    auth: true,
     items: [
       {
         href: "/admin/tournoi",
