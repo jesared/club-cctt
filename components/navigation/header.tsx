@@ -5,38 +5,19 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import ThemeToggle from "@/components/ThemeToggle";
 import { getVisibleSections } from "@/components/navigation/menu-items";
 import { Button } from "@/components/ui/button";
+import { useSidebar } from "@/context/SidebarContext";
 import { cn } from "@/lib/utils";
-
-const SIDEBAR_KEY = "app.sidebar.state";
 
 export default function Header() {
   const pathname = usePathname();
   const { data: session } = useSession();
 
-  const [sidebarHidden, setSidebarHidden] = useState(false);
-
-  /* 🔥 STATE SYNC (CORRIGÉ) */
-  useEffect(() => {
-    const updateSidebarState = () => {
-      const state = localStorage.getItem(SIDEBAR_KEY);
-      setSidebarHidden(state === "hidden");
-    };
-
-    // init
-    updateSidebarState();
-
-    // 👇 custom event (IMPORTANT)
-    window.addEventListener("sidebar:update", updateSidebarState);
-
-    return () => {
-      window.removeEventListener("sidebar:update", updateSidebarState);
-    };
-  }, []);
+  const { state, setState } = useSidebar();
 
   const visibleSections = useMemo(
     () =>
@@ -66,17 +47,12 @@ export default function Header() {
     <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur">
       <div className="flex h-16 items-center px-4 md:px-6">
         {/* 🔥 BOUTON SIDEBAR (FIABLE) */}
-        {sidebarHidden && (
+        {state === "hidden" && (
           <Button
             variant="ghost"
             size="icon"
             className="mr-2"
-            onClick={() => {
-              localStorage.setItem(SIDEBAR_KEY, "expanded");
-
-              // 👇 TRIGGER GLOBAL UPDATE
-              window.dispatchEvent(new Event("sidebar:update"));
-            }}
+            onClick={() => setState("expanded")}
           >
             <Menu className="h-5 w-5" />
           </Button>

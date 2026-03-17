@@ -13,14 +13,12 @@ import {
   type MenuSection,
 } from "@/components/navigation/menu-items";
 import { Button } from "@/components/ui/button";
+import { useSidebar } from "@/context/SidebarContext";
 import { cn } from "@/lib/utils";
 
 import SidebarSection from "./SidebarSection";
 
-const SIDEBAR_KEY = "app.sidebar.state";
 const SECTIONS_KEY = "app.sidebar.sections";
-
-type SidebarState = "expanded" | "collapsed" | "hidden";
 
 type SidebarProps = {
   mobile?: boolean;
@@ -49,18 +47,15 @@ export default function Sidebar({}: SidebarProps) {
     [session],
   );
 
-  const [sidebarState, setSidebarState] = useState<SidebarState>("expanded");
+  const { state, setState } = useSidebar();
 
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
 
-  const collapsed = sidebarState === "collapsed";
+  const collapsed = state === "collapsed";
 
   /* ================= LOAD ================= */
 
   useEffect(() => {
-    const stored = localStorage.getItem(SIDEBAR_KEY);
-    if (stored) setSidebarState(stored as SidebarState);
-
     const storedSections = localStorage.getItem(SECTIONS_KEY);
     if (storedSections) {
       try {
@@ -74,9 +69,6 @@ export default function Sidebar({}: SidebarProps) {
 
   /* ================= SAVE ================= */
 
-  useEffect(() => {
-    localStorage.setItem(SIDEBAR_KEY, sidebarState);
-  }, [sidebarState]);
 
   useEffect(() => {
     localStorage.setItem(SECTIONS_KEY, JSON.stringify(openSections));
@@ -92,9 +84,7 @@ export default function Sidebar({}: SidebarProps) {
   };
 
   const toggleCollapse = () => {
-    setSidebarState((prev) =>
-      prev === "collapsed" ? "expanded" : "collapsed",
-    );
+    setState(state === "collapsed" ? "expanded" : "collapsed");
   };
 
   /* ================= RENDER ================= */
@@ -103,9 +93,9 @@ export default function Sidebar({}: SidebarProps) {
     <div
       className={cn(
         "transition-all duration-300",
-        sidebarState === "expanded" && "w-[260px]",
-        sidebarState === "collapsed" && "w-[72px]",
-        sidebarState === "hidden" && "w-0 overflow-hidden",
+        state === "expanded" && "w-[260px]",
+        state === "collapsed" && "w-[72px]",
+        state === "hidden" && "w-0 overflow-hidden",
       )}
     >
       <aside className="h-full flex flex-col border-r bg-card mt-14">
@@ -128,13 +118,7 @@ export default function Sidebar({}: SidebarProps) {
             <Button
               size="icon"
               variant="ghost"
-              onClick={() => {
-                setSidebarState("hidden");
-                localStorage.setItem(SIDEBAR_KEY, "hidden");
-
-                // 🔥 IMPORTANT
-                window.dispatchEvent(new Event("sidebar:update"));
-              }}
+              onClick={() => setState("hidden")}
             >
               <X className="h-4 w-4" />
             </Button>
