@@ -27,6 +27,7 @@ export type MenuItem = {
   href: string;
   label: string;
   icon: LucideIcon;
+  badge?: string;
 };
 
 export type MenuSection = {
@@ -119,7 +120,7 @@ export const navigation: MenuSection[] = [
     roles: ["admin"],
     items: [
       { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-      { href: "/admin/messages", label: "Messages", icon: MessageSquare },
+      { href: "/admin/messages", label: "Messages", icon: MessageSquare, badge: "3" },
       { href: "/admin/users", label: "Utilisateurs", icon: Users },
       { href: "/admin/audit-ux", label: "Audit UX", icon: FileText },
     ],
