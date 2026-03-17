@@ -21,15 +21,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" suppressHydrationWarning>
-      <body className="min-h-screen bg-background text-foreground antialiased">
+      <body className="min-h-screen bg-background text-foreground antialiased ">
         <Providers>
           <div className="flex min-h-screen flex-col">
             {/* HEADER */}
 
             {/* PAGE CONTENT */}
-            <main className="flex-1">
-              <div className="px-4 py-6">{children}</div>
-            </main>
+            <main className="flex-1">{children}</main>
 
             {/* FOOTER */}
           </div>
