@@ -36,6 +36,16 @@ function HeaderContent() {
   });
 
   const [isScrolled, setIsScrolled] = useState(false);
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    setOpenSections(
+      visibleSections.reduce<Record<string, boolean>>((acc, section, index) => {
+        acc[section.title] = index === 0;
+        return acc;
+      }, {})
+    );
+  }, [visibleSections]);
 
   /* SCROLL EFFECT */
   useEffect(() => {
@@ -49,6 +59,13 @@ function HeaderContent() {
   useEffect(() => {
     setOpen(false);
   }, [pathname, setOpen]);
+
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
   return (
     <header
@@ -90,44 +107,83 @@ function HeaderContent() {
 
       {/* SIDEBAR MOBILE */}
       <Sidebar side="right" className="bg-background">
-        <SidebarHeader>
-          <span className="font-semibold">Menu</span>
-          <button onClick={() => setOpen(false)}>
-            <X className="h-5 w-5" />
-          </button>
+        <SidebarHeader className="h-auto flex-col items-start gap-3 py-4">
+          <div className="flex w-full items-center justify-between">
+            <span className="font-semibold">Menu</span>
+            <button onClick={() => setOpen(false)} aria-label="Fermer le menu">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+          <div className="w-full rounded-md bg-muted px-3 py-2 text-xs text-muted-foreground">
+            Navigation rapide du site
+          </div>
         </SidebarHeader>
 
         <SidebarContent>
-          <SidebarMenu className="flex-1 overflow-y-auto">
-            {visibleSections.map((section) => (
-                <div key={section.title} className="mb-4">
-                  <p className="px-2 pb-2 text-xs font-semibold uppercase text-muted-foreground">
-                    {section.title}
-                  </p>
+          <SidebarMenu className="flex-1 overflow-y-auto pb-2">
+            {visibleSections.map((section) => {
+              const isSectionOpen = openSections[section.title] ?? false;
+              const sectionId = `section-${section.title.toLowerCase().replace(/\s+/g, "-")}`;
 
-                  {section.items.map((item) => {
-                    const active =
-                      pathname === item.href ||
-                      pathname.startsWith(item.href + "/");
+              return (
+                <div key={section.title} className="mb-3 rounded-lg border bg-card/60">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setOpenSections((prev) => ({
+                        ...prev,
+                        [section.title]: !isSectionOpen,
+                      }))
+                    }
+                    className="flex w-full items-center justify-between px-3 py-3 text-left"
+                    aria-expanded={isSectionOpen}
+                    aria-controls={sectionId}
+                  >
+                    <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      {section.title}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      {isSectionOpen ? "−" : "+"}
+                    </span>
+                  </button>
 
-                    return (
-                      <SidebarMenuItem key={item.href}>
-                        <SidebarMenuButton
-                          asChild
-                          isActive={active}
-                          onClick={() => setOpen(false)}
-                        >
-                          <Link href={item.href}>{item.label}</Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    );
-                  })}
+                  {isSectionOpen && (
+                    <div id={sectionId} className="space-y-1 px-2 pb-2">
+                      {section.items.map((item) => {
+                        const active =
+                          pathname === item.href ||
+                          pathname.startsWith(item.href + "/");
+
+                        return (
+                          <SidebarMenuItem key={item.href}>
+                            <SidebarMenuButton
+                              asChild
+                              isActive={active}
+                              onClick={() => setOpen(false)}
+                              className="min-h-11"
+                            >
+                              <Link
+                                href={item.href}
+                                className="flex items-center justify-between"
+                              >
+                                <span>{item.label}</span>
+                                {active ? (
+                                  <span className="h-2 w-2 rounded-full bg-primary" />
+                                ) : null}
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
-              ))}
+              );
+            })}
           </SidebarMenu>
 
           {/* CTA + AUTH */}
-          <div className="mt-auto p-4 space-y-2">
+          <div className="mt-auto space-y-2 border-t p-4">
             {!session ? (
               <button
                 onClick={() => {
