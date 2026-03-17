@@ -5,9 +5,10 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import ThemeToggle from "@/components/ThemeToggle";
+import { getVisibleSections } from "@/components/navigation/menu-items";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -18,12 +19,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-
-const publicNavItems = [
-  { href: "/", label: "Accueil", icon: Home },
-  { href: "/club", label: "Club" },
-  { href: "/tournoi", label: "Tournoi" },
-];
 
 function UserMenu() {
   const { data: session } = useSession();
@@ -65,7 +60,7 @@ function UserMenu() {
               <p className="text-sm font-medium">
                 {session.user?.name ?? "Utilisateur"}
               </p>
-              <p className="text-xs text-muted-foreground truncate">
+              <p className="truncate text-xs text-muted-foreground">
                 {session.user?.email}
               </p>
             </div>
@@ -80,7 +75,7 @@ function UserMenu() {
               </Link>
 
               <button
-                className="w-full text-left rounded-md px-2 py-1.5 text-sm hover:bg-accent"
+                className="w-full rounded-md px-2 py-1.5 text-left text-sm hover:bg-accent"
                 onClick={() => {
                   setOpen(false);
                   void signOut();
@@ -101,6 +96,23 @@ export default function Header() {
   const { data: session } = useSession();
   const [open, setOpen] = useState(false);
 
+  const visibleSections = useMemo(
+    () => getVisibleSections({ role: session?.user?.role, session: session ?? null }),
+    [session],
+  );
+
+  const desktopLinks = useMemo(() => {
+    const links = [{ href: "/", label: "Accueil", icon: Home }];
+
+    for (const section of visibleSections) {
+      const firstItem = section.items[0];
+      if (!firstItem || firstItem.href === "/") continue;
+      links.push({ href: firstItem.href, label: section.title });
+    }
+
+    return links;
+  }, [visibleSections]);
+
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
@@ -108,7 +120,6 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur">
       <div className="flex h-16 items-center px-4 md:px-6">
-        {/* LOGO */}
         <Link href="/" className="flex items-center gap-2">
           <Image
             src="/logo.jpg"
@@ -120,11 +131,10 @@ export default function Header() {
           <span className="hidden font-semibold md:block">CCTT</span>
         </Link>
 
-        {/* NAV DESKTOP */}
-        <nav className="ml-8 hidden md:flex items-center gap-1">
-          {publicNavItems.map((item) => {
+        <nav className="ml-8 hidden items-center gap-1 md:flex">
+          {desktopLinks.map((item) => {
             const active =
-              pathname === item.href || pathname.startsWith(item.href + "/");
+              pathname === item.href || pathname.startsWith(`${item.href}/`);
 
             return (
               <Link
@@ -134,7 +144,7 @@ export default function Header() {
                   "flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors",
                   active
                     ? "bg-accent text-accent-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted",
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
                 )}
               >
                 {item.icon && <item.icon className="h-4 w-4" />}
@@ -144,7 +154,6 @@ export default function Header() {
           })}
         </nav>
 
-        {/* RIGHT */}
         <div className="ml-auto flex items-center gap-2">
           <ThemeToggle />
 
@@ -152,7 +161,6 @@ export default function Header() {
             <UserMenu />
           </div>
 
-          {/* MOBILE */}
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
@@ -160,45 +168,81 @@ export default function Header() {
               </Button>
             </SheetTrigger>
 
-            <SheetContent side="left" className="w-[260px] p-0">
+            <SheetContent side="left" className="w-[280px] p-0">
               <SheetHeader className="border-b px-4 py-3">
                 <SheetTitle>CCTT</SheetTitle>
               </SheetHeader>
 
-              <nav className="p-3">
-                {publicNavItems.map((item) => {
-                  const active =
-                    pathname === item.href ||
-                    pathname.startsWith(item.href + "/");
+              <nav className="space-y-4 p-3">
+                <SheetClose asChild>
+                  <Link
+                    href="/"
+                    className={cn(
+                      "flex items-center gap-2 rounded-md px-3 py-2 text-sm",
+                      pathname === "/" ? "bg-accent" : "text-muted-foreground hover:bg-muted",
+                    )}
+                  >
+                    <Home className="h-4 w-4" />
+                    Accueil
+                  </Link>
+                </SheetClose>
 
-                  return (
-                    <SheetClose asChild key={item.href}>
-                      <Link
-                        href={item.href}
-                        className={cn(
-                          "flex items-center gap-2 rounded-md px-3 py-2 text-sm",
-                          active
-                            ? "bg-accent"
-                            : "hover:bg-muted text-muted-foreground",
-                        )}
+                {visibleSections.map((section) => (
+                  <div key={section.title} className="space-y-1">
+                    <p className="px-2 pb-1 text-xs font-semibold uppercase text-muted-foreground">
+                      {section.title}
+                    </p>
+
+                    {section.items.map((item) => {
+                      const active =
+                        pathname === item.href || pathname.startsWith(`${item.href}/`);
+
+                      return (
+                        <SheetClose asChild key={item.href}>
+                          <Link
+                            href={item.href}
+                            className={cn(
+                              "flex items-center gap-2 rounded-md px-3 py-2 text-sm",
+                              active ? "bg-accent" : "text-muted-foreground hover:bg-muted",
+                            )}
+                          >
+                            <item.icon className="h-4 w-4" />
+                            {item.label}
+                          </Link>
+                        </SheetClose>
+                      );
+                    })}
+                  </div>
+                ))}
+
+                <div className="border-t pt-4">
+                  {!session ? (
+                    <Button className="w-full" onClick={() => signIn("google")}>
+                      Connexion
+                    </Button>
+                  ) : (
+                    <div className="space-y-2">
+                      <SheetClose asChild>
+                        <Link
+                          href="/user"
+                          className="flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-muted"
+                        >
+                          <User className="h-4 w-4" />
+                          Mon espace
+                        </Link>
+                      </SheetClose>
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => {
+                          setOpen(false);
+                          void signOut();
+                        }}
                       >
-                        {item.icon && <item.icon className="h-4 w-4" />}
-                        {item.label}
-                      </Link>
-                    </SheetClose>
-                  );
-                })}
-
-                <div className="mt-4 border-t pt-4">
-                  <SheetClose asChild>
-                    <Link
-                      href={session ? "/user" : "/api/auth/signin"}
-                      className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted rounded-md"
-                    >
-                      <User className="h-4 w-4" />
-                      {session ? "Mon espace" : "Connexion"}
-                    </Link>
-                  </SheetClose>
+                        Déconnexion
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </nav>
             </SheetContent>

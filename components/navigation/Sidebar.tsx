@@ -3,10 +3,11 @@
 import { ChevronLeft, Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
 
 import AuthButton from "@/components/AuthButton";
-import { primaryCta, type MenuSection, navigation, type Role } from "@/components/navigation/menu-items";
+import { getVisibleSections, primaryCta, type MenuSection } from "@/components/navigation/menu-items";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -23,7 +24,6 @@ const COLLAPSED_KEY = "app.sidebar.collapsed";
 const SECTIONS_KEY = "app.sidebar.sections";
 
 type SidebarProps = {
-  role: Role;
   mobile?: boolean;
 };
 
@@ -36,11 +36,13 @@ function buildSectionState(sections: MenuSection[], pathname: string) {
   }, {});
 }
 
-export default function Sidebar({ role, mobile = false }: SidebarProps) {
+export default function Sidebar({ mobile = false }: SidebarProps) {
   const pathname = usePathname();
+  const { data: session } = useSession();
+
   const sections = useMemo(
-    () => navigation.filter((section) => section.roles.includes(role)),
-    [role],
+    () => getVisibleSections({ role: session?.user?.role, session: session ?? null }),
+    [session],
   );
 
   const [collapsed, setCollapsed] = useState(false);
