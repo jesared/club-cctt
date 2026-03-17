@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, Menu } from "lucide-react";
+import { Home } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,15 +9,11 @@ import { useMemo } from "react";
 
 import ThemeToggle from "@/components/ThemeToggle";
 import { getVisibleSections } from "@/components/navigation/menu-items";
-import { Button } from "@/components/ui/button";
-import { useSidebar } from "@/context/SidebarContext";
 import { cn } from "@/lib/utils";
 
 export default function Header() {
   const pathname = usePathname();
   const { data: session } = useSession();
-
-  const { state, setState } = useSidebar();
 
   const visibleSections = useMemo(
     () =>
@@ -46,25 +42,11 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur">
       <div className="flex h-16 items-center px-4 md:px-6">
-        {/* 🔥 BOUTON SIDEBAR (FIABLE) */}
-        {state === "hidden" && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="mr-2"
-            onClick={() => setState("expanded")}
-          >
-            <Menu className="h-5 w-5" />
-          </Button>
-        )}
-
-        {/* LOGO */}
         <Link href="/" className="flex items-center gap-2">
           <Image src="/logo.jpg" alt="Logo" width={32} height={32} />
           <span className="hidden md:block font-semibold">CCTT</span>
         </Link>
 
-        {/* NAV */}
         <nav className="ml-8 hidden md:flex items-center gap-1">
           {desktopLinks.map((item) => {
             const active =
@@ -88,7 +70,6 @@ export default function Header() {
           })}
         </nav>
 
-        {/* RIGHT */}
         <div className="ml-auto flex items-center gap-2">
           <ThemeToggle />
         </div>
