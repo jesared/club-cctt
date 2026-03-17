@@ -135,8 +135,8 @@ export default function Header() {
                   <Link
                     href={item.href}
                     className={cn(
-                      "flex items-center gap-2 transition-colors hover:text-primary",
-                      active ? "text-primary" : "text-muted-foreground",
+                      "flex items-center gap-2 transition-colors ",
+                      active ? "" : "",
                     )}
                   >
                     {item.icon ? <item.icon className="h-4 w-4" /> : null}

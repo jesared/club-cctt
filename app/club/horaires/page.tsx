@@ -51,7 +51,7 @@ export default async function HorairesPage() {
           </p>
           <p>
             Pour toute question,{" "}
-            <Link className="text-primary hover:underline" href="/contact">
+            <Link className="text-link hover:underline" href="/contact">
               contactez-nous
             </Link>
             .
@@ -62,7 +62,7 @@ export default async function HorairesPage() {
       {/* HORAIRES */}
       <section className="space-y-8">
         {/* LÉGENDE */}
-        <Card className="bg-accent-foreground border-0">
+        <Card className="bg-transparent border border-transparent">
           <CardHeader>
             <CardTitle>Légende</CardTitle>
           </CardHeader>
@@ -95,7 +95,7 @@ export default async function HorairesPage() {
         {/* JOURS DYNAMIQUES */}
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {data.jours.map((jour) => (
-            <Card key={jour.jour} className="bg-accent-foreground border ">
+            <Card key={jour.jour} className="">
               <CardHeader>
                 <CardTitle>{jour.jour}</CardTitle>
               </CardHeader>
@@ -144,7 +144,7 @@ export default async function HorairesPage() {
 
           <Link
             href="/contact"
-            className="text-primary font-medium hover:underline "
+            className="text-link font-medium hover:underline "
           >
             Demander un essai gratuit
           </Link>

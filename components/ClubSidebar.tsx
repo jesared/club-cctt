@@ -31,9 +31,9 @@ export default function ClubSidebar({
               onClick={() => onNavigate?.()}
               className={cn(
                 "flex items-center gap-3 rounded-lg border px-3 py-2 text-sm transition-colors",
-                "hover:border-primary/40 hover:bg-primary/10",
+                "hover:border-primary/40 hover:bg-primary/10 ",
                 active
-                  ? "border-primary bg-primary/15 text-primary"
+                  ? "border-primary bg-primary text-primary-foreground"
                   : "border-transparent text-muted-foreground",
               )}
               aria-current={active ? "page" : undefined}
