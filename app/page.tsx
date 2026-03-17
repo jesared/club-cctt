@@ -16,12 +16,15 @@ export default function Home() {
             Club de tennis de table à Châlons-en-Champagne – loisirs et
             compétition, jeunes et adultes.
           </p>
-          <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <Button asChild>
               <Link href="/horaires">Voir les horaires</Link>
             </Button>
             <Button asChild variant="outline">
               <Link href="/contact">Nous contacter</Link>
+            </Button>
+            <Button asChild variant="secondary">
+              <Link href="/theme">Voir le thème</Link>
             </Button>
           </div>
         </div>
