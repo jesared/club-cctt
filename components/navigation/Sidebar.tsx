@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, PanelLeftOpen, X } from "lucide-react";
+import { EyeOff, PanelLeftOpen } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -54,22 +54,31 @@ export default function Sidebar({}: SidebarProps) {
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
 
   const collapsed = sidebarState === "collapsed";
-
   useEffect(() => {
     const stored = localStorage.getItem(SIDEBAR_KEY);
     if (stored) setSidebarState(stored as SidebarState);
 
+    const baseState = buildSectionState(sections, pathname);
+
     const storedSections = localStorage.getItem(SECTIONS_KEY);
+
     if (storedSections) {
       try {
-        setOpenSections(JSON.parse(storedSections));
+        const parsed = JSON.parse(storedSections) as Record<string, boolean>;
+
+        // 🔥 fusion intelligente
+        const merged = {
+          ...parsed,
+          ...baseState, // 👉 force ouverture section active
+        };
+
+        setOpenSections(merged);
         return;
       } catch {}
     }
 
-    setOpenSections(buildSectionState(sections, pathname));
+    setOpenSections(baseState);
   }, [pathname, sections]);
-
   useEffect(() => {
     localStorage.setItem(SIDEBAR_KEY, sidebarState);
     window.dispatchEvent(new Event("sidebar:update"));
@@ -119,32 +128,23 @@ export default function Sidebar({}: SidebarProps) {
           sidebarState === "hidden" && "w-0 overflow-hidden",
         )}
       >
-        <aside className="pt-14 flex h-full flex-col border-r bg-card">
+        <aside className="pt-16 flex h-full flex-col border-r bg-card">
           <div className="flex h-14 items-center justify-between border-b px-3">
             {!collapsed && <p className="text-sm font-semibold">Navigation</p>}
 
             <div className="flex items-center gap-1">
-              <Button size="icon" variant="ghost" onClick={toggleCollapse}>
-                <ChevronLeft
-                  className={cn(
-                    "h-4 w-4 transition-transform",
-                    collapsed && "rotate-180",
-                  )}
-                />
-              </Button>
-
               <Button
                 size="icon"
                 variant="ghost"
                 aria-label="Masquer la sidebar"
                 onClick={() => setSidebarState("hidden")}
               >
-                <X className="h-4 w-4" />
+                <EyeOff className="h-4 w-4" />
               </Button>
             </div>
           </div>
 
-          <div className="flex-1 space-y-5 overflow-y-auto px-2 py-4">
+          <div className="flex-1 space-y-5 overflow-y-auto overflow-x-hidden px-2 py-4">
             {sections.map((section) => (
               <SidebarSection
                 key={section.title}
