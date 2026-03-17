@@ -20,7 +20,7 @@ import {
 import { cn } from "@/lib/utils";
 
 const publicNavItems = [
-  { href: "/", icon: Home },
+  { href: "/", label: "Accueil", icon: Home },
   { href: "/club", label: "Club" },
   { href: "/tournoi", label: "Tournoi" },
 ];
@@ -42,16 +42,14 @@ function UserMenu() {
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex h-9 items-center justify-center gap-2 rounded-full cursor-pointer px-3"
-        aria-expanded={open}
-        aria-label="Ouvrir le menu utilisateur"
+        className="flex h-9 items-center gap-2 rounded-full px-2 hover:bg-accent"
       >
         {session.user?.image ? (
           <Image
             src={session.user.image}
             alt="Avatar"
-            width={26}
-            height={26}
+            width={28}
+            height={28}
             className="rounded-full"
           />
         ) : (
@@ -61,32 +59,28 @@ function UserMenu() {
 
       {open && (
         <>
-          <button
-            type="button"
-            className="fixed inset-0 z-40 bg-background/20"
-            aria-label="Fermer le menu utilisateur"
-            onClick={() => setOpen(false)}
-          />
-          <div className="absolute right-0 z-50 mt-2 w-56 rounded-md border bg-popover p-2 text-popover-foreground shadow-md">
-            <div className="border-b px-2 py-2">
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="absolute right-0 z-50 mt-2 w-56 rounded-md border bg-popover shadow-md">
+            <div className="border-b px-3 py-2">
               <p className="text-sm font-medium">
                 {session.user?.name ?? "Utilisateur"}
               </p>
-              <p className="truncate text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground truncate">
                 {session.user?.email}
               </p>
             </div>
-            <div className="mt-1 flex flex-col gap-1">
+
+            <div className="p-1">
               <Link
                 href="/user"
-                className="rounded-sm px-2 py-1.5 text-sm hover:bg-accent"
+                className="block rounded-md px-2 py-1.5 text-sm hover:bg-accent"
                 onClick={() => setOpen(false)}
               >
-                Mon espace utilisateur
+                Mon espace
               </Link>
+
               <button
-                type="button"
-                className="rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent"
+                className="w-full text-left rounded-md px-2 py-1.5 text-sm hover:bg-accent"
                 onClick={() => {
                   setOpen(false);
                   void signOut();
@@ -105,132 +99,107 @@ function UserMenu() {
 export default function Header() {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    setIsMobileMenuOpen(false);
+    setOpen(false);
   }, [pathname]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/80 bg-background/95 shadow-sm backdrop-blur">
-      <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-4 px-4">
+    <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur">
+      <div className="flex h-16 items-center px-4 md:px-6">
+        {/* LOGO */}
         <Link href="/" className="flex items-center gap-2">
           <Image
             src="/logo.jpg"
-            alt="Logo du club"
-            width={36}
-            height={36}
+            alt="Logo"
+            width={32}
+            height={32}
             className="rounded-sm"
           />
-          <span className="hidden text-sm font-semibold md:inline">CCTT</span>
+          <span className="hidden font-semibold md:block">CCTT</span>
         </Link>
 
-        <nav className="hidden flex-1 items-center justify-center md:flex">
-          <ul className="flex items-center gap-6 text-sm font-medium">
-            {publicNavItems.map((item) => {
-              const active =
-                pathname === item.href || pathname.startsWith(`${item.href}/`);
-              return (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className={cn(
-                      "flex items-center gap-2 transition-colors ",
-                      active ? "" : "",
-                    )}
-                  >
-                    {item.icon ? <item.icon className="h-4 w-4" /> : null}
-                    <span>{item.label}</span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+        {/* NAV DESKTOP */}
+        <nav className="ml-8 hidden md:flex items-center gap-1">
+          {publicNavItems.map((item) => {
+            const active =
+              pathname === item.href || pathname.startsWith(item.href + "/");
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors",
+                  active
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted",
+                )}
+              >
+                {item.icon && <item.icon className="h-4 w-4" />}
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
 
+        {/* RIGHT */}
         <div className="ml-auto flex items-center gap-2">
           <ThemeToggle />
+
           <div className="hidden md:block">
             <UserMenu />
           </div>
 
-          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+          {/* MOBILE */}
+          <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="md:hidden"
-                aria-label="Ouvrir le menu"
-              >
+              <Button variant="ghost" size="icon" className="md:hidden">
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent
-              side="left"
-              className="w-[86vw] max-w-sm p-0"
-              aria-label="Navigation mobile"
-            >
-              <SheetHeader className="border-b px-5 py-4 text-left">
-                <SheetTitle className="text-base">
-                  <Link href="/" className="flex items-center gap-3">
-                    <Image
-                      src="/logo.jpg"
-                      alt="Logo du club"
-                      width={34}
-                      height={34}
-                      className="rounded-sm"
-                    />
-                    <span>CCTT</span>
-                  </Link>
-                </SheetTitle>
+
+            <SheetContent side="left" className="w-[260px] p-0">
+              <SheetHeader className="border-b px-4 py-3">
+                <SheetTitle>CCTT</SheetTitle>
               </SheetHeader>
 
-              <nav className="px-3 py-4" aria-label="Menu principal mobile">
-                <ul className="flex flex-col gap-1">
-                  {publicNavItems.map((item) => {
-                    const isActive =
-                      pathname === item.href ||
-                      pathname.startsWith(`${item.href}/`);
+              <nav className="p-3">
+                {publicNavItems.map((item) => {
+                  const active =
+                    pathname === item.href ||
+                    pathname.startsWith(item.href + "/");
 
-                    return (
-                      <li key={item.href}>
-                        <SheetClose asChild>
-                          <Link
-                            href={item.href}
-                            className={cn(
-                              "flex items-center gap-2 rounded-md px-3 py-2.5 text-base font-medium transition-colors",
-                              isActive
-                                ? "bg-primary/10 text-primary"
-                                : "text-foreground/90 hover:bg-muted",
-                            )}
-                          >
-                            {item.icon ? (
-                              <item.icon className="h-4 w-4" />
-                            ) : null}
-                            <span>{item.label}</span>
-                          </Link>
-                        </SheetClose>
-                      </li>
-                    );
-                  })}
-
-                  <li>
-                    <SheetClose asChild>
+                  return (
+                    <SheetClose asChild key={item.href}>
                       <Link
-                        href={session ? "/user" : "/api/auth/signin"}
+                        href={item.href}
                         className={cn(
-                          "flex items-center gap-2 rounded-md px-3 py-2.5 text-base font-medium transition-colors",
-                          pathname.startsWith("/user")
-                            ? "bg-primary/10 text-primary"
-                            : "text-foreground/90 hover:bg-muted",
+                          "flex items-center gap-2 rounded-md px-3 py-2 text-sm",
+                          active
+                            ? "bg-accent"
+                            : "hover:bg-muted text-muted-foreground",
                         )}
                       >
-                        <User className="h-4 w-4" />
-                        <span>{session ? "User" : "Connexion"}</span>
+                        {item.icon && <item.icon className="h-4 w-4" />}
+                        {item.label}
                       </Link>
                     </SheetClose>
-                  </li>
-                </ul>
+                  );
+                })}
+
+                <div className="mt-4 border-t pt-4">
+                  <SheetClose asChild>
+                    <Link
+                      href={session ? "/user" : "/api/auth/signin"}
+                      className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted rounded-md"
+                    >
+                      <User className="h-4 w-4" />
+                      {session ? "Mon espace" : "Connexion"}
+                    </Link>
+                  </SheetClose>
+                </div>
               </nav>
             </SheetContent>
           </Sheet>

@@ -28,7 +28,7 @@ export default function Home() {
       </section>
 
       <section className="py-4">
-        <Card className="border-0 bg-accent-foreground">
+        <Card className="border-0 bg-transparent">
           <CardHeader>
             <CardTitle className="text-xl font-semibold">
               Bienvenue au CCTT
@@ -78,7 +78,7 @@ export default function Home() {
       </section>
 
       <section className="py-8">
-        <Card className="border-primary/30 bg-accent-foreground">
+        <Card className="border-primary/30 bg-primary/5">
           <CardHeader>
             <CardTitle className="text-xl font-semibold">
               Envie de nous rejoindre ?

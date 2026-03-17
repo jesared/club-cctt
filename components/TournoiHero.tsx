@@ -19,9 +19,9 @@ export default function TournoiHero() {
       </section>
       <section>
         <div className="mx-auto py-8">
-          <Card className="border-l-4 border-l-primary  bg-accent-foreground">
+          <Card className="border-l-4 border-l-primary  ">
             <CardHeader>
-              <p className="uppercase tracking-wide text-sm text-primary mb-2">
+              <p className="uppercase tracking-wide text-sm text-foreground mb-2 bg-accent">
                 Tournoi annuel du club
               </p>
 

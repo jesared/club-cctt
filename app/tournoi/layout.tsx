@@ -16,42 +16,53 @@ import {
 
 export default function UserLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="relative left-1/2 right-1/2 w-screen -translate-x-1/2">
-      <div className="flex min-h-full flex-col">
-        <div className="flex flex-1">
-          <aside className="hidden w-[240px] flex-col border-r  md:flex">
-            <TournoiSidebar />
-            <div className="mt-auto border-t p-4">
-              <AuthButton />
-            </div>
-          </aside>
-
-          <main className="min-w-0 flex-1 px-4 md:px-8">
-            <div className="mb-4 flex items-center justify-between md:hidden">
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    aria-label="Ouvrir la navigation utilisateur"
-                  >
-                    <Menu className="h-5 w-5" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="w-[280px] p-0">
-                  <SheetHeader className="px-4 py-3 text-left">
-                    <SheetTitle>Espace tournoi</SheetTitle>
-                  </SheetHeader>
-                  <TournoiSidebar />
-                  <div className="border-t p-4">
-                    <AuthButton />
-                  </div>
-                </SheetContent>
-              </Sheet>
-            </div>
-            {children}
-          </main>
+    <div className="flex min-h-screen">
+      {/* SIDEBAR DESKTOP FIXE */}
+      <aside className="hidden md:flex md:w-[260px] md:flex-col md:border-r md:bg-card md:h-screen md:sticky md:top-0">
+        <div className="flex flex-1 flex-col overflow-y-auto">
+          <TournoiSidebar />
         </div>
+
+        <div className="border-t p-4">
+          <AuthButton />
+        </div>
+      </aside>
+
+      {/* CONTENT */}
+      <div className="flex flex-1 flex-col min-w-0">
+        {/* HEADER MOBILE */}
+        <div className="flex items-center justify-between border-b px-4 py-3 md:hidden">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                aria-label="Ouvrir la navigation utilisateur"
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+
+            <SheetContent side="left" className="w-[260px] p-0">
+              <SheetHeader className="px-4 py-3 text-left">
+                <SheetTitle>Espace tournoi</SheetTitle>
+              </SheetHeader>
+
+              <div className="flex h-full flex-col">
+                <div className="flex-1 overflow-y-auto">
+                  <TournoiSidebar />
+                </div>
+
+                <div className="border-t p-4">
+                  <AuthButton />
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+
+        {/* PAGE CONTENT */}
+        <main className="flex-1 min-w-0 px-4 py-6 md:px-8">{children}</main>
       </div>
     </div>
   );
