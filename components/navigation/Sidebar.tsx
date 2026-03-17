@@ -13,12 +13,14 @@ import {
   type MenuSection,
 } from "@/components/navigation/menu-items";
 import { Button } from "@/components/ui/button";
-import { useSidebar } from "@/context/SidebarContext";
 import { cn } from "@/lib/utils";
 
 import SidebarSection from "./SidebarSection";
 
+const SIDEBAR_KEY = "app.sidebar.state";
 const SECTIONS_KEY = "app.sidebar.sections";
+
+type SidebarState = "expanded" | "collapsed" | "hidden";
 
 type SidebarProps = {
   mobile?: boolean;
@@ -47,15 +49,16 @@ export default function Sidebar({}: SidebarProps) {
     [session],
   );
 
-  const { state, setState } = useSidebar();
+  const [sidebarState, setSidebarState] = useState<SidebarState>("expanded");
 
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
 
-  const collapsed = state === "collapsed";
-
-  /* ================= LOAD ================= */
+  const collapsed = sidebarState === "collapsed";
 
   useEffect(() => {
+    const stored = localStorage.getItem(SIDEBAR_KEY);
+    if (stored) setSidebarState(stored as SidebarState);
+
     const storedSections = localStorage.getItem(SECTIONS_KEY);
     if (storedSections) {
       try {
@@ -67,14 +70,14 @@ export default function Sidebar({}: SidebarProps) {
     setOpenSections(buildSectionState(sections, pathname));
   }, [pathname, sections]);
 
-  /* ================= SAVE ================= */
-
+  useEffect(() => {
+    localStorage.setItem(SIDEBAR_KEY, sidebarState);
+    window.dispatchEvent(new Event("sidebar:update"));
+  }, [sidebarState]);
 
   useEffect(() => {
     localStorage.setItem(SECTIONS_KEY, JSON.stringify(openSections));
   }, [openSections]);
-
-  /* ================= ACTIONS ================= */
 
   const toggleSection = (title: string) => {
     setOpenSections((prev) => ({
@@ -84,27 +87,25 @@ export default function Sidebar({}: SidebarProps) {
   };
 
   const toggleCollapse = () => {
-    setState(state === "collapsed" ? "expanded" : "collapsed");
+    setSidebarState((prev) =>
+      prev === "collapsed" ? "expanded" : "collapsed",
+    );
   };
-
-  /* ================= RENDER ================= */
 
   return (
     <div
       className={cn(
         "transition-all duration-300",
-        state === "expanded" && "w-[260px]",
-        state === "collapsed" && "w-[72px]",
-        state === "hidden" && "w-0 overflow-hidden",
+        sidebarState === "expanded" && "w-[260px]",
+        sidebarState === "collapsed" && "w-[72px]",
+        sidebarState === "hidden" && "w-0 overflow-hidden",
       )}
     >
-      <aside className="h-full flex flex-col border-r bg-card mt-14">
-        {/* HEADER */}
+      <aside className="mt-14 flex h-full flex-col border-r bg-card">
         <div className="flex h-14 items-center justify-between border-b px-3">
           {!collapsed && <p className="text-sm font-semibold">Navigation</p>}
 
           <div className="flex items-center gap-1">
-            {/* COLLAPSE */}
             <Button size="icon" variant="ghost" onClick={toggleCollapse}>
               <ChevronLeft
                 className={cn(
@@ -114,19 +115,18 @@ export default function Sidebar({}: SidebarProps) {
               />
             </Button>
 
-            {/* HIDE */}
             <Button
               size="icon"
               variant="ghost"
-              onClick={() => setState("hidden")}
+              aria-label="Masquer la sidebar"
+              onClick={() => setSidebarState("hidden")}
             >
               <X className="h-4 w-4" />
             </Button>
           </div>
         </div>
 
-        {/* CONTENT */}
-        <div className="flex-1 overflow-y-auto px-2 py-4 space-y-5">
+        <div className="flex-1 space-y-5 overflow-y-auto px-2 py-4">
           {sections.map((section) => (
             <SidebarSection
               key={section.title}
@@ -138,8 +138,7 @@ export default function Sidebar({}: SidebarProps) {
           ))}
         </div>
 
-        {/* FOOTER */}
-        <div className="border-t p-3 space-y-3">
+        <div className="space-y-3 border-t p-3">
           {!collapsed && (
             <Link
               href={primaryCta.href}
