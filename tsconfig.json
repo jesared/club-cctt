@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -24,18 +20,11 @@
     ],
     "baseUrl": "",
     "paths": {
-      "@/*": [
-        "./*"
-      ],
-      "next-themes": [
-        "./lib/next-themes"
-      ]
+      "@/*": ["./*"],
+      "next-themes": ["./lib/next-themes"]
     }
   },
-  "typeRoots": [
-    "./types",
-    "./node_modules/@types"
-  ],
+  "typeRoots": ["./types", "./node_modules/@types"],
   "include": [
     "next-env.d.ts",
     "**/*.ts",
@@ -43,9 +32,8 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts",
-    "types/**/*.d.ts"
+    "types/**/*.d.ts",
+    "app/(dashboard)/tournoi/layout.tsx.bak"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

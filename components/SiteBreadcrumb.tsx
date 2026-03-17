@@ -1,16 +1,10 @@
 "use client";
 
-import { Fragment } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Fragment } from "react";
 
-import {
-  clubAdminMenuItems,
-  mainMenuItems,
-  tournamentAdminMenuItems,
-  userMenuItems,
-  tournamentMenuItems,
-} from "@/components/navigation/menu-items";
+import { navigation } from "@/components/navigation/menu-items";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -20,33 +14,44 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-const routeLabels = new Map<string, string>([
-  ...mainMenuItems,
-  ...tournamentMenuItems,
-  ...clubAdminMenuItems,
-  ...tournamentAdminMenuItems,
-  ...userMenuItems,
-].map((item) => [item.href, item.label]));
+/* =========================
+   MAP DES ROUTES
+========================= */
+
+const routeLabels = new Map<string, string>(
+  navigation.flatMap((section) =>
+    section.items.map((item) => [item.href, item.label] as const),
+  ),
+);
+
+/* =========================
+   FORMAT LABEL FALLBACK
+========================= */
 
 const formatSegmentLabel = (segment: string) => {
-  const decodedSegment = decodeURIComponent(segment);
-  return decodedSegment
+  const decoded = decodeURIComponent(segment);
+
+  return decoded
     .split("-")
     .filter(Boolean)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 };
+
+/* =========================
+   COMPONENT
+========================= */
 
 export default function SiteBreadcrumb() {
   const pathname = usePathname();
 
-  if (pathname === "/") {
-    return null;
-  }
+  if (pathname === "/") return null;
 
   const segments = pathname.split("/").filter(Boolean);
-  const breadcrumbItems = segments.map((segment, index) => {
-    const href = `/${segments.slice(0, index + 1).join("/")}`;
+
+  const items = segments.map((segment, index) => {
+    const href = "/" + segments.slice(0, index + 1).join("/");
+
     return {
       href,
       label: routeLabels.get(href) ?? formatSegmentLabel(segment),
@@ -55,18 +60,22 @@ export default function SiteBreadcrumb() {
   });
 
   return (
-    <div className="border-b bg-background/70">
-      <div className="mx-auto w-full max-w-6xl px-4 py-3">
+    <div className="border-b bg-background/60 backdrop-blur">
+      <div className="px-4 py-3 md:px-6">
         <Breadcrumb>
           <BreadcrumbList>
+            {/* HOME */}
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
                 <Link href="/">Accueil</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
-            {breadcrumbItems.map((item) => (
+
+            {/* ITEMS */}
+            {items.map((item) => (
               <Fragment key={item.href}>
                 <BreadcrumbSeparator />
+
                 <BreadcrumbItem>
                   {item.isLast ? (
                     <BreadcrumbPage>{item.label}</BreadcrumbPage>
