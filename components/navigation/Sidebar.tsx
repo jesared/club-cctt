@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import AuthButton from "@/components/AuthButton";
+import ThemeToggle from "@/components/ThemeToggle";
 import {
   getVisibleSections,
   primaryCta,
@@ -166,6 +167,10 @@ export default function Sidebar({ mobile = false }: SidebarProps) {
                 {primaryCta.label}
               </Link>
             )}
+            <div className={cn("flex", collapsed ? "justify-center" : "justify-between")}>
+              {!collapsed && <span className="text-xs text-muted-foreground">Thème</span>}
+              <ThemeToggle />
+            </div>
             <AuthButton collapsed={collapsed} />
           </div>
         </aside>
