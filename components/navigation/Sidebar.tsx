@@ -1,30 +1,29 @@
 "use client";
 
-import { ChevronLeft, Menu } from "lucide-react";
+import { ChevronLeft, X } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
 
 import AuthButton from "@/components/AuthButton";
-import { getVisibleSections, primaryCta, type MenuSection } from "@/components/navigation/menu-items";
-import { Button } from "@/components/ui/button";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  getVisibleSections,
+  primaryCta,
+  type MenuSection,
+} from "@/components/navigation/menu-items";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 import SidebarSection from "./SidebarSection";
 
-const COLLAPSED_KEY = "app.sidebar.collapsed";
+const SIDEBAR_KEY = "app.sidebar.state";
 const SECTIONS_KEY = "app.sidebar.sections";
 
+type SidebarState = "expanded" | "collapsed" | "hidden";
+
 type SidebarProps = {
-  mobile?: boolean;
+  onOpen?: () => void; // 👉 utilisé par le header
 };
 
 function buildSectionState(sections: MenuSection[], pathname: string) {
@@ -36,155 +35,137 @@ function buildSectionState(sections: MenuSection[], pathname: string) {
   }, {});
 }
 
-export default function Sidebar({ mobile = false }: SidebarProps) {
+export default function Sidebar({}: SidebarProps) {
   const pathname = usePathname();
   const { data: session } = useSession();
 
   const sections = useMemo(
-    () => getVisibleSections({ role: session?.user?.role, session: session ?? null }),
+    () =>
+      getVisibleSections({
+        role: session?.user?.role,
+        session: session ?? null,
+      }),
     [session],
   );
 
-  const [collapsed, setCollapsed] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarState, setSidebarState] = useState<SidebarState>("expanded");
+
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
 
+  const collapsed = sidebarState === "collapsed";
+
+  /* ================= LOAD ================= */
+
   useEffect(() => {
-    if (mobile) {
-      setOpenSections((current) =>
-        Object.keys(current).length ? current : buildSectionState(sections, pathname),
-      );
-      return;
-    }
+    const stored = localStorage.getItem(SIDEBAR_KEY);
+    if (stored) setSidebarState(stored as SidebarState);
 
-    const storedCollapsed = window.localStorage.getItem(COLLAPSED_KEY);
-    if (storedCollapsed) {
-      setCollapsed(storedCollapsed === "1");
-    }
-
-    const storedSections = window.localStorage.getItem(SECTIONS_KEY);
+    const storedSections = localStorage.getItem(SECTIONS_KEY);
     if (storedSections) {
       try {
-        const parsed = JSON.parse(storedSections) as Record<string, boolean>;
-        setOpenSections({ ...buildSectionState(sections, pathname), ...parsed });
+        setOpenSections(JSON.parse(storedSections));
         return;
-      } catch {
-        // noop
-      }
+      } catch {}
     }
 
     setOpenSections(buildSectionState(sections, pathname));
-  }, [mobile, pathname, sections]);
+  }, [pathname, sections]);
+
+  /* ================= SAVE ================= */
 
   useEffect(() => {
-    if (!mobile) {
-      window.localStorage.setItem(COLLAPSED_KEY, collapsed ? "1" : "0");
-    }
-  }, [collapsed, mobile]);
+    localStorage.setItem(SIDEBAR_KEY, sidebarState);
+  }, [sidebarState]);
 
   useEffect(() => {
-    if (!mobile) {
-      window.localStorage.setItem(SECTIONS_KEY, JSON.stringify(openSections));
-    }
-  }, [mobile, openSections]);
+    localStorage.setItem(SECTIONS_KEY, JSON.stringify(openSections));
+  }, [openSections]);
 
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
+  /* ================= ACTIONS ================= */
 
   const toggleSection = (title: string) => {
-    setOpenSections((current) => ({
-      ...current,
-      [title]: !current[title],
+    setOpenSections((prev) => ({
+      ...prev,
+      [title]: !prev[title],
     }));
   };
 
-  if (mobile) {
-    return (
-      <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-        <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label="Ouvrir le menu">
-            <Menu className="h-5 w-5" />
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="w-[300px] p-0">
-          <SheetHeader className="border-b px-4 py-3">
-            <SheetTitle>Navigation</SheetTitle>
-          </SheetHeader>
-
-          <div className="flex h-full min-h-0 flex-col">
-            <div className="app-scroll flex-1 space-y-5 overflow-y-auto px-3 py-4">
-              {sections.map((section) => (
-                <SidebarSection
-                  key={section.title}
-                  section={section}
-                  collapsed={false}
-                  open={Boolean(openSections[section.title])}
-                  onToggle={() => toggleSection(section.title)}
-                  onNavigate={() => setMobileOpen(false)}
-                />
-              ))}
-            </div>
-
-            <div className="space-y-3 border-t p-4">
-              <Link
-                href={primaryCta.href}
-                onClick={() => setMobileOpen(false)}
-                className="block rounded-lg border px-3 py-2 text-center text-sm font-medium transition-colors hover:bg-muted"
-              >
-                {primaryCta.label}
-              </Link>
-              <AuthButton />
-            </div>
-          </div>
-        </SheetContent>
-      </Sheet>
+  const toggleCollapse = () => {
+    setSidebarState((prev) =>
+      prev === "collapsed" ? "expanded" : "collapsed",
     );
-  }
+  };
+
+  /* ================= RENDER ================= */
 
   return (
-    <aside
+    <div
       className={cn(
-        "hidden h-full shrink-0 border-r bg-card md:flex md:flex-col",
-        "transition-[width] duration-200",
-        collapsed ? "w-[72px]" : "w-[260px]",
+        "transition-all duration-300",
+        sidebarState === "expanded" && "w-[260px]",
+        sidebarState === "collapsed" && "w-[72px]",
+        sidebarState === "hidden" && "w-0 overflow-hidden",
       )}
     >
-      <div className="flex h-14 items-center justify-between border-b px-3">
-        {!collapsed && <p className="text-sm font-semibold">Navigation</p>}
-        <Button
-          size="icon"
-          variant="ghost"
-          aria-label="Réduire la sidebar"
-          onClick={() => setCollapsed((value) => !value)}
-        >
-          <ChevronLeft className={cn("h-4 w-4 transition-transform", collapsed && "rotate-180")} />
-        </Button>
-      </div>
+      <aside className="h-full flex flex-col border-r bg-card mt-14">
+        {/* HEADER */}
+        <div className="flex h-14 items-center justify-between border-b px-3">
+          {!collapsed && <p className="text-sm font-semibold">Navigation</p>}
 
-      <div className="app-scroll flex-1 space-y-5 overflow-y-auto px-2 py-4">
-        {sections.map((section) => (
-          <SidebarSection
-            key={section.title}
-            section={section}
-            collapsed={collapsed}
-            open={Boolean(openSections[section.title])}
-            onToggle={() => toggleSection(section.title)}
-          />
-        ))}
-      </div>
+          <div className="flex items-center gap-1">
+            {/* COLLAPSE */}
+            <Button size="icon" variant="ghost" onClick={toggleCollapse}>
+              <ChevronLeft
+                className={cn(
+                  "h-4 w-4 transition-transform",
+                  collapsed && "rotate-180",
+                )}
+              />
+            </Button>
 
-      <div className="space-y-3 border-t p-3">
-        {!collapsed && (
-          <Link
-            href={primaryCta.href}
-            className="block rounded-lg border px-3 py-2 text-center text-sm font-medium transition-colors hover:bg-muted"
-          >
-            {primaryCta.label}
-          </Link>
-        )}
-        <AuthButton collapsed={collapsed} />
-      </div>
-    </aside>
+            {/* HIDE */}
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => {
+                setSidebarState("hidden");
+                localStorage.setItem(SIDEBAR_KEY, "hidden");
+
+                // 🔥 IMPORTANT
+                window.dispatchEvent(new Event("sidebar:update"));
+              }}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        {/* CONTENT */}
+        <div className="flex-1 overflow-y-auto px-2 py-4 space-y-5">
+          {sections.map((section) => (
+            <SidebarSection
+              key={section.title}
+              section={section}
+              collapsed={collapsed}
+              open={!!openSections[section.title]}
+              onToggle={() => toggleSection(section.title)}
+            />
+          ))}
+        </div>
+
+        {/* FOOTER */}
+        <div className="border-t p-3 space-y-3">
+          {!collapsed && (
+            <Link
+              href={primaryCta.href}
+              className="block rounded-lg border px-3 py-2 text-center text-sm hover:bg-muted"
+            >
+              {primaryCta.label}
+            </Link>
+          )}
+          <AuthButton collapsed={collapsed} />
+        </div>
+      </aside>
+    </div>
   );
 }
