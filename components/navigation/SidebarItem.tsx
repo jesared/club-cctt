@@ -62,7 +62,7 @@ export default function SidebarItem({
 
         // 👉 actif
         active
-          ? "bg-accent text-foreground font-medium"
+          ? "bg-primary text-secondary"
           : "text-muted-foreground hover:text-foreground",
 
         // 👉 collapsed
@@ -82,7 +82,7 @@ export default function SidebarItem({
         className={cn(
           "h-4 w-4 shrink-0 transition-colors",
           active
-            ? "text-primary"
+            ? "text-secondary "
             : "text-muted-foreground group-hover:text-foreground",
         )}
       />

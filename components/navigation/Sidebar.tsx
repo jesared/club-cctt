@@ -122,7 +122,7 @@ export default function Sidebar({ mobile = false }: SidebarProps) {
       >
         <aside
           className={cn(
-            "flex flex-col border-r bg-card",
+            "flex flex-col border-r ",
             mobile
               ? "h-full"
               : [
@@ -167,8 +167,15 @@ export default function Sidebar({ mobile = false }: SidebarProps) {
                 {primaryCta.label}
               </Link>
             )}
-            <div className={cn("flex", collapsed ? "justify-center" : "justify-between")}>
-              {!collapsed && <span className="text-xs text-muted-foreground">Thème</span>}
+            <div
+              className={cn(
+                "flex",
+                collapsed ? "justify-center" : "justify-between",
+              )}
+            >
+              {!collapsed && (
+                <span className="text-xs text-muted-foreground">Thème</span>
+              )}
               <ThemeToggle />
             </div>
             <AuthButton collapsed={collapsed} />

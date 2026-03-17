@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import KpiPageViewTracker from "@/components/KpiPageViewTracker";
 import TrackedLink from "@/components/TrackedLink";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { tournamentRegistrationContent } from "@/lib/tournament-registration-content";
@@ -37,17 +37,29 @@ const rythmeEditorial = [
   {
     phase: "Avant le tournoi",
     frequence: "3 publications / semaine",
-    contenus: ["Ouverture des inscriptions", "Présentation des tableaux", "Portraits de bénévoles et partenaires"],
+    contenus: [
+      "Ouverture des inscriptions",
+      "Présentation des tableaux",
+      "Portraits de bénévoles et partenaires",
+    ],
   },
   {
     phase: "Pendant le tournoi",
     frequence: "Stories quotidiennes + 1 récap/jour",
-    contenus: ["Résultats clés de la journée", "Photos ambiance salle", "Moments forts et coulisses"],
+    contenus: [
+      "Résultats clés de la journée",
+      "Photos ambiance salle",
+      "Moments forts et coulisses",
+    ],
   },
   {
     phase: "Après le tournoi",
     frequence: "2 publications la semaine suivante",
-    contenus: ["Podiums et remerciements", "Best-of photos/vidéos", "Annonce de la prochaine édition"],
+    contenus: [
+      "Podiums et remerciements",
+      "Best-of photos/vidéos",
+      "Annonce de la prochaine édition",
+    ],
   },
 ];
 
@@ -55,21 +67,28 @@ const preuvesSociales = [
   {
     titre: "Participation en hausse",
     valeur: "24 tableaux ouverts",
-    detail: "Un volume qui confirme l'attractivité du tournoi au niveau régional et national.",
+    detail:
+      "Un volume qui confirme l'attractivité du tournoi au niveau régional et national.",
   },
   {
     titre: "Engagement du public",
     valeur: "300+ visiteurs sur le week-end",
-    detail: "Parents, supporters et clubs partenaires présents pour soutenir les joueurs.",
+    detail:
+      "Parents, supporters et clubs partenaires présents pour soutenir les joueurs.",
   },
   {
     titre: "Confiance des clubs",
     valeur: "Retours positifs récurrents",
-    detail: "Des témoignages mis en avant après chaque édition pour rassurer les futurs participants.",
+    detail:
+      "Des témoignages mis en avant après chaque édition pour rassurer les futurs participants.",
   },
 ];
 
-function formatCategory(minPoints: number | null, maxPoints: number | null, label: string) {
+function formatCategory(
+  minPoints: number | null,
+  maxPoints: number | null,
+  label: string,
+) {
   if (label.trim().length > 0) {
     return label;
   }
@@ -103,7 +122,6 @@ function formatTimeLabel(startAt: Date) {
     minute: "2-digit",
   }).format(startAt);
 }
-
 
 async function getOpenTournamentEvents() {
   try {
@@ -155,27 +173,27 @@ export default async function TournoiHomePage() {
     select: { id: true },
   });
 
-  const hasUserRegistration = tournament && session?.user?.id
-    ?
-      (await prisma.tournamentRegistration.count({
-        where: {
-          tournamentId: tournament.id,
-          OR: [
-            { userId: session.user.id },
-            ...(userEmail
-              ? [
-                  {
-                    contactEmail: {
-                      equals: userEmail,
-                      mode: "insensitive" as const,
+  const hasUserRegistration =
+    tournament && session?.user?.id
+      ? (await prisma.tournamentRegistration.count({
+          where: {
+            tournamentId: tournament.id,
+            OR: [
+              { userId: session.user.id },
+              ...(userEmail
+                ? [
+                    {
+                      contactEmail: {
+                        equals: userEmail,
+                        mode: "insensitive" as const,
+                      },
                     },
-                  },
-                ]
-              : []),
-          ],
-        },
-      })) > 0
-    : false;
+                  ]
+                : []),
+            ],
+          },
+        })) > 0
+      : false;
 
   const tableaux = tournamentEvents.map((event) => ({
     id: event.id,
@@ -192,13 +210,18 @@ export default async function TournoiHomePage() {
       <KpiPageViewTracker page="tournoi" label="tournoi-page" />
       <Card className="border-l-4 border-l-primary bg-card cyberpunk-highlight">
         <CardHeader>
-          <p className="mb-2 text-sm uppercase tracking-wide text-primary">{informationsTournoi.organisateur}</p>
-          <CardTitle className="text-3xl md:text-4xl">{informationsTournoi.nom}</CardTitle>
+          <p className="mb-2 text-sm uppercase tracking-wide text-primary">
+            {informationsTournoi.organisateur}
+          </p>
+          <CardTitle className="text-3xl md:text-4xl">
+            {informationsTournoi.nom}
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6 text-muted-foreground">
           <p>
-            Tournoi homologué {informationsTournoi.homologation} sur {informationsTournoi.tables} tables,
-            du samedi 4 au lundi 6 avril 2026.
+            Tournoi homologué {informationsTournoi.homologation} sur{" "}
+            {informationsTournoi.tables} tables, du samedi 4 au lundi 6 avril
+            2026.
           </p>
 
           <p>{tournamentRegistrationContent.message}</p>
@@ -240,12 +263,16 @@ export default async function TournoiHomePage() {
               <strong>Lieu :</strong> {informationsTournoi.lieu}
             </p>
             <p>
-              <strong>Format :</strong> {informationsTournoi.format.matchs}, {informationsTournoi.format.poules},{" "}
-              {informationsTournoi.format.qualifies}, puis {informationsTournoi.format.phaseFinale}.
+              <strong>Format :</strong> {informationsTournoi.format.matchs},{" "}
+              {informationsTournoi.format.poules},{" "}
+              {informationsTournoi.format.qualifies}, puis{" "}
+              {informationsTournoi.format.phaseFinale}.
             </p>
             <p>
-              <strong>Inscriptions :</strong> jusqu&apos;au {informationsTournoi.inscriptions.dateLimite} (paiement en ligne possible
-              jusqu&apos;au {informationsTournoi.inscriptions.paiementEnLigne}).
+              <strong>Inscriptions :</strong> jusqu&apos;au{" "}
+              {informationsTournoi.inscriptions.dateLimite} (paiement en ligne
+              possible jusqu&apos;au{" "}
+              {informationsTournoi.inscriptions.paiementEnLigne}).
             </p>
           </CardContent>
         </Card>
@@ -259,19 +286,12 @@ export default async function TournoiHomePage() {
               <strong>Responsable :</strong> {informationsTournoi.contact.nom}
             </p>
             <p>
-              <strong>Téléphone :</strong> {informationsTournoi.contact.telephone}
+              <strong>Téléphone :</strong>{" "}
+              {informationsTournoi.contact.telephone}
             </p>
             <p>
               <strong>Email :</strong> {informationsTournoi.contact.email}
             </p>
-            <a
-              href={informationsTournoi.contact.site}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex justify-center border border-purple-600 text-purple-600 px-5 py-2 rounded-md hover:bg-purple-50 transition"
-            >
-              Site officiel du club
-            </a>
           </CardContent>
         </Card>
       </section>
@@ -283,7 +303,9 @@ export default async function TournoiHomePage() {
           </CardHeader>
           <CardContent>
             {tableaux.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Aucun tableau ouvert n&apos;est disponible pour le moment.</p>
+              <p className="text-sm text-muted-foreground">
+                Aucun tableau ouvert n&apos;est disponible pour le moment.
+              </p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="min-w-full text-sm">
@@ -300,7 +322,9 @@ export default async function TournoiHomePage() {
                   <tbody>
                     {tableaux.map((tableau) => (
                       <tr key={tableau.id} className="border-b last:border-0">
-                        <td className="py-2 pr-4 font-semibold">{tableau.code}</td>
+                        <td className="py-2 pr-4 font-semibold">
+                          {tableau.code}
+                        </td>
                         <td className="py-2 pr-4">{tableau.date}</td>
                         <td className="py-2 pr-4">{tableau.heure}</td>
                         <td className="py-2 pr-4">{tableau.categorie}</td>
@@ -313,7 +337,9 @@ export default async function TournoiHomePage() {
               </div>
             )}
             <p className="text-sm text-muted-foreground mt-4">
-              Chèque jusqu&apos;au {informationsTournoi.inscriptions.chequeLimite}. {informationsTournoi.inscriptions.remboursement}.
+              Chèque jusqu&apos;au{" "}
+              {informationsTournoi.inscriptions.chequeLimite}.{" "}
+              {informationsTournoi.inscriptions.remboursement}.
             </p>
           </CardContent>
         </Card>
@@ -326,8 +352,9 @@ export default async function TournoiHomePage() {
           </CardHeader>
           <CardContent className="space-y-4 text-muted-foreground">
             <p>
-              Pour garder le tournoi visible et régulier, nous publions des contenus avant, pendant et après
-              l&apos;évènement selon un planning clair.
+              Pour garder le tournoi visible et régulier, nous publions des
+              contenus avant, pendant et après l&apos;évènement selon un
+              planning clair.
             </p>
 
             <div className="space-y-4">
@@ -352,15 +379,19 @@ export default async function TournoiHomePage() {
           </CardHeader>
           <CardContent className="space-y-4 text-muted-foreground">
             <p>
-              Les preuves sociales permettent de montrer la crédibilité du tournoi et d&apos;encourager de nouvelles
-              inscriptions.
+              Les preuves sociales permettent de montrer la crédibilité du
+              tournoi et d&apos;encourager de nouvelles inscriptions.
             </p>
 
             <div className="grid gap-3">
               {preuvesSociales.map((preuve) => (
                 <div key={preuve.titre} className="rounded-lg border p-4">
-                  <p className="text-sm uppercase tracking-wide text-muted-foreground">{preuve.titre}</p>
-                  <p className="text-lg font-semibold text-foreground">{preuve.valeur}</p>
+                  <p className="text-sm uppercase tracking-wide text-muted-foreground">
+                    {preuve.titre}
+                  </p>
+                  <p className="text-lg font-semibold text-foreground">
+                    {preuve.valeur}
+                  </p>
                   <p className="text-sm mt-1">{preuve.detail}</p>
                 </div>
               ))}
