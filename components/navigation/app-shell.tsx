@@ -34,7 +34,7 @@ export default function AppShell({ children, title }: AppShellProps) {
               </SheetTrigger>
 
               <SheetContent side="left" className="w-[260px] p-0">
-                <Sidebar />
+                <Sidebar mobile />
               </SheetContent>
             </Sheet>
           </div>

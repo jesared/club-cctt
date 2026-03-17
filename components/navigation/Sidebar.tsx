@@ -46,7 +46,7 @@ function buildSectionState(sections: MenuSection[], pathname: string) {
   }, {});
 }
 
-export default function Sidebar({}: SidebarProps) {
+export default function Sidebar({ mobile = false }: SidebarProps) {
   const pathname = usePathname();
   const { data: session } = useSession();
 
@@ -64,6 +64,11 @@ export default function Sidebar({}: SidebarProps) {
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
 
   const collapsed = sidebarState === "collapsed";
+  const widthClasses = cn(
+    sidebarState === "expanded" && "w-[260px]",
+    sidebarState === "collapsed" && "w-[72px]",
+    sidebarState === "hidden" && "w-0 overflow-hidden",
+  );
   useEffect(() => {
     const stored = localStorage.getItem(SIDEBAR_KEY);
     if (stored) setSidebarState(stored as SidebarState);
@@ -89,19 +94,13 @@ export default function Sidebar({}: SidebarProps) {
     }));
   };
 
-  const toggleCollapse = () => {
-    setSidebarState((prev) =>
-      prev === "collapsed" ? "expanded" : "collapsed",
-    );
-  };
-
   const reopenSidebar = () => {
     setSidebarState("expanded");
   };
 
   return (
     <>
-      {sidebarState === "hidden" && (
+      {!mobile && sidebarState === "hidden" && (
         <Button
           type="button"
           variant="secondary"
@@ -117,12 +116,20 @@ export default function Sidebar({}: SidebarProps) {
       <div
         className={cn(
           "transition-all duration-300",
-          sidebarState === "expanded" && "w-[260px]",
-          sidebarState === "collapsed" && "w-[72px]",
-          sidebarState === "hidden" && "w-0 overflow-hidden",
+          mobile ? "w-full" : ["relative shrink-0", widthClasses],
         )}
       >
-        <aside className="pt-16 flex h-full flex-col border-r bg-card">
+        <aside
+          className={cn(
+            "flex flex-col border-r bg-card",
+            mobile
+              ? "h-full"
+              : [
+                  "fixed left-0 top-0 z-40 h-screen pt-16 transition-all duration-300",
+                  widthClasses,
+                ],
+          )}
+        >
           <div className="flex h-14 items-center justify-between border-b px-3">
             {!collapsed && <p className="text-sm font-semibold">Navigation</p>}
 
