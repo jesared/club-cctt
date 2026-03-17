@@ -36,6 +36,10 @@ export default function Header() {
   const pathname = usePathname();
   const { data: session } = useSession();
 
+  if (pathname !== "/") {
+    return null;
+  }
+
   const visibleSections = useMemo(
     () =>
       getVisibleSections({
