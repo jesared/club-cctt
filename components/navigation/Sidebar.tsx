@@ -26,11 +26,21 @@ type SidebarProps = {
   mobile?: boolean;
   onOpen?: () => void;
 };
+function isItemActive(pathname: string, href: string) {
+  if (href === "/") return pathname === "/";
 
+  // 🔥 cas spécial admin (évite double actif)
+  if (href === "/admin") {
+    return pathname === "/admin" || pathname.startsWith("/admin/");
+  }
+
+  // 👉 évite que /admin match /admin/tournoi
+  return pathname === href || pathname.startsWith(href + "/");
+}
 function buildSectionState(sections: MenuSection[], pathname: string) {
   return sections.reduce<Record<string, boolean>>((acc, section) => {
-    acc[section.title] = section.items.some(
-      (item) => pathname === item.href || pathname.startsWith(`${item.href}/`),
+    acc[section.title] = section.items.some((item) =>
+      isItemActive(pathname, item.href),
     );
     return acc;
   }, {});
@@ -58,24 +68,8 @@ export default function Sidebar({}: SidebarProps) {
     const stored = localStorage.getItem(SIDEBAR_KEY);
     if (stored) setSidebarState(stored as SidebarState);
 
+    // 🔥 IMPORTANT : on ne merge plus
     const baseState = buildSectionState(sections, pathname);
-
-    const storedSections = localStorage.getItem(SECTIONS_KEY);
-
-    if (storedSections) {
-      try {
-        const parsed = JSON.parse(storedSections) as Record<string, boolean>;
-
-        // 🔥 fusion intelligente
-        const merged = {
-          ...parsed,
-          ...baseState, // 👉 force ouverture section active
-        };
-
-        setOpenSections(merged);
-        return;
-      } catch {}
-    }
 
     setOpenSections(baseState);
   }, [pathname, sections]);
