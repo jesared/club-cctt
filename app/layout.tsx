@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 
-import Footer from "@/components/layout/footer";
-import Header from "@/components/layout/header";
 import Providers from "@/components/Providers";
-import SiteBreadcrumb from "@/components/SiteBreadcrumb";
 
 import "./globals.css";
 
@@ -28,18 +25,13 @@ export default function RootLayout({
         <Providers>
           <div className="flex min-h-screen flex-col">
             {/* HEADER */}
-            <Header />
 
             {/* PAGE CONTENT */}
             <main className="flex-1">
-              <div className="px-4 py-6">
-                <SiteBreadcrumb />
-                {children}
-              </div>
+              <div className="px-4 py-6">{children}</div>
             </main>
 
             {/* FOOTER */}
-            <Footer />
           </div>
         </Providers>
       </body>

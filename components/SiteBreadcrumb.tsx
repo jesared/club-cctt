@@ -60,7 +60,7 @@ export default function SiteBreadcrumb() {
   });
 
   return (
-    <div className="border-b bg-background/60 backdrop-blur">
+    <div className="bg-background/60 backdrop-blur">
       <div className="px-4 py-3 md:px-6">
         <Breadcrumb>
           <BreadcrumbList>

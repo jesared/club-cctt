@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import Sidebar from "@/components/navigation/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import SiteBreadcrumb from "../SiteBreadcrumb";
 
 type AppShellProps = {
   children: ReactNode;
@@ -40,6 +41,7 @@ export default function AppShell({ children, title }: AppShellProps) {
           </div>
 
           <div className="ml-2 text-sm font-semibold">{title}</div>
+          <SiteBreadcrumb />
         </header>
 
         {/* MAIN */}
