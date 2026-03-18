@@ -22,21 +22,20 @@ type SidebarItemProps = {
 function isItemActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
 
-  // 🔥 admin global (EXCLUSION tournoi)
-  if (href === "/admin") {
-    return (
-      pathname === "/admin" ||
-      (pathname.startsWith("/admin/") && !pathname.startsWith("/admin/tournoi"))
-    );
+  const pathSegments = pathname.split("/").filter(Boolean);
+  const hrefSegments = href.split("/").filter(Boolean);
+
+  // 👉 doit matcher tous les segments
+  const isMatch = hrefSegments.every(
+    (segment, index) => pathSegments[index] === segment,
+  );
+
+  // ❌ si c'est un parent (moins précis), on refuse
+  if (isMatch && pathSegments.length !== hrefSegments.length) {
+    return false;
   }
 
-  // 🔥 admin tournoi (prioritaire)
-  if (href === "/admin/tournoi") {
-    return pathname.startsWith("/admin/tournoi");
-  }
-
-  // 👉 default
-  return pathname === href || pathname.startsWith(href + "/");
+  return isMatch;
 }
 
 export default function SidebarItem({

@@ -1,10 +1,9 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-
-import { Button } from "@/components/ui/button";
 
 export default function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
@@ -16,17 +15,32 @@ export default function ThemeToggle() {
 
   const isDark = mounted ? resolvedTheme === "dark" : false;
 
+  const toggle = () => {
+    setTheme(isDark ? "light" : "dark");
+  };
+
   return (
-    <Button
-      type="button"
-      variant="outline"
-      size="icon"
-      onClick={() => setTheme(isDark ? "light" : "dark")}
-      aria-label={isDark ? "Activer le mode clair" : "Activer le mode sombre"}
-      title={isDark ? "Mode sombre" : "Mode clair"}
-      className="cursor-pointer"
+    <button
+      onClick={toggle}
+      aria-label="Changer le thème"
+      className={cn(
+        "relative inline-flex h-7 w-14 items-center rounded-full transition-colors duration-300 border border-accent/30",
+        isDark ? "bg-zinc-800" : "bg-zinc-300",
+      )}
     >
-      {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-    </Button>
+      {/* BULLE */}
+      <span
+        className={cn(
+          "absolute flex h-6 w-6 items-center justify-center rounded-full  shadow-md transition-all duration-300",
+          isDark ? "translate-x-7" : "translate-x-1",
+        )}
+      >
+        {isDark ? (
+          <Sun className="h-3.5 w-3.5 text-secondary" />
+        ) : (
+          <Moon className="h-3.5 w-3.5 text-zinc-700" />
+        )}
+      </span>
+    </button>
   );
 }

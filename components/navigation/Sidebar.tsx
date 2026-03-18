@@ -2,7 +2,6 @@
 
 import { EyeOff, PanelLeftOpen } from "lucide-react";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
@@ -10,7 +9,6 @@ import AuthButton from "@/components/AuthButton";
 import ThemeToggle from "@/components/ThemeToggle";
 import {
   getVisibleSections,
-  primaryCta,
   type MenuSection,
 } from "@/components/navigation/menu-items";
 import { Button } from "@/components/ui/button";
@@ -159,14 +157,6 @@ export default function Sidebar({ mobile = false }: SidebarProps) {
           </div>
 
           <div className="space-y-3 border-t p-3">
-            {!collapsed && (
-              <Link
-                href={primaryCta.href}
-                className="block rounded-lg border px-3 py-2 text-center text-sm hover:bg-muted"
-              >
-                {primaryCta.label}
-              </Link>
-            )}
             <div
               className={cn(
                 "flex",

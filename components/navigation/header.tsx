@@ -113,11 +113,14 @@ export default function Header() {
               Connexion
             </Button>
           ) : (
-            <Link
-              href="/user"
-              className="rounded-md border px-3 py-2 text-sm hover:bg-muted"
-            >
-              Mon espace
+            <Link href="/user" className="rounded-md px-3 py-2 text-sm">
+              <Image
+                src={session.user.image || "/default-avatar.png"}
+                alt="Avatar"
+                width={40}
+                height={40}
+                className={cn("rounded-full", "h-8 w-8")}
+              />
             </Link>
           )}
 
