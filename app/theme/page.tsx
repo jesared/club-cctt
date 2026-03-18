@@ -36,6 +36,29 @@ const tokenCards = [
   },
 ];
 
+const usageExamples = [
+  {
+    title: "Surfaces",
+    description:
+      "Utiliser bg-background pour la page, bg-card pour les blocs de contenu, et border-border pour garder une hiérarchie lisible.",
+  },
+  {
+    title: "Texte",
+    description:
+      "text-foreground pour le texte principal et text-muted-foreground pour les compléments permet de maintenir un contraste cohérent.",
+  },
+  {
+    title: "Actions",
+    description:
+      "Le bouton principal doit rester réservé aux actions critiques du parcours. Les variantes secondary/outline/ghost servent à réduire la charge visuelle.",
+  },
+  {
+    title: "Feedback",
+    description:
+      "Accent met en valeur des états positifs et destructive les alertes. Éviter d'utiliser ces teintes pour du contenu purement décoratif.",
+  },
+];
+
 export default function ThemePage() {
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 py-6">
@@ -107,6 +130,55 @@ export default function ThemePage() {
             <Badge variant="secondary">Information</Badge>
             <Badge variant="destructive">Urgent</Badge>
             <Badge variant="outline">Neutre</Badge>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section className="grid gap-4 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Guide d&apos;utilisation</CardTitle>
+            <CardDescription>
+              Quelques règles simples pour appliquer le thème de façon uniforme
+              dans l&apos;application.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {usageExamples.map((item) => (
+              <div key={item.title} className="rounded-lg border border-border p-3">
+                <p className="text-sm font-semibold">{item.title}</p>
+                <p className="text-sm text-muted-foreground">{item.description}</p>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Hiérarchie typographique</CardTitle>
+            <CardDescription>
+              Exemple de styles de texte à conserver pour rester homogène.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="rounded-lg border border-border p-4">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                Libellé / métadonnée
+              </p>
+              <p className="text-xl font-semibold">Titre de section</p>
+              <p className="text-sm text-muted-foreground">
+                Texte d&apos;accompagnement. Utiliser des phrases courtes et
+                explicites pour les descriptions.
+              </p>
+            </div>
+            <div className="rounded-lg bg-muted p-4">
+              <p className="text-sm font-medium">
+                Zone secondaire (bg-muted) pour contenus contextuels.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Pratique pour des aides, notes ou encarts de résumé.
+              </p>
+            </div>
           </CardContent>
         </Card>
       </section>
