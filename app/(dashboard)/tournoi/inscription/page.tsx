@@ -1,6 +1,6 @@
 import KpiPageViewTracker from "@/components/KpiPageViewTracker";
 import TournamentRegistrationForm from "@/components/TournamentRegistrationForm";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
@@ -28,7 +28,11 @@ function formatEventLabel(event: {
           : `jusqu'à ${event.maxPoints} pts`;
 
   const genderLabel =
-    event.gender === "M" ? "Messieurs" : event.gender === "F" ? "Dames" : "Mixte";
+    event.gender === "M"
+      ? "Messieurs"
+      : event.gender === "F"
+        ? "Dames"
+        : "Mixte";
 
   const labelParts = [event.label.trim()];
 
@@ -103,41 +107,44 @@ export default async function InscriptionsPage() {
     onsitePriceLabel: `${(event.feeOnsiteCents / 100).toFixed(0)}€`,
   }));
 
-  const hasUserRegistration = tournament && session?.user?.id
-    ?
-      (await prisma.tournamentRegistration.count({
-        where: {
-          tournamentId: tournament.id,
-          OR: [
-            { userId: session.user.id },
-            ...(userEmail
-              ? [
-                  {
-                    contactEmail: {
-                      equals: userEmail,
-                      mode: "insensitive" as const,
+  const hasUserRegistration =
+    tournament && session?.user?.id
+      ? (await prisma.tournamentRegistration.count({
+          where: {
+            tournamentId: tournament.id,
+            OR: [
+              { userId: session.user.id },
+              ...(userEmail
+                ? [
+                    {
+                      contactEmail: {
+                        equals: userEmail,
+                        mode: "insensitive" as const,
+                      },
                     },
-                  },
-                ]
-              : []),
-          ],
-        },
-      })) > 0
-    : false;
+                  ]
+                : []),
+            ],
+          },
+        })) > 0
+      : false;
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-16">
       <KpiPageViewTracker page="tournoi-inscription" label="inscription-page" />
+      <header className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">
+          Inscription{" "}
+          {tournament?.name ? `au ${tournament.name}` : "au Tournoi"}
+        </h1>
+      </header>
       <Card className="shadow-sm border-border tournament-panel">
         <CardHeader className="space-y-3">
-          <CardTitle>
-            Inscription{" "}
-            {tournament?.name ? `au ${tournament.name}` : "au Tournoi"}
-          </CardTitle>
           <p className="text-muted-foreground">
             Suivez les 3 étapes du formulaire pour envoyer votre demande
-            d&apos;inscription. Nous vous confirmons votre place par email sous 48 h maximum,
-            après vérification des disponibilités dans les tableaux sélectionnés.
+            d&apos;inscription. Nous vous confirmons votre place par email sous
+            48 h maximum, après vérification des disponibilités dans les
+            tableaux sélectionnés.
           </p>
         </CardHeader>
         <CardContent className="space-y-6">

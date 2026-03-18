@@ -14,7 +14,6 @@ import {
   MessageSquare,
   Receipt,
   Settings,
-  Table2,
   Trophy,
   User,
   UserPlus,
@@ -123,10 +122,10 @@ export const navigation: MenuSection[] = [
     roles: ["user", "admin"],
     items: [
       { href: "/tournoi", label: "Tournoi", icon: FileText },
-      { href: "/tournoi/tableaux", label: "Tableaux", icon: Table2 },
+
       {
         href: "/tournoi/inscription",
-        label: "Inscriptions",
+        label: "S'inscrire",
         icon: ClipboardPen,
       },
       {
@@ -136,9 +135,14 @@ export const navigation: MenuSection[] = [
       },
       { href: "/tournoi/resultats", label: "Résultats", icon: Trophy },
       {
-        href: "/tournoi/classements",
-        label: "Classements",
+        href: "/tournoi/palmares",
+        label: "Palmarès",
         icon: CalendarCheck,
+      },
+      {
+        href: "/tournoi/affiches",
+        label: "Affiches",
+        icon: LayoutGrid,
       },
     ],
   },

@@ -13,6 +13,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { Home } from "lucide-react";
 
 /* =========================
    MAP DES ROUTES
@@ -67,7 +68,9 @@ export default function SiteBreadcrumb() {
             {/* HOME */}
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link href="/">Accueil</Link>
+                <Link href="/">
+                  <Home className="h-4 w-4" />
+                </Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
 

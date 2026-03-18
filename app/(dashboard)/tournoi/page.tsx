@@ -7,7 +7,7 @@ import { tournamentRegistrationContent } from "@/lib/tournament-registration-con
 import { getServerSession } from "next-auth";
 
 const informationsTournoi = {
-  nom: "Tournoi National Chalons en Champagne TT",
+  nom: "Tournoi National de Paques 2026",
   organisateur: "Chalons en Champagne TT",
   lieu: "Gymnase Kiezer, 150 avenue des Alliés, Chalons en Champagne",
   tables: 30,
@@ -208,7 +208,7 @@ export default async function TournoiHomePage() {
   return (
     <main className="max-w-7xl mx-auto px-4 py-8 space-y-6">
       <KpiPageViewTracker page="tournoi" label="tournoi-page" />
-      <Card className="border-l-4 border-l-primary bg-card cyberpunk-highlight">
+      <Card className="bg-transparent border-0">
         <CardHeader>
           <p className="mb-2 text-sm uppercase tracking-wide text-primary">
             {informationsTournoi.organisateur}

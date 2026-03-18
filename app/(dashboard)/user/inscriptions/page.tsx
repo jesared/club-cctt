@@ -1,10 +1,21 @@
-import Link from "next/link";
-import { CalendarClock, CircleDollarSign, ListChecks, UserRound } from "lucide-react";
+import {
+  CalendarClock,
+  CircleDollarSign,
+  ListChecks,
+  UserRound,
+} from "lucide-react";
 import { getServerSession } from "next-auth";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -33,7 +44,9 @@ function formatAmount(cents: number) {
   return `${(cents / 100).toFixed(2)} €`;
 }
 
-function getRegistrationStatusLabel(status: "PENDING" | "CONFIRMED" | "CANCELLED") {
+function getRegistrationStatusLabel(
+  status: "PENDING" | "CONFIRMED" | "CANCELLED",
+) {
   switch (status) {
     case "CONFIRMED":
       return "Confirmée";
@@ -79,17 +92,21 @@ export default async function MesInscriptionsPage() {
 
   if (!tournament) {
     return (
-      <main className="space-y-6">
+      <main className="max-w-7xl mx-auto px-4 py-8 space-y-6">
         <header className="mb-6 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-semibold">Mes inscriptions tournoi</h1>
-            <p className="text-sm text-muted-foreground">Aucun tournoi actif n&apos;est disponible actuellement.</p>
+            <p className="text-sm text-muted-foreground">
+              Aucun tournoi actif n&apos;est disponible actuellement.
+            </p>
           </div>
         </header>
         <Card className="border-border bg-card shadow-sm">
           <CardHeader>
             <CardTitle>Tournoi indisponible</CardTitle>
-            <CardDescription>Revenez plus tard pour consulter vos inscriptions.</CardDescription>
+            <CardDescription>
+              Revenez plus tard pour consulter vos inscriptions.
+            </CardDescription>
           </CardHeader>
         </Card>
       </main>
@@ -152,7 +169,11 @@ export default async function MesInscriptionsPage() {
 
   const totalDueCents = registrations.reduce(
     (sum, registration) =>
-      sum + registration.registrationEvents.reduce((eventSum, entry) => eventSum + entry.event.feeOnlineCents, 0),
+      sum +
+      registration.registrationEvents.reduce(
+        (eventSum, entry) => eventSum + entry.event.feeOnlineCents,
+        0,
+      ),
     0,
   );
 
@@ -168,21 +189,29 @@ export default async function MesInscriptionsPage() {
   const totalRemainingCents = Math.max(totalDueCents - totalPaidCents, 0);
 
   return (
-    <main className="space-y-6">
+    <main className="max-w-7xl mx-auto px-4 py-8 space-y-6">
       <header className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Mes inscriptions tournoi</h1>
           <p className="text-sm text-muted-foreground">
-            Récapitulatif de vos joueurs inscrits sur <strong>{tournament.name}</strong> du{" "}
-            {DATE_FORMATTER.format(tournament.startDate)} au {DATE_FORMATTER.format(tournament.endDate)}.
+            Récapitulatif de vos joueurs inscrits sur{" "}
+            <strong>{tournament.name}</strong> du{" "}
+            {DATE_FORMATTER.format(tournament.startDate)} au{" "}
+            {DATE_FORMATTER.format(tournament.endDate)}.
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Button asChild variant="secondary">
-            <Link href="mailto:inscriptions-tournoi@cctt.fr?subject=Question%20paiement%20tournoi">Contacter</Link>
+            <Link href="mailto:inscriptions-tournoi@cctt.fr?subject=Question%20paiement%20tournoi">
+              Contacter
+            </Link>
           </Button>
           <Button asChild>
-            <Link href="https://tournoi.cctt.fr" target="_blank" rel="noreferrer">
+            <Link
+              href="https://tournoi.cctt.fr"
+              target="_blank"
+              rel="noreferrer"
+            >
               Payer en ligne
             </Link>
           </Button>
@@ -211,7 +240,9 @@ export default async function MesInscriptionsPage() {
             <CardDescription className="flex items-center gap-2">
               <ListChecks className="h-4 w-4" /> Déjà payé
             </CardDescription>
-            <CardTitle className="text-emerald-500">{formatAmount(totalPaidCents)}</CardTitle>
+            <CardTitle className="text-emerald-500">
+              {formatAmount(totalPaidCents)}
+            </CardTitle>
           </CardHeader>
         </Card>
       </section>
@@ -234,7 +265,8 @@ export default async function MesInscriptionsPage() {
           <CardHeader>
             <CardTitle>Aucun joueur inscrit</CardTitle>
             <CardDescription>
-              Vous pouvez ajouter votre premier joueur depuis le formulaire d&apos;inscription.
+              Vous pouvez ajouter votre premier joueur depuis le formulaire
+              d&apos;inscription.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -250,11 +282,17 @@ export default async function MesInscriptionsPage() {
             const paidCents = registration.payments
               .filter((payment) => payment.status === "PAID")
               .reduce((sum, payment) => sum + payment.amountCents, 0);
-            const dueCents = registration.registrationEvents.reduce((sum, entry) => sum + entry.event.feeOnlineCents, 0);
+            const dueCents = registration.registrationEvents.reduce(
+              (sum, entry) => sum + entry.event.feeOnlineCents,
+              0,
+            );
             const remainingCents = Math.max(dueCents - paidCents, 0);
 
             return (
-              <Card key={registration.id} className="border-border bg-card shadow-sm transition-colors duration-200 hover:shadow-md">
+              <Card
+                key={registration.id}
+                className="border-border bg-card shadow-sm transition-colors duration-200 hover:shadow-md"
+              >
                 <CardHeader>
                   <CardTitle className="flex flex-wrap items-center justify-between gap-2">
                     <span>{playerName}</span>
@@ -264,8 +302,12 @@ export default async function MesInscriptionsPage() {
                   </CardTitle>
                   <CardDescription>
                     Licence {registration.player.licence}
-                    {registration.player.club ? ` • ${registration.player.club}` : ""}
-                    {registration.player.points !== null ? ` • ${registration.player.points} pts` : ""}
+                    {registration.player.club
+                      ? ` • ${registration.player.club}`
+                      : ""}
+                    {registration.player.points !== null
+                      ? ` • ${registration.player.points} pts`
+                      : ""}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -290,18 +332,25 @@ export default async function MesInscriptionsPage() {
                               {DATE_TIME_FORMATTER.format(entry.event.startAt)}
                             </span>
                           </TableCell>
-                          <TableCell className="text-muted-foreground">{formatAmount(entry.event.feeOnlineCents)}</TableCell>
-                          <TableCell className="text-muted-foreground">{getEventStatusLabel(entry.status)}</TableCell>
+                          <TableCell className="text-muted-foreground">
+                            {formatAmount(entry.event.feeOnlineCents)}
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">
+                            {getEventStatusLabel(entry.status)}
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
 
                   <p className="text-sm text-muted-foreground">
-                    Paiement : <strong>{formatAmount(paidCents)}</strong> / {formatAmount(dueCents)}
+                    Paiement : <strong>{formatAmount(paidCents)}</strong> /{" "}
+                    {formatAmount(dueCents)}
                   </p>
                   {remainingCents > 0 ? (
-                    <p className="text-sm text-amber-500">Reste à payer : {formatAmount(remainingCents)}</p>
+                    <p className="text-sm text-amber-500">
+                      Reste à payer : {formatAmount(remainingCents)}
+                    </p>
                   ) : (
                     <p className="text-sm text-emerald-500">Dossier soldé</p>
                   )}

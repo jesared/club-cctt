@@ -197,7 +197,6 @@ export default function Sidebar({
           <div className="flex h-14 items-center justify-between border-b px-3">
             {!collapsed && (
               <>
-                <p className="text-sm font-semibold">Navigation</p>
                 <ThemeToggle />
               </>
             )}
