@@ -14,6 +14,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+import Image from "next/image";
+import Link from "next/link";
 import SidebarSection from "./SidebarSection";
 
 const SIDEBAR_KEY = "app.sidebar.state";
@@ -124,11 +126,30 @@ export default function Sidebar({ mobile = false }: SidebarProps) {
             mobile
               ? "h-full"
               : [
-                  "fixed left-0 top-0 z-40 h-screen pt-16 transition-all duration-300",
+                  "fixed left-0 top-0 z-40 h-screen pt-4 transition-all duration-300",
                   widthClasses,
                 ],
           )}
         >
+          <Link
+            href="/"
+            className={cn(
+              "flex justify-center mx-14 m-4 transition-all duration-300",
+              collapsed && "justify-center",
+            )}
+          >
+            <Image
+              src="/logo.jpg"
+              alt="Logo"
+              width={180}
+              height={180}
+              fill={collapsed}
+              className={cn(
+                "object-contain rounded-lg",
+                collapsed ? "h-8 w-8" : "h-auto w-auto",
+              )}
+            />
+          </Link>
           <div className="flex h-14 items-center justify-between border-b px-3">
             {!collapsed && <p className="text-sm font-semibold">Navigation</p>}
 
