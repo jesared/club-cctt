@@ -50,7 +50,7 @@ function buildSectionState(sections: MenuSection[], pathname: string) {
 
 export default function Sidebar({
   mobile = false,
-  open = false,
+  open,
   onClose,
 }: SidebarProps) {
   const pathname = usePathname();
@@ -68,6 +68,7 @@ export default function Sidebar({
   const [sidebarState, setSidebarState] = useState<SidebarState>("expanded");
 
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
+  const isMobileOpen = mobile ? (open ?? true) : (open ?? false);
 
   const collapsed = sidebarState === "collapsed";
 
@@ -106,13 +107,13 @@ export default function Sidebar({
 
   // bloque scroll body en mobile
   useEffect(() => {
-    if (mobile && open) {
+    if (mobile && isMobileOpen) {
       document.body.style.overflow = "hidden";
     }
     return () => {
       document.body.style.overflow = "";
     };
-  }, [mobile, open]);
+  }, [isMobileOpen, mobile]);
 
   const reopenSidebar = () => {
     setSidebarState("expanded");
@@ -134,7 +135,7 @@ export default function Sidebar({
       )}
 
       {/* Overlay mobile */}
-      {mobile && open && (
+      {mobile && isMobileOpen && onClose && (
         <div className="fixed inset-0 z-40 bg-black/50" onClick={onClose} />
       )}
 
@@ -150,7 +151,7 @@ export default function Sidebar({
             mobile
               ? [
                   "fixed inset-y-0 left-0 z-50 w-[260px] h-screen overflow-y-auto transition-transform",
-                  open ? "translate-x-0" : "-translate-x-full",
+                  isMobileOpen ? "translate-x-0" : "-translate-x-full",
                 ]
               : [
                   "fixed left-0 top-0 z-40 h-screen pt-4 transition-all duration-300",
@@ -159,7 +160,7 @@ export default function Sidebar({
           )}
         >
           {/* Bouton fermer mobile */}
-          {mobile && (
+          {mobile && onClose && (
             <div className="flex justify-end p-3">
               <Button size="icon" variant="ghost" onClick={onClose}>
                 <X className="h-5 w-5" />
