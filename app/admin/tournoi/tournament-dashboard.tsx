@@ -26,7 +26,10 @@ type DashboardCard = {
   Icon: typeof Users;
 };
 
-export function TournamentDashboard({ tournamentName, stats }: TournamentDashboardProps) {
+export function TournamentDashboard({
+  tournamentName,
+  stats,
+}: TournamentDashboardProps) {
   const cards: DashboardCard[] = [
     {
       label: "Joueurs inscrits",
@@ -70,7 +73,9 @@ export function TournamentDashboard({ tournamentName, stats }: TournamentDashboa
     <section className="space-y-4">
       <div>
         <h2 className="text-2xl font-bold text-foreground">{tournamentName}</h2>
-        <p className="text-sm text-muted-foreground">Dashboard rapide du tournoi</p>
+        <p className="text-sm text-muted-foreground">
+          Dashboard rapide du tournoi
+        </p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
@@ -81,10 +86,14 @@ export function TournamentDashboard({ tournamentName, stats }: TournamentDashboa
           >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">{label}</p>
-                <p className="mt-2 text-3xl font-bold text-foreground">{value}</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  {label}
+                </p>
+                <p className="mt-2 text-3xl font-bold text-foreground">
+                  {value}
+                </p>
               </div>
-              <div className="rounded-lg bg-secondary p-2 text-foreground">
+              <div className="rounded-lg bg-secondary p-2 text-secondary-foreground">
                 <Icon className="h-5 w-5" aria-hidden="true" />
               </div>
             </div>

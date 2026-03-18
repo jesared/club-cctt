@@ -67,7 +67,7 @@ export function TournamentAdminPage({
                 className={`rounded-md border px-3 py-1.5 text-sm transition-colors ${
                   isActive
                     ? "border-primary bg-primary text-primary-foreground"
-                    : "hover:bg-secondary text-foreground"
+                    : "hover:bg-secondary hover:text-secondary-foreground text-foreground"
                 }`}
               >
                 {link.label}
