@@ -8,6 +8,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const tokenCards = [
   {
@@ -57,6 +66,41 @@ const usageExamples = [
     description:
       "Accent met en valeur des états positifs et destructive les alertes. Éviter d'utiliser ces teintes pour du contenu purement décoratif.",
   },
+];
+
+const funnelRows = [
+  {
+    step: "Visite page tournoi",
+    metric: "Taux de clic CTA",
+    target: "≥ 20 %",
+    note: "Tester des CTA plus explicites: \"Je m'inscris en 3 min\".",
+  },
+  {
+    step: "Ouverture formulaire",
+    metric: "Taux de démarrage",
+    target: "≥ 65 %",
+    note: "Afficher les étapes et la durée estimée dès le départ.",
+  },
+  {
+    step: "Remplissage",
+    metric: "Abandon mi-parcours",
+    target: "≤ 30 %",
+    note: "Réduire les champs non bloquants et clarifier les aides.",
+  },
+  {
+    step: "Validation",
+    metric: "Taux de soumission",
+    target: "≥ 80 %",
+    note: "Renforcer la confirmation et le suivi post-envoi.",
+  },
+];
+
+const checklistItems = [
+  "Lister les champs obligatoires avant ouverture du formulaire.",
+  "Afficher une progression visible pour réduire l'incertitude.",
+  "Pré-remplir les informations connues de l'utilisateur connecté.",
+  "Montrer une validation inline (erreurs + succès) champ par champ.",
+  "Ajouter une section d'aide concise sous les champs complexes.",
 ];
 
 export default function ThemePage() {
@@ -178,6 +222,194 @@ export default function ThemePage() {
               <p className="text-sm text-muted-foreground">
                 Pratique pour des aides, notes ou encarts de résumé.
               </p>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section className="grid gap-4 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Tableau: suivi du tunnel</CardTitle>
+            <CardDescription>
+              Exemple de table lisible en clair/sombre pour piloter les métriques de conversion.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableCaption>
+                Prioriser les étapes avec le plus grand écart entre objectif et réel.
+              </TableCaption>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Étape</TableHead>
+                  <TableHead>Métrique</TableHead>
+                  <TableHead>Objectif</TableHead>
+                  <TableHead className="text-right">Note d&apos;action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {funnelRows.map((row) => (
+                  <TableRow key={row.step}>
+                    <TableCell className="font-medium">{row.step}</TableCell>
+                    <TableCell>{row.metric}</TableCell>
+                    <TableCell>{row.target}</TableCell>
+                    <TableCell className="text-right text-sm text-muted-foreground">
+                      {row.note}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Jauges: lecture rapide des états</CardTitle>
+            <CardDescription>
+              Les barres de progression servent à rendre le niveau d&apos;avancement immédiatement visible.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-5">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="font-medium">Profil complété</span>
+                <span className="text-muted-foreground">72%</span>
+              </div>
+              <progress className="h-2 w-full overflow-hidden rounded bg-muted [&::-webkit-progress-bar]:bg-muted [&::-webkit-progress-value]:bg-primary [&::-moz-progress-bar]:bg-primary" value={72} max={100} />
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="font-medium">Paiement validé</span>
+                <span className="text-muted-foreground">45%</span>
+              </div>
+              <progress className="h-2 w-full overflow-hidden rounded bg-muted [&::-webkit-progress-bar]:bg-muted [&::-webkit-progress-value]:bg-accent [&::-moz-progress-bar]:bg-accent" value={45} max={100} />
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="font-medium">Dossiers incomplets</span>
+                <span className="text-muted-foreground">20%</span>
+              </div>
+              <progress className="h-2 w-full overflow-hidden rounded bg-muted [&::-webkit-progress-bar]:bg-muted [&::-webkit-progress-value]:bg-destructive [&::-moz-progress-bar]:bg-destructive" value={20} max={100} />
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section className="grid gap-4 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Formulaire: structure recommandée</CardTitle>
+            <CardDescription>
+              Démo d&apos;un formulaire avec labels, aides contextuelles, validation et hiérarchie claire.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-4" onSubmit={(event) => event.preventDefault()}>
+              <div className="space-y-1.5">
+                <label htmlFor="nom" className="text-sm font-medium">
+                  Nom complet
+                </label>
+                <input
+                  id="nom"
+                  type="text"
+                  placeholder="Ex: Camille Dupont"
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Utiliser le même nom que sur la licence FFTT.
+                </p>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-1.5">
+                  <label htmlFor="email" className="text-sm font-medium">
+                    Email
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    placeholder="vous@club.fr"
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label htmlFor="categorie" className="text-sm font-medium">
+                    Catégorie
+                  </label>
+                  <select
+                    id="categorie"
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    defaultValue=""
+                  >
+                    <option value="" disabled>
+                      Choisir une catégorie
+                    </option>
+                    <option value="loisir">Loisir</option>
+                    <option value="competition">Compétition</option>
+                    <option value="jeune">Jeune</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label htmlFor="notes" className="text-sm font-medium">
+                  Notes complémentaires
+                </label>
+                <textarea
+                  id="notes"
+                  rows={3}
+                  placeholder="Précisions utiles pour l'organisation..."
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                />
+              </div>
+
+              <div className="rounded-lg border border-dashed p-3">
+                <p className="text-sm font-medium">Validation à afficher</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  ✅ Champ valide (vert), ⚠️ attention (amber), ❌ erreur (rouge)
+                  avec message actionnable sous le champ.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <Button type="submit">Envoyer</Button>
+                <Button type="reset" variant="outline">
+                  Réinitialiser
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Listes: informations scannables</CardTitle>
+            <CardDescription>
+              Utiliser listes à puces et listes numérotées pour faciliter la lecture rapide.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div>
+              <p className="text-sm font-semibold">Checklist UX avant mise en production</p>
+              <ul className="mt-2 list-disc space-y-2 pl-5 text-sm text-muted-foreground">
+                {checklistItems.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <p className="text-sm font-semibold">Séquence recommandée</p>
+              <ol className="mt-2 list-decimal space-y-2 pl-5 text-sm text-muted-foreground">
+                <li>Définir les objectifs (conversion, rapidité, clarté).</li>
+                <li>Prototyper les écrans clés avec états vides/erreurs/succès.</li>
+                <li>Tester avec 5 utilisateurs et corriger les frictions majeures.</li>
+                <li>Instrumenter les KPI et suivre chaque semaine.</li>
+              </ol>
             </div>
           </CardContent>
         </Card>
