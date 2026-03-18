@@ -1,6 +1,6 @@
-import { FiltersForm } from "./filters-form";
 import { prisma } from "@/lib/prisma";
 import { RegistrationEventStatus } from "@prisma/client";
+import { FiltersForm } from "./filters-form";
 
 type PageProps = {
   searchParams?: Promise<{
@@ -100,7 +100,10 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
           nomComplet:
             `${entry.registration.player.nom} ${entry.registration.player.prenom}`.trim(),
           licence: entry.registration.licenseNumber ?? "—",
-          club: entry.registration.clubName ?? entry.registration.player.club ?? "—",
+          club:
+            entry.registration.clubName ??
+            entry.registration.player.club ??
+            "—",
           points,
         };
       }),
@@ -154,8 +157,8 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
     })),
   ];
 
-  const clubs = [...new Set(players.map((player) => player.club))].sort((a, b) =>
-    a.localeCompare(b),
+  const clubs = [...new Set(players.map((player) => player.club))].sort(
+    (a, b) => a.localeCompare(b),
   );
 
   const clubOptions = [
@@ -200,9 +203,9 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
         </div>
 
         <div className="hidden md:block">
-          <div className="overflow-hidden rounded-xl border bg-card">
+          <div className="overflow-hidden rounded-xl border">
             <table className="w-full text-sm">
-              <thead className="bg-muted/50 text-muted-foreground">
+              <thead className="bg-card text-muted-foreground">
                 <tr>
                   <th className="px-4 py-3 text-left">#</th>
                   <th className="px-4 py-3 text-left">Nom</th>
@@ -215,11 +218,20 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
 
               <tbody>
                 {filteredPlayers.map((player, index) => (
-                  <tr key={player.id} className="border-t transition hover:bg-muted/40">
-                    <td className="px-4 py-3 text-muted-foreground">{index + 1}</td>
-                    <td className="px-4 py-3 font-medium">{player.nomComplet}</td>
+                  <tr
+                    key={player.id}
+                    className="border-t transition hover:bg-muted/40"
+                  >
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {index + 1}
+                    </td>
+                    <td className="px-4 py-3 font-medium">
+                      {player.nomComplet}
+                    </td>
                     <td className="px-4 py-3">{player.club}</td>
-                    <td className="px-4 py-3">{player.tableauCodes.join(" · ")}</td>
+                    <td className="px-4 py-3">
+                      {player.tableauCodes.join(" · ")}
+                    </td>
                     <td className="px-4 py-3">{player.points}</td>
                     <td className="px-4 py-3">{player.licence}</td>
                   </tr>
@@ -231,17 +243,28 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
 
         <div className="space-y-3 md:hidden">
           {filteredPlayers.map((player, index) => (
-            <div key={player.id} className="rounded-xl border bg-card p-4 shadow-sm">
+            <div
+              key={player.id}
+              className="rounded-xl border bg-card p-4 shadow-sm"
+            >
               <div className="flex items-center justify-between gap-3">
                 <p className="font-medium">
                   {index + 1}. {player.nomComplet}
                 </p>
-                <span className="text-xs text-muted-foreground">{player.points} pts</span>
+                <span className="text-xs text-muted-foreground">
+                  {player.points} pts
+                </span>
               </div>
 
-              <p className="mt-1 text-sm text-muted-foreground">{player.club}</p>
-              <p className="mt-1 text-xs text-muted-foreground">{player.tableauCodes.join(" · ")}</p>
-              <p className="mt-2 text-xs text-muted-foreground">N° licence : {player.licence}</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {player.club}
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {player.tableauCodes.join(" · ")}
+              </p>
+              <p className="mt-2 text-xs text-muted-foreground">
+                N° licence : {player.licence}
+              </p>
             </div>
           ))}
         </div>

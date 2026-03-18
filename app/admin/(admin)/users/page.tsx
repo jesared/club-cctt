@@ -71,10 +71,10 @@ export default async function AdminUsersPage() {
         </p>
       </div>
 
-      <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
+      <div className="rounded-xl border  shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-secondary border-b">
+            <thead className="bg-card border-b">
               <tr>
                 <th className="text-left font-semibold px-4 py-3">Nom</th>
                 <th className="text-left font-semibold px-4 py-3">Email</th>
