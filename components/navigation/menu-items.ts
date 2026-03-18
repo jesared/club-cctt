@@ -1,6 +1,7 @@
 import {
   BadgeEuro,
   Banknote,
+  Building2,
   CalendarCheck,
   CalendarClock,
   ClipboardPen,
@@ -15,6 +16,7 @@ import {
   Settings,
   Table2,
   Trophy,
+  User,
   UserPlus,
   Users,
   type LucideIcon,
@@ -60,13 +62,58 @@ export function getVisibleSections({
     return true;
   });
 }
+export function getVisibleSectionsHeader({
+  role,
+  session,
+}: {
+  role: unknown;
+  session: Session | null;
+}) {
+  const normalizedRole = normalizeRole(role);
 
+  return navigationHeader.filter((section) => {
+    if (!section.roles.includes(normalizedRole)) return false;
+    if (section.auth && !session) return false;
+    return true;
+  });
+}
+export const navigationHeader: MenuSection[] = [
+  {
+    title: "Tournoi",
+    roles: ["user", "admin"],
+    items: [{ href: "/tournoi", label: "Tournoi", icon: Trophy }],
+  },
+  {
+    title: "Club",
+    roles: ["user", "admin"],
+    items: [{ href: "/club", label: "Club", icon: Building2 }],
+  },
+  {
+    title: "Administration",
+    roles: ["admin"],
+    auth: true,
+    items: [{ href: "/admin", label: "Admin", icon: LayoutDashboard }],
+  },
+  {
+    title: "Admin tournoi",
+    roles: ["admin"],
+    auth: true,
+    items: [
+      {
+        href: "/admin/tournoi",
+        label: "Admin tournoi",
+        icon: LayoutDashboard,
+      },
+    ],
+  },
+];
 export const navigation: MenuSection[] = [
   {
     title: "Mon espace",
     roles: ["user", "admin"],
     auth: true,
     items: [
+      { href: "/user", label: "Mon profil", icon: User },
       {
         href: "/user/inscriptions",
         label: "Mes inscriptions",

@@ -62,8 +62,8 @@ export default function SidebarItem({
 
         // 👉 actif
         active
-          ? "bg-primary text-secondary"
-          : "text-muted-foreground hover:text-foreground",
+          ? "bg-primary text-primary-foreground hover:bg-primary"
+          : "text-muted-foreground hover:text-muted-foreground",
 
         // 👉 collapsed
         collapsed && "justify-center px-2",
@@ -82,8 +82,8 @@ export default function SidebarItem({
         className={cn(
           "h-4 w-4 shrink-0 transition-colors",
           active
-            ? "text-secondary "
-            : "text-muted-foreground group-hover:text-foreground",
+            ? "text-primary-foreground "
+            : "text-muted-foreground group-hover:text-muted-foreground",
         )}
       />
 

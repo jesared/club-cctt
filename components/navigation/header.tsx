@@ -8,9 +8,9 @@ import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 
 import ThemeToggle from "@/components/ThemeToggle";
-import { getVisibleSections } from "@/components/navigation/menu-items";
-import { cn } from "@/lib/utils";
+import { getVisibleSectionsHeader } from "@/components/navigation/menu-items";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 // 🔥 LOGIQUE ACTIVE (IDENTIQUE SIDEBAR)
 function isItemActive(pathname: string, href: string) {
@@ -39,7 +39,7 @@ export default function Header() {
 
   const visibleSections = useMemo(
     () =>
-      getVisibleSections({
+      getVisibleSectionsHeader({
         role: session?.user?.role,
         session: session ?? null,
       }),
@@ -101,7 +101,9 @@ export default function Header() {
         {/* ACTIONS */}
         <div className="ml-auto flex items-center gap-2">
           {!session ? (
-            <Button size="sm" onClick={() => void signIn("google")}>Connexion</Button>
+            <Button size="sm" onClick={() => void signIn("google")}>
+              Connexion
+            </Button>
           ) : (
             <Link
               href="/user"

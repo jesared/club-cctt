@@ -7,9 +7,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { getVisibleSectionsHeader } from "@/components/navigation/menu-items";
 import ThemeToggle from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
-import { getVisibleSections } from "@/components/navigation/menu-items";
 
 import {
   Sidebar,
@@ -31,7 +31,7 @@ function HeaderContent() {
   const pathname = usePathname();
   const { data: session } = useSession();
 
-  const visibleSections = getVisibleSections({
+  const visibleSections = getVisibleSectionsHeader({
     role: (session?.user as { role?: string } | undefined)?.role,
     session: session ?? null,
   });
@@ -44,7 +44,7 @@ function HeaderContent() {
       visibleSections.reduce<Record<string, boolean>>((acc, section, index) => {
         acc[section.title] = index === 0;
         return acc;
-      }, {})
+      }, {}),
     );
   }, [visibleSections]);
 
@@ -97,7 +97,9 @@ function HeaderContent() {
         {/* ACTIONS */}
         <div className="flex items-center gap-2">
           {!session ? (
-            <Button size="sm" onClick={() => void signIn("google")}>Connexion</Button>
+            <Button size="sm" onClick={() => void signIn("google")}>
+              Connexion
+            </Button>
           ) : (
             <Link
               href="/user"
@@ -138,7 +140,10 @@ function HeaderContent() {
               const sectionId = `section-${section.title.toLowerCase().replace(/\s+/g, "-")}`;
 
               return (
-                <div key={section.title} className="mb-3 rounded-lg border bg-card/60">
+                <div
+                  key={section.title}
+                  className="mb-3 rounded-lg border bg-card/60"
+                >
                   <button
                     type="button"
                     onClick={() =>
