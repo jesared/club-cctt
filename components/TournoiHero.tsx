@@ -1,6 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { tournamentRegistrationContent } from "@/lib/tournament-registration-content";
 import Image from "next/image";
+import Link from "next/link";
+import { Button } from "./ui/button";
 
 export default function TournoiHero() {
   return (
@@ -46,19 +48,14 @@ export default function TournoiHero() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <a
-                  href="/tournoi"
-                  className="inline-flex justify-center bg-primary text-primary-foreground px-6 py-3 rounded-md hover:bg-primary/90 transition"
-                >
-                  Infos du tournoi
-                </a>
-
-                <a
-                  href={tournamentRegistrationContent.cta.href}
-                  className="inline-flex justify-center border border-border bg-background text-foreground px-6 py-3 rounded-md hover:bg-accent transition"
-                >
-                  {tournamentRegistrationContent.cta.label}
-                </a>
+                <Button asChild>
+                  <Link href="/tournoi">Infos du tournoi</Link>
+                </Button>
+                <Button asChild variant={"secondary"}>
+                  <Link href={tournamentRegistrationContent.cta.href}>
+                    {tournamentRegistrationContent.cta.label}
+                  </Link>
+                </Button>
               </div>
             </CardContent>
           </Card>
