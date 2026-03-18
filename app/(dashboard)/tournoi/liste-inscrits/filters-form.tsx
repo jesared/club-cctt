@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
+import { X } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 
@@ -53,6 +54,8 @@ export function FiltersForm({
     "Tous les tableaux",
   );
   const selectedClubLabel = findLabel(clubOptions, selectedClub, "Tous les clubs");
+  const hasTableauFilter = selectedTableau !== "all";
+  const hasClubFilter = selectedClub !== "all";
 
   return (
     <div className="space-y-3">
@@ -92,8 +95,32 @@ export function FiltersForm({
 
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-xs uppercase tracking-wide text-muted-foreground">Filtres :</span>
-        <Badge variant="secondary">Tableau : {selectedTableauLabel}</Badge>
-        <Badge variant="secondary">Club : {selectedClubLabel}</Badge>
+        <Badge variant="secondary" className="gap-1">
+          Tableau : {selectedTableauLabel}
+          {hasTableauFilter ? (
+            <button
+              type="button"
+              onClick={() => updateFilter("tableau", "all")}
+              className="inline-flex h-4 w-4 items-center justify-center rounded-full hover:bg-black/10"
+              aria-label="Retirer le filtre tableau"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          ) : null}
+        </Badge>
+        <Badge variant="secondary" className="gap-1">
+          Club : {selectedClubLabel}
+          {hasClubFilter ? (
+            <button
+              type="button"
+              onClick={() => updateFilter("club", "all")}
+              className="inline-flex h-4 w-4 items-center justify-center rounded-full hover:bg-black/10"
+              aria-label="Retirer le filtre club"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          ) : null}
+        </Badge>
       </div>
     </div>
   );
