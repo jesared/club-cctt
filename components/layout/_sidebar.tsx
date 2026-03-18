@@ -39,9 +39,9 @@ export default function Sidebar({
 
   return (
     <>
-      {/* MOBILE BURGER */}
+      {/* MOBILE */}
       <div className="mb-3 md:hidden">
-        <Sheet>
+        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
           <SheetTrigger asChild>
             <Button variant="outline" size="sm" className="gap-2">
               <PanelLeft className="h-4 w-4" />
@@ -49,30 +49,26 @@ export default function Sidebar({
             </Button>
           </SheetTrigger>
 
-          <SheetContent
-            side="left"
-            className="fixed inset-y-0 left-0 z-50 w-[260px] p-4"
-          >
+          <SheetContent side="left" className="w-[260px] p-4 flex flex-col">
             <SheetHeader>
-              <SheetTitle>{title}</SheetTitle>
+              <SheetTitle>CCTT</SheetTitle>
             </SheetHeader>
 
             <MobileSidebarNav
-              title={title}
               groupedItems={groupedItems}
-              onNavigate={() => setMobileOpen(false)}
+              onNavigate={() => setMobileOpen(false)} // 🔥 FIX
             />
 
             {userSection && (
-              <div className="mt-4 border-t pt-4">{userSection}</div>
+              <div className="mt-auto border-t pt-4">{userSection}</div>
             )}
           </SheetContent>
         </Sheet>
       </div>
 
-      {/* DESKTOP SIDEBAR */}
-      <aside className="hidden h-screen w-[260px] flex-col border-r p-4 md:flex ">
-        <DesktopSidebarNav groupedItems={groupedItems} title={title} />
+      {/* DESKTOP */}
+      <aside className="hidden h-screen w-[260px] flex-col border-r p-4 md:flex">
+        <DesktopSidebarNav groupedItems={groupedItems} />
 
         {userSection && (
           <div className="mt-auto border-t pt-4">{userSection}</div>
@@ -83,11 +79,9 @@ export default function Sidebar({
 }
 
 function MobileSidebarNav({
-  title,
   groupedItems,
   onNavigate,
 }: {
-  title: string;
   groupedItems: Array<{ section: string; items: SidebarItem[] }>;
   onNavigate: () => void;
 }) {
@@ -108,7 +102,7 @@ function MobileSidebarNav({
               <Link
                 key={item.href}
                 href={item.href}
-                onClick={onNavigate}
+                onClick={onNavigate} // 🔥 ferme le menu
                 className={cn(
                   "flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-accent",
                   isActive && "bg-primary text-primary-foreground",
@@ -127,10 +121,8 @@ function MobileSidebarNav({
 
 function DesktopSidebarNav({
   groupedItems,
-  title,
 }: {
   groupedItems: Array<{ section: string; items: SidebarItem[] }>;
-  title: string;
 }) {
   const pathname = usePathname();
 

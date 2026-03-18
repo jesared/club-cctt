@@ -3,10 +3,10 @@
 import { Menu } from "lucide-react";
 import type { ReactNode } from "react";
 
-import Sidebar from "@/components/navigation/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import SiteBreadcrumb from "../SiteBreadcrumb";
+import Sidebar from "./Sidebar";
 
 type AppShellProps = {
   children: ReactNode;

@@ -1,6 +1,6 @@
 "use client";
 
-import { EyeOff, PanelLeftOpen } from "lucide-react";
+import { EyeOff, PanelLeftOpen, X } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -25,19 +25,20 @@ type SidebarState = "expanded" | "collapsed" | "hidden";
 
 type SidebarProps = {
   mobile?: boolean;
-  onOpen?: () => void;
+  open?: boolean;
+  onClose?: () => void;
 };
+
 function isItemActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
 
-  // 🔥 cas spécial admin (évite double actif)
   if (href === "/admin") {
     return pathname === "/admin" || pathname.startsWith("/admin/");
   }
 
-  // 👉 évite que /admin match /admin/tournoi
   return pathname === href || pathname.startsWith(href + "/");
 }
+
 function buildSectionState(sections: MenuSection[], pathname: string) {
   return sections.reduce<Record<string, boolean>>((acc, section) => {
     acc[section.title] = section.items.some((item) =>
@@ -47,7 +48,11 @@ function buildSectionState(sections: MenuSection[], pathname: string) {
   }, {});
 }
 
-export default function Sidebar({ mobile = false }: SidebarProps) {
+export default function Sidebar({
+  mobile = false,
+  open = false,
+  onClose,
+}: SidebarProps) {
   const pathname = usePathname();
   const { data: session } = useSession();
 
@@ -65,25 +70,29 @@ export default function Sidebar({ mobile = false }: SidebarProps) {
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
 
   const collapsed = sidebarState === "collapsed";
+
   const widthClasses = cn(
     sidebarState === "expanded" && "w-[260px]",
     sidebarState === "collapsed" && "w-[72px]",
     sidebarState === "hidden" && "w-0 overflow-hidden",
   );
+
+  // init
   useEffect(() => {
     const stored = localStorage.getItem(SIDEBAR_KEY);
     if (stored) setSidebarState(stored as SidebarState);
 
-    // 🔥 IMPORTANT : on ne merge plus
     const baseState = buildSectionState(sections, pathname);
-
     setOpenSections(baseState);
   }, [pathname, sections]);
+
+  // persist sidebar
   useEffect(() => {
     localStorage.setItem(SIDEBAR_KEY, sidebarState);
     window.dispatchEvent(new Event("sidebar:update"));
   }, [sidebarState]);
 
+  // persist sections
   useEffect(() => {
     localStorage.setItem(SECTIONS_KEY, JSON.stringify(openSections));
   }, [openSections]);
@@ -95,23 +104,38 @@ export default function Sidebar({ mobile = false }: SidebarProps) {
     }));
   };
 
+  // bloque scroll body en mobile
+  useEffect(() => {
+    if (mobile && open) {
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobile, open]);
+
   const reopenSidebar = () => {
     setSidebarState("expanded");
   };
 
   return (
     <>
+      {/* Bouton reopen desktop */}
       {!mobile && sidebarState === "hidden" && (
         <Button
           type="button"
           variant="secondary"
           size="sm"
           className="fixed left-3 top-20 z-50 gap-2 shadow-md"
-          aria-label="Rouvrir la sidebar"
           onClick={reopenSidebar}
         >
           <PanelLeftOpen className="h-4 w-4" />
         </Button>
+      )}
+
+      {/* Overlay mobile */}
+      {mobile && open && (
+        <div className="fixed inset-0 z-40 bg-black/50" onClick={onClose} />
       )}
 
       <div
@@ -122,34 +146,49 @@ export default function Sidebar({ mobile = false }: SidebarProps) {
       >
         <aside
           className={cn(
-            "flex flex-col border-r ",
+            "flex flex-col border-r bg-background",
             mobile
-              ? "h-full"
+              ? [
+                  "fixed inset-y-0 left-0 z-50 w-[260px] h-screen overflow-y-auto transition-transform",
+                  open ? "translate-x-0" : "-translate-x-full",
+                ]
               : [
                   "fixed left-0 top-0 z-40 h-screen pt-4 transition-all duration-300",
                   widthClasses,
                 ],
           )}
         >
+          {/* Bouton fermer mobile */}
+          {mobile && (
+            <div className="flex justify-end p-3">
+              <Button size="icon" variant="ghost" onClick={onClose}>
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+          )}
+
+          {/* Logo */}
           <Link
             href="/"
+            onClick={mobile ? onClose : undefined}
             className={cn(
-              "flex justify-center mx-14 m-4 transition-all duration-300",
+              "flex justify-center mx-16 m-4 transition-all duration-300",
               collapsed && "justify-center",
             )}
           >
             <Image
               src="/logo.jpg"
               alt="Logo"
-              width={180}
-              height={180}
-              fill={collapsed}
+              width={160}
+              height={160}
               className={cn(
                 "object-contain rounded-lg",
                 collapsed ? "h-8 w-8" : "h-auto w-auto",
               )}
             />
           </Link>
+
+          {/* Header */}
           <div className="flex h-14 items-center justify-between border-b px-3">
             {!collapsed && <p className="text-sm font-semibold">Navigation</p>}
 
@@ -157,7 +196,6 @@ export default function Sidebar({ mobile = false }: SidebarProps) {
               <Button
                 size="icon"
                 variant="ghost"
-                aria-label="Masquer la sidebar"
                 onClick={() => setSidebarState("hidden")}
               >
                 <EyeOff className="h-4 w-4" />
@@ -165,7 +203,8 @@ export default function Sidebar({ mobile = false }: SidebarProps) {
             </div>
           </div>
 
-          <div className="flex-1 space-y-5 overflow-y-auto overflow-x-hidden px-2 py-4">
+          {/* Menu */}
+          <div className="flex-1 space-y-5 overflow-y-auto overflow-x-hidden px-2 py-4 overscroll-contain">
             {sections.map((section) => (
               <SidebarSection
                 key={section.title}
@@ -173,10 +212,12 @@ export default function Sidebar({ mobile = false }: SidebarProps) {
                 collapsed={collapsed}
                 open={!!openSections[section.title]}
                 onToggle={() => toggleSection(section.title)}
+                onNavigate={mobile ? onClose : undefined}
               />
             ))}
           </div>
 
+          {/* Footer */}
           <div className="space-y-3 border-t p-3">
             <div
               className={cn(
@@ -189,6 +230,7 @@ export default function Sidebar({ mobile = false }: SidebarProps) {
               )}
               <ThemeToggle />
             </div>
+
             <AuthButton collapsed={collapsed} />
           </div>
         </aside>

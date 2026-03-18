@@ -24,6 +24,7 @@ export default function SidebarSection({
 }: SidebarSectionProps) {
   return (
     <section className="space-y-1">
+      {/* HEADER SECTION */}
       <button
         type="button"
         onClick={onToggle}
@@ -35,6 +36,7 @@ export default function SidebarSection({
         )}
       >
         {!collapsed && <span className="truncate">{section.title}</span>}
+
         <ChevronDown
           className={cn(
             "h-4 w-4 shrink-0 transition-transform duration-200",
@@ -44,6 +46,7 @@ export default function SidebarSection({
         />
       </button>
 
+      {/* ITEMS */}
       {open && (
         <div className="space-y-1">
           {section.items.map((item) => (
@@ -51,7 +54,9 @@ export default function SidebarSection({
               key={item.href}
               item={item}
               collapsed={collapsed}
-              onNavigate={onNavigate}
+              onNavigate={() => {
+                onNavigate?.(); // ✅ SAFE
+              }}
             />
           ))}
         </div>

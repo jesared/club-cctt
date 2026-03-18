@@ -34,7 +34,8 @@
     "**/*.mts",
     "types/**/*.d.ts",
     "app/(dashboard)/tournoi/layout.tsx.bak",
-    "app/(dashboard)/layout.tsx.bak"
+    "app/(dashboard)/layout.tsx.bak",
+    "components/layout/sidebar.tsx.bak"
   ],
   "exclude": ["node_modules"]
 }
