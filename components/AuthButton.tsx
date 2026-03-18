@@ -44,7 +44,7 @@ export default function AuthButton({ collapsed = false }: AuthButtonProps) {
   return (
     <div
       className={cn(
-        "mt-1 mb-4 rounded-xl border border-sidebar-border bg-sidebar-accent/40 p-3",
+        "mt-1 mb-8 rounded-xl border border-sidebar-border bg-sidebar-accent/40 p-3",
         collapsed && "p-2",
       )}
     >
