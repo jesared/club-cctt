@@ -103,12 +103,14 @@ export function PointagesGrid({
         .filter((table) => table && table !== "—"),
     );
 
-    const uniqueTables = Array.from(new Set(extractedTables)).sort((tableA, tableB) =>
-      tableA.localeCompare(tableB, "fr"),
+    const uniqueTables = Array.from(new Set(extractedTables)).sort(
+      (tableA, tableB) => tableA.localeCompare(tableB, "fr"),
     );
 
     return uniqueTables.map((tableCode) => {
-      const matchingTournamentTable = tournamentTables.find((table) => table.table === tableCode);
+      const matchingTournamentTable = tournamentTables.find(
+        (table) => table.table === tableCode,
+      );
 
       if (!matchingTournamentTable) {
         return {
@@ -485,7 +487,7 @@ export function PointagesGrid({
                           <span className="relative inline-flex h-4 w-4 items-center justify-center">
                             <input
                               type="checkbox"
-                              className="peer h-4 w-4 cursor-pointer appearance-none rounded-full border border-slate-500 bg-background checked:border-transparent align-middle transition  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-60"
+                              className="peer h-4 w-4 cursor-pointer appearance-none rounded-full border border-slate-500  checked:border-transparent align-middle transition  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-60"
                               checked={checkedState[key] ?? false}
                               disabled={pendingState[key]}
                               onChange={() =>
@@ -497,7 +499,6 @@ export function PointagesGrid({
                               className="pointer-events-none absolute scale-0 transition-transform peer-checked:scale-100 text-primary"
                             />
                           </span>
-                          <span className="text-xs ">Présent</span>
                         </label>
                       ) : (
                         <span className="text-xs text-muted-foreground">
@@ -516,7 +517,7 @@ export function PointagesGrid({
                       onClick={() => openEditPopup(player)}
                       title="Éditer le joueur"
                       aria-label={`Éditer ${player.name}`}
-                      className="cursor-pointer rounded-full dark:text-sidebar-accent hover:bg-primary/10 focus-visible:outline-accent"
+                      className="cursor-pointer rounded-full hover:bg-primary/10 focus-visible:outline-accent"
                     >
                       <Pencil size={16} />
                     </Button>
@@ -527,7 +528,7 @@ export function PointagesGrid({
                       onClick={() => setDeletingPlayer(player)}
                       title="Supprimer le joueur"
                       aria-label={`Supprimer ${player.name}`}
-                      className="cursor-pointer rounded-full text-red-600 hover:bg-red-100 focus-visible:outline-red-500"
+                      className="cursor-pointer rounded-full text-destructive hover:bg-destructive/10 focus-visible:outline-destructive"
                     >
                       <Trash2 size={16} />
                     </Button>
