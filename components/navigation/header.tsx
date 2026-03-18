@@ -1,7 +1,7 @@
 "use client";
 
 import { Home } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -10,6 +10,7 @@ import { useMemo } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { getVisibleSections } from "@/components/navigation/menu-items";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 // 🔥 LOGIQUE ACTIVE (IDENTIQUE SIDEBAR)
 function isItemActive(pathname: string, href: string) {
@@ -99,6 +100,17 @@ export default function Header() {
 
         {/* ACTIONS */}
         <div className="ml-auto flex items-center gap-2">
+          {!session ? (
+            <Button size="sm" onClick={() => void signIn("google")}>Connexion</Button>
+          ) : (
+            <Link
+              href="/user"
+              className="rounded-md border px-3 py-2 text-sm hover:bg-muted"
+            >
+              Mon espace
+            </Link>
+          )}
+
           <ThemeToggle />
         </div>
       </div>
