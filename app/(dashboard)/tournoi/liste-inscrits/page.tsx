@@ -1,3 +1,4 @@
+import { FiltersForm } from "./filters-form";
 import { prisma } from "@/lib/prisma";
 import { RegistrationEventStatus } from "@prisma/client";
 
@@ -10,9 +11,9 @@ type PageProps = {
 
 type PlayerRow = {
   id: string;
-  tableauId: string;
-  tableauCode: string;
-  tableauNom: string;
+  tableauIds: string[];
+  tableauCodes: string[];
+  tableauNoms: string[];
   nomComplet: string;
   club: string;
   points: number;
@@ -98,45 +99,90 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
     },
   });
 
-  const players: PlayerRow[] =
-    tournament?.events
-      .flatMap((event) =>
-        event.registrationEvents.map((entry) => {
-          const points =
-            entry.seedPointsSnapshot ?? entry.registration.player.points ?? 0;
+  const rawPlayers =
+    tournament?.events.flatMap((event) =>
+      event.registrationEvents.map((entry) => {
+        const points =
+          entry.seedPointsSnapshot ?? entry.registration.player.points ?? 0;
 
-          return {
-            id: entry.id,
-            tableauId: event.id,
-            tableauCode: event.code,
-            tableauNom: `${event.code} · ${event.label}`,
-            nomComplet:
-              `${entry.registration.player.nom} ${entry.registration.player.prenom}`.trim(),
-            club: entry.registration.clubName ?? entry.registration.player.club ?? "—",
-            points,
-            statut: toStatusLabel(entry.status),
-          };
-        }),
-      )
-      .sort(
-        (a, b) =>
-          b.points - a.points ||
-          a.nomComplet.localeCompare(b.nomComplet) ||
-          a.tableauCode.localeCompare(b.tableauCode),
-      ) ?? [];
+        return {
+          playerId: entry.registration.player.id,
+          tableauId: event.id,
+          tableauCode: event.code,
+          tableauNom: `${event.code} · ${event.label}`,
+          nomComplet:
+            `${entry.registration.player.nom} ${entry.registration.player.prenom}`.trim(),
+          club: entry.registration.clubName ?? entry.registration.player.club ?? "—",
+          points,
+          statut: toStatusLabel(entry.status),
+        };
+      }),
+    ) ?? [];
 
-  const tableaus = tournament?.events.map((event) => ({
-    id: event.id,
-    code: event.code,
-  })) ?? [];
+  const playersById = new Map<string, PlayerRow>();
+
+  rawPlayers.forEach((player) => {
+    const existing = playersById.get(player.playerId);
+
+    if (!existing) {
+      playersById.set(player.playerId, {
+        id: player.playerId,
+        tableauIds: [player.tableauId],
+        tableauCodes: [player.tableauCode],
+        tableauNoms: [player.tableauNom],
+        nomComplet: player.nomComplet,
+        club: player.club,
+        points: player.points,
+        statut: player.statut,
+      });
+      return;
+    }
+
+    if (!existing.tableauIds.includes(player.tableauId)) {
+      existing.tableauIds.push(player.tableauId);
+      existing.tableauCodes.push(player.tableauCode);
+      existing.tableauNoms.push(player.tableauNom);
+    }
+
+    existing.points = Math.max(existing.points, player.points);
+
+    if (player.statut === "Pointé") {
+      existing.statut = "Pointé";
+    } else if (player.statut === "Liste d'attente" && existing.statut === "Inscrit") {
+      existing.statut = "Liste d'attente";
+    }
+  });
+
+  const players = [...playersById.values()].sort(
+    (a, b) =>
+      b.points - a.points ||
+      a.nomComplet.localeCompare(b.nomComplet) ||
+      a.tableauCodes.join(",").localeCompare(b.tableauCodes.join(",")),
+  );
+
+  const tableaus =
+    tournament?.events.map((event) => ({
+      id: event.id,
+      code: event.code,
+    })) ?? [];
+
+  const tableauOptions = [
+    { value: "all", label: "Tous les tableaux" },
+    ...tableaus.map((tableau) => ({ value: tableau.id, label: tableau.code })),
+  ];
 
   const clubs = [...new Set(players.map((player) => player.club))].sort((a, b) =>
     a.localeCompare(b),
   );
 
+  const clubOptions = [
+    { value: "all", label: "Tous les clubs" },
+    ...clubs.map((club) => ({ value: club, label: club })),
+  ];
+
   const filteredPlayers = players.filter((player) => {
     const tableauMatch =
-      selectedTableau === "all" || player.tableauId === selectedTableau;
+      selectedTableau === "all" || player.tableauIds.includes(selectedTableau);
     const clubMatch = selectedClub === "all" || player.club === selectedClub;
 
     return tableauMatch && clubMatch;
@@ -148,53 +194,17 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
         <h1 className="text-xl font-semibold">Liste des inscrits</h1>
         <p className="text-sm text-muted-foreground">
           {tournament
-            ? `${tournament.name} · ${players.length} inscription(s)`
+            ? `${tournament.name} · ${players.length} joueur(s)`
             : "Aucun tournoi actif pour le moment."}
         </p>
 
         {players.length > 0 ? (
-          <form action="/tournoi/liste-inscrits" className="grid gap-3 md:grid-cols-3">
-            <label className="space-y-1">
-              <span className="text-sm font-medium">Filtrer par tableau</span>
-              <select
-                name="tableau"
-                defaultValue={selectedTableau}
-                className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-              >
-                <option value="all">Tous les tableaux</option>
-                {tableaus.map((tableau) => (
-                  <option key={tableau.id} value={tableau.id}>
-                    {tableau.code}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="space-y-1">
-              <span className="text-sm font-medium">Filtrer par club</span>
-              <select
-                name="club"
-                defaultValue={selectedClub}
-                className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-              >
-                <option value="all">Tous les clubs</option>
-                {clubs.map((club) => (
-                  <option key={club} value={club}>
-                    {club}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <div className="flex items-end">
-              <button
-                type="submit"
-                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
-              >
-                Appliquer les filtres
-              </button>
-            </div>
-          </form>
+          <FiltersForm
+            selectedTableau={selectedTableau}
+            selectedClub={selectedClub}
+            tableauOptions={tableauOptions}
+            clubOptions={clubOptions}
+          />
         ) : null}
       </div>
 
@@ -226,7 +236,7 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
                     <td className="px-4 py-3 text-muted-foreground">{index + 1}</td>
                     <td className="px-4 py-3 font-medium">{player.nomComplet}</td>
                     <td className="px-4 py-3">{player.club}</td>
-                    <td className="px-4 py-3">{player.tableauNom}</td>
+                    <td className="px-4 py-3">{player.tableauNoms.join(" · ")}</td>
                     <td className="px-4 py-3">{player.points}</td>
                     <td className="px-4 py-3">{player.statut}</td>
                   </tr>
@@ -247,7 +257,7 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
               </div>
 
               <p className="mt-1 text-sm text-muted-foreground">{player.club}</p>
-              <p className="mt-1 text-xs text-muted-foreground">{player.tableauNom}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{player.tableauNoms.join(" · ")}</p>
               <p className="mt-2 text-xs text-muted-foreground">{player.statut}</p>
             </div>
           ))}
