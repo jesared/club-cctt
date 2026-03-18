@@ -13,24 +13,11 @@ type PlayerRow = {
   id: string;
   tableauIds: string[];
   tableauCodes: string[];
-  tableauNoms: string[];
   nomComplet: string;
+  licence: string;
   club: string;
   points: number;
-  statut: "Inscrit" | "Liste d'attente" | "Pointé";
 };
-
-function toStatusLabel(status: RegistrationEventStatus): PlayerRow["statut"] {
-  if (status === RegistrationEventStatus.CHECKED_IN) {
-    return "Pointé";
-  }
-
-  if (status === RegistrationEventStatus.WAITLISTED) {
-    return "Liste d'attente";
-  }
-
-  return "Inscrit";
-}
 
 export default async function PlayersByTablePage({ searchParams }: PageProps) {
   const resolvedSearchParams = await searchParams;
@@ -80,6 +67,7 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
               seedPointsSnapshot: true,
               registration: {
                 select: {
+                  licenseNumber: true,
                   clubName: true,
                   player: {
                     select: {
@@ -109,12 +97,11 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
           playerId: entry.registration.player.id,
           tableauId: event.id,
           tableauCode: event.code,
-          tableauNom: `${event.code} · ${event.label}`,
           nomComplet:
             `${entry.registration.player.nom} ${entry.registration.player.prenom}`.trim(),
+          licence: entry.registration.licenseNumber ?? "—",
           club: entry.registration.clubName ?? entry.registration.player.club ?? "—",
           points,
-          statut: toStatusLabel(entry.status),
         };
       }),
     ) ?? [];
@@ -129,11 +116,10 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
         id: player.playerId,
         tableauIds: [player.tableauId],
         tableauCodes: [player.tableauCode],
-        tableauNoms: [player.tableauNom],
         nomComplet: player.nomComplet,
+        licence: player.licence,
         club: player.club,
         points: player.points,
-        statut: player.statut,
       });
       return;
     }
@@ -141,16 +127,9 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
     if (!existing.tableauIds.includes(player.tableauId)) {
       existing.tableauIds.push(player.tableauId);
       existing.tableauCodes.push(player.tableauCode);
-      existing.tableauNoms.push(player.tableauNom);
     }
 
     existing.points = Math.max(existing.points, player.points);
-
-    if (player.statut === "Pointé") {
-      existing.statut = "Pointé";
-    } else if (player.statut === "Liste d'attente" && existing.statut === "Inscrit") {
-      existing.statut = "Liste d'attente";
-    }
   });
 
   const players = [...playersById.values()].sort(
@@ -164,11 +143,15 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
     tournament?.events.map((event) => ({
       id: event.id,
       code: event.code,
+      label: event.label,
     })) ?? [];
 
   const tableauOptions = [
     { value: "all", label: "Tous les tableaux" },
-    ...tableaus.map((tableau) => ({ value: tableau.id, label: tableau.code })),
+    ...tableaus.map((tableau) => ({
+      value: tableau.id,
+      label: `${tableau.code} · ${tableau.label}`,
+    })),
   ];
 
   const clubs = [...new Set(players.map((player) => player.club))].sort((a, b) =>
@@ -226,7 +209,7 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
                   <th className="px-4 py-3 text-left">Club</th>
                   <th className="px-4 py-3 text-left">Tableau</th>
                   <th className="px-4 py-3 text-left">Points</th>
-                  <th className="px-4 py-3 text-left">Statut</th>
+                  <th className="px-4 py-3 text-left">N° licence</th>
                 </tr>
               </thead>
 
@@ -236,9 +219,9 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
                     <td className="px-4 py-3 text-muted-foreground">{index + 1}</td>
                     <td className="px-4 py-3 font-medium">{player.nomComplet}</td>
                     <td className="px-4 py-3">{player.club}</td>
-                    <td className="px-4 py-3">{player.tableauNoms.join(" · ")}</td>
+                    <td className="px-4 py-3">{player.tableauCodes.join(" · ")}</td>
                     <td className="px-4 py-3">{player.points}</td>
-                    <td className="px-4 py-3">{player.statut}</td>
+                    <td className="px-4 py-3">{player.licence}</td>
                   </tr>
                 ))}
               </tbody>
@@ -257,8 +240,8 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
               </div>
 
               <p className="mt-1 text-sm text-muted-foreground">{player.club}</p>
-              <p className="mt-1 text-xs text-muted-foreground">{player.tableauNoms.join(" · ")}</p>
-              <p className="mt-2 text-xs text-muted-foreground">{player.statut}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{player.tableauCodes.join(" · ")}</p>
+              <p className="mt-2 text-xs text-muted-foreground">N° licence : {player.licence}</p>
             </div>
           ))}
         </div>
