@@ -177,16 +177,20 @@ export default function Sidebar({
               collapsed && "justify-center",
             )}
           >
-            <Image
-              src="/logo.jpg"
-              alt="Logo"
-              width={160}
-              height={160}
-              className={cn(
-                "object-contain rounded-lg",
-                collapsed ? "h-8 w-8" : "h-auto w-auto",
-              )}
-            />
+            {mobile ? (
+              <span className="text-2xl font-bold tracking-wide">CCTT</span>
+            ) : (
+              <Image
+                src="/logo.jpg"
+                alt="Logo"
+                width={160}
+                height={160}
+                className={cn(
+                  "object-contain rounded-lg",
+                  collapsed ? "h-8 w-8" : "h-auto w-auto",
+                )}
+              />
+            )}
           </Link>
 
           {/* Header */}
