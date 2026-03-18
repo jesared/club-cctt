@@ -24,21 +24,23 @@ export default function ThemeToggle() {
       onClick={toggle}
       aria-label="Changer le thème"
       className={cn(
-        "relative inline-flex h-7 w-14 items-center rounded-full transition-colors duration-300 border border-accent/30",
-        isDark ? "bg-zinc-800" : "bg-zinc-300",
+        "relative inline-flex h-8 w-16 items-center rounded-full transition-colors duration-300 border-border border-2 ",
+        isDark ? "bg-primary" : "bg-border",
       )}
     >
       {/* BULLE */}
       <span
         className={cn(
-          "absolute flex h-6 w-6 items-center justify-center rounded-full  shadow-md transition-all duration-300",
-          isDark ? "translate-x-7" : "translate-x-1",
+          "absolute flex h-7.5 w-7.5 items-center justify-center rounded-full   shadow-md transition-all duration-300",
+          isDark
+            ? "translate-x-7 bg-background text-primary-foreground"
+            : "translate-x-1 bg-card text-secondary-foreground",
         )}
       >
         {isDark ? (
-          <Sun className="h-3.5 w-3.5 text-secondary" />
+          <Sun className="h-4.5 w-4.5 " />
         ) : (
-          <Moon className="h-3.5 w-3.5 text-zinc-700" />
+          <Moon className="h-4 w-4" />
         )}
       </span>
     </button>
