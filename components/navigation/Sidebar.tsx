@@ -195,7 +195,12 @@ export default function Sidebar({
 
           {/* Header */}
           <div className="flex h-14 items-center justify-between border-b px-3">
-            {!collapsed && <p className="text-sm font-semibold">Navigation</p>}
+            {!collapsed && (
+              <>
+                <p className="text-sm font-semibold">Navigation</p>
+                <ThemeToggle />
+              </>
+            )}
 
             <div className="hidden md:flex items-center gap-1">
               <Button
@@ -223,19 +228,13 @@ export default function Sidebar({
           </div>
 
           {/* Footer */}
-          <div className="space-y-3 border-t p-3">
+          <div className="space-y-1 border-t p-3">
             <div
               className={cn(
                 "flex",
                 collapsed ? "justify-center" : "justify-between",
               )}
-            >
-              {!collapsed && (
-                <span className="text-xs text-muted-foreground">Thème</span>
-              )}
-              <ThemeToggle />
-            </div>
-
+            ></div>
             <AuthButton collapsed={collapsed} />
           </div>
         </aside>

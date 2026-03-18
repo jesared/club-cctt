@@ -1,10 +1,9 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 
 type AuthButtonProps = {
   collapsed?: boolean;
@@ -16,7 +15,14 @@ export default function AuthButton({ collapsed = false }: AuthButtonProps) {
   // Chargement
   if (status === "loading") {
     return (
-      <div className={cn("mt-6 text-sm text-muted-foreground", collapsed && "text-center text-xs")}>Chargement...</div>
+      <div
+        className={cn(
+          "mt-6 text-sm text-muted-foreground",
+          collapsed && "text-center text-xs",
+        )}
+      >
+        Chargement...
+      </div>
     );
   }
 
@@ -24,7 +30,10 @@ export default function AuthButton({ collapsed = false }: AuthButtonProps) {
   if (!session) {
     return (
       <div className="mt-6">
-        <Button onClick={() => signIn("google")} className={cn("w-full", collapsed && "px-2 text-xs")}>
+        <Button
+          onClick={() => signIn("google")}
+          className={cn("w-full", collapsed && "px-2 text-xs")}
+        >
           {collapsed ? "Login" : "Se connecter"}
         </Button>
       </div>
@@ -35,11 +44,13 @@ export default function AuthButton({ collapsed = false }: AuthButtonProps) {
   return (
     <div
       className={cn(
-        "mt-6 rounded-xl border border-sidebar-border bg-sidebar-accent/40 p-3",
+        "mt-1 mb-4 rounded-xl border border-sidebar-border bg-sidebar-accent/40 p-3",
         collapsed && "p-2",
       )}
     >
-      <div className={cn("flex items-center gap-3", collapsed && "justify-center") }>
+      <div
+        className={cn("flex items-center gap-3", collapsed && "justify-center")}
+      >
         {session.user?.image && (
           <Image
             src={session.user.image}
@@ -61,19 +72,13 @@ export default function AuthButton({ collapsed = false }: AuthButtonProps) {
       </div>
 
       <div className={cn("mt-3 flex flex-col gap-2", collapsed && "hidden")}>
-        <Link
-          href="/user"
-          className="rounded-md border border-sidebar-border bg-background px-3 py-2 text-center text-xs font-medium text-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-        >
-          Espace utilisateur
-        </Link>
-
-        <button
+        <Button
+          variant={"secondary"}
           onClick={() => signOut()}
           className="cursor-pointer rounded-md border border-sidebar-border px-3 py-2 text-xs transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
         >
           Déconnexion
-        </button>
+        </Button>
       </div>
     </div>
   );
