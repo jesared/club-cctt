@@ -6,62 +6,64 @@ const affiches = [
     id: "A1",
     titre: "Affiche 2026",
     description: "",
-    format: "A3 / HD",
+    format: "Web",
     url: "/affiches/affiche2026.jpg",
   },
   {
     id: "A2",
-    titre: "Tableaux jeunes",
-    description: "Version dédiée à la promotion des catégories jeunes.",
-    format: "A4 / Web",
+    titre: "Affiche 2025",
+    description: "",
+    format: "Web",
+    url: "/affiches/affiche2025.jpg",
   },
   {
     id: "A3",
-    titre: "Tableaux adultes",
-    description: "Version orientée inscriptions adultes et compétiteurs.",
-    format: "A4 / Web",
+    titre: "Affiche 2024",
+    description: "",
+    format: "Web",
+    url: "/affiches/affiche2024.jpg",
   },
   {
     id: "A4",
-    titre: "Programme du week-end",
-    description: "Affiche des horaires clés: pointage, début et finales.",
-    format: "A3",
+    titre: "Affiche 2023",
+    description: "",
+    format: "Web",
+    url: "/affiches/affiche2023.jpg",
   },
   {
     id: "A5",
-    titre: "Tarifs & inscriptions",
-    description: "Rappel des prix et du lien d'inscription.",
-    format: "Story + Feed",
+    titre: "Affiche 2022",
+    description: "",
+    format: "Web",
+    url: "/affiches/affiche2022.jpg",
   },
   {
     id: "A6",
-    titre: "Partenaires",
-    description: "Mise en avant des partenaires institutionnels et privés.",
-    format: "A3 / Web",
+    titre: "Affiche 2019",
+    description: "",
+    format: "Web",
+    url: "/affiches/affiche2019.jpg",
   },
   {
     id: "A7",
-    titre: "Infos pratiques",
-    description: "Accès salle, restauration, parking et contacts utiles.",
-    format: "A4",
+    titre: "Affiche 2018",
+    description: "",
+    format: "Web",
+    url: "/affiches/affiche2018.png",
   },
   {
     id: "A8",
-    titre: "Règlement",
-    description: "Résumé des règles principales et conditions FFTT.",
-    format: "A4 / PDF",
+    titre: "Affiche 2017",
+    description: "",
+    format: "Web",
+    url: "/affiches/affiche2017.jpg",
   },
   {
     id: "A9",
-    titre: "Live résultats",
-    description: "Affiche pour annoncer le suivi en direct des tableaux.",
+    titre: "Affiche 2016",
+    description: "",
     format: "Web",
-  },
-  {
-    id: "A10",
-    titre: "Aftermovie & remerciements",
-    description: "Visuel post-événement avec liens photos/vidéos.",
-    format: "Feed",
+    url: "/affiches/affiche2016.jpg",
   },
 ];
 
@@ -95,16 +97,13 @@ export default function TournoiAffichesPage() {
               <div className="flex items-start justify-between gap-2">
                 <CardTitle className="text-base">{affiche.titre}</CardTitle>
                 <span className="rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
-                  {affiche.id}
+                  {affiche.titre.split(" ")[1]}
                 </span>
               </div>
             </CardHeader>
             <CardContent className="space-y-2 pt-0">
               <p className="text-sm text-muted-foreground">
                 {affiche.description}
-              </p>
-              <p className="text-xs text-muted-foreground/80">
-                Format conseillé: {affiche.format}
               </p>
             </CardContent>
           </Card>

@@ -51,7 +51,7 @@ export function ImagePopup({
         >
           <button
             type="button"
-            className="absolute right-4 top-4 rounded-md bg-white/10 px-3 py-2 text-sm font-medium text-white hover:bg-white/20"
+            className="cursor-pointer absolute right-4 top-4 rounded-md bg-white/10 px-3 py-2 text-sm font-medium text-white hover:bg-white/20"
             onClick={() => setIsOpen(false)}
             aria-label="Fermer l'aperçu"
           >
@@ -67,7 +67,10 @@ export function ImagePopup({
               alt={alt}
               width={1200}
               height={1600}
-              className={popupImageClassName ?? "max-h-[90vh] w-auto rounded-md object-contain"}
+              className={
+                popupImageClassName ??
+                "max-h-[90vh] w-auto rounded-md object-contain"
+              }
               priority
             />
           </div>
