@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Image from "next/image";
+import { ImagePopup } from "@/components/ui/image-popup";
 
 const affiches = [
   {
@@ -81,12 +81,13 @@ export default function TournoiAffichesPage() {
           <Card key={affiche.id} className="overflow-hidden">
             <CardHeader className="space-y-3">
               {affiche.url ? (
-                <Image
+                <ImagePopup
                   src={affiche.url}
                   alt={affiche.titre}
+                  title={affiche.titre}
                   width={320}
                   height={400}
-                  className="cover rounded-md border border-dashed border-muted-foreground/30 bg-muted/50"
+                  previewClassName="cover rounded-md border border-dashed border-muted-foreground/30 bg-muted/50"
                 />
               ) : (
                 <div className="aspect-[3/4] rounded-md border border-dashed border-muted-foreground/30 bg-muted/50" />
