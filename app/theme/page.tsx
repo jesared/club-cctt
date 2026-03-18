@@ -17,6 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import Link from "next/link";
 
 const tokenCards = [
   {
@@ -115,6 +116,9 @@ export default function ThemePage() {
               contrastes) s&apos;appliquent automatiquement en mode clair et
               sombre.
             </p>
+            <Button asChild variant="outline" className="mt-2">
+              <Link href="/">Retour à l&apos;accueil</Link>
+            </Button>
           </div>
           <div className="flex items-center gap-3 rounded-lg border border-border bg-background px-4 py-3">
             <span className="text-sm text-muted-foreground">Changer le mode</span>
