@@ -251,11 +251,11 @@ export default function TournoiPalmaresPage() {
         </p>
       </header>
 
-      <section className="grid gap-4 md:grid-cols-4">
-        <Card>
+      <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <Card className="bg-accent">
           <CardHeader>
             <CardTitle className="space-y-1">
-              <p className="text-muted-foreground text-xs">
+              <p className="text-xs">
                 Vainqueur TC {palmaresRecents[0]?.annee}
               </p>{" "}
               <span>{palmaresRecents[0]?.tc?.nom ?? "—"}</span>
@@ -275,10 +275,10 @@ export default function TournoiPalmaresPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-accent">
           <CardHeader>
             <CardTitle className="space-y-1">
-              <p className="text-muted-foreground text-xs">
+              <p className="text-xs">
                 Vainqueure Dames TC {palmaresRecents[0]?.annee}
               </p>{" "}
               <span>{palmaresRecents[0]?.dames?.nom ?? "—"}</span>
@@ -297,10 +297,10 @@ export default function TournoiPalmaresPage() {
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-accent">
           <CardHeader>
             <CardTitle className="space-y-1">
-              <p className="text-muted-foreground text-xs">
+              <p className="text-xs">
                 Vainqueur TC {palmaresRecents[1]?.annee}
               </p>
               <span>{palmaresRecents[1]?.tc?.nom ?? "—"}</span>
@@ -320,10 +320,10 @@ export default function TournoiPalmaresPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-accent">
           <CardHeader>
             <CardTitle className="space-y-1">
-              <p className="text-muted-foreground text-xs">
+              <p className="text-xs">
                 Vainqueure Dames TC {palmaresRecents[1]?.annee}
               </p>
               <span>{palmaresRecents[1]?.dames?.nom ?? "—"}</span>
@@ -334,6 +334,50 @@ export default function TournoiPalmaresPage() {
               <Image
                 src="/palmares/marteau.jpg"
                 alt="Vainqueure TC Dames"
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover"
+                priority
+              />
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-accent">
+          <CardHeader>
+            <CardTitle className="space-y-1">
+              <p className="text-xs">
+                Vainqueur TC {palmaresRecents[2]?.annee}
+              </p>
+              <span>{palmaresRecents[2]?.tc?.nom ?? "—"}</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="relative aspect-[4/3] overflow-hidden rounded-lg border bg-muted/30">
+              <Image
+                src="/palmares/martin.jpg"
+                alt="Vainqueur TC"
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover"
+                priority
+              />
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-accent">
+          <CardHeader>
+            <CardTitle className="space-y-1">
+              <p className="text-xs">
+                Vainqueur TC {palmaresRecents[3]?.annee}
+              </p>
+              <span>{palmaresRecents[3]?.tc?.nom ?? "—"}</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="relative aspect-[4/3] overflow-hidden rounded-lg border bg-muted/30">
+              <Image
+                src="/palmares/chobeau.jpg"
+                alt="Vainqueur TC"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover"

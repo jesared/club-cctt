@@ -1,86 +1,180 @@
-import TrackedLink from "@/components/TrackedLink";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+"use client";
 
-const LISTE_OFFICIELLE_URL = "https://tournoi.cctt.fr/liste-des-inscrits/";
+import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
 
-const pointsForts = [
+type Player = {
+  id: string;
+  nom: string;
+  prenom: string;
+  club: string;
+  points: number;
+};
+
+type Tableau = {
+  id: string;
+  nom: string;
+  joueurs: Player[];
+};
+
+const data: Tableau[] = [
   {
-    title: "Publication officielle",
-    description:
-      "La source de référence reste la plateforme tournoi.cctt.fr, mise à jour par l'équipe d'organisation.",
+    id: "1",
+    nom: "Tableau 500-899",
+    joueurs: [
+      {
+        id: "1",
+        nom: "Hautier",
+        prenom: "Jean-Marc",
+        club: "CCTT",
+        points: 580,
+      },
+    ],
   },
   {
-    title: "Consultation rapide",
-    description:
-      "Affichage intégré ci-dessous pour éviter d'ouvrir un nouvel onglet quand vous êtes déjà sur le site du club.",
-  },
-  {
-    title: "Version mobile",
-    description:
-      "Sur smartphone, utilisez le bouton d'accès direct si l'intégration est moins lisible selon votre navigateur.",
+    id: "2",
+    nom: "Tableau 900-1599",
+    joueurs: [
+      {
+        id: "2",
+        nom: "Dupont",
+        prenom: "Lucas",
+        club: "Reims TT",
+        points: 1420,
+      },
+    ],
   },
 ];
 
-export default function ListeInscritsPage() {
+export default function PlayersByTable() {
+  const [selectedTableau, setSelectedTableau] = useState<string | "all">("all");
+
+  // 🔥 scroll top quand filtre change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [selectedTableau]);
+
   return (
-    <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-8">
-      <header className="space-y-3">
-        <Badge variant="secondary" className="w-fit">
-          Tournoi CCTT 2026
-        </Badge>
-        <h1 className="text-2xl font-semibold md:text-3xl">Liste des inscrits</h1>
-        <p className="max-w-3xl text-sm text-muted-foreground md:text-base">
-          Retrouvez la liste officielle des engagés sur chaque tableau, avec un
-          accès direct à la version publique de référence.
-        </p>
-      </header>
+    <main className="mx-auto max-w-7xl space-y-6 px-4 py-8">
+      {/* HEADER */}
+      <div className="space-y-3">
+        <h1 className="text-xl font-semibold">Liste des inscrits</h1>
 
-      <section className="grid gap-4 md:grid-cols-3">
-        {pointsForts.map((point) => (
-          <Card key={point.title} className="border-border/70 bg-card/60 backdrop-blur">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">{point.title}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">{point.description}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </section>
-
-      <Card>
-        <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <CardTitle className="text-lg md:text-xl">Consultation en direct</CardTitle>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Si le contenu ne s&apos;affiche pas dans votre navigateur, ouvrez la
-              page officielle dans un nouvel onglet.
-            </p>
-          </div>
-          <TrackedLink
-            kpiPage="tournoi"
-            kpiLabel="liste-inscrits-externe"
-            href={LISTE_OFFICIELLE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+        {/* 🔥 FILTRES */}
+        <div className="flex gap-2 overflow-x-auto pb-2">
+          <button
+            onClick={() => setSelectedTableau("all")}
+            className={cn(
+              "whitespace-nowrap rounded-full border px-4 py-1 text-sm transition",
+              selectedTableau === "all"
+                ? "bg-primary text-primary-foreground"
+                : "hover:bg-muted",
+            )}
           >
-            Ouvrir la liste officielle
-          </TrackedLink>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-hidden rounded-lg border border-border/70 bg-background">
-            <iframe
-              title="Liste officielle des inscrits du tournoi"
-              src={LISTE_OFFICIELLE_URL}
-              className="h-[900px] w-full"
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
-          </div>
-        </CardContent>
-      </Card>
+            Tous
+          </button>
+
+          {data.map((tableau) => (
+            <button
+              key={tableau.id}
+              onClick={() => setSelectedTableau(tableau.id)}
+              className={cn(
+                "whitespace-nowrap rounded-full border px-4 py-1 text-sm transition",
+                selectedTableau === tableau.id
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-muted",
+              )}
+            >
+              {tableau.nom}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 🔥 LISTE PAR TABLEAU */}
+      {data
+        .filter(
+          (tableau) =>
+            selectedTableau === "all" || tableau.id === selectedTableau,
+        )
+        .map((tableau) => {
+          // 🔥 tri par points (desc)
+          const joueurs = [...tableau.joueurs].sort(
+            (a, b) => b.points - a.points,
+          );
+
+          return (
+            <section key={tableau.id} className="space-y-4">
+              {/* HEADER TABLEAU */}
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold">{tableau.nom}</h2>
+                <span className="text-sm text-muted-foreground">
+                  {joueurs.length} joueurs
+                </span>
+              </div>
+
+              {/* DESKTOP */}
+              <div className="hidden md:block">
+                <div className="overflow-hidden rounded-xl border bg-card">
+                  <table className="w-full text-sm">
+                    <thead className="bg-muted/50 text-muted-foreground">
+                      <tr>
+                        <th className="px-4 py-3 text-left">#</th>
+                        <th className="px-4 py-3 text-left">Nom</th>
+                        <th className="px-4 py-3 text-left">Club</th>
+                        <th className="px-4 py-3 text-left">Points</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {joueurs.map((player, index) => (
+                        <tr
+                          key={player.id}
+                          className="border-t transition hover:bg-muted/40"
+                        >
+                          <td className="px-4 py-3 text-muted-foreground">
+                            {index + 1}
+                          </td>
+
+                          <td className="px-4 py-3 font-medium">
+                            {player.nom} {player.prenom}
+                          </td>
+
+                          <td className="px-4 py-3">{player.club}</td>
+
+                          <td className="px-4 py-3">{player.points}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* MOBILE */}
+              <div className="space-y-3 md:hidden">
+                {joueurs.map((player, index) => (
+                  <div
+                    key={player.id}
+                    className="rounded-xl border bg-card p-4 shadow-sm"
+                  >
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium">
+                        {index + 1}. {player.nom} {player.prenom}
+                      </p>
+                      <span className="text-xs text-muted-foreground">
+                        {player.points} pts
+                      </span>
+                    </div>
+
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {player.club}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          );
+        })}
     </main>
   );
 }
