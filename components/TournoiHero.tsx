@@ -14,7 +14,7 @@ export default function TournoiHero() {
             alt="Tournoi de Pâques 2026 – Châlons-en-Champagne Tennis de Table"
             width={1200}
             height={630}
-            className="rounded-lg object-cover"
+            className="rounded-lg object-cover object-center w-full h-auto"
             priority
           />
         </div>
