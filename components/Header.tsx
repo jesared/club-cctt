@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import ThemeToggle from "@/components/ThemeToggle";
+import { Button } from "@/components/ui/button";
 import { getVisibleSections } from "@/components/navigation/menu-items";
 
 import {
@@ -95,6 +96,17 @@ function HeaderContent() {
 
         {/* ACTIONS */}
         <div className="flex items-center gap-2">
+          {!session ? (
+            <Button size="sm" onClick={() => void signIn("google")}>Connexion</Button>
+          ) : (
+            <Link
+              href="/user"
+              className="rounded-md border px-3 py-2 text-sm hover:bg-accent"
+            >
+              Mon espace
+            </Link>
+          )}
+
           <ThemeToggle />
 
           <SidebarTrigger asChild>
