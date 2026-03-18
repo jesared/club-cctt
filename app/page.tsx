@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export default function Home() {
   return (
     <main className="max-w-7xl mx-auto px-4 py-8 space-y-6">
-      <section className="rounded-2xl border border-border bg-card p-6">
+      <section className="rounded-2xl border border-primary/30 bg-primary/5 p-6">
         <div className="max-w-3xl space-y-6">
           <h1 className="text-3xl font-bold">
             Châlons-en-Champagne Tennis de Table
@@ -18,10 +18,10 @@ export default function Home() {
           </p>
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <Button asChild>
-              <Link href="/horaires">Voir les horaires</Link>
+              <Link href="/club/horaires">Voir les horaires</Link>
             </Button>
             <Button asChild variant="outline">
-              <Link href="/contact">Nous contacter</Link>
+              <Link href="/club/contact">Nous contacter</Link>
             </Button>
             <Button asChild variant="secondary">
               <Link href="/theme">Voir le thème</Link>
@@ -31,7 +31,7 @@ export default function Home() {
       </section>
 
       <section className="py-4">
-        <Card className="border-0 bg-transparent">
+        <Card className="border-0 bg-primary/5">
           <CardHeader>
             <CardTitle className="text-xl font-semibold">
               Bienvenue au CCTT
@@ -93,7 +93,7 @@ export default function Home() {
               possibles avant toute inscription.
             </p>
             <Button asChild>
-              <Link href="/contact">Nous contacter</Link>
+              <Link href="/club/contact">Nous contacter</Link>
             </Button>
           </CardContent>
         </Card>

@@ -21,7 +21,7 @@ export default function TournoiHero() {
         <div className="mx-auto py-8">
           <Card className="border-l-4 border-l-primary  ">
             <CardHeader>
-              <p className="uppercase tracking-wide text-sm text-foreground mb-2 bg-accent">
+              <p className="uppercase tracking-wide text-sm text-foreground mb-2 ">
                 Tournoi annuel du club
               </p>
 
@@ -31,17 +31,17 @@ export default function TournoiHero() {
             </CardHeader>
 
             <CardContent className="space-y-6">
-              <p className="text-muted-foreground leading-relaxed max-w-4xl cyberpunk-text-soft">
+              <p className="text-muted-foreground leading-relaxed max-w-4xl -text-soft">
                 Le <strong>Tournoi de Pâques</strong> est le tournoi annuel
                 organisé par le Châlons-en-Champagne Tennis de Table. Ouvert aux
                 joueurs de tous niveaux, il rassemble chaque année de nombreux
                 compétiteurs dans une ambiance conviviale et sportive.
               </p>
-              <p className="text-sm text-muted-foreground cyberpunk-text-soft">
+              <p className="text-sm text-muted-foreground ">
                 {tournamentRegistrationContent.message}
               </p>
 
-              <p className="text-sm text-muted-foreground cyberpunk-text-soft">
+              <p className="text-sm text-muted-foreground ">
                 Avril 2026 – Châlons-en-Champagne
               </p>
 
