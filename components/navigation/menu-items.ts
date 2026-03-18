@@ -88,24 +88,6 @@ export const navigationHeader: MenuSection[] = [
     roles: ["user", "admin"],
     items: [{ href: "/club", label: "Club", icon: Building2 }],
   },
-  {
-    title: "Administration",
-    roles: ["admin"],
-    auth: true,
-    items: [{ href: "/admin", label: "Admin", icon: LayoutDashboard }],
-  },
-  {
-    title: "Admin tournoi",
-    roles: ["admin"],
-    auth: true,
-    items: [
-      {
-        href: "/admin/tournoi",
-        label: "Admin tournoi",
-        icon: LayoutDashboard,
-      },
-    ],
-  },
 ];
 export const navigation: MenuSection[] = [
   {
@@ -185,7 +167,6 @@ export const navigation: MenuSection[] = [
     roles: ["admin"],
     auth: true,
     items: [
-      { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
       {
         href: "/admin/messages",
         label: "Messages",

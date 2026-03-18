@@ -1,6 +1,6 @@
 "use client";
 
-import { Home } from "lucide-react";
+import { Home, ShieldMinus } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -67,7 +67,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur">
-      <div className="flex h-16 items-center px-4 md:px-6">
+      <div className="flex h-16 items-center px-4 md:px-6 mx-auto w-full max-w-7xl">
         {/* LOGO */}
         <Link href="/" className="flex items-center gap-2">
           <Image src="/logo.jpg" alt="Logo" width={32} height={32} />
@@ -100,6 +100,14 @@ export default function Header() {
 
         {/* ACTIONS */}
         <div className="ml-auto flex items-center gap-2">
+          {session?.user.role === "ADMIN" && (
+            <Link
+              href="/admin/tournoi"
+              className="rounded-md border px-3 py-2 text-sm bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
+            >
+              <ShieldMinus className="h-4 w-4" />
+            </Link>
+          )}
           {!session ? (
             <Button size="sm" onClick={() => void signIn("google")}>
               Connexion
