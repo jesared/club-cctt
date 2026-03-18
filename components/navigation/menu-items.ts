@@ -15,7 +15,6 @@ import {
   Settings,
   Table2,
   Trophy,
-  User,
   UserPlus,
   Users,
   type LucideIcon,
@@ -68,7 +67,6 @@ export const navigation: MenuSection[] = [
     roles: ["user", "admin"],
     auth: true,
     items: [
-      { href: "/user", label: "Mon profil", icon: User },
       {
         href: "/user/inscriptions",
         label: "Mes inscriptions",
