@@ -51,9 +51,19 @@ function TableCell({ className, ...props }: React.ComponentProps<"td">) {
   return <td className={cn("px-4 py-3 align-middle", className)} {...props} />;
 }
 
+function TableCaption({ className, ...props }: React.ComponentProps<"caption">) {
+  return (
+    <caption
+      className={cn("mt-3 text-sm text-muted-foreground", className)}
+      {...props}
+    />
+  );
+}
+
 export {
   Table,
   TableBody,
+  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
