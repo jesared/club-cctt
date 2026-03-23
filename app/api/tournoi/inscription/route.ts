@@ -1,156 +1,19 @@
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { RegistrationSource } from "@prisma/client";
+import {
+  checkRateLimit,
+  createTournamentRegistration,
+  ensureWebRegistrationOwnerId,
+  getInvalidTables,
+  getLatestTournamentId,
+  getSelectedEvents,
+  resolvePlayerRefId,
+  sendRegistrationNotifications,
+  validateAndNormalizeRegistration,
+  type RegistrationPayload,
+} from "@/lib/tournament-registration";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-
-type RegistrationPayload = {
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-  phone?: string;
-  licenseNumber?: string;
-  points?: string;
-  gender?: string;
-  club?: string;
-  tables?: unknown;
-  website?: string;
-};
-
-const WINDOW_MS = 10 * 60 * 1000;
-const MAX_REQUESTS = 5;
-const requestTracker = new Map<string, number[]>();
-
-function checkRateLimit(clientIp: string) {
-  const now = Date.now();
-  const timestamps = requestTracker.get(clientIp) ?? [];
-  const validTimestamps = timestamps.filter((time) => now - time < WINDOW_MS);
-
-  if (validTimestamps.length >= MAX_REQUESTS) {
-    requestTracker.set(clientIp, validTimestamps);
-    return false;
-  }
-
-  validTimestamps.push(now);
-  requestTracker.set(clientIp, validTimestamps);
-  return true;
-}
-
-function isValidEmail(email: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-function normalizeTables(tables: unknown) {
-  if (!Array.isArray(tables)) {
-    return [];
-  }
-
-  return tables
-    .filter((value): value is string => typeof value === "string")
-    .map((value) => value.trim().toUpperCase())
-    .filter(
-      (value, index, current) =>
-        value.length > 0 && current.indexOf(value) === index,
-    )
-    .slice(0, 6);
-}
-
-async function sendWithWebhook(payload: {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  licenseNumber: string;
-  points: string;
-  gender: string;
-  club: string;
-  tables: string[];
-}) {
-  const webhookUrl = process.env.TOURNAMENT_REGISTRATION_WEBHOOK_URL;
-
-  if (!webhookUrl) {
-    return false;
-  }
-
-  const response = await fetch(webhookUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      ...payload,
-      source: "cctt-tournament-registration-form",
-      sentAt: new Date().toISOString(),
-    }),
-  });
-
-  return response.ok;
-}
-
-async function sendWithResend(payload: {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  licenseNumber: string;
-  points: string;
-  gender: string;
-  club: string;
-  tables: string[];
-}) {
-  const resendApiKey = process.env.RESEND_API_KEY;
-  const to = process.env.TOURNAMENT_REGISTRATION_TO_EMAIL;
-
-  if (!resendApiKey || !to) {
-    return false;
-  }
-
-  const from =
-    process.env.TOURNAMENT_REGISTRATION_FROM_EMAIL ??
-    "Inscriptions tournoi CCTT <onboarding@resend.dev>";
-
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${resendApiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from,
-      to,
-      subject: `Inscription tournoi: ${payload.firstName} ${payload.lastName}`,
-      reply_to: payload.email,
-      text: [
-        `Nom: ${payload.lastName}`,
-        `Prénom: ${payload.firstName}`,
-        `Email: ${payload.email}`,
-        `Téléphone: ${payload.phone}`,
-        `N° licence: ${payload.licenseNumber}`,
-        `Points: ${payload.points || "Non renseigné"}`,
-        `Genre: ${payload.gender || "Non renseigné"}`,
-        `Club: ${payload.club}`,
-        `Tableaux: ${payload.tables.join(", ")}`,
-      ].join("\n"),
-    }),
-  });
-
-  return response.ok;
-}
-
-async function ensureWebRegistrationOwnerId() {
-  const user = await prisma.user.upsert({
-    where: { email: "inscriptions-web@cctt.local" },
-    update: {},
-    create: {
-      email: "inscriptions-web@cctt.local",
-      name: "Inscriptions Web CCTT",
-      role: "ADMIN",
-    },
-    select: { id: true },
-  });
-
-  return user.id;
-}
 
 export async function POST(request: NextRequest) {
   const clientIp =
@@ -162,7 +25,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         message:
-          "Trop de tentatives depuis votre adresse IP. Merci de réessayer dans quelques minutes.",
+          "Trop de tentatives depuis votre adresse IP. Merci de rÃ©essayer dans quelques minutes.",
       },
       { status: 429 },
     );
@@ -173,128 +36,33 @@ export async function POST(request: NextRequest) {
   try {
     body = (await request.json()) as RegistrationPayload;
   } catch {
-    return NextResponse.json({ message: "Requête invalide." }, { status: 400 });
+    return NextResponse.json({ message: "RequÃªte invalide." }, { status: 400 });
   }
 
-  const firstName = body.firstName?.trim() ?? "";
-  const lastName = body.lastName?.trim() ?? "";
-  const email = body.email?.trim() ?? "";
-  const phone = body.phone?.trim() ?? "";
-  const licenseNumber = body.licenseNumber?.trim() ?? "";
-  const points = body.points?.trim() ?? "";
-  const gender = body.gender?.trim().toUpperCase() ?? "";
-  const club = body.club?.trim() ?? "";
-  const website = body.website?.trim() ?? "";
-  const tables = normalizeTables(body.tables);
+  const website =
+    typeof body.website === "string" ? body.website.trim() : "";
 
   if (website.length > 0) {
     return NextResponse.json(
       {
-        message: "Votre demande d'inscription a bien été prise en compte.",
+        message: "Votre demande d'inscription a bien Ã©tÃ© prise en compte.",
       },
       { status: 200 },
     );
   }
 
-  if (firstName.length < 2 || firstName.length > 100) {
-    return NextResponse.json(
-      { message: "Le prénom doit contenir entre 2 et 100 caractères." },
-      { status: 400 },
-    );
+  const validation = validateAndNormalizeRegistration(body);
+
+  if (!validation.ok) {
+    return NextResponse.json({ message: validation.message }, { status: 400 });
   }
 
-  if (lastName.length < 2 || lastName.length > 100) {
-    return NextResponse.json(
-      { message: "Le nom doit contenir entre 2 et 100 caractères." },
-      { status: 400 },
-    );
-  }
+  const { payload } = validation;
 
-  if (!isValidEmail(email) || email.length > 150) {
-    return NextResponse.json(
-      { message: "Adresse email invalide." },
-      { status: 400 },
-    );
-  }
+  const sent = await sendRegistrationNotifications(payload);
+  const tournamentId = await getLatestTournamentId();
 
-  if (phone.length < 10 || phone.length > 20) {
-    return NextResponse.json(
-      {
-        message:
-          "Le numéro de téléphone doit contenir entre 10 et 20 caractères.",
-      },
-      { status: 400 },
-    );
-  }
-
-  if (licenseNumber.length < 6 || licenseNumber.length > 20) {
-    return NextResponse.json(
-      {
-        message: "Le numéro de licence doit contenir entre 6 et 20 caractères.",
-      },
-      { status: 400 },
-    );
-  }
-
-  if (club.length < 2 || club.length > 120) {
-    return NextResponse.json(
-      { message: "Le nom du club doit contenir entre 2 et 120 caractères." },
-      { status: 400 },
-    );
-  }
-
-  if (!/^\d{1,5}$/.test(points)) {
-    return NextResponse.json(
-      { message: "Les points doivent être un nombre positif." },
-      { status: 400 },
-    );
-  }
-
-  if (!["M", "F"].includes(gender)) {
-    return NextResponse.json(
-      { message: "Le genre doit être M ou F." },
-      { status: 400 },
-    );
-  }
-
-  if (tables.length === 0) {
-    return NextResponse.json(
-      { message: "Merci de sélectionner au moins un tableau." },
-      { status: 400 },
-    );
-  }
-
-  const numericPoints = Number.parseInt(points, 10);
-
-  const normalizedPayload = {
-    firstName,
-    lastName,
-    email,
-    phone,
-    licenseNumber,
-    points,
-    gender,
-    club,
-    tables,
-  };
-
-  const sent =
-    (await sendWithWebhook(normalizedPayload)) ||
-    (await sendWithResend(normalizedPayload));
-
-  const tournament = await prisma.tournament.findFirst({
-    where: {
-      status: {
-        in: ["PUBLISHED", "DRAFT"],
-      },
-    },
-    orderBy: [{ startDate: "desc" }],
-    select: {
-      id: true,
-    },
-  });
-
-  if (!tournament) {
+  if (!tournamentId) {
     return NextResponse.json(
       {
         message: "Aucun tournoi actif n'est disponible pour le moment.",
@@ -308,30 +76,16 @@ export async function POST(request: NextRequest) {
   const sessionUserId = session?.user?.id ?? null;
 
   const existingPlayer = await prisma.player.findUnique({
-    where: { licence: licenseNumber },
+    where: { licence: payload.licenseNumber },
     select: { id: true },
   });
 
-  const selectedEvents = await prisma.tournamentEvent.findMany({
-    where: {
-      tournamentId: tournament.id,
-      code: {
-        in: tables,
-      },
-      status: {
-        in: ["OPEN", "FULL"],
-      },
-    },
-    select: {
-      id: true,
-      code: true,
-      gender: true,
-      minPoints: true,
-      maxPoints: true,
-    },
-  });
+  const selectedEvents = await getSelectedEvents(
+    tournamentId,
+    payload.tables,
+  );
 
-  if (selectedEvents.length !== tables.length) {
+  if (selectedEvents.length !== payload.tables.length) {
     return NextResponse.json(
       {
         message:
@@ -341,27 +95,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const invalidTables = selectedEvents
-    .filter((event) => {
-      if (event.gender === "F" && gender !== "F") {
-        return true;
-      }
-
-      if (event.gender === "M" && gender !== "M") {
-        return true;
-      }
-
-      if (event.minPoints !== null && numericPoints < event.minPoints) {
-        return true;
-      }
-
-      if (event.maxPoints !== null && numericPoints > event.maxPoints) {
-        return true;
-      }
-
-      return false;
-    })
-    .map((event) => event.code);
+  const invalidTables = getInvalidTables(selectedEvents, payload);
 
   if (invalidTables.length > 0) {
     return NextResponse.json(
@@ -372,52 +106,24 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const maxPlayer = await prisma.tournamentRegistration.aggregate({
-    where: { tournamentId: tournament.id },
-    _max: { playerId: true },
+  const playerRefId = await resolvePlayerRefId({
+    existingPlayerId: existingPlayer?.id ?? null,
+    payload,
+    ownerId,
   });
 
-  const playerRefId =
-    existingPlayer?.id ??
-    (
-      await prisma.player.create({
-        data: {
-          licence: licenseNumber,
-          nom: lastName,
-          prenom: firstName,
-          points: numericPoints,
-          club,
-          ownerId,
-        },
-        select: { id: true },
-      })
-    ).id;
-
   try {
-    await prisma.tournamentRegistration.create({
-      data: {
-        tournamentId: tournament.id,
-        playerId: (maxPlayer._max.playerId ?? 0) + 1,
-        playerRefId,
-        licenseNumber,
-        clubName: club,
-        gender,
-        userId: sessionUserId,
-        contactEmail: email.toLowerCase(),
-        contactPhone: phone,
-        source: RegistrationSource.WEB,
-        registrationEvents: {
-          create: selectedEvents.map((event) => ({
-            eventId: event.id,
-            seedPointsSnapshot: numericPoints,
-          })),
-        },
-      },
+    await createTournamentRegistration({
+      tournamentId,
+      payload,
+      selectedEvents,
+      playerRefId,
+      sessionUserId,
     });
   } catch {
     return NextResponse.json(
       {
-        message: "Ce joueur est déjà inscrit sur ce tournoi.",
+        message: "Ce joueur est dÃ©jÃ  inscrit sur ce tournoi.",
       },
       { status: 409 },
     );
@@ -427,15 +133,15 @@ export async function POST(request: NextRequest) {
     console.error(
       "Tournament registration form is not configured: missing webhook or email provider",
       {
-        email,
-        licenseNumber,
+        email: payload.email,
+        licenseNumber: payload.licenseNumber,
       },
     );
 
     return NextResponse.json(
       {
         message:
-          "Inscription reçue. Le service de notification est en maintenance: contactez inscriptions-tournoi@cctt.fr si vous ne recevez pas de confirmation sous 48h.",
+          "Inscription reÃ§ue. Le service de notification est en maintenance: contactez inscriptions-tournoi@cctt.fr si vous ne recevez pas de confirmation sous 48h.",
       },
       { status: 200 },
     );
@@ -444,7 +150,7 @@ export async function POST(request: NextRequest) {
   return NextResponse.json(
     {
       message:
-        "Inscription envoyée avec succès. Vous recevrez un email de confirmation après validation.",
+        "Inscription envoyÃ©e avec succÃ¨s. Vous recevrez un email de confirmation aprÃ¨s validation.",
     },
     { status: 200 },
   );
