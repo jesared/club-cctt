@@ -1,5 +1,6 @@
-﻿import { authOptions } from "@/lib/auth";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { withPrismaRetry } from "@/lib/prisma-retry";
 import {
   checkRateLimit,
   createTournamentRegistration,
@@ -75,10 +76,12 @@ export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
   const sessionUserId = session?.user?.id ?? null;
 
-  const existingPlayer = await prisma.player.findUnique({
-    where: { licence: payload.licenseNumber },
-    select: { id: true },
-  });
+  const existingPlayer = await withPrismaRetry(() =>
+    prisma.player.findUnique({
+      where: { licence: payload.licenseNumber },
+      select: { id: true },
+    }),
+  );
 
   const selectedEvents = await getSelectedEvents(
     tournamentId,

@@ -1,5 +1,6 @@
 ﻿import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { withPrismaRetry } from "@/lib/prisma-retry";
 import { isAdminRole } from "@/lib/roles";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
@@ -11,17 +12,19 @@ export async function GET() {
     return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
   }
 
-  const messages = await prisma.message.findMany({
-    orderBy: { createdAt: "desc" },
-    include: {
-      author: {
-        select: {
-          name: true,
-          email: true,
+  const messages = await withPrismaRetry(() =>
+    prisma.message.findMany({
+      orderBy: { createdAt: "desc" },
+      include: {
+        author: {
+          select: {
+            name: true,
+            email: true,
+          },
         },
       },
-    },
-  });
+    }),
+  );
 
   return NextResponse.json(messages);
 }

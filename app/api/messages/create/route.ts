@@ -1,5 +1,6 @@
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { withPrismaRetry } from "@/lib/prisma-retry";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
@@ -19,14 +20,16 @@ export async function POST(req: Request) {
     );
   }
 
-  await prisma.message.create({
-    data: {
-      title,
-      content,
-      important: Boolean(important),
-      authorId: session.user.id,
-    },
-  });
+  await withPrismaRetry(() =>
+    prisma.message.create({
+      data: {
+        title,
+        content,
+        important: Boolean(important),
+        authorId: session.user.id,
+      },
+    }),
+  );
 
   return NextResponse.json({ ok: true });
 }

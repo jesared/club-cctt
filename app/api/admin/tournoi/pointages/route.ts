@@ -1,5 +1,6 @@
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { withPrismaRetry } from "@/lib/prisma-retry";
 import { isAdminRole } from "@/lib/roles";
 import { RegistrationEventStatus } from "@prisma/client";
 import { getServerSession } from "next-auth";
@@ -44,32 +45,36 @@ export async function POST(request: Request) {
       : null;
 
   if (checked) {
-    await prisma.$transaction([
-      prisma.tournamentCheckIn.createMany({
-        data: registrationEventIds.map((registrationEventId: string) => ({
-          registrationEventId,
-          checkedInByUserId,
-        })),
-        skipDuplicates: true,
-      }),
-      prisma.tournamentRegistrationEvent.updateMany({
-        where: { id: { in: registrationEventIds } },
-        data: { status: RegistrationEventStatus.CHECKED_IN },
-      }),
-    ]);
+    await withPrismaRetry(() =>
+      prisma.$transaction([
+        prisma.tournamentCheckIn.createMany({
+          data: registrationEventIds.map((registrationEventId: string) => ({
+            registrationEventId,
+            checkedInByUserId,
+          })),
+          skipDuplicates: true,
+        }),
+        prisma.tournamentRegistrationEvent.updateMany({
+          where: { id: { in: registrationEventIds } },
+          data: { status: RegistrationEventStatus.CHECKED_IN },
+        }),
+      ]),
+    );
   } else {
-    await prisma.$transaction([
-      prisma.tournamentCheckIn.deleteMany({
-        where: { registrationEventId: { in: registrationEventIds } },
-      }),
-      prisma.tournamentRegistrationEvent.updateMany({
-        where: {
-          id: { in: registrationEventIds },
-          status: RegistrationEventStatus.CHECKED_IN,
-        },
-        data: { status: RegistrationEventStatus.REGISTERED },
-      }),
-    ]);
+    await withPrismaRetry(() =>
+      prisma.$transaction([
+        prisma.tournamentCheckIn.deleteMany({
+          where: { registrationEventId: { in: registrationEventIds } },
+        }),
+        prisma.tournamentRegistrationEvent.updateMany({
+          where: {
+            id: { in: registrationEventIds },
+            status: RegistrationEventStatus.CHECKED_IN,
+          },
+          data: { status: RegistrationEventStatus.REGISTERED },
+        }),
+      ]),
+    );
   }
 
   return NextResponse.json({ ok: true });
@@ -95,31 +100,33 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
   }
 
-  const registration = await prisma.tournamentRegistration.findUnique({
-    where: { id: registrationId },
-    select: {
-      id: true,
-      tournamentId: true,
-      registrationEvents: {
-        select: {
-          id: true,
-          eventId: true,
-          event: {
-            select: {
-              code: true,
-              startAt: true,
+  const registration = await withPrismaRetry(() =>
+    prisma.tournamentRegistration.findUnique({
+      where: { id: registrationId },
+      select: {
+        id: true,
+        tournamentId: true,
+        registrationEvents: {
+          select: {
+            id: true,
+            eventId: true,
+            event: {
+              select: {
+                code: true,
+                startAt: true,
+              },
             },
-          },
-          status: true,
-          checkIn: {
-            select: {
-              id: true,
+            status: true,
+            checkIn: {
+              select: {
+                id: true,
+              },
             },
           },
         },
       },
-    },
-  });
+    }),
+  );
 
   if (!registration) {
     return NextResponse.json(
@@ -128,15 +135,17 @@ export async function PATCH(request: Request) {
     );
   }
 
-  const allowedEvents = await prisma.tournamentEvent.findMany({
-    where: {
-      tournamentId: registration.tournamentId,
-      id: {
-        in: eventIds,
+  const allowedEvents = await withPrismaRetry(() =>
+    prisma.tournamentEvent.findMany({
+      where: {
+        tournamentId: registration.tournamentId,
+        id: {
+          in: eventIds,
+        },
       },
-    },
-    select: { id: true },
-  });
+      select: { id: true },
+    }),
+  );
 
   if (allowedEvents.length !== eventIds.length) {
     return NextResponse.json(
@@ -157,54 +166,58 @@ export async function PATCH(request: Request) {
     (eventId) => !existingEventIds.has(eventId),
   );
 
-  await prisma.$transaction(async (tx) => {
-    if (eventIdsToDelete.length > 0) {
-      await tx.tournamentRegistrationEvent.deleteMany({
-        where: {
-          registrationId,
-          eventId: {
-            in: eventIdsToDelete,
-          },
-        },
-      });
-    }
-
-    if (eventIdsToCreate.length > 0) {
-      await tx.tournamentRegistrationEvent.createMany({
-        data: eventIdsToCreate.map((eventId) => ({
-          registrationId,
-          eventId,
-        })),
-        skipDuplicates: true,
-      });
-    }
-  });
-
-  const updatedRegistration = await prisma.tournamentRegistration.findUnique({
-    where: { id: registrationId },
-    select: {
-      id: true,
-      registrationEvents: {
-        orderBy: [{ event: { startAt: "asc" } }, { event: { code: "asc" } }],
-        select: {
-          id: true,
-          eventId: true,
-          event: {
-            select: {
-              code: true,
-              startAt: true,
+  await withPrismaRetry(() =>
+    prisma.$transaction(async (tx) => {
+      if (eventIdsToDelete.length > 0) {
+        await tx.tournamentRegistrationEvent.deleteMany({
+          where: {
+            registrationId,
+            eventId: {
+              in: eventIdsToDelete,
             },
           },
-          status: true,
-          checkIn: {
-            select: {
-              id: true,
+        });
+      }
+
+      if (eventIdsToCreate.length > 0) {
+        await tx.tournamentRegistrationEvent.createMany({
+          data: eventIdsToCreate.map((eventId) => ({
+            registrationId,
+            eventId,
+          })),
+          skipDuplicates: true,
+        });
+      }
+    }),
+  );
+
+  const updatedRegistration = await withPrismaRetry(() =>
+    prisma.tournamentRegistration.findUnique({
+      where: { id: registrationId },
+      select: {
+        id: true,
+        registrationEvents: {
+          orderBy: [{ event: { startAt: "asc" } }, { event: { code: "asc" } }],
+          select: {
+            id: true,
+            eventId: true,
+            event: {
+              select: {
+                code: true,
+                startAt: true,
+              },
+            },
+            status: true,
+            checkIn: {
+              select: {
+                id: true,
+              },
             },
           },
         },
       },
-    },
-  });
+    }),
+  );
 
   if (!updatedRegistration) {
     return NextResponse.json(
@@ -270,10 +283,12 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
   }
 
-  const registration = await prisma.tournamentRegistration.findUnique({
-    where: { id: registrationId },
-    select: { playerRefId: true },
-  });
+  const registration = await withPrismaRetry(() =>
+    prisma.tournamentRegistration.findUnique({
+      where: { id: registrationId },
+      select: { playerRefId: true },
+    }),
+  );
 
   if (!registration) {
     return NextResponse.json(
@@ -282,15 +297,17 @@ export async function DELETE(request: Request) {
     );
   }
 
-  await prisma.$transaction(async (tx) => {
-    await tx.tournamentRegistration.deleteMany({
-      where: { playerRefId: registration.playerRefId },
-    });
+  await withPrismaRetry(() =>
+    prisma.$transaction(async (tx) => {
+      await tx.tournamentRegistration.deleteMany({
+        where: { playerRefId: registration.playerRefId },
+      });
 
-    await tx.player.delete({
-      where: { id: registration.playerRefId },
-    });
-  });
+      await tx.player.delete({
+        where: { id: registration.playerRefId },
+      });
+    }),
+  );
 
   return NextResponse.json({ ok: true });
 }

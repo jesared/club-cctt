@@ -190,7 +190,6 @@ model TournamentCheckIn {
   registrationEvent   TournamentRegistrationEvent @relation(fields: [registrationEventId], references: [id], onDelete: Cascade)
 }
 
-
 model KpiEvent {
   id        String       @id @default(cuid())
   eventType KpiEventType
@@ -271,7 +270,6 @@ enum EventGender {
   M
   F
 }
-
 
 enum KpiEventType {
   VIEW

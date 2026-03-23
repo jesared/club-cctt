@@ -1,5 +1,6 @@
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { withPrismaRetry } from "@/lib/prisma-retry";
 import { isAdminRole } from "@/lib/roles";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
@@ -25,14 +26,16 @@ export async function PUT(
     return NextResponse.json({ error: "Champs manquants" }, { status: 400 });
   }
 
-  await prisma.message.update({
-    where: { id },
-    data: {
-      title,
-      content,
-      important: Boolean(important),
-    },
-  });
+  await withPrismaRetry(() =>
+    prisma.message.update({
+      where: { id },
+      data: {
+        title,
+        content,
+        important: Boolean(important),
+      },
+    }),
+  );
 
   return NextResponse.json({ ok: true });
 }

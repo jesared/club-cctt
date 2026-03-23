@@ -1,5 +1,6 @@
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { withPrismaRetry } from "@/lib/prisma-retry";
 import { isAdminRole } from "@/lib/roles";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
@@ -16,9 +17,11 @@ export async function DELETE(
 
   const { id } = await context.params;
 
-  await prisma.message.delete({
-    where: { id },
-  });
+  await withPrismaRetry(() =>
+    prisma.message.delete({
+      where: { id },
+    }),
+  );
 
   return NextResponse.json({ success: true });
 }

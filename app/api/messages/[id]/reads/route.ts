@@ -1,5 +1,6 @@
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { withPrismaRetry } from "@/lib/prisma-retry";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -14,10 +15,12 @@ export async function GET(
 
   const { id } = await context.params;
 
-  const reads = await prisma.messageRead.findMany({
-    where: { messageId: id },
-    include: { user: true },
-  });
+  const reads = await withPrismaRetry(() =>
+    prisma.messageRead.findMany({
+      where: { messageId: id },
+      include: { user: true },
+    }),
+  );
 
   return NextResponse.json(reads);
 }

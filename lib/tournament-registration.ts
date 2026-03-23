@@ -1,4 +1,5 @@
-﻿import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
+import { withPrismaRetry } from "@/lib/prisma-retry";
 import { RegistrationSource } from "@prisma/client";
 
 export type RegistrationPayload = {
@@ -236,32 +237,36 @@ async function sendWithResend(payload: NormalizedRegistrationPayload) {
 }
 
 export async function ensureWebRegistrationOwnerId() {
-  const user = await prisma.user.upsert({
-    where: { email: "inscriptions-web@cctt.local" },
-    update: {},
-    create: {
-      email: "inscriptions-web@cctt.local",
-      name: "Inscriptions Web CCTT",
-      role: "ADMIN",
-    },
-    select: { id: true },
-  });
+  const user = await withPrismaRetry(() =>
+    prisma.user.upsert({
+      where: { email: "inscriptions-web@cctt.local" },
+      update: {},
+      create: {
+        email: "inscriptions-web@cctt.local",
+        name: "Inscriptions Web CCTT",
+        role: "ADMIN",
+      },
+      select: { id: true },
+    }),
+  );
 
   return user.id;
 }
 
 export async function getLatestTournamentId() {
-  const tournament = await prisma.tournament.findFirst({
-    where: {
-      status: {
-        in: ["PUBLISHED", "DRAFT"],
+  const tournament = await withPrismaRetry(() =>
+    prisma.tournament.findFirst({
+      where: {
+        status: {
+          in: ["PUBLISHED", "DRAFT"],
+        },
       },
-    },
-    orderBy: [{ startDate: "desc" }],
-    select: {
-      id: true,
-    },
-  });
+      orderBy: [{ startDate: "desc" }],
+      select: {
+        id: true,
+      },
+    }),
+  );
 
   return tournament?.id ?? null;
 }
@@ -270,24 +275,26 @@ export async function getSelectedEvents(
   tournamentId: string,
   tables: string[],
 ) {
-  return prisma.tournamentEvent.findMany({
-    where: {
-      tournamentId,
-      code: {
-        in: tables,
+  return withPrismaRetry(() =>
+    prisma.tournamentEvent.findMany({
+      where: {
+        tournamentId,
+        code: {
+          in: tables,
+        },
+        status: {
+          in: ["OPEN", "FULL"],
+        },
       },
-      status: {
-        in: ["OPEN", "FULL"],
+      select: {
+        id: true,
+        code: true,
+        gender: true,
+        minPoints: true,
+        maxPoints: true,
       },
-    },
-    select: {
-      id: true,
-      code: true,
-      gender: true,
-      minPoints: true,
-      maxPoints: true,
-    },
-  });
+    }),
+  );
 }
 
 export function getInvalidTables(
@@ -335,17 +342,19 @@ export async function resolvePlayerRefId({
     return existingPlayerId;
   }
 
-  const player = await prisma.player.create({
-    data: {
-      licence: payload.licenseNumber,
-      nom: payload.lastName,
-      prenom: payload.firstName,
-      points: payload.pointsNumber,
-      club: payload.club,
-      ownerId,
-    },
-    select: { id: true },
-  });
+  const player = await withPrismaRetry(() =>
+    prisma.player.create({
+      data: {
+        licence: payload.licenseNumber,
+        nom: payload.lastName,
+        prenom: payload.firstName,
+        points: payload.pointsNumber,
+        club: payload.club,
+        ownerId,
+      },
+      select: { id: true },
+    }),
+  );
 
   return player.id;
 }
@@ -363,30 +372,34 @@ export async function createTournamentRegistration({
   playerRefId: string;
   sessionUserId: string | null;
 }) {
-  const maxPlayer = await prisma.tournamentRegistration.aggregate({
-    where: { tournamentId },
-    _max: { playerId: true },
-  });
+  const maxPlayer = await withPrismaRetry(() =>
+    prisma.tournamentRegistration.aggregate({
+      where: { tournamentId },
+      _max: { playerId: true },
+    }),
+  );
 
-  await prisma.tournamentRegistration.create({
-    data: {
-      tournamentId,
-      playerId: (maxPlayer._max.playerId ?? 0) + 1,
-      playerRefId,
-      licenseNumber: payload.licenseNumber,
-      clubName: payload.club,
-      gender: payload.gender,
-      userId: sessionUserId,
-      contactEmail: payload.email.toLowerCase(),
-      contactPhone: payload.phone,
-      source: RegistrationSource.WEB,
-      registrationEvents: {
-        create: selectedEvents.map((event) => ({
-          eventId: event.id,
-          seedPointsSnapshot: payload.pointsNumber,
-        })),
+  await withPrismaRetry(() =>
+    prisma.tournamentRegistration.create({
+      data: {
+        tournamentId,
+        playerId: (maxPlayer._max.playerId ?? 0) + 1,
+        playerRefId,
+        licenseNumber: payload.licenseNumber,
+        clubName: payload.club,
+        gender: payload.gender,
+        userId: sessionUserId,
+        contactEmail: payload.email.toLowerCase(),
+        contactPhone: payload.phone,
+        source: RegistrationSource.WEB,
+        registrationEvents: {
+          create: selectedEvents.map((event) => ({
+            eventId: event.id,
+            seedPointsSnapshot: payload.pointsNumber,
+          })),
+        },
       },
-    },
-  });
+    }),
+  );
 }
 
