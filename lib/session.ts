@@ -10,7 +10,7 @@ export async function requireAdminSession() {
     redirect("/api/auth/signin");
   }
 
-  if (!isAdminRole((session.user as any)?.role)) {
+  if (!isAdminRole(session.user.role)) {
     redirect("/");
   }
 

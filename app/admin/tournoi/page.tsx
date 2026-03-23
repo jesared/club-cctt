@@ -1,7 +1,6 @@
 import { requireAdminSession, TournamentAdminPage } from "./_components";
 import {
   getCurrentTournament,
-  getRegistrationsByTable,
   getTournamentDashboardStats,
   getTournamentTables,
 } from "./data";
@@ -22,21 +21,11 @@ export default async function AdminTournoiPage() {
     );
   }
 
-  const [tournamentTables, registrationsByTable, dashboardStats] =
+  const [tournamentTables, dashboardStats] =
     await Promise.all([
       getTournamentTables(tournament.id),
-      getRegistrationsByTable(tournament.id),
       getTournamentDashboardStats(tournament.id),
     ]);
-
-  const totalEarlyRevenue = tournamentTables.reduce(
-    (sum, table) => sum + Number.parseInt(table.earlyPayment, 10),
-    0,
-  );
-  const totalOnsiteRevenue = tournamentTables.reduce(
-    (sum, table) => sum + Number.parseInt(table.onsitePayment, 10),
-    0,
-  );
 
   return (
     <TournamentAdminPage

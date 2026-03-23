@@ -11,6 +11,10 @@ type SheetContextValue = {
   setOpen: (open: boolean) => void;
 };
 
+type ClickableChildProps = {
+  onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+};
+
 const SheetContext = React.createContext<SheetContextValue | null>(null);
 
 function useSheetContext() {
@@ -52,13 +56,13 @@ function SheetTrigger({
   children,
 }: {
   asChild?: boolean;
-  children: React.ReactElement<any>;
+  children: React.ReactElement<ClickableChildProps>;
 }) {
   const { setOpen } = useSheetContext();
 
   if (asChild) {
     return React.cloneElement(children, {
-      onClick: (event: React.MouseEvent<any>) => {
+      onClick: (event: React.MouseEvent<HTMLElement>) => {
         children.props.onClick?.(event);
         if (!event.defaultPrevented) {
           setOpen(true);
@@ -75,13 +79,13 @@ function SheetClose({
   children,
 }: {
   asChild?: boolean;
-  children: React.ReactElement<any>;
+  children: React.ReactElement<ClickableChildProps>;
 }) {
   const { setOpen } = useSheetContext();
 
   if (asChild) {
     return React.cloneElement(children, {
-      onClick: (event: React.MouseEvent<any>) => {
+      onClick: (event: React.MouseEvent<HTMLElement>) => {
         children.props.onClick?.(event);
         if (!event.defaultPrevented) {
           setOpen(false);

@@ -176,7 +176,7 @@ export default async function AdminTournoiAjoutPlayerPage({
   return (
     <TournamentAdminPage
       title="Ajouter un joueur"
-      description="Formulaire d'inscription sur place avec création immédiate du dossier joueur dans le tournoi courant."
+      description="Formulaire d&apos;inscription sur place avec crÃ©ation immÃ©diate du dossier joueur dans le tournoi courant."
       activeHref="/admin/tournoi/ajout-player"
     >
       {params.success ? (
@@ -192,10 +192,10 @@ export default async function AdminTournoiAjoutPlayerPage({
 
       <section className="rounded-xl border bg-card p-6 shadow-sm space-y-6">
         <div>
-          <h2 className="text-xl font-semibold">Formulaire d'ajout joueur</h2>
+          <h2 className="text-xl font-semibold">Formulaire d&apos;ajout joueur</h2>
           <p className="text-sm text-muted-foreground">
-            Tous les champs marqués d'un * sont obligatoires. Le joueur sera
-            inscrit en statut confirmé.
+            Tous les champs marquÃ©s d&apos;un * sont obligatoires. Le joueur sera
+            inscrit en statut confirmÃ©.
           </p>
         </div>
 
@@ -207,8 +207,8 @@ export default async function AdminTournoiAjoutPlayerPage({
           />
         ) : (
           <p className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            Aucun tournoi actif n'a été trouvé. Créez d'abord un tournoi avant
-            d'ajouter un joueur.
+            Aucun tournoi actif n&apos;a Ã©tÃ© trouvÃ©. CrÃ©ez d&apos;abord un tournoi avant
+            d&apos;ajouter un joueur.
           </p>
         )}
       </section>
