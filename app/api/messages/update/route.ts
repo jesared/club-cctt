@@ -1,13 +1,14 @@
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { isAdminRole } from "@/lib/roles";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
 
-  if (!session || session.user.role !== "ADMIN") {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
+  if (!session || !isAdminRole(session.user.role)) {
+    return NextResponse.json({ error: "Non autorisÃ©" }, { status: 403 });
   }
 
   const { id, title, content, important } = await req.json();

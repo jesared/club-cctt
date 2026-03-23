@@ -1,19 +1,8 @@
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { authOptions } from "@/lib/auth";
+import { requireAdminSession } from "@/lib/session";
 
 export default async function AdminPage() {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    redirect("/api/auth/signin");
-  }
-
-  if (session.user.role !== "ADMIN") {
-    redirect("/");
-  }
+  await requireAdminSession();
 
   return (
     <main className="mx-auto max-w-7xl space-y-6 px-4 py-8">

@@ -1,5 +1,6 @@
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { isAdminRole } from "@/lib/roles";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -11,8 +12,8 @@ export async function PUT(
 ) {
   const session = await getServerSession(authOptions);
 
-  if (!session || session.user.role !== "ADMIN") {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  if (!session || !isAdminRole(session.user.role)) {
+    return NextResponse.json({ error: "Non autorisÃ©" }, { status: 401 });
   }
 
   const { id } = await context.params;

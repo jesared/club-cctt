@@ -1,8 +1,6 @@
-import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { requireAdminSession } from "@/lib/session";
 
 const MANAGED_ROLES = ["USER", "JOUEUR", "COACH", "BUREAU"] as const;
 
@@ -11,11 +9,7 @@ type ManagedRole = (typeof MANAGED_ROLES)[number];
 async function updateUserRole(formData: FormData) {
   "use server";
 
-  const session = await getServerSession(authOptions);
-
-  if (!session || session.user.role !== "ADMIN") {
-    redirect("/");
-  }
+  await requireAdminSession();
 
   const userId = formData.get("userId");
   const role = formData.get("role");
@@ -37,15 +31,7 @@ async function updateUserRole(formData: FormData) {
 }
 
 export default async function AdminUsersPage() {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    redirect("/api/auth/signin");
-  }
-
-  if (session.user.role !== "ADMIN") {
-    redirect("/");
-  }
+  await requireAdminSession();
 
   const users = await prisma.user.findMany({
     select: {

@@ -1,7 +1,5 @@
-import { authOptions } from "@/lib/auth";
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { requireAdminSession } from "@/lib/session";
 
 const quickWins = [
   "Sécuriser les fallbacks de contenu (horaires/comité/partenaires).",
@@ -38,15 +36,7 @@ const plan90 = [
 ];
 
 export default async function AdminAuditUxPage() {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    redirect("/api/auth/signin");
-  }
-
-  if (session.user.role !== "ADMIN") {
-    redirect("/");
-  }
+  await requireAdminSession();
 
   const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 

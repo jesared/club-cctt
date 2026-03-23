@@ -1,7 +1,5 @@
-import { authOptions } from "@/lib/auth";
-import { getServerSession } from "next-auth";
+import { requireAdminSession } from "@/lib/session";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 
 const TOURNAMENT_ADMIN_LINKS = [
@@ -14,19 +12,7 @@ const TOURNAMENT_ADMIN_LINKS = [
   { href: "/admin/tournoi/exports", label: "Exports" },
 ] as const;
 
-export async function requireAdminSession() {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    redirect("/api/auth/signin");
-  }
-
-  if ((session.user as any)?.role !== "ADMIN") {
-    redirect("/");
-  }
-
-  return session;
-}
+export { requireAdminSession };
 
 type TournamentAdminPageProps = {
   title: string;

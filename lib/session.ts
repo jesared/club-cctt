@@ -1,4 +1,5 @@
 import { authOptions } from "@/lib/auth";
+import { isAdminRole } from "@/lib/roles";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
@@ -9,7 +10,7 @@ export async function requireAdminSession() {
     redirect("/api/auth/signin");
   }
 
-  if ((session.user as any)?.role !== "ADMIN") {
+  if (!isAdminRole((session.user as any)?.role)) {
     redirect("/");
   }
 

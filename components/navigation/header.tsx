@@ -10,6 +10,7 @@ import { useMemo } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { getVisibleSectionsHeader } from "@/components/navigation/menu-items";
 import { Button } from "@/components/ui/button";
+import { isAdminRole } from "@/lib/roles";
 import { cn } from "@/lib/utils";
 
 // 🔥 LOGIQUE ACTIVE (IDENTIQUE SIDEBAR)
@@ -65,6 +66,8 @@ export default function Header() {
     return null;
   }
 
+  const isAdmin = isAdminRole(session?.user?.role);
+
   return (
     <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur">
       <div className="flex h-16 items-center px-4 md:px-6 mx-auto w-full max-w-7xl">
@@ -100,7 +103,7 @@ export default function Header() {
 
         {/* ACTIONS */}
         <div className="ml-auto flex items-center gap-2">
-          {session?.user.role === "ADMIN" && (
+          {isAdmin && (
             <Link
               href="/admin/tournoi"
               className="rounded-md border px-3 py-2 text-sm bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"

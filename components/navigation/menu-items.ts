@@ -21,6 +21,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { Session } from "next-auth";
+import { normalizeRole } from "@/lib/roles";
 
 export type Role = "user" | "admin";
 
@@ -37,14 +38,6 @@ export type MenuSection = {
   auth?: boolean;
   items: MenuItem[];
 };
-
-export function normalizeRole(role: unknown): Role {
-  if (typeof role !== "string") {
-    return "user";
-  }
-
-  return role.toLowerCase() === "admin" ? "admin" : "user";
-}
 
 export function getVisibleSections({
   role,
