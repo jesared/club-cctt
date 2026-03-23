@@ -61,6 +61,12 @@ export default function Sidebar({
       getVisibleSections({
         role: session?.user?.role,
         session: session ?? null,
+      }).filter((section) => {
+        const isPublicSection = section.items.every(
+          (item) =>
+            item.href.startsWith("/club") || item.href.startsWith("/tournoi"),
+        );
+        return !isPublicSection;
       }),
     [session],
   );

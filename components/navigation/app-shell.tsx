@@ -2,11 +2,13 @@
 
 import { Menu } from "lucide-react";
 import type { ReactNode } from "react";
+import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import SiteBreadcrumb from "../SiteBreadcrumb";
 import Sidebar from "./Sidebar";
+import { isPublicRoute } from "@/lib/routes";
 
 type AppShellProps = {
   children: ReactNode;
@@ -14,6 +16,12 @@ type AppShellProps = {
 };
 
 export default function AppShell({ children, title }: AppShellProps) {
+  const pathname = usePathname();
+
+  if (isPublicRoute(pathname)) {
+    return <>{children}</>;
+  }
+
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       {/* SIDEBAR DESKTOP */}
