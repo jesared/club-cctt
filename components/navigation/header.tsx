@@ -45,7 +45,8 @@ export default function Header() {
   const [openSection, setOpenSection] = useState<string | null>(null);
 
   const sectionMeta = useMemo(
-    () => ({
+    () =>
+      ({
       Club: {
         description: "Découvrir le club, ses horaires et ses tarifs.",
         cta: { href: "/club/contact", label: "Nous contacter" },
@@ -55,7 +56,7 @@ export default function Header() {
           "/club/partenaires": "Soutiens et partenaires du club.",
           "/club/comite-directeur": "Équipe dirigeante du club.",
           "/club/contact": "Contact et localisation.",
-        },
+        } as Record<string, string>,
       },
       Tournoi: {
         description: "Infos, inscription et résultats du tournoi.",
@@ -67,9 +68,16 @@ export default function Header() {
           "/tournoi/resultats": "Résultats et classements.",
           "/tournoi/palmares": "Palmarès des éditions précédentes.",
           "/tournoi/affiches": "Affiches et supports officiels.",
-        },
+        } as Record<string, string>,
       },
-    }),
+    }) satisfies Record<
+        "Club" | "Tournoi",
+        {
+          description: string;
+          cta: { href: string; label: string };
+          items: Record<string, string>;
+        }
+      >,
     [],
   );
 
