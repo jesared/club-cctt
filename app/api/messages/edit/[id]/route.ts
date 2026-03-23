@@ -13,7 +13,7 @@ export async function PUT(
   const session = await getServerSession(authOptions);
 
   if (!session || !isAdminRole(session.user.role)) {
-    return NextResponse.json({ error: "Non autorisÃ©" }, { status: 401 });
+    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   }
 
   const { id } = await context.params;

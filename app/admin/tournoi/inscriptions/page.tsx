@@ -1,4 +1,4 @@
-import { requireAdminSession, TournamentAdminPage } from "../_components";
+﻿import { requireAdminSession, TournamentAdminPage } from "../_components";
 import {
   getAdminPlayers,
   getCurrentTournament,
@@ -19,21 +19,21 @@ export default async function AdminTournoiInscriptionsPage() {
   const totalRegistrations = registrationsByTable.reduce((sum, row) => sum + row.registrations, 0);
   const totalWaitlist = registrationsByTable.reduce((sum, row) => sum + row.waitlist, 0);
   const totalCheckins = registrationsByTable.reduce((sum, row) => sum + row.checkins, 0);
-  const toFollowUp = adminPlayers.filter((player) => player.status === "Ã€ confirmer").length;
+  const toFollowUp = adminPlayers.filter((player) => player.status === "À confirmer").length;
   const tableCapacity = 96;
 
   return (
     <TournamentAdminPage
       title="Inscriptions"
-      description="Suivi dÃ©taillÃ© des engagements par tableau avec les donnÃ©es Player/TournamentRegistration."
+      description="Suivi détaillé des engagements par tableau avec les données Player/TournamentRegistration."
       activeHref="/admin/tournoi/inscriptions"
     >
       <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {[
           { label: "Inscriptions suivies", value: `${totalRegistrations}`, helper: "Tous tableaux" },
-          { label: "Pointages saisis", value: `${totalCheckins}`, helper: "PrÃ©sences confirmÃ©es" },
-          { label: "Liste d&apos;attente", value: `${totalWaitlist}`, helper: "Ã€ arbitrer" },
-          { label: "Ã€ relancer", value: `${toFollowUp}`, helper: "Confirmation manquante" },
+          { label: "Pointages saisis", value: `${totalCheckins}`, helper: "Présences confirmées" },
+          { label: "Liste d&apos;attente", value: `${totalWaitlist}`, helper: "À arbitrer" },
+          { label: "À relancer", value: `${toFollowUp}`, helper: "Confirmation manquante" },
         ].map((card) => (
           <article key={card.label} className="rounded-xl border bg-card p-4 shadow-sm">
             <p className="text-sm text-muted-foreground">{card.label}</p>
@@ -46,7 +46,7 @@ export default async function AdminTournoiInscriptionsPage() {
       <section className="rounded-xl border bg-card shadow-sm p-6 space-y-4">
         <div>
           <h2 className="text-xl font-semibold">Occupation des tableaux</h2>
-          <p className="text-sm text-muted-foreground">SynthÃ¨se des sÃ©ries Ã  surveiller en prioritÃ©.</p>
+          <p className="text-sm text-muted-foreground">Synthèse des séries à surveiller en priorité.</p>
         </div>
 
         <div className="overflow-x-auto">
@@ -54,7 +54,7 @@ export default async function AdminTournoiInscriptionsPage() {
             <thead>
               <tr className="border-b text-left text-muted-foreground">
                 <th className="py-2 pr-3 font-medium">Tableau</th>
-                <th className="py-2 pr-3 font-medium">CatÃ©gorie</th>
+                <th className="py-2 pr-3 font-medium">Catégorie</th>
                 <th className="py-2 pr-3 font-medium">Inscrits</th>
                 <th className="py-2 pr-3 font-medium">Liste d&apos;attente</th>
                 <th className="py-2 font-medium">Remplissage</th>
@@ -139,3 +139,4 @@ export default async function AdminTournoiInscriptionsPage() {
     </TournamentAdminPage>
   );
 }
+

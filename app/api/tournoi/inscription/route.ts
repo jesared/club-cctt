@@ -1,4 +1,4 @@
-import { authOptions } from "@/lib/auth";
+﻿import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import {
   checkRateLimit,
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         message:
-          "Trop de tentatives depuis votre adresse IP. Merci de rÃ©essayer dans quelques minutes.",
+          "Trop de tentatives depuis votre adresse IP. Merci de réessayer dans quelques minutes.",
       },
       { status: 429 },
     );
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
   try {
     body = (await request.json()) as RegistrationPayload;
   } catch {
-    return NextResponse.json({ message: "RequÃªte invalide." }, { status: 400 });
+    return NextResponse.json({ message: "Requête invalide." }, { status: 400 });
   }
 
   const website =
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
   if (website.length > 0) {
     return NextResponse.json(
       {
-        message: "Votre demande d'inscription a bien Ã©tÃ© prise en compte.",
+        message: "Votre demande d'inscription a bien été prise en compte.",
       },
       { status: 200 },
     );
@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
   } catch {
     return NextResponse.json(
       {
-        message: "Ce joueur est dÃ©jÃ  inscrit sur ce tournoi.",
+        message: "Ce joueur est déjà inscrit sur ce tournoi.",
       },
       { status: 409 },
     );
@@ -141,7 +141,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         message:
-          "Inscription reÃ§ue. Le service de notification est en maintenance: contactez inscriptions-tournoi@cctt.fr si vous ne recevez pas de confirmation sous 48h.",
+          "Inscription reçue. Le service de notification est en maintenance: contactez inscriptions-tournoi@cctt.fr si vous ne recevez pas de confirmation sous 48h.",
       },
       { status: 200 },
     );
@@ -150,8 +150,9 @@ export async function POST(request: NextRequest) {
   return NextResponse.json(
     {
       message:
-        "Inscription envoyÃ©e avec succÃ¨s. Vous recevrez un email de confirmation aprÃ¨s validation.",
+        "Inscription envoyée avec succès. Vous recevrez un email de confirmation après validation.",
     },
     { status: 200 },
   );
 }
+

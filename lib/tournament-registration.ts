@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+﻿import { prisma } from "@/lib/prisma";
 import { RegistrationSource } from "@prisma/client";
 
 export type RegistrationPayload = {
@@ -87,14 +87,14 @@ export function validateAndNormalizeRegistration(
   if (firstName.length < 2 || firstName.length > 100) {
     return {
       ok: false,
-      message: "Le prÃ©nom doit contenir entre 2 et 100 caractÃ¨res.",
+      message: "Le prénom doit contenir entre 2 et 100 caractères.",
     };
   }
 
   if (lastName.length < 2 || lastName.length > 100) {
     return {
       ok: false,
-      message: "Le nom doit contenir entre 2 et 100 caractÃ¨res.",
+      message: "Le nom doit contenir entre 2 et 100 caractères.",
     };
   }
 
@@ -106,39 +106,39 @@ export function validateAndNormalizeRegistration(
     return {
       ok: false,
       message:
-        "Le numÃ©ro de tÃ©lÃ©phone doit contenir entre 10 et 20 caractÃ¨res.",
+        "Le numéro de téléphone doit contenir entre 10 et 20 caractères.",
     };
   }
 
   if (licenseNumber.length < 6 || licenseNumber.length > 20) {
     return {
       ok: false,
-      message: "Le numÃ©ro de licence doit contenir entre 6 et 20 caractÃ¨res.",
+      message: "Le numéro de licence doit contenir entre 6 et 20 caractères.",
     };
   }
 
   if (club.length < 2 || club.length > 120) {
     return {
       ok: false,
-      message: "Le nom du club doit contenir entre 2 et 120 caractÃ¨res.",
+      message: "Le nom du club doit contenir entre 2 et 120 caractères.",
     };
   }
 
   if (!/^\d{1,5}$/.test(points)) {
     return {
       ok: false,
-      message: "Les points doivent Ãªtre un nombre positif.",
+      message: "Les points doivent être un nombre positif.",
     };
   }
 
   if (!["M", "F"].includes(gender)) {
-    return { ok: false, message: "Le genre doit Ãªtre M ou F." };
+    return { ok: false, message: "Le genre doit être M ou F." };
   }
 
   if (tables.length === 0) {
     return {
       ok: false,
-      message: "Merci de sÃ©lectionner au moins un tableau.",
+      message: "Merci de sélectionner au moins un tableau.",
     };
   }
 
@@ -220,12 +220,12 @@ async function sendWithResend(payload: NormalizedRegistrationPayload) {
       reply_to: payload.email,
       text: [
         `Nom: ${payload.lastName}`,
-        `PrÃ©nom: ${payload.firstName}`,
+        `Prénom: ${payload.firstName}`,
         `Email: ${payload.email}`,
-        `TÃ©lÃ©phone: ${payload.phone}`,
-        `NÂ° licence: ${payload.licenseNumber}`,
-        `Points: ${payload.points || "Non renseignÃ©"}`,
-        `Genre: ${payload.gender || "Non renseignÃ©"}`,
+        `Téléphone: ${payload.phone}`,
+        `N° licence: ${payload.licenseNumber}`,
+        `Points: ${payload.points || "Non renseigné"}`,
+        `Genre: ${payload.gender || "Non renseigné"}`,
         `Club: ${payload.club}`,
         `Tableaux: ${payload.tables.join(", ")}`,
       ].join("\n"),
@@ -389,3 +389,4 @@ export async function createTournamentRegistration({
     },
   });
 }
+

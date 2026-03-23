@@ -1,4 +1,4 @@
-import { authOptions } from "@/lib/auth";
+﻿import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { RegistrationSource, RegistrationStatus } from "@prisma/client";
 import { getServerSession } from "next-auth";
@@ -176,7 +176,7 @@ export default async function AdminTournoiAjoutPlayerPage({
   return (
     <TournamentAdminPage
       title="Ajouter un joueur"
-      description="Formulaire d&apos;inscription sur place avec crÃ©ation immÃ©diate du dossier joueur dans le tournoi courant."
+      description="Formulaire d&apos;inscription sur place avec création immédiate du dossier joueur dans le tournoi courant."
       activeHref="/admin/tournoi/ajout-player"
     >
       {params.success ? (
@@ -194,8 +194,8 @@ export default async function AdminTournoiAjoutPlayerPage({
         <div>
           <h2 className="text-xl font-semibold">Formulaire d&apos;ajout joueur</h2>
           <p className="text-sm text-muted-foreground">
-            Tous les champs marquÃ©s d&apos;un * sont obligatoires. Le joueur sera
-            inscrit en statut confirmÃ©.
+            Tous les champs marqués d&apos;un * sont obligatoires. Le joueur sera
+            inscrit en statut confirmé.
           </p>
         </div>
 
@@ -207,7 +207,7 @@ export default async function AdminTournoiAjoutPlayerPage({
           />
         ) : (
           <p className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            Aucun tournoi actif n&apos;a Ã©tÃ© trouvÃ©. CrÃ©ez d&apos;abord un tournoi avant
+            Aucun tournoi actif n&apos;a été trouvé. Créez d&apos;abord un tournoi avant
             d&apos;ajouter un joueur.
           </p>
         )}
@@ -215,3 +215,4 @@ export default async function AdminTournoiAjoutPlayerPage({
     </TournamentAdminPage>
   );
 }
+
