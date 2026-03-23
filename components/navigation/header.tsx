@@ -1,11 +1,11 @@
 "use client";
 
-import { ChevronDown, Home, ShieldMinus } from "lucide-react";
+import { ChevronDown, Home, Menu, ShieldMinus } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import ThemeToggle from "@/components/ThemeToggle";
 import { getVisibleSections } from "@/components/navigation/menu-items";
@@ -43,6 +43,9 @@ export default function Header() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [openSection, setOpenSection] = useState<string | null>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileSection, setMobileSection] = useState<string | null>(null);
+  const headerRef = useRef<HTMLElement | null>(null);
 
   const sectionMeta = useMemo(
     () =>
@@ -100,6 +103,30 @@ export default function Header() {
     [publicSections],
   );
 
+  useEffect(() => {
+    function handleOutside(event: MouseEvent | TouchEvent) {
+      if (!headerRef.current) return;
+      if (headerRef.current.contains(event.target as Node)) return;
+      setOpenSection(null);
+      setMobileOpen(false);
+      setMobileSection(null);
+    }
+
+    document.addEventListener("mousedown", handleOutside);
+    document.addEventListener("touchstart", handleOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutside);
+      document.removeEventListener("touchstart", handleOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    setOpenSection(null);
+    setMobileOpen(false);
+    setMobileSection(null);
+  }, [pathname]);
+
   if (!isPublicRoute(pathname)) {
     return null;
   }
@@ -107,7 +134,10 @@ export default function Header() {
   const isAdmin = isAdminRole(session?.user?.role);
 
   return (
-    <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur">
+    <header
+      ref={headerRef}
+      className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur"
+    >
       <div className="flex h-16 items-center px-4 md:px-6 mx-auto w-full max-w-7xl">
         {/* LOGO */}
         <Link href="/" className="flex items-center gap-2">
@@ -166,8 +196,14 @@ export default function Header() {
                     </span>
                   </button>
 
-                  {openSection === item.title ? (
-                    <div className="absolute left-0 top-full z-50 mt-3 w-[520px] rounded-lg border bg-background shadow-xl">
+                  <div
+                    className={cn(
+                      "absolute left-0 top-full z-50 mt-3 w-[520px] rounded-lg border bg-background shadow-xl transition-all duration-200",
+                      openSection === item.title
+                        ? "opacity-100 translate-y-0 pointer-events-auto"
+                        : "opacity-0 -translate-y-1 pointer-events-none",
+                    )}
+                  >
                     <div className="p-4">
                       <div className="flex items-center justify-between">
                         <div>
@@ -227,7 +263,6 @@ export default function Header() {
                       ) : null}
                     </div>
                   </div>
-                  ) : null}
                 </div>
               );
             }
@@ -254,6 +289,25 @@ export default function Header() {
 
         {/* ACTIONS */}
         <div className="ml-auto flex items-center gap-2">
+          <button
+            type="button"
+            className="md:hidden inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm text-foreground hover:bg-muted"
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-mega-menu"
+            onClick={() => setMobileOpen((prev) => !prev)}
+          >
+            <Menu className="h-4 w-4" />
+            <span>Menu</span>
+            <span
+              className={cn(
+                "transition-transform duration-200",
+                mobileOpen ? "rotate-180" : "rotate-0",
+              )}
+            >
+              <ChevronDown className="h-4 w-4 opacity-80" />
+            </span>
+          </button>
+
           {isAdmin && (
             <Link
               href="/admin/tournoi"
@@ -279,6 +333,130 @@ export default function Header() {
           )}
 
           <ThemeToggle />
+        </div>
+      </div>
+
+      {/* NAV MOBILE */}
+      <div
+        id="mobile-mega-menu"
+        className={cn(
+          "md:hidden border-t bg-background/95 backdrop-blur transition-[max-height,opacity] duration-200 overflow-hidden",
+          mobileOpen
+            ? "max-h-[70vh] opacity-100"
+            : "max-h-0 opacity-0 pointer-events-none",
+        )}
+      >
+        <div className="px-4 py-4 space-y-3">
+          <Link
+            href="/"
+            onClick={() => {
+              setMobileOpen(false);
+              setMobileSection(null);
+            }}
+            className={cn(
+              "flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors",
+              isItemActive(pathname, "/")
+                ? "bg-primary text-primary-foreground font-medium"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground",
+            )}
+          >
+            <Home className="h-4 w-4" />
+            Accueil
+          </Link>
+
+          {publicSections.map((section) => {
+            const meta =
+              section.title === "Club" || section.title === "Tournoi"
+                ? sectionMeta[section.title]
+                : null;
+            const expanded = mobileSection === section.title;
+
+            return (
+              <div
+                key={section.title}
+                className="rounded-lg border bg-background"
+              >
+                <button
+                  type="button"
+                  className="flex w-full items-center justify-between px-3 py-2 text-sm font-medium text-foreground"
+                  onClick={() =>
+                    setMobileSection((prev) =>
+                      prev === section.title ? null : section.title,
+                    )
+                  }
+                  aria-expanded={expanded}
+                >
+                  <div className="flex flex-col text-left">
+                    <span>{section.title}</span>
+                    {meta ? (
+                      <span className="text-xs font-normal text-muted-foreground">
+                        {meta.description}
+                      </span>
+                    ) : null}
+                  </div>
+                  <span
+                    className={cn(
+                      "transition-transform duration-200",
+                      expanded ? "rotate-180" : "rotate-0",
+                    )}
+                  >
+                    <ChevronDown className="h-4 w-4 opacity-80" />
+                  </span>
+                </button>
+
+                <div
+                  className={cn(
+                    "grid gap-1 px-3 pb-3 text-sm transition-[max-height,opacity] duration-200 overflow-hidden",
+                    expanded ? "max-h-[520px] opacity-100" : "max-h-0 opacity-0",
+                  )}
+                >
+                  {section.items.map((submenuItem) => {
+                    const active = isItemActive(pathname, submenuItem.href);
+                    const helper = meta?.items?.[submenuItem.href];
+
+                    return (
+                      <Link
+                        key={submenuItem.href}
+                        href={submenuItem.href}
+                        onClick={() => {
+                          setMobileOpen(false);
+                          setMobileSection(null);
+                        }}
+                        className={cn(
+                          "rounded-md border border-transparent px-3 py-2 transition-colors",
+                          active
+                            ? "bg-muted text-foreground"
+                            : "hover:border-border hover:bg-muted/60 text-muted-foreground",
+                        )}
+                      >
+                        <div className="text-sm font-medium text-foreground">
+                          {submenuItem.label}
+                        </div>
+                        {helper ? (
+                          <div className="text-xs text-muted-foreground">
+                            {helper}
+                          </div>
+                        ) : null}
+                      </Link>
+                    );
+                  })}
+
+                  {meta?.cta ? (
+                    <Link
+                      href={meta.cta.href}
+                      onClick={() => {
+                        setMobileOpen(false);
+                        setMobileSection(null);
+                      }}
+                      className="mt-1 inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground hover:opacity-90"
+                    >
+                      {meta.cta.label}
+                    </Link>
+                  ) : null}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </header>
