@@ -17,7 +17,7 @@ function isEditable(startDate: Date) {
 
 export async function GET(
   _request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const session = await getServerSession(authOptions);
 
@@ -25,8 +25,10 @@ export async function GET(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const { id } = await params;
+
   const tournament = await prisma.tournament.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       events: {
         orderBy: [{ startAt: "asc" }, { code: "asc" }],
@@ -43,7 +45,7 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const session = await getServerSession(authOptions);
 
@@ -51,8 +53,10 @@ export async function PUT(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const { id } = await params;
+
   const tournament = await prisma.tournament.findUnique({
-    where: { id: params.id },
+    where: { id },
     select: { id: true, startDate: true },
   });
 
@@ -100,7 +104,7 @@ export async function PUT(
   }
 
   const updated = await prisma.tournament.update({
-    where: { id: params.id },
+    where: { id },
     data: {
       slug,
       name,
