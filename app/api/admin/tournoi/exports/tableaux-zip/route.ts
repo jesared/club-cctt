@@ -129,8 +129,9 @@ export async function GET() {
   }
 
   const payload = await zip.generateAsync({ type: "nodebuffer" });
+  const body = new Uint8Array(payload);
 
-  return new NextResponse(payload, {
+  return new NextResponse(body, {
     headers: {
       "Content-Type": "application/zip",
       "Content-Disposition": "attachment; filename=tableaux.zip",
