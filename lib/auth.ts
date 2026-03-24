@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import type { Role } from "@prisma/client";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
@@ -76,7 +77,7 @@ export const authOptions: NextAuthOptions = {
       if (!existing.role) {
         await prisma.user.update({
           where: { id: existing.id },
-          data: { role: "USER" },
+          data: { role: "USER" as Role },
         });
       }
 

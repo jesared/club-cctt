@@ -240,6 +240,24 @@ model PartenairesCache {
   createdAt DateTime @default(now())
 }
 
+model ContactContent {
+  id               String   @id
+  title            String
+  subtitle         String
+  intro            String
+  email            String
+  responseDelay    String
+  addressName      String
+  addressLine      String
+  addressCity      String
+  ctaPrimaryLabel  String
+  ctaPrimaryHref   String
+  ctaSecondaryLabel String
+  ctaSecondaryHref  String
+  updatedAt        DateTime @updatedAt
+  createdAt        DateTime @default(now())
+}
+
 enum Role {
   USER
   CLUB
