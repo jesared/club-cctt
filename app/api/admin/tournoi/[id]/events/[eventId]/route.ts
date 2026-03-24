@@ -26,7 +26,7 @@ function isEditable(startDate: Date) {
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string; eventId: string } },
+  { params }: { params: Promise<{ id: string; eventId: string }> },
 ) {
   const session = await getServerSession(authOptions);
 
@@ -34,8 +34,10 @@ export async function PUT(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const { id, eventId } = await params;
+
   const tournament = await prisma.tournament.findUnique({
-    where: { id: params.id },
+    where: { id },
     select: { id: true, startDate: true },
   });
 
@@ -78,7 +80,7 @@ export async function PUT(
   }
 
   const event = await prisma.tournamentEvent.update({
-    where: { id: params.eventId },
+    where: { id: eventId },
     data: {
       code,
       label,
@@ -105,7 +107,7 @@ export async function PUT(
 
 export async function DELETE(
   _request: Request,
-  { params }: { params: { id: string; eventId: string } },
+  { params }: { params: Promise<{ id: string; eventId: string }> },
 ) {
   const session = await getServerSession(authOptions);
 
@@ -113,8 +115,10 @@ export async function DELETE(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const { id, eventId } = await params;
+
   const tournament = await prisma.tournament.findUnique({
-    where: { id: params.id },
+    where: { id },
     select: { id: true, startDate: true },
   });
 
@@ -130,7 +134,7 @@ export async function DELETE(
   }
 
   await prisma.tournamentEvent.delete({
-    where: { id: params.eventId },
+    where: { id: eventId },
   });
 
   return NextResponse.json({ ok: true });
