@@ -26,7 +26,7 @@ function isEditable(startDate: Date) {
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const session = await getServerSession(authOptions);
 
@@ -34,8 +34,10 @@ export async function POST(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const { id } = await params;
+
   const tournament = await prisma.tournament.findUnique({
-    where: { id: params.id },
+    where: { id },
     select: { id: true, startDate: true },
   });
 
