@@ -27,7 +27,11 @@ function isRetryablePrismaError(error: unknown) {
     message.includes("ETIMEDOUT") ||
     code === "P1001" ||
     code === "P1002" ||
-    metaCode === "57P01"
+    code === "P2034" ||
+    metaCode === "57P01" ||
+    metaCode === "40001" ||
+    message.includes("write conflict") ||
+    message.includes("deadlock")
   );
 }
 

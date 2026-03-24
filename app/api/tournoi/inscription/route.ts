@@ -1,6 +1,4 @@
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { withPrismaRetry } from "@/lib/prisma-retry";
 import {
   checkRateLimit,
   createTournamentRegistration,
@@ -8,7 +6,6 @@ import {
   getInvalidTables,
   getLatestTournamentId,
   getSelectedEvents,
-  resolvePlayerRefId,
   sendRegistrationNotifications,
   validateAndNormalizeRegistration,
   type RegistrationPayload,
@@ -22,7 +19,7 @@ export async function POST(request: NextRequest) {
     request.headers.get("x-real-ip") ??
     "unknown";
 
-  if (!checkRateLimit(clientIp)) {
+  if (!(await checkRateLimit(clientIp))) {
     return NextResponse.json(
       {
         message:
@@ -60,7 +57,6 @@ export async function POST(request: NextRequest) {
 
   const { payload } = validation;
 
-  const sent = await sendRegistrationNotifications(payload);
   const tournamentId = await getLatestTournamentId();
 
   if (!tournamentId) {
@@ -75,13 +71,6 @@ export async function POST(request: NextRequest) {
   const ownerId = await ensureWebRegistrationOwnerId();
   const session = await getServerSession(authOptions);
   const sessionUserId = session?.user?.id ?? null;
-
-  const existingPlayer = await withPrismaRetry(() =>
-    prisma.player.findUnique({
-      where: { licence: payload.licenseNumber },
-      select: { id: true },
-    }),
-  );
 
   const selectedEvents = await getSelectedEvents(
     tournamentId,
@@ -109,19 +98,13 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const playerRefId = await resolvePlayerRefId({
-    existingPlayerId: existingPlayer?.id ?? null,
-    payload,
-    ownerId,
-  });
-
   try {
     await createTournamentRegistration({
       tournamentId,
       payload,
       selectedEvents,
-      playerRefId,
       sessionUserId,
+      ownerId,
     });
   } catch {
     return NextResponse.json(
@@ -131,6 +114,8 @@ export async function POST(request: NextRequest) {
       { status: 409 },
     );
   }
+
+  const sent = await sendRegistrationNotifications(payload);
 
   if (!sent) {
     console.error(

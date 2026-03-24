@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { withPrismaRetry } from "@/lib/prisma-retry";
-import { RegistrationSource } from "@prisma/client";
+import { RegistrationSource, type Role } from "@prisma/client";
 
 export type RegistrationPayload = {
   firstName?: string;
@@ -35,20 +35,54 @@ type ValidationResult =
 
 const WINDOW_MS = 10 * 60 * 1000;
 const MAX_REQUESTS = 5;
-const requestTracker = new Map<string, number[]>();
 
-export function checkRateLimit(clientIp: string) {
-  const now = Date.now();
-  const timestamps = requestTracker.get(clientIp) ?? [];
-  const validTimestamps = timestamps.filter((time) => now - time < WINDOW_MS);
+export async function checkRateLimit(clientIp: string) {
+  const now = new Date();
+  const bucketId = `tournoi:${clientIp}`;
 
-  if (validTimestamps.length >= MAX_REQUESTS) {
-    requestTracker.set(clientIp, validTimestamps);
+  const bucket = await withPrismaRetry(() =>
+    prisma.rateLimitBucket.findUnique({
+      where: { id: bucketId },
+    }),
+  );
+
+  if (!bucket) {
+    await withPrismaRetry(() =>
+      prisma.rateLimitBucket.create({
+        data: {
+          id: bucketId,
+          count: 1,
+          windowStart: now,
+        },
+      }),
+    );
+    return true;
+  }
+
+  const windowStart = bucket.windowStart;
+  const windowExpires = new Date(windowStart.getTime() + WINDOW_MS);
+
+  if (now > windowExpires) {
+    await withPrismaRetry(() =>
+      prisma.rateLimitBucket.update({
+        where: { id: bucketId },
+        data: { count: 1, windowStart: now },
+      }),
+    );
+    return true;
+  }
+
+  if (bucket.count >= MAX_REQUESTS) {
     return false;
   }
 
-  validTimestamps.push(now);
-  requestTracker.set(clientIp, validTimestamps);
+  await withPrismaRetry(() =>
+    prisma.rateLimitBucket.update({
+      where: { id: bucketId },
+      data: { count: bucket.count + 1 },
+    }),
+  );
+
   return true;
 }
 
@@ -244,7 +278,7 @@ export async function ensureWebRegistrationOwnerId() {
       create: {
         email: "inscriptions-web@cctt.local",
         name: "Inscriptions Web CCTT",
-        role: "ADMIN",
+        role: "ADMIN" as Role,
       },
       select: { id: true },
     }),
@@ -258,7 +292,7 @@ export async function getLatestTournamentId() {
     prisma.tournament.findFirst({
       where: {
         status: {
-          in: ["PUBLISHED", "DRAFT"],
+          in: ["PUBLISHED"],
         },
       },
       orderBy: [{ startDate: "desc" }],
@@ -363,43 +397,69 @@ export async function createTournamentRegistration({
   tournamentId,
   payload,
   selectedEvents,
-  playerRefId,
   sessionUserId,
+  ownerId,
 }: {
   tournamentId: string;
   payload: NormalizedRegistrationPayload;
   selectedEvents: Array<{ id: string }>;
-  playerRefId: string;
   sessionUserId: string | null;
+  ownerId: string;
 }) {
-  const maxPlayer = await withPrismaRetry(() =>
-    prisma.tournamentRegistration.aggregate({
-      where: { tournamentId },
-      _max: { playerId: true },
-    }),
-  );
-
   await withPrismaRetry(() =>
-    prisma.tournamentRegistration.create({
-      data: {
-        tournamentId,
-        playerId: (maxPlayer._max.playerId ?? 0) + 1,
-        playerRefId,
-        licenseNumber: payload.licenseNumber,
-        clubName: payload.club,
-        gender: payload.gender,
-        userId: sessionUserId,
-        contactEmail: payload.email.toLowerCase(),
-        contactPhone: payload.phone,
-        source: RegistrationSource.WEB,
-        registrationEvents: {
-          create: selectedEvents.map((event) => ({
-            eventId: event.id,
-            seedPointsSnapshot: payload.pointsNumber,
-          })),
-        },
+    prisma.$transaction(
+      async (tx) => {
+        const existingPlayer = await tx.player.findUnique({
+          where: { licence: payload.licenseNumber },
+          select: { id: true },
+        });
+
+        const playerRefId =
+          existingPlayer?.id ??
+          (
+            await tx.player.create({
+              data: {
+                licence: payload.licenseNumber,
+                nom: payload.lastName,
+                prenom: payload.firstName,
+                points: payload.pointsNumber,
+                club: payload.club,
+                ownerId,
+              },
+              select: { id: true },
+            })
+          ).id;
+
+        const maxPlayer = await tx.tournamentRegistration.aggregate({
+          where: { tournamentId },
+          _max: { playerId: true },
+        });
+
+        const nextPlayerId = (maxPlayer._max.playerId ?? 0) + 1;
+
+        await tx.tournamentRegistration.create({
+          data: {
+            tournamentId,
+            playerId: nextPlayerId,
+            playerRefId,
+            licenseNumber: payload.licenseNumber,
+            clubName: payload.club,
+            gender: payload.gender,
+            userId: sessionUserId,
+            contactEmail: payload.email.toLowerCase(),
+            contactPhone: payload.phone,
+            source: RegistrationSource.WEB,
+            registrationEvents: {
+              create: selectedEvents.map((event) => ({
+                eventId: event.id,
+                seedPointsSnapshot: payload.pointsNumber,
+              })),
+            },
+          },
+        });
       },
-    }),
+      { isolationLevel: "Serializable" },
+    ),
   );
 }
 
