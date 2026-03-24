@@ -163,6 +163,10 @@ CREATE INDEX "TournamentPayment_registrationId_status_idx" ON "TournamentPayment
 CREATE UNIQUE INDEX "TournamentCheckIn_registrationEventId_key" ON "TournamentCheckIn"("registrationEventId");
 
 -- Seed tournament
+INSERT INTO "User" ("id")
+VALUES ('cmlgqxfdo0000tjdccvq010t1')
+ON CONFLICT DO NOTHING;
+
 INSERT INTO "Tournament" (
   "id", "slug", "name", "description", "venue", "registrationOpenAt", "registrationCloseAt", "startDate", "endDate", "status", "updatedAt"
 ) VALUES (

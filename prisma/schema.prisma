@@ -212,6 +212,13 @@ model MessageRead {
   @@unique([userId, messageId])
 }
 
+model HorairesCache {
+  id        String   @id
+  data      Json
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
 enum Role {
   USER
   CLUB

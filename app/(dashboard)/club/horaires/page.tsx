@@ -20,6 +20,14 @@ type HorairesData = {
   jours: Jour[];
 };
 
+type HorairesResponse = {
+  data: HorairesData;
+  meta: {
+    stale: boolean;
+    updatedAt: string | null;
+  };
+};
+
 /* ---------- PAGE ---------- */
 
 export default async function HorairesPage() {
@@ -28,7 +36,14 @@ export default async function HorairesPage() {
     cache: "no-store",
   });
 
-  const data: HorairesData = await res.json();
+  const payload: HorairesResponse = await res.json();
+  const { data, meta } = payload;
+  const formattedUpdatedAt = meta.updatedAt
+    ? new Intl.DateTimeFormat("fr-FR", {
+        dateStyle: "long",
+        timeStyle: "short",
+      }).format(new Date(meta.updatedAt))
+    : null;
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-12 space-y-12 ">
@@ -37,7 +52,20 @@ export default async function HorairesPage() {
         <p className="hidden text-xs font-mono uppercase tracking-[0.2em] text-accent ">
           CCTT / Training Matrix
         </p>
-        <h1 className="text-4xl font-bold mb-2">Horaires d’entraînement</h1>
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="text-4xl font-bold mb-2">Horaires d’entraînement</h1>
+          {formattedUpdatedAt ? (
+            <Badge variant={meta.stale ? "secondary" : "outline"}>
+              {meta.stale
+                ? `Dernière mise à jour le ${formattedUpdatedAt}`
+                : `Mis à jour le ${formattedUpdatedAt}`}
+            </Badge>
+          ) : meta.stale ? (
+            <Badge variant="secondary">
+              Dernière mise à jour indisponible
+            </Badge>
+          ) : null}
+        </div>
 
         <p className=" max-w-3xl ">
           Retrouvez ci-dessous l’ensemble des créneaux d’entraînement du
