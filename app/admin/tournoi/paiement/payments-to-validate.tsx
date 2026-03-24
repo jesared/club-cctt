@@ -330,18 +330,18 @@ export function PaymentsToValidate({ initialPayments }: Props) {
             return group;
           }
 
-          const nextPaidCents = result.paidAmountCents ?? nextPaidCents;
+          const resolvedPaidCents = result.paidAmountCents ?? nextPaidCents;
           const nextStatus: PaymentStatus =
-            nextPaidCents >= group.totalAmountDueCents && group.totalAmountDueCents > 0
+            resolvedPaidCents >= group.totalAmountDueCents && group.totalAmountDueCents > 0
               ? "PAYÉ"
-              : nextPaidCents > 0
+              : resolvedPaidCents > 0
                 ? "PARTIEL"
                 : "EN ATTENTE";
 
           return {
             ...group,
-            totalPaidCents: nextPaidCents,
-            remainingCents: Math.max(group.totalAmountDueCents - nextPaidCents, 0),
+            totalPaidCents: resolvedPaidCents,
+            remainingCents: Math.max(group.totalAmountDueCents - resolvedPaidCents, 0),
             paymentStatus: nextStatus,
             statusLabel: formatPaymentStatus(nextStatus),
             suggestedAction: getSuggestedAction(nextStatus),
