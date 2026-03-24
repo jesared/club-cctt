@@ -22,7 +22,7 @@ function parseIntValue(value: unknown) {
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const session = await getServerSession(authOptions);
 
@@ -57,8 +57,10 @@ export async function PUT(
     );
   }
 
+  const { id } = await params;
+
   const template = await prisma.tournamentEventTemplate.update({
-    where: { id: params.id },
+    where: { id },
     data: {
       code,
       label,
@@ -78,7 +80,7 @@ export async function PUT(
 
 export async function DELETE(
   _request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const session = await getServerSession(authOptions);
 
@@ -86,8 +88,10 @@ export async function DELETE(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const { id } = await params;
+
   await prisma.tournamentEventTemplate.delete({
-    where: { id: params.id },
+    where: { id },
   });
 
   return NextResponse.json({ ok: true });
