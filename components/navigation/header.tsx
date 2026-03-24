@@ -127,6 +127,15 @@ export default function Header() {
     setMobileSection(null);
   }, [pathname]);
 
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const original = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = original;
+    };
+  }, [mobileOpen]);
+
   if (!isPublicRoute(pathname)) {
     return null;
   }
@@ -342,11 +351,11 @@ export default function Header() {
         className={cn(
           "md:hidden border-t bg-background/95 backdrop-blur transition-[max-height,opacity] duration-200 overflow-hidden",
           mobileOpen
-            ? "max-h-[70vh] opacity-100"
+            ? "max-h-[calc(100dvh-4rem)] opacity-100"
             : "max-h-0 opacity-0 pointer-events-none",
         )}
       >
-        <div className="px-4 py-4 space-y-3">
+        <div className="px-4 py-4 space-y-4 max-h-[calc(100dvh-4rem)] overflow-y-auto">
           <Link
             href="/"
             onClick={() => {
@@ -364,6 +373,54 @@ export default function Header() {
             Accueil
           </Link>
 
+          <div className="rounded-lg border bg-muted/30 p-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+              Accès rapide
+            </p>
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              <Link
+                href="/club/horaires"
+                onClick={() => {
+                  setMobileOpen(false);
+                  setMobileSection(null);
+                }}
+                className="inline-flex items-center justify-center rounded-md border px-3 py-2 text-sm hover:bg-muted"
+              >
+                Horaires
+              </Link>
+              <Link
+                href="/club/tarifs"
+                onClick={() => {
+                  setMobileOpen(false);
+                  setMobileSection(null);
+                }}
+                className="inline-flex items-center justify-center rounded-md border px-3 py-2 text-sm hover:bg-muted"
+              >
+                Tarifs
+              </Link>
+              <Link
+                href="/club/contact"
+                onClick={() => {
+                  setMobileOpen(false);
+                  setMobileSection(null);
+                }}
+                className="inline-flex items-center justify-center rounded-md border px-3 py-2 text-sm hover:bg-muted"
+              >
+                Contact
+              </Link>
+              <Link
+                href="/tournoi/inscription"
+                onClick={() => {
+                  setMobileOpen(false);
+                  setMobileSection(null);
+                }}
+                className="inline-flex items-center justify-center rounded-md border px-3 py-2 text-sm hover:bg-muted"
+              >
+                Inscription tournoi
+              </Link>
+            </div>
+          </div>
+
           {publicSections.map((section) => {
             const meta =
               section.title === "Club" || section.title === "Tournoi"
@@ -378,7 +435,7 @@ export default function Header() {
               >
                 <button
                   type="button"
-                  className="flex w-full items-center justify-between px-3 py-2 text-sm font-medium text-foreground"
+                  className="flex w-full items-center justify-between px-3 py-3 text-sm font-medium text-foreground"
                   onClick={() =>
                     setMobileSection((prev) =>
                       prev === section.title ? null : section.title,
@@ -406,7 +463,7 @@ export default function Header() {
 
                 <div
                   className={cn(
-                    "grid gap-1 px-3 pb-3 text-sm transition-[max-height,opacity] duration-200 overflow-hidden",
+                    "grid gap-2 px-3 pb-4 text-sm transition-[max-height,opacity] duration-200 overflow-hidden",
                     expanded ? "max-h-[520px] opacity-100" : "max-h-0 opacity-0",
                   )}
                 >
@@ -423,7 +480,7 @@ export default function Header() {
                           setMobileSection(null);
                         }}
                         className={cn(
-                          "rounded-md border border-transparent px-3 py-2 transition-colors",
+                          "rounded-md border border-transparent px-3 py-3 transition-colors",
                           active
                             ? "bg-muted text-foreground"
                             : "hover:border-border hover:bg-muted/60 text-muted-foreground",
