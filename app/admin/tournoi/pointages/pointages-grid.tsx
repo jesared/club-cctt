@@ -90,9 +90,9 @@ export function PointagesGrid({
   const [selectedEditEventIds, setSelectedEditEventIds] = useState<Set<string>>(
     new Set(),
   );
-  const [selectedWaitlistEventIds, setSelectedWaitlistEventIds] = useState<Set<string>>(
-    new Set(),
-  );
+  const [selectedWaitlistEventIds, setSelectedWaitlistEventIds] = useState<
+    Set<string>
+  >(new Set());
   const [editPending, setEditPending] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -217,7 +217,8 @@ export function PointagesGrid({
       tournamentTables
         .filter(
           (table) =>
-            table.maxPlayers !== null && table.registrations >= table.maxPlayers,
+            table.maxPlayers !== null &&
+            table.registrations >= table.maxPlayers,
         )
         .map((table) => table.id),
     );
@@ -282,25 +283,25 @@ export function PointagesGrid({
     setEditPending(true);
 
     try {
-    const response = await fetch("/api/admin/tournoi/pointages", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        registrationId: editingPlayer.id,
-        eventIds: nextEventIds,
-        waitlistEventIds: Array.from(selectedWaitlistEventIds).filter((id) =>
-          nextEventIds.includes(id),
-        ),
-      }),
-    });
+      const response = await fetch("/api/admin/tournoi/pointages", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          registrationId: editingPlayer.id,
+          eventIds: nextEventIds,
+          waitlistEventIds: Array.from(selectedWaitlistEventIds).filter((id) =>
+            nextEventIds.includes(id),
+          ),
+        }),
+      });
 
       if (!response.ok) {
         throw new Error("Erreur lors de la sauvegarde des engagements");
       }
 
-        const payload = (await response.json()) as {
+      const payload = (await response.json()) as {
         player?: {
           registrationId: string;
           table: string;
@@ -483,7 +484,9 @@ export function PointagesGrid({
         <table className="min-w-full text-sm">
           <thead className="sticky top-0 z-20 bg-card">
             <tr className="border-b border-border text-left text-[11px] uppercase tracking-wide text-muted-foreground">
-              <th className="sticky left-0 z-10 bg-card py-2.5 pl-3 pr-3 font-medium">Joueur</th>
+              <th className="sticky left-0 z-10 bg-card py-2.5 pl-3 pr-3 font-medium">
+                Joueur
+              </th>
               <th className="py-2.5 pr-3 font-medium">Licence</th>
               <th className="py-2.5 pr-3 font-medium">Club</th>
               <th className="py-2.5 pr-3 font-medium">Tableau(x)</th>
@@ -496,98 +499,102 @@ export function PointagesGrid({
             </tr>
           </thead>
           <tbody>
-            {filteredPlayers.map((player) => (
+            {filteredPlayers.map((player) =>
               (() => {
                 const hasAnyCheck = normalizedDayColumns.some(
                   (dayColumn) =>
                     checkedState[`${player.id}-${dayColumn.key}`] ?? false,
                 );
                 return (
-              <tr
-                key={player.id}
-                className={`border-b border-slate-800 last:border-0 hover:bg-accent/10 ${
-                  hasAnyCheck ? "bg-muted/20" : ""
-                }`}
-              >
-                <td className="sticky left-0 z-10 bg-card py-3 pl-3 pr-3 font-medium text-foreground">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span>{player.name}</span>
-                    {player.waitlistEventIds.length > 0 ? (
-                      <span className="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
-                        Attente
-                      </span>
-                    ) : null}
-                  </div>
-                </td>
-                <td className="py-3 pr-3 text-foreground">{player.licence}</td>
-                <td className="py-3 pr-3 text-foreground">{player.club}</td>
-                <td className="py-3 pr-3 text-foreground">{player.table}</td>
-                {normalizedDayColumns.map((dayColumn) => {
-                  const key = `${player.id}-${dayColumn.key}`;
-                  const hasEventForDay =
-                    (player.registrationEventIdsByDay[dayColumn.key] ?? [])
-                      .length > 0;
-                  return (
-                    <td key={key} className="py-3 pr-3 text-foreground">
-                      {hasEventForDay ? (
-                        <label className="inline-flex items-center gap-2 ">
-                          <span className="relative inline-flex h-4 w-4 items-center justify-center">
-                            <input
-                              type="checkbox"
-                              className="peer h-4 w-4 cursor-pointer appearance-none rounded-full border border-slate-500  checked:border-transparent align-middle transition  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-60"
-                              checked={checkedState[key] ?? false}
-                              disabled={pendingState[key]}
-                              onChange={() =>
-                                toggleCheck(player, dayColumn.key)
-                              }
-                            />
-                            <CircleCheckBig
-                              size={18}
-                              className="pointer-events-none absolute scale-0 transition-transform peer-checked:scale-100 text-primary"
-                            />
+                  <tr
+                    key={player.id}
+                    className={`border-b border-slate-800 last:border-0 hover:bg-accent/10 ${
+                      hasAnyCheck ? "bg-muted/20" : ""
+                    }`}
+                  >
+                    <td className="sticky left-0 z-10 py-3 pl-3 pr-3 font-medium text-foreground">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span>{player.name}</span>
+                        {player.waitlistEventIds.length > 0 ? (
+                          <span className="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
+                            Attente
                           </span>
-                          {pendingState[key] ? (
-                            <span className="h-3 w-3 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground" />
-                          ) : null}
-                        </label>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">
-                          Non inscrit
-                        </span>
-                      )}
+                        ) : null}
+                      </div>
                     </td>
-                  );
-                })}
-                <td className="py-3 pr-3 ">
-                  <div className="flex items-center gap-2">
-                    <Button
-                      type="button"
-                      variant="link"
-                      size="icon"
-                      onClick={() => openEditPopup(player)}
-                      title="Éditer le joueur"
-                      aria-label={`Éditer ${player.name}`}
-                      className="cursor-pointer rounded-full hover:bg-primary/10 focus-visible:outline-accent"
-                    >
-                      <Pencil size={16} />
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="link"
-                      size="icon"
-                      onClick={() => setDeletingPlayer(player)}
-                      title="Supprimer le joueur"
-                      aria-label={`Supprimer ${player.name}`}
-                      className="cursor-pointer rounded-full text-destructive hover:bg-destructive/10 focus-visible:outline-destructive"
-                    >
-                      <Trash2 size={16} />
-                    </Button>
-                  </div>
-                </td>
-              </tr>
+                    <td className="py-3 pr-3 text-foreground">
+                      {player.licence}
+                    </td>
+                    <td className="py-3 pr-3 text-foreground">{player.club}</td>
+                    <td className="py-3 pr-3 text-foreground">
+                      {player.table}
+                    </td>
+                    {normalizedDayColumns.map((dayColumn) => {
+                      const key = `${player.id}-${dayColumn.key}`;
+                      const hasEventForDay =
+                        (player.registrationEventIdsByDay[dayColumn.key] ?? [])
+                          .length > 0;
+                      return (
+                        <td key={key} className="py-3 pr-3 text-foreground">
+                          {hasEventForDay ? (
+                            <label className="inline-flex items-center gap-2 ">
+                              <span className="relative inline-flex h-4 w-4 items-center justify-center">
+                                <input
+                                  type="checkbox"
+                                  className="peer h-4 w-4 cursor-pointer appearance-none rounded-full border border-slate-500  checked:border-transparent align-middle transition  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-60"
+                                  checked={checkedState[key] ?? false}
+                                  disabled={pendingState[key]}
+                                  onChange={() =>
+                                    toggleCheck(player, dayColumn.key)
+                                  }
+                                />
+                                <CircleCheckBig
+                                  size={18}
+                                  className="pointer-events-none absolute scale-0 transition-transform peer-checked:scale-100 text-primary"
+                                />
+                              </span>
+                              {pendingState[key] ? (
+                                <span className="h-3 w-3 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground" />
+                              ) : null}
+                            </label>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">
+                              Non inscrit
+                            </span>
+                          )}
+                        </td>
+                      );
+                    })}
+                    <td className="py-3 pr-3 ">
+                      <div className="flex items-center gap-2">
+                        <Button
+                          type="button"
+                          variant="link"
+                          size="icon"
+                          onClick={() => openEditPopup(player)}
+                          title="Éditer le joueur"
+                          aria-label={`Éditer ${player.name}`}
+                          className="cursor-pointer rounded-full hover:bg-primary/10 focus-visible:outline-accent"
+                        >
+                          <Pencil size={16} />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="link"
+                          size="icon"
+                          onClick={() => setDeletingPlayer(player)}
+                          title="Supprimer le joueur"
+                          aria-label={`Supprimer ${player.name}`}
+                          className="cursor-pointer rounded-full text-destructive hover:bg-destructive/10 focus-visible:outline-destructive"
+                        >
+                          <Trash2 size={16} />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
                 );
-              })()
-            ))}
+              })(),
+            )}
             {filteredPlayers.length === 0 ? (
               <tr>
                 <td
@@ -641,15 +648,15 @@ export function PointagesGrid({
                 : `Tableaux indisponibles pour ce classement : ${ineligibleTableCodes.join(", ")}.`}
             </p>
             <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 max-h-[70vh] overflow-y-auto pr-1">
-                  {tournamentTables.map((table) => {
-                    const eligible = isEligible(parsedEditingPoints, table);
-                    const checked = selectedEditEventIds.has(table.id);
-                    const waitlisted = selectedWaitlistEventIds.has(table.id);
-                    const isFull = fullTableIds.has(table.id);
+              {tournamentTables.map((table) => {
+                const eligible = isEligible(parsedEditingPoints, table);
+                const checked = selectedEditEventIds.has(table.id);
+                const waitlisted = selectedWaitlistEventIds.has(table.id);
+                const isFull = fullTableIds.has(table.id);
 
-                    return (
-                      <label
-                        key={table.id}
+                return (
+                  <label
+                    key={table.id}
                     className={`flex items-start gap-2 rounded-lg border p-3 text-sm transition ${
                       eligible
                         ? "border-border"
@@ -686,19 +693,27 @@ export function PointagesGrid({
                       <CircleCheckBig className="pointer-events-none absolute h-3 w-3 scale-0 text-primary-foreground transition-transform peer-checked:scale-100" />
                     </span>
                     <span>
-                      <span className={`block font-semibold ${eligible ? "text-foreground" : "line-through"}`}>
+                      <span
+                        className={`block font-semibold ${eligible ? "text-foreground" : "line-through"}`}
+                      >
                         Tableau {table.table}
                       </span>
-                      <span className={`block text-muted-foreground ${eligible ? "" : "line-through"}`}>
+                      <span
+                        className={`block text-muted-foreground ${eligible ? "" : "line-through"}`}
+                      >
                         {table.category}
                       </span>
-                      <span className={`block text-muted-foreground ${eligible ? "" : "line-through"}`}>
+                      <span
+                        className={`block text-muted-foreground ${eligible ? "" : "line-through"}`}
+                      >
                         Sur place : {table.onsitePayment}
                       </span>
                       <label className="mt-2 inline-flex items-center gap-2 text-xs text-muted-foreground">
                         <input
                           type="checkbox"
-                          disabled={!checked || editPending || (isFull && waitlisted)}
+                          disabled={
+                            !checked || editPending || (isFull && waitlisted)
+                          }
                           checked={waitlisted}
                           onChange={(event) => {
                             const isWaitlisted = event.target.checked;
@@ -713,9 +728,11 @@ export function PointagesGrid({
                             });
                           }}
                         />
-                        Conserver en liste d'attente
+                        Conserver en liste d&apos;attente
                         {isFull ? (
-                          <span className="text-[10px] text-muted-foreground">(tableau complet)</span>
+                          <span className="text-[10px] text-muted-foreground">
+                            (tableau complet)
+                          </span>
                         ) : null}
                       </label>
                     </span>
@@ -731,7 +748,7 @@ export function PointagesGrid({
                   setSelectedEditEventIds(new Set());
                 }}
                 disabled={editPending}
-                className="rounded-md border border-border px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-secondary"
+                className="rounded-md border border-border px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-muted/60"
               >
                 Annuler
               </button>
@@ -793,8 +810,3 @@ export function PointagesGrid({
     </section>
   );
 }
-
-
-
-
-

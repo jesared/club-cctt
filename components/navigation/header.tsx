@@ -50,30 +50,30 @@ export default function Header() {
   const sectionMeta = useMemo(
     () =>
       ({
-      Club: {
-        description: "Découvrir le club, ses horaires et ses tarifs.",
-        cta: { href: "/club/contact", label: "Nous contacter" },
-        items: {
-          "/club/horaires": "Créneaux, salles et périodes d’ouverture.",
-          "/club/tarifs": "Tarifs et formules d’adhésion.",
-          "/club/partenaires": "Soutiens et partenaires du club.",
-          "/club/comite-directeur": "Équipe dirigeante du club.",
-          "/club/contact": "Contact et localisation.",
-        } as Record<string, string>,
-      },
-      Tournoi: {
-        description: "Infos, inscription et résultats du tournoi.",
-        cta: { href: "/tournoi/inscription", label: "S’inscrire au tournoi" },
-        items: {
-          "/tournoi": "Présentation et dates clés.",
-          "/tournoi/inscription": "Formulaire d’inscription en ligne.",
-          "/tournoi/liste-inscrits": "Liste des participants.",
-          "/tournoi/resultats": "Résultats et classements.",
-          "/tournoi/palmares": "Palmarès des éditions précédentes.",
-          "/tournoi/affiches": "Affiches et supports officiels.",
-        } as Record<string, string>,
-      },
-    }) satisfies Record<
+        Club: {
+          description: "Découvrir le club, ses horaires et ses tarifs.",
+          cta: { href: "/club/contact", label: "Nous contacter" },
+          items: {
+            "/club/horaires": "Créneaux, salles et périodes d’ouverture.",
+            "/club/tarifs": "Tarifs et formules d’adhésion.",
+            "/club/partenaires": "Soutiens et partenaires du club.",
+            "/club/comite-directeur": "Équipe dirigeante du club.",
+            "/club/contact": "Contact et localisation.",
+          } as Record<string, string>,
+        },
+        Tournoi: {
+          description: "Infos, inscription et résultats du tournoi.",
+          cta: { href: "/tournoi/inscription", label: "S’inscrire au tournoi" },
+          items: {
+            "/tournoi": "Présentation et dates clés.",
+            "/tournoi/inscription": "Formulaire d’inscription en ligne.",
+            "/tournoi/liste-inscrits": "Liste des participants.",
+            "/tournoi/resultats": "Résultats et classements.",
+            "/tournoi/palmares": "Palmarès des éditions précédentes.",
+            "/tournoi/affiches": "Affiches et supports officiels.",
+          } as Record<string, string>,
+        },
+      }) satisfies Record<
         "Club" | "Tournoi",
         {
           description: string;
@@ -236,15 +236,15 @@ export default function Header() {
                           const helper = meta?.items?.[submenuItem.href];
 
                           return (
-                          <Link
-                            key={submenuItem.href}
-                            href={submenuItem.href}
-                            onClick={() => setOpenSection(null)}
-                            className={cn(
-                              "rounded-md border border-transparent px-3 py-2 transition-colors",
-                              active
-                                ? "bg-muted text-foreground"
-                                : "hover:border-border hover:bg-muted/60 text-muted-foreground",
+                            <Link
+                              key={submenuItem.href}
+                              href={submenuItem.href}
+                              onClick={() => setOpenSection(null)}
+                              className={cn(
+                                "rounded-md border border-transparent px-3 py-2 transition-colors",
+                                active
+                                  ? "bg-muted text-foreground"
+                                  : "hover:border-border hover:bg-muted/60 text-muted-foreground",
                               )}
                             >
                               <div className="text-sm font-medium text-foreground">
@@ -324,13 +324,7 @@ export default function Header() {
                 className="hidden sm:inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
               >
                 <ShieldMinus className="h-4 w-4" />
-                Admin
-              </Link>
-              <Link
-                href="/admin/tournoi/templates"
-                className="hidden sm:inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-muted"
-              >
-                Templates
+                Administration
               </Link>
               <Link
                 href="/admin/tournoi"
@@ -403,16 +397,6 @@ export default function Header() {
                   className="inline-flex items-center justify-center rounded-md border px-3 py-2 text-sm hover:bg-muted"
                 >
                   Dashboard
-                </Link>
-                <Link
-                  href="/admin/tournoi/templates"
-                  onClick={() => {
-                    setMobileOpen(false);
-                    setMobileSection(null);
-                  }}
-                  className="inline-flex items-center justify-center rounded-md border px-3 py-2 text-sm hover:bg-muted"
-                >
-                  Templates
                 </Link>
               </div>
             </div>
@@ -509,7 +493,9 @@ export default function Header() {
                 <div
                   className={cn(
                     "grid gap-2 px-3 pb-4 text-sm transition-[max-height,opacity] duration-200 overflow-hidden",
-                    expanded ? "max-h-[520px] opacity-100" : "max-h-0 opacity-0",
+                    expanded
+                      ? "max-h-[520px] opacity-100"
+                      : "max-h-0 opacity-0",
                   )}
                 >
                   {section.items.map((submenuItem) => {
@@ -564,8 +550,3 @@ export default function Header() {
     </header>
   );
 }
-
-
-
-
-

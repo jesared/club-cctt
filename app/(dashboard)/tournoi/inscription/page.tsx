@@ -150,22 +150,72 @@ export default async function InscriptionsPage() {
         })) > 0
       : false;
 
+  const totalTables = tableOptions.length;
+  const fullTables = tableOptions.filter((table) => table.isFull).length;
+  const openTables = Math.max(totalTables - fullTables, 0);
+
   return (
-    <main className="max-w-4xl mx-auto px-4 py-16">
+    <main className="max-w-5xl mx-auto px-4 py-14 space-y-8">
       <KpiPageViewTracker page="tournoi-inscription" label="inscription-page" />
-      <header className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">
-          Inscription{" "}
-          {tournament?.name ? `au ${tournament.name}` : "au Tournoi"}
+      <header className="space-y-3">
+        <h1 className="text-3xl font-semibold">
+          Inscription {tournament?.name ? `au ${tournament.name}` : "au Tournoi"}
         </h1>
+        <p className="text-sm text-muted-foreground">
+          Remplissez le formulaire, choisissez vos tableaux, puis validez. Une confirmation
+          vous sera envoyee par email apres verification des disponibilites.
+        </p>
       </header>
+
+      <section className="grid gap-3 sm:grid-cols-3">
+        {[
+          { label: "Tableaux ouverts", value: `${openTables}` },
+          { label: "Tableaux complets", value: `${fullTables}` },
+          { label: "Total tableaux", value: `${totalTables}` },
+        ].map((stat) => (
+          <div key={stat.label} className="rounded-xl border bg-card p-4">
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">
+              {stat.label}
+            </p>
+            <p className="mt-2 text-2xl font-semibold text-foreground">
+              {stat.value}
+            </p>
+          </div>
+        ))}
+      </section>
+
       <Card className="shadow-sm border-border tournament-panel">
-        <CardHeader className="space-y-3">
-          <p className="text-muted-foreground">
-            Suivez les 3 etapes du formulaire pour envoyer votre demande
-            d&apos;inscription. Nous vous confirmons votre place par email sous
-            48 h maximum, apres verification des disponibilites dans les
-            tableaux selectionnes.
+        <CardHeader className="space-y-4">
+          <div className="grid gap-3 sm:grid-cols-3">
+            {[
+              {
+                step: "1",
+                title: "Completer le profil",
+                detail: "Nom, licence, points, contact.",
+              },
+              {
+                step: "2",
+                title: "Choisir les tableaux",
+                detail: "Disponibilites en temps reel.",
+              },
+              {
+                step: "3",
+                title: "Valider la demande",
+                detail: "Email de confirmation sous 48h.",
+              },
+            ].map((item) => (
+              <div key={item.step} className="rounded-lg border bg-background p-3">
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Etape {item.step}
+                </p>
+                <p className="mt-1 font-semibold text-foreground">{item.title}</p>
+                <p className="text-xs text-muted-foreground">{item.detail}</p>
+              </div>
+            ))}
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Les tableaux complets peuvent proposer une liste d&apos;attente si vous
+            choisissez de rester candidat.
           </p>
         </CardHeader>
         <CardContent className="space-y-6">

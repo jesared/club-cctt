@@ -99,11 +99,11 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
           tableauCode: event.code,
           nomComplet:
             `${entry.registration.player.nom} ${entry.registration.player.prenom}`.trim(),
-          licence: entry.registration.licenseNumber ?? "—",
+          licence: entry.registration.licenseNumber ?? "-",
           club:
             entry.registration.clubName ??
             entry.registration.player.club ??
-            "—",
+            "-",
           points,
         };
       }),
@@ -153,7 +153,7 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
     { value: "all", label: "Tous les tableaux" },
     ...tableaus.map((tableau) => ({
       value: tableau.id,
-      label: `${tableau.code} · ${tableau.label}`,
+      label: `${tableau.code} - ${tableau.label}`,
     })),
   ];
 
@@ -174,54 +174,78 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
     return tableauMatch && clubMatch;
   });
 
+  const totalPlayers = players.length;
+  const totalClubs = clubs.length;
+  const totalTableaux = tableaus.length;
+  const filteredCount = filteredPlayers.length;
+
   return (
-    <main className="mx-auto max-w-7xl space-y-6 px-4 py-8">
-      <div className="space-y-3">
-        <h1 className="text-xl font-semibold">Liste des inscrits</h1>
-        <p className="text-sm text-muted-foreground">
-          {tournament
-            ? `${tournament.name} · ${players.length} joueur(s)`
-            : "Aucun tournoi actif pour le moment."}
-        </p>
+    <main className="mx-auto max-w-7xl space-y-8 px-4 py-10">
+      <div className="space-y-4">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-semibold">Liste des inscrits</h1>
+          <p className="text-sm text-muted-foreground">
+            {tournament
+              ? `${tournament.name} - ${totalPlayers} joueur(s)`
+              : "Aucun tournoi actif pour le moment."}
+          </p>
+        </div>
+
+        <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            { label: "Joueurs", value: `${totalPlayers}` },
+            { label: "Clubs", value: `${totalClubs}` },
+            { label: "Tableaux", value: `${totalTableaux}` },
+            { label: "Filtre actif", value: `${filteredCount}` },
+          ].map((stat) => (
+            <div key={stat.label} className="rounded-xl border bg-card p-4">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                {stat.label}
+              </p>
+              <p className="mt-2 text-xl font-semibold text-foreground">
+                {stat.value}
+              </p>
+            </div>
+          ))}
+        </section>
 
         {players.length > 0 ? (
-          <FiltersForm
-            selectedTableau={selectedTableau}
-            selectedClub={selectedClub}
-            tableauOptions={tableauOptions}
-            clubOptions={clubOptions}
-          />
+          <div className="rounded-xl border bg-card p-4">
+            <FiltersForm
+              selectedTableau={selectedTableau}
+              selectedClub={selectedClub}
+              tableauOptions={tableauOptions}
+              clubOptions={clubOptions}
+            />
+          </div>
         ) : null}
       </div>
 
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Liste complète</h2>
+          <h2 className="text-lg font-semibold">Liste complete</h2>
           <span className="text-sm text-muted-foreground">
-            {filteredPlayers.length} joueur(s)
+            {filteredCount} joueur(s)
           </span>
         </div>
 
         <div className="hidden md:block">
-          <div className="overflow-hidden rounded-xl border">
+          <div className="overflow-hidden rounded-xl border bg-card">
             <table className="w-full text-sm">
-              <thead className="bg-card text-muted-foreground">
+              <thead className="bg-muted/30 text-muted-foreground">
                 <tr>
                   <th className="px-4 py-3 text-left">#</th>
                   <th className="px-4 py-3 text-left">Nom</th>
                   <th className="px-4 py-3 text-left">Club</th>
                   <th className="px-4 py-3 text-left">Tableau</th>
                   <th className="px-4 py-3 text-left">Points</th>
-                  <th className="px-4 py-3 text-left">N° licence</th>
+                  <th className="px-4 py-3 text-left">No licence</th>
                 </tr>
               </thead>
 
               <tbody>
                 {filteredPlayers.map((player, index) => (
-                  <tr
-                    key={player.id}
-                    className="border-t transition hover:bg-muted/40"
-                  >
+                  <tr key={player.id} className="border-t transition hover:bg-muted/40">
                     <td className="px-4 py-3 text-muted-foreground">
                       {index + 1}
                     </td>
@@ -230,7 +254,16 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
                     </td>
                     <td className="px-4 py-3">{player.club}</td>
                     <td className="px-4 py-3">
-                      {player.tableauCodes.join(" · ")}
+                      <div className="flex flex-wrap gap-1">
+                        {player.tableauCodes.map((code) => (
+                          <span
+                            key={code}
+                            className="rounded-full border px-2 py-0.5 text-xs text-muted-foreground"
+                          >
+                            {code}
+                          </span>
+                        ))}
+                      </div>
                     </td>
                     <td className="px-4 py-3">{player.points}</td>
                     <td className="px-4 py-3">{player.licence}</td>
@@ -259,11 +292,18 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
               <p className="mt-1 text-sm text-muted-foreground">
                 {player.club}
               </p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {player.tableauCodes.join(" · ")}
-              </p>
+              <div className="mt-2 flex flex-wrap gap-1">
+                {player.tableauCodes.map((code) => (
+                  <span
+                    key={code}
+                    className="rounded-full border px-2 py-0.5 text-xs text-muted-foreground"
+                  >
+                    {code}
+                  </span>
+                ))}
+              </div>
               <p className="mt-2 text-xs text-muted-foreground">
-                N° licence : {player.licence}
+                No licence : {player.licence}
               </p>
             </div>
           ))}
@@ -272,15 +312,16 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
 
       {players.length > 0 && filteredPlayers.length === 0 ? (
         <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">
-          Aucun inscrit ne correspond à ces filtres.
+          Aucun inscrit ne correspond a ces filtres.
         </p>
       ) : null}
 
       {players.length === 0 ? (
         <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">
-          Les inscriptions apparaîtront ici dès que des joueurs seront engagés.
+          Les inscriptions apparaitront ici des que des joueurs seront engages.
         </p>
       ) : null}
     </main>
   );
 }
+

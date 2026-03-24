@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import Providers from "@/components/Providers";
 import Header from "@/components/layout/header";
+import Footer from "@/components/layout/footer";
 
 import "./globals.css";
 
@@ -30,7 +31,7 @@ export default function RootLayout({
             {/* PAGE CONTENT */}
             <main className="flex-1">{children}</main>
 
-            {/* FOOTER */}
+            <Footer />
           </div>
         </Providers>
       </body>

@@ -9,20 +9,20 @@ import { getServerSession } from "next-auth";
 const informationsTournoi = {
   nom: "Tournoi National de Paques 2026",
   organisateur: "Chalons en Champagne TT",
-  lieu: "Gymnase Kiezer, 150 avenue des Alliés, Chalons en Champagne",
+  lieu: "Gymnase Kiezer, 150 avenue des Allies, Chalons en Champagne",
   tables: 30,
   homologation: "FFTT",
   format: {
     matchs: "Best of 5 games",
     poules: "Poules de 3 joueurs",
-    qualifies: "2 qualifiés par poule",
-    phaseFinale: "Élimination directe",
+    qualifies: "2 qualifies par poule",
+    phaseFinale: "Elimination directe",
   },
   inscriptions: {
     dateLimite: "04/04/2026",
     chequeLimite: "02/04/2026",
     paiementEnLigne: "04/04/2026",
-    remboursement: "50% remboursement sur justificatif médical uniquement",
+    remboursement: "50% remboursement sur justificatif medical uniquement",
   },
   contact: {
     nom: "Jean Marc HAUTIER",
@@ -32,57 +32,6 @@ const informationsTournoi = {
     paiement: "https://tournoi.cctt.fr",
   },
 };
-
-const rythmeEditorial = [
-  {
-    phase: "Avant le tournoi",
-    frequence: "3 publications / semaine",
-    contenus: [
-      "Ouverture des inscriptions",
-      "Présentation des tableaux",
-      "Portraits de bénévoles et partenaires",
-    ],
-  },
-  {
-    phase: "Pendant le tournoi",
-    frequence: "Stories quotidiennes + 1 récap/jour",
-    contenus: [
-      "Résultats clés de la journée",
-      "Photos ambiance salle",
-      "Moments forts et coulisses",
-    ],
-  },
-  {
-    phase: "Après le tournoi",
-    frequence: "2 publications la semaine suivante",
-    contenus: [
-      "Podiums et remerciements",
-      "Best-of photos/vidéos",
-      "Annonce de la prochaine édition",
-    ],
-  },
-];
-
-const preuvesSociales = [
-  {
-    titre: "Participation en hausse",
-    valeur: "24 tableaux ouverts",
-    detail:
-      "Un volume qui confirme l'attractivité du tournoi au niveau régional et national.",
-  },
-  {
-    titre: "Engagement du public",
-    valeur: "300+ visiteurs sur le week-end",
-    detail:
-      "Parents, supporters et clubs partenaires présents pour soutenir les joueurs.",
-  },
-  {
-    titre: "Confiance des clubs",
-    valeur: "Retours positifs récurrents",
-    detail:
-      "Des témoignages mis en avant après chaque édition pour rassurer les futurs participants.",
-  },
-];
 
 function formatCategory(
   minPoints: number | null,
@@ -94,18 +43,18 @@ function formatCategory(
   }
 
   if (minPoints === null && maxPoints === null) {
-    return "Toutes catégories";
+    return "Toutes categories";
   }
 
   if (minPoints === null) {
-    return `Jusqu'à ${maxPoints} pts`;
+    return `Jusqu'a ${maxPoints} pts`;
   }
 
   if (maxPoints === null) {
     return `${minPoints}+ pts`;
   }
 
-  return `${minPoints} à ${maxPoints} pts`;
+  return `${minPoints} a ${maxPoints} pts`;
 }
 
 function formatDateLabel(startAt: Date) {
@@ -201,57 +150,77 @@ export default async function TournoiHomePage() {
     date: formatDateLabel(event.startAt),
     heure: formatTimeLabel(event.startAt),
     categorie: formatCategory(event.minPoints, event.maxPoints, event.label),
-    online: `${(event.feeOnlineCents / 100).toFixed(0)}€`,
-    surPlace: `${(event.feeOnsiteCents / 100).toFixed(0)}€`,
+    online: `${(event.feeOnlineCents / 100).toFixed(0)} EUR`,
+    surPlace: `${(event.feeOnsiteCents / 100).toFixed(0)} EUR`,
   }));
 
   return (
-    <main className="max-w-7xl mx-auto px-4 py-8 space-y-6">
+    <main className="max-w-7xl mx-auto px-4 py-10 space-y-10">
       <KpiPageViewTracker page="tournoi" label="tournoi-page" />
-      <Card className="bg-transparent border-0">
-        <CardHeader>
-          <p className="mb-2 text-sm uppercase tracking-wide text-primary">
+      <section className="rounded-2xl border bg-card/50 p-6 md:p-8 shadow-sm space-y-6">
+        <div className="space-y-2">
+          <p className="text-xs uppercase tracking-[0.2em] text-primary">
             {informationsTournoi.organisateur}
           </p>
-          <CardTitle className="text-3xl md:text-4xl">
+          <h1 className="text-3xl md:text-4xl font-semibold text-foreground">
             {informationsTournoi.nom}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6 text-muted-foreground">
-          <p>
-            Tournoi homologué {informationsTournoi.homologation} sur{" "}
-            {informationsTournoi.tables} tables, du samedi 4 au lundi 6 avril
-            2026.
+          </h1>
+          <p className="text-sm md:text-base text-muted-foreground">
+            Tournoi homologue {informationsTournoi.homologation} sur{" "}
+            {informationsTournoi.tables} tables, du samedi 4 au lundi 6 avril 2026.
           </p>
+        </div>
 
-          <p>{tournamentRegistrationContent.message}</p>
+        <p className="text-sm text-muted-foreground">
+          {tournamentRegistrationContent.message}
+        </p>
 
-          <div className="flex flex-col sm:flex-row gap-4">
-            <TrackedLink
-              kpiPage="tournoi"
-              kpiLabel="cta-inscription"
-              href={tournamentRegistrationContent.cta.href}
-              className="inline-flex justify-center rounded-md bg-primary px-6 py-3 text-primary-foreground transition hover:opacity-90"
-            >
-              {tournamentRegistrationContent.cta.label}
-            </TrackedLink>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <TrackedLink
+            kpiPage="tournoi"
+            kpiLabel="cta-inscription"
+            href={tournamentRegistrationContent.cta.href}
+            className="inline-flex justify-center rounded-md bg-primary px-6 py-3 text-primary-foreground transition hover:opacity-90"
+          >
+            {tournamentRegistrationContent.cta.label}
+          </TrackedLink>
+          <a
+            href="/tournoi/reglement"
+            className="inline-flex justify-center rounded-md border border-primary px-6 py-3 text-primary transition hover:bg-primary/10"
+          >
+            Consulter le reglement 2026
+          </a>
+          {hasUserRegistration ? (
             <a
-              href="/tournoi/reglement"
-              className="inline-flex justify-center rounded-md border border-primary px-6 py-3 text-primary transition hover:bg-primary/10"
+              href="/user/inscriptions"
+              className="inline-flex justify-center rounded-md border border-border px-6 py-3 text-foreground transition hover:bg-accent/40"
             >
-              Consulter le règlement 2026
+              Voir mes inscriptions
             </a>
-            {hasUserRegistration ? (
-              <a
-                href="/user/inscriptions"
-                className="inline-flex justify-center rounded-md border border-border px-6 py-3 text-foreground transition hover:bg-accent/40"
-              >
-                Voir mes inscriptions
-              </a>
-            ) : null}
-          </div>
-        </CardContent>
-      </Card>
+          ) : null}
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            { label: "Dates", value: "4 - 6 avril 2026" },
+            { label: "Lieu", value: informationsTournoi.lieu },
+            { label: "Tables", value: `${informationsTournoi.tables} tables` },
+            {
+              label: "Paiement en ligne",
+              value: `Jusqu'au ${informationsTournoi.inscriptions.paiementEnLigne}`,
+            },
+          ].map((item) => (
+            <div key={item.label} className="rounded-xl border bg-background p-4">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                {item.label}
+              </p>
+              <p className="mt-2 text-sm font-semibold text-foreground">
+                {item.value}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
 
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
@@ -274,6 +243,11 @@ export default async function TournoiHomePage() {
               possible jusqu&apos;au{" "}
               {informationsTournoi.inscriptions.paiementEnLigne}).
             </p>
+            <p>
+              <strong>Cheque :</strong> jusqu&apos;au{" "}
+              {informationsTournoi.inscriptions.chequeLimite}.{" "}
+              {informationsTournoi.inscriptions.remboursement}.
+            </p>
           </CardContent>
         </Card>
 
@@ -286,11 +260,14 @@ export default async function TournoiHomePage() {
               <strong>Responsable :</strong> {informationsTournoi.contact.nom}
             </p>
             <p>
-              <strong>Téléphone :</strong>{" "}
+              <strong>Telephone :</strong>{" "}
               {informationsTournoi.contact.telephone}
             </p>
             <p>
               <strong>Email :</strong> {informationsTournoi.contact.email}
+            </p>
+            <p>
+              <strong>Site :</strong> {informationsTournoi.contact.site}
             </p>
           </CardContent>
         </Card>
@@ -299,7 +276,7 @@ export default async function TournoiHomePage() {
       <section>
         <Card>
           <CardHeader>
-            <CardTitle>Tableaux (avec horaires)</CardTitle>
+            <CardTitle>Tableaux et horaires</CardTitle>
           </CardHeader>
           <CardContent>
             {tableaux.length === 0 ? (
@@ -310,12 +287,12 @@ export default async function TournoiHomePage() {
               <div className="overflow-x-auto">
                 <table className="min-w-full text-sm">
                   <thead>
-                    <tr className="border-b text-left">
+                    <tr className="border-b text-left text-muted-foreground">
                       <th className="py-2 pr-4">Code</th>
                       <th className="py-2 pr-4">Date</th>
                       <th className="py-2 pr-4">Heure</th>
-                      <th className="py-2 pr-4">Catégorie</th>
-                      <th className="py-2 pr-4">Online</th>
+                      <th className="py-2 pr-4">Categorie</th>
+                      <th className="py-2 pr-4">En ligne</th>
                       <th className="py-2">Sur place</th>
                     </tr>
                   </thead>
@@ -337,68 +314,20 @@ export default async function TournoiHomePage() {
               </div>
             )}
             <p className="text-sm text-muted-foreground mt-4">
-              Chèque jusqu&apos;au{" "}
-              {informationsTournoi.inscriptions.chequeLimite}.{" "}
-              {informationsTournoi.inscriptions.remboursement}.
+              Les tarifs en ligne et sur place s&apos;appliquent par tableau. En
+              cas de forfait medical, le remboursement suit les conditions FFTT.
             </p>
-          </CardContent>
-        </Card>
-      </section>
-
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Rythme éditorial du tournoi</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 text-muted-foreground">
-            <p>
-              Pour garder le tournoi visible et régulier, nous publions des
-              contenus avant, pendant et après l&apos;évènement selon un
-              planning clair.
-            </p>
-
-            <div className="space-y-4">
-              {rythmeEditorial.map((item) => (
-                <div key={item.phase} className="rounded-lg border p-4">
-                  <p className="font-semibold text-foreground">{item.phase}</p>
-                  <p className="text-sm text-primary">{item.frequence}</p>
-                  <ul className="mt-2 list-disc pl-5 text-sm space-y-1">
-                    {item.contenus.map((contenu) => (
-                      <li key={contenu}>{contenu}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Preuves sociales mises en avant</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 text-muted-foreground">
-            <p>
-              Les preuves sociales permettent de montrer la crédibilité du
-              tournoi et d&apos;encourager de nouvelles inscriptions.
-            </p>
-
-            <div className="grid gap-3">
-              {preuvesSociales.map((preuve) => (
-                <div key={preuve.titre} className="rounded-lg border p-4">
-                  <p className="text-sm uppercase tracking-wide text-muted-foreground">
-                    {preuve.titre}
-                  </p>
-                  <p className="text-lg font-semibold text-foreground">
-                    {preuve.valeur}
-                  </p>
-                  <p className="text-sm mt-1">{preuve.detail}</p>
-                </div>
-              ))}
-            </div>
           </CardContent>
         </Card>
       </section>
     </main>
   );
 }
+
+
+
+
+
+
+
+

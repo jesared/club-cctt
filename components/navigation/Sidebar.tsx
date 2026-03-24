@@ -234,12 +234,17 @@ export default function Sidebar({
 
           {/* Footer */}
           <div className="space-y-1 border-t p-3">
-            <div
-              className={cn(
-                "flex",
-                collapsed ? "justify-center" : "justify-between",
-              )}
-            ></div>
+            <div className={cn("flex")}>
+              <Link
+                href="/"
+                onClick={mobile ? onClose : undefined}
+                className="w-full cursor-pointer"
+              >
+                <Button variant="outline" className="w-full">
+                  Retour au site
+                </Button>
+              </Link>
+            </div>
             <AuthButton collapsed={collapsed} />
           </div>
         </aside>

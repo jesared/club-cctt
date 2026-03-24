@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Image from "next/image";
 import Link from "next/link";
+import { WinnersCarousel } from "./winners-carousel";
 
 type Winner = {
   nom: string;
@@ -69,7 +69,7 @@ const palmaresRecents: PalmaresYear[] = [
       },
       {
         code: "I",
-        label: "NC à N°400",
+        label: "NC a No400",
         winner: { nom: "ZHAO Dongyi", club: "ANNECY TT" },
       },
       {
@@ -82,7 +82,7 @@ const palmaresRecents: PalmaresYear[] = [
   {
     annee: 2024,
     tc: { nom: "SALIFOU Abdel-Kader", club: "ORTT" },
-    dames: { nom: "MARTEAU Bérenice", club: "NARBONNE" },
+    dames: { nom: "MARTEAU Berenice", club: "NARBONNE" },
     tableaux: [
       {
         code: "A",
@@ -106,13 +106,13 @@ const palmaresRecents: PalmaresYear[] = [
       },
       {
         code: "I",
-        label: "NC à N°400",
-        winner: { nom: "MARTEAU Bérenice", club: "NARBONNE" },
+        label: "NC a No400",
+        winner: { nom: "MARTEAU Berenice", club: "NARBONNE" },
       },
       {
         code: "J",
         label: "Dames TC",
-        winner: { nom: "MARTEAU Bérenice", club: "NARBONNE" },
+        winner: { nom: "MARTEAU Berenice", club: "NARBONNE" },
       },
       {
         code: "P",
@@ -148,7 +148,7 @@ const palmaresRecents: PalmaresYear[] = [
       },
       {
         code: "I",
-        label: "NC à N°400",
+        label: "NC a No400",
         winner: { nom: "SALPIN Anais", club: "ALCL GD QUEV." },
       },
       {
@@ -185,7 +185,7 @@ const palmaresRecents: PalmaresYear[] = [
       },
       {
         code: "I",
-        label: "NC à N°400",
+        label: "NC a No400",
         winner: { nom: "ERHART Maurice", club: "MULHOUSE TT" },
       },
       {
@@ -206,7 +206,7 @@ const archivesTc = [
   {
     annee: 2019,
     tc: "SALIFOU Abdel kader (BCL OISE TT)",
-    dames: "LEGRY Clémence (CHALONS-EN-C TT)",
+    dames: "LEGRY Clemence (CHALONS-EN-C TT)",
   },
   {
     annee: 2018,
@@ -241,163 +241,73 @@ const archivesTc = [
 ];
 
 export default function TournoiPalmaresPage() {
+  const featuredWinners = [
+    {
+      label: "Vainqueur TC",
+      year: palmaresRecents[0]?.annee ?? 2025,
+      name: palmaresRecents[0]?.tc?.nom ?? "-",
+      imageSrc: "/palmares/rembert.jpg",
+      imageAlt: "Vainqueur TC",
+    },
+    {
+      label: "Vainqueure Dames TC",
+      year: palmaresRecents[0]?.annee ?? 2025,
+      name: palmaresRecents[0]?.dames?.nom ?? "-",
+      imageSrc: "/palmares/zhao.jpg",
+      imageAlt: "Vainqueure Dames TC",
+    },
+    {
+      label: "Vainqueur TC",
+      year: palmaresRecents[1]?.annee ?? 2024,
+      name: palmaresRecents[1]?.tc?.nom ?? "-",
+      imageSrc: "/palmares/salifou.jpg",
+      imageAlt: "Vainqueur TC",
+    },
+    {
+      label: "Vainqueure Dames TC",
+      year: palmaresRecents[1]?.annee ?? 2024,
+      name: palmaresRecents[1]?.dames?.nom ?? "-",
+      imageSrc: "/palmares/marteau.jpg",
+      imageAlt: "Vainqueure Dames TC",
+    },
+    {
+      label: "Vainqueur TC",
+      year: palmaresRecents[2]?.annee ?? 2023,
+      name: palmaresRecents[2]?.tc?.nom ?? "-",
+      imageSrc: "/palmares/martin.jpg",
+      imageAlt: "Vainqueur TC",
+    },
+    {
+      label: "Vainqueur TC",
+      year: palmaresRecents[3]?.annee ?? 2022,
+      name: palmaresRecents[3]?.tc?.nom ?? "-",
+      imageSrc: "/palmares/chobeau.jpg",
+      imageAlt: "Vainqueur TC",
+    },
+  ];
+
   return (
-    <main className="mx-auto max-w-7xl space-y-6 px-4 py-8">
-      <header className="mb-2 space-y-2">
-        <h1 className="text-2xl font-semibold">Palmarès du tournoi</h1>
+    <main className="mx-auto max-w-7xl space-y-8 px-4 py-10">
+      <header className="space-y-2">
+        <h1 className="text-3xl font-semibold">Palmares du tournoi</h1>
         <p className="text-sm text-muted-foreground">
-          Retrouvez les vainqueurs des tableaux récents et les archives du
-          tournoi national de Pâques du CCTT.
+          Retrouvez les vainqueurs des tableaux recents et les archives du
+          tournoi national de Paques du CCTT.
         </p>
       </header>
 
-      <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="bg-accent">
-          <CardHeader>
-            <CardTitle className="space-y-1">
-              <p className="text-xs">
-                Vainqueur TC {palmaresRecents[0]?.annee}
-              </p>{" "}
-              <span>{palmaresRecents[0]?.tc?.nom ?? "—"}</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="relative aspect-[4/3] overflow-hidden rounded-lg border bg-muted/30">
-              <Image
-                src="/palmares/rembert.jpg"
-                alt="Vainqueur TC"
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover"
-                priority
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-accent">
-          <CardHeader>
-            <CardTitle className="space-y-1">
-              <p className="text-xs">
-                Vainqueure Dames TC {palmaresRecents[0]?.annee}
-              </p>{" "}
-              <span>{palmaresRecents[0]?.dames?.nom ?? "—"}</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="relative aspect-[4/3] overflow-hidden rounded-lg border bg-muted/30">
-              <Image
-                src="/palmares/zhao.jpg"
-                alt="Vainqueure TC Dames"
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover"
-                priority
-              />
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-accent">
-          <CardHeader>
-            <CardTitle className="space-y-1">
-              <p className="text-xs">
-                Vainqueur TC {palmaresRecents[1]?.annee}
-              </p>
-              <span>{palmaresRecents[1]?.tc?.nom ?? "—"}</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="relative aspect-[4/3] overflow-hidden rounded-lg border bg-muted/30">
-              <Image
-                src="/palmares/salifou.jpg"
-                alt="Vainqueur TC"
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover"
-                priority
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-accent">
-          <CardHeader>
-            <CardTitle className="space-y-1">
-              <p className="text-xs">
-                Vainqueure Dames TC {palmaresRecents[1]?.annee}
-              </p>
-              <span>{palmaresRecents[1]?.dames?.nom ?? "—"}</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="relative aspect-[4/3] overflow-hidden rounded-lg border bg-muted/30">
-              <Image
-                src="/palmares/marteau.jpg"
-                alt="Vainqueure TC Dames"
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover"
-                priority
-              />
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-accent">
-          <CardHeader>
-            <CardTitle className="space-y-1">
-              <p className="text-xs">
-                Vainqueur TC {palmaresRecents[2]?.annee}
-              </p>
-              <span>{palmaresRecents[2]?.tc?.nom ?? "—"}</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="relative aspect-[4/3] overflow-hidden rounded-lg border bg-muted/30">
-              <Image
-                src="/palmares/martin.jpg"
-                alt="Vainqueur TC"
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover"
-                priority
-              />
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-accent">
-          <CardHeader>
-            <CardTitle className="space-y-1">
-              <p className="text-xs">
-                Vainqueur TC {palmaresRecents[3]?.annee}
-              </p>
-              <span>{palmaresRecents[3]?.tc?.nom ?? "—"}</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="relative aspect-[4/3] overflow-hidden rounded-lg border bg-muted/30">
-              <Image
-                src="/palmares/chobeau.jpg"
-                alt="Vainqueur TC"
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover"
-                priority
-              />
-            </div>
-          </CardContent>
-        </Card>
-      </section>
+      <WinnersCarousel items={featuredWinners} />
 
       <Card>
         <CardHeader>
-          <CardTitle>Résumé par année (2022 → 2025)</CardTitle>
+          <CardTitle>Resume par annee (2022-2025)</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[560px] text-left text-sm">
               <thead>
                 <tr className="border-b text-muted-foreground">
-                  <th className="py-3 pr-4 font-medium">Année</th>
+                  <th className="py-3 pr-4 font-medium">Annee</th>
                   <th className="py-3 pr-4 font-medium">TC</th>
                   <th className="py-3 font-medium">Dames TC</th>
                 </tr>
@@ -407,15 +317,15 @@ export default function TournoiPalmaresPage() {
                   <tr key={entree.annee} className="border-b last:border-b-0">
                     <td className="py-3 pr-4 font-medium">{entree.annee}</td>
                     <td className="py-3 pr-4">
-                      <p>{entree.tc?.nom ?? "—"}</p>
+                      <p>{entree.tc?.nom ?? "-"}</p>
                       <p className="text-xs text-muted-foreground">
-                        {entree.tc?.club ?? "—"}
+                        {entree.tc?.club ?? "-"}
                       </p>
                     </td>
                     <td className="py-3">
-                      <p>{entree.dames?.nom ?? "—"}</p>
+                      <p>{entree.dames?.nom ?? "-"}</p>
                       <p className="text-xs text-muted-foreground">
-                        {entree.dames?.club ?? "—"}
+                        {entree.dames?.club ?? "-"}
                       </p>
                     </td>
                   </tr>
@@ -430,9 +340,9 @@ export default function TournoiPalmaresPage() {
         {palmaresRecents.map((annee) => (
           <Card key={annee.annee}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
-              <CardTitle>Palmarès {annee.annee}</CardTitle>
+              <CardTitle>Palmares {annee.annee}</CardTitle>
               <Badge variant="secondary">
-                {annee.tableaux.length} tableaux renseignés
+                {annee.tableaux.length} tableaux renseignes
               </Badge>
             </CardHeader>
             <CardContent>
@@ -443,12 +353,12 @@ export default function TournoiPalmaresPage() {
                     className="rounded-md border p-2"
                   >
                     <p className="font-medium">
-                      {tableau.code} · {tableau.label}
+                      {tableau.code} - {tableau.label}
                     </p>
                     <p className="text-muted-foreground">
                       {tableau.winner
                         ? `${tableau.winner.nom} (${tableau.winner.club})`
-                        : "Non communiqué"}
+                        : "Non communique"}
                     </p>
                   </li>
                 ))}
@@ -460,7 +370,7 @@ export default function TournoiPalmaresPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Archives TC & Dames TC (2009 → 2019)</CardTitle>
+          <CardTitle>Archives TC & Dames TC (2009-2019)</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="mb-4 text-sm text-muted-foreground">
@@ -470,7 +380,7 @@ export default function TournoiPalmaresPage() {
             <table className="w-full min-w-[700px] text-left text-sm">
               <thead>
                 <tr className="border-b text-muted-foreground">
-                  <th className="py-3 pr-4 font-medium">Année</th>
+                  <th className="py-3 pr-4 font-medium">Annee</th>
                   <th className="py-3 pr-4 font-medium">Vainqueur TC</th>
                   <th className="py-3 font-medium">Vainqueure Dames TC</th>
                 </tr>
@@ -487,7 +397,7 @@ export default function TournoiPalmaresPage() {
             </table>
           </div>
           <p className="mt-4 text-xs text-muted-foreground">
-            Source des données :{" "}
+            Source des donnees :{" "}
             <Link
               href="https://tournoi.cctt.fr/palmares/"
               target="_blank"
@@ -503,3 +413,4 @@ export default function TournoiPalmaresPage() {
     </main>
   );
 }
+
