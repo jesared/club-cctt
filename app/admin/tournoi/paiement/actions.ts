@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 import { prisma } from "@/lib/prisma";
 import { PaymentMethod, PaymentStatus } from "@prisma/client";
@@ -92,9 +92,14 @@ export async function updatePaymentGroupStatus(groupKey: string, nextStatus: UiP
       );
       const nextPayments = buildPaymentsForStatus(totalAmountDueCents, nextStatus);
 
+      const paidAmountCents = nextPayments
+        .filter((payment) => payment.status === PaymentStatus.PAID)
+        .reduce((acc, payment) => acc + payment.amountCents, 0);
+
       return prisma.tournamentRegistration.update({
         where: { id: registration.id },
         data: {
+          paidAmountCents,
           payments: {
             deleteMany: {},
             create: nextPayments.map((payment) => ({
@@ -116,3 +121,116 @@ export async function updatePaymentGroupStatus(groupKey: string, nextStatus: UiP
 
   return { ok: true };
 }
+
+export async function updatePaymentGroupPaidAmount(groupKey: string, paidAmountCents: number) {
+  await requireAdminSession();
+
+  if (!groupKey) {
+    return { ok: false, error: "Dossier de paiement introuvable." };
+  }
+
+  const normalizedPaidAmount = Number.isFinite(paidAmountCents) ? Math.max(paidAmountCents, 0) : 0;
+
+  const registrations = await prisma.tournamentRegistration.findMany({
+    select: {
+      id: true,
+      contactEmail: true,
+      contactPhone: true,
+      registrationEvents: {
+        select: {
+          event: {
+            select: {
+              feeOnlineCents: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const targetRegistrations = registrations.filter(
+    (registration) => getRegistrationGroupKey(registration) === groupKey,
+  );
+
+  if (targetRegistrations.length === 0) {
+    return { ok: false, error: "Le dossier sélectionné n'existe plus." };
+  }
+
+  const registrationsWithDue = targetRegistrations.map((registration) => {
+    const totalAmountDueCents = registration.registrationEvents.reduce(
+      (acc, eventEntry) => acc + eventEntry.event.feeOnlineCents,
+      0,
+    );
+    return { ...registration, totalAmountDueCents };
+  });
+
+  const totalDue = registrationsWithDue.reduce((sum, reg) => sum + reg.totalAmountDueCents, 0);
+  const cappedPaidAmount = Math.min(normalizedPaidAmount, totalDue);
+
+  let remainingToAllocate = cappedPaidAmount;
+  const allocations = registrationsWithDue.map((registration) => {
+    const allocation = Math.min(registration.totalAmountDueCents, remainingToAllocate);
+    remainingToAllocate -= allocation;
+    return { id: registration.id, paidAmountCents: allocation };
+  });
+
+  await prisma.$transaction(
+    allocations.map((allocation) =>
+      prisma.tournamentRegistration.update({
+        where: { id: allocation.id },
+        data: {
+          paidAmountCents: allocation.paidAmountCents,
+        },
+      }),
+    ),
+  );
+
+  revalidatePath("/admin/tournoi/paiement");
+  revalidatePath("/admin/tournoi/joueurs");
+  revalidatePath("/admin/tournoi/inscriptions");
+
+  return { ok: true, paidAmountCents: cappedPaidAmount };
+}
+
+export async function updatePaymentGroupNote(groupKey: string, note: string) {
+  await requireAdminSession();
+
+  if (!groupKey) {
+    return { ok: false, error: "Dossier de paiement introuvable." };
+  }
+
+  const normalizedNote = note.trim();
+
+  const registrations = await prisma.tournamentRegistration.findMany({
+    select: {
+      id: true,
+      contactEmail: true,
+      contactPhone: true,
+    },
+  });
+
+  const targetRegistrations = registrations.filter(
+    (registration) => getRegistrationGroupKey(registration) === groupKey,
+  );
+
+  if (targetRegistrations.length === 0) {
+    return { ok: false, error: "Le dossier sélectionné n'existe plus." };
+  }
+
+  await prisma.$transaction(
+    targetRegistrations.map((registration) =>
+      prisma.tournamentRegistration.update({
+        where: { id: registration.id },
+        data: { notes: normalizedNote },
+      }),
+    ),
+  );
+
+  revalidatePath("/admin/tournoi/paiement");
+  revalidatePath("/admin/tournoi/joueurs");
+  revalidatePath("/admin/tournoi/inscriptions");
+
+  return { ok: true };
+}
+
+

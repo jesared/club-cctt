@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { ChevronDown, Home, Menu, ShieldMinus } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
@@ -14,7 +14,7 @@ import { isAdminRole } from "@/lib/roles";
 import { isPublicRoute } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
-// 🔥 LOGIQUE ACTIVE (IDENTIQUE SIDEBAR)
+// ðŸ”¥ LOGIQUE ACTIVE (IDENTIQUE SIDEBAR)
 function isItemActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
 
@@ -22,7 +22,7 @@ function isItemActive(pathname: string, href: string) {
     return pathname === href;
   }
 
-  // 👉 admin global
+  // ðŸ‘‰ admin global
   if (href === "/admin") {
     return (
       pathname === "/admin" ||
@@ -30,12 +30,12 @@ function isItemActive(pathname: string, href: string) {
     );
   }
 
-  // 👉 admin tournoi (prioritaire)
+  // ðŸ‘‰ admin tournoi (prioritaire)
   if (href === "/admin/tournoi") {
     return pathname.startsWith("/admin/tournoi");
   }
 
-  // 👉 default
+  // ðŸ‘‰ default
   return pathname === href || pathname.startsWith(href + "/");
 }
 
@@ -318,12 +318,27 @@ export default function Header() {
           </button>
 
           {isAdmin && (
-            <Link
-              href="/admin/tournoi"
-              className="rounded-md border px-3 py-2 text-sm bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
-            >
-              <ShieldMinus className="h-4 w-4" />
-            </Link>
+            <>
+              <Link
+                href="/admin/tournoi"
+                className="hidden sm:inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
+              >
+                <ShieldMinus className="h-4 w-4" />
+                Admin
+              </Link>
+              <Link
+                href="/admin/tournoi/templates"
+                className="hidden sm:inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-muted"
+              >
+                Templates
+              </Link>
+              <Link
+                href="/admin/tournoi"
+                className="sm:hidden inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
+              >
+                <ShieldMinus className="h-4 w-4" />
+              </Link>
+            </>
           )}
           {!session ? (
             <Button size="sm" onClick={() => void signIn("google")}>
@@ -372,6 +387,36 @@ export default function Header() {
             <Home className="h-4 w-4" />
             Accueil
           </Link>
+
+          {isAdmin && (
+            <div className="rounded-lg border bg-muted/30 p-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                Admin tournoi
+              </p>
+              <div className="mt-3 grid gap-2">
+                <Link
+                  href="/admin/tournoi"
+                  onClick={() => {
+                    setMobileOpen(false);
+                    setMobileSection(null);
+                  }}
+                  className="inline-flex items-center justify-center rounded-md border px-3 py-2 text-sm hover:bg-muted"
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  href="/admin/tournoi/templates"
+                  onClick={() => {
+                    setMobileOpen(false);
+                    setMobileSection(null);
+                  }}
+                  className="inline-flex items-center justify-center rounded-md border px-3 py-2 text-sm hover:bg-muted"
+                >
+                  Templates
+                </Link>
+              </div>
+            </div>
+          )}
 
           <div className="rounded-lg border bg-muted/30 p-3">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
@@ -519,3 +564,8 @@ export default function Header() {
     </header>
   );
 }
+
+
+
+
+

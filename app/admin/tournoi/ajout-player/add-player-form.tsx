@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type TournamentTable = {
   id: string;
@@ -18,6 +18,19 @@ type Props = {
   tournamentId: string;
   tournamentTables: TournamentTable[];
   action: (formData: FormData) => void;
+  initialData?: {
+    registrationId: string;
+    nom: string;
+    prenom: string;
+    licence: string;
+    points: string;
+    club: string;
+    contactEmail: string;
+    contactPhone: string;
+    notes: string;
+    eventIds: string[];
+  };
+  submitLabel?: string;
 };
 
 function isEligible(points: number | null, table: TournamentTable) {
@@ -36,18 +49,39 @@ function isEligible(points: number | null, table: TournamentTable) {
   return true;
 }
 
-export function AddPlayerForm({ tournamentId, tournamentTables, action }: Props) {
-  const [formData, setFormData] = useState({
-    nom: "",
-    prenom: "",
-    licence: "",
-    points: "",
-    club: "",
-    contactEmail: "",
-    contactPhone: "",
-    notes: "",
-    eventIds: [] as string[],
-  });
+export function AddPlayerForm({
+  tournamentId,
+  tournamentTables,
+  action,
+  initialData,
+  submitLabel,
+}: Props) {
+  const [formData, setFormData] = useState(() => ({
+    nom: initialData?.nom ?? "",
+    prenom: initialData?.prenom ?? "",
+    licence: initialData?.licence ?? "",
+    points: initialData?.points ?? "",
+    club: initialData?.club ?? "",
+    contactEmail: initialData?.contactEmail ?? "",
+    contactPhone: initialData?.contactPhone ?? "",
+    notes: initialData?.notes ?? "",
+    eventIds: initialData?.eventIds ?? ([] as string[]),
+  }));
+
+  useEffect(() => {
+    if (!initialData) return;
+    setFormData({
+      nom: initialData.nom,
+      prenom: initialData.prenom,
+      licence: initialData.licence,
+      points: initialData.points,
+      club: initialData.club,
+      contactEmail: initialData.contactEmail,
+      contactPhone: initialData.contactPhone,
+      notes: initialData.notes,
+      eventIds: initialData.eventIds,
+    });
+  }, [initialData]);
 
   const parsedPoints = useMemo(() => {
     if (!formData.points.trim()) {
@@ -105,6 +139,9 @@ export function AddPlayerForm({ tournamentId, tournamentTables, action }: Props)
   return (
     <form action={action} className="space-y-6">
       <input type="hidden" name="tournamentId" value={tournamentId} />
+      {initialData ? (
+        <input type="hidden" name="registrationId" value={initialData.registrationId} />
+      ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="space-y-1 text-sm">
@@ -257,7 +294,7 @@ export function AddPlayerForm({ tournamentId, tournamentTables, action }: Props)
                       <span>
                         <span className="block font-semibold text-foreground">Tableau {table.table}</span>
                         <span className="block text-muted-foreground">{table.category}</span>
-                        <span className="block text-muted-foreground">{table.time} · Sur place : {table.onsitePayment}</span>
+                        <span className="block text-muted-foreground">{table.time} - Sur place : {table.onsitePayment}</span>
                       </span>
                     </label>
                   );
@@ -285,8 +322,12 @@ export function AddPlayerForm({ tournamentId, tournamentTables, action }: Props)
         disabled={!canSubmit}
         className="inline-flex items-center rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        Ajouter le joueur
+        {submitLabel ?? "Ajouter le joueur"}
       </button>
     </form>
   );
 }
+
+
+
+

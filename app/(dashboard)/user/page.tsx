@@ -1,4 +1,4 @@
-import { ArrowRight, CalendarDays, CreditCard, FileText } from "lucide-react";
+﻿import { ArrowRight, CalendarDays, CreditCard, FileText } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -63,7 +63,13 @@ export default function UserProfilePage() {
             >
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Icon className="h-4 w-4 text-primary" />
+                  <Icon
+                    className={`h-4 w-4 ${
+                      action.icon === CalendarDays
+                        ? "text-primary dark:text-white"
+                        : "text-primary"
+                    }`}
+                  />
                   {action.title}
                 </CardTitle>
                 <CardDescription>{action.description}</CardDescription>
@@ -86,3 +92,4 @@ export default function UserProfilePage() {
     </main>
   );
 }
+

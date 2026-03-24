@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { FormEvent, useMemo, useState } from "react";
 import { trackKpiEvent } from "@/lib/kpi";
@@ -18,6 +18,7 @@ type RegistrationPayload = {
   gender: "M" | "F" | "";
   club: string;
   tables: string[];
+  waitlistTables: string[];
   website: string;
 };
 
@@ -31,6 +32,8 @@ type TableOption = {
   gender: "MIXED" | "M" | "F";
   onlinePriceLabel: string;
   onsitePriceLabel: string;
+  isFull: boolean;
+  remainingSpots: number | null;
 };
 
 const initialData: RegistrationPayload = {
@@ -43,6 +46,7 @@ const initialData: RegistrationPayload = {
   gender: "",
   club: "",
   tables: [],
+  waitlistTables: [],
   website: "",
 };
 
@@ -155,12 +159,32 @@ export default function TournamentRegistrationForm({
         return current;
       }
 
+      if (table.isFull && !current.waitlistTables.includes(tableCode)) {
+        const accepted = window.confirm(
+          "Ce tableau est complet. Voulez-vous etre ajoute sur la liste d'attente ?",
+        );
+        if (!accepted) {
+          return current;
+        }
+
+        return {
+          ...current,
+          tables: current.tables.includes(tableCode)
+            ? current.tables
+            : [...current.tables, tableCode],
+          waitlistTables: [...current.waitlistTables, tableCode],
+        };
+      }
+
       const exists = current.tables.includes(tableCode);
       return {
         ...current,
         tables: exists
           ? current.tables.filter((value) => value !== tableCode)
           : [...current.tables, tableCode],
+        waitlistTables: exists
+          ? current.waitlistTables.filter((value) => value !== tableCode)
+          : current.waitlistTables,
       };
     });
   };
@@ -171,7 +195,7 @@ export default function TournamentRegistrationForm({
     if (!canSubmit) {
       setFeedback({
         type: "error",
-        message: "Étape 2 : sélectionnez au moins un tableau pour continuer.",
+        message: "Etape 2 : selectionnez au moins un tableau pour continuer.",
       });
       return;
     }
@@ -198,7 +222,7 @@ export default function TournamentRegistrationForm({
         type: "success",
         message:
           payload.message ??
-          "Demande envoyée ✅ Vous recevrez un email de confirmation sous 48 h maximum (après vérification des places).",
+          "Demande envoyee. Vous recevrez un email de confirmation sous 48 h maximum (apres verification des places).",
       });
       trackKpiEvent({
         eventType: "SUBMIT",
@@ -213,7 +237,7 @@ export default function TournamentRegistrationForm({
         message:
           error instanceof Error
             ? error.message
-            : "Envoi impossible pour le moment. Vérifiez vos informations, puis réessayez dans quelques minutes.",
+            : "Envoi impossible pour le moment. Verifiez vos informations, puis reessayez dans quelques minutes.",
       });
     } finally {
       setIsSubmitting(false);
@@ -222,7 +246,7 @@ export default function TournamentRegistrationForm({
 
   const infoMessage = useMemo(() => {
     if (!formData.points.trim()) {
-      return "Étape 1 : indiquez vos points pour afficher vos tableaux disponibles.";
+      return "Etape 1 : indiquez vos points pour afficher vos tableaux disponibles.";
     }
 
     if (parsedPoints === null || parsedPoints < 0) {
@@ -264,7 +288,7 @@ export default function TournamentRegistrationForm({
         </div>
         <div>
           <label htmlFor="firstName" className="block text-sm font-medium mb-1">
-            Prénom
+            Prenom
           </label>
           <input
             id="firstName"
@@ -312,7 +336,7 @@ export default function TournamentRegistrationForm({
         </div>
         <div>
           <label htmlFor="phone" className="block text-sm font-medium mb-1">
-            Téléphone
+            Telephone
           </label>
           <input
             id="phone"
@@ -341,7 +365,7 @@ export default function TournamentRegistrationForm({
             htmlFor="licenseNumber"
             className="block text-sm font-medium mb-1"
           >
-            N° licence FFTT
+            No licence FFTT
           </label>
           <input
             id="licenseNumber"
@@ -393,6 +417,15 @@ export default function TournamentRegistrationForm({
                       ? isEligible(nextPoints, current.gender, table)
                       : false;
                   }),
+                  waitlistTables: current.waitlistTables.filter((tableCode) => {
+                    const table = tableOptions.find(
+                      (option) => option.value === tableCode,
+                    );
+                    return table
+                      ? isEligible(nextPoints, current.gender, table) &&
+                          current.tables.includes(tableCode)
+                      : false;
+                  }),
                 };
               })
             }
@@ -424,6 +457,15 @@ export default function TournamentRegistrationForm({
                       ? isEligible(parsedPoints, nextGender, table)
                       : false;
                   }),
+                  waitlistTables: current.waitlistTables.filter((tableCode) => {
+                    const table = tableOptions.find(
+                      (option) => option.value === tableCode,
+                    );
+                    return table
+                      ? isEligible(parsedPoints, nextGender, table) &&
+                          current.tables.includes(tableCode)
+                      : false;
+                  }),
                 };
               })
             }
@@ -431,7 +473,7 @@ export default function TournamentRegistrationForm({
             className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           >
             <option className="bg-card text-foreground" value="">
-              Sélectionner
+              Selectionner
             </option>
             <option className="bg-card text-foreground" value="M">
               M
@@ -472,9 +514,9 @@ export default function TournamentRegistrationForm({
         </p>
         {formData.points.trim() ? (
           <div className="space-y-4">
-            <legend className="text-sm font-medium">Tableaux souhaités</legend>
+            <legend className="text-sm font-medium">Tableaux souhaites</legend>
             <p className="text-sm text-gray-600">
-              Étape 2 : vous pouvez sélectionner un ou plusieurs tableaux.
+              Etape 2 : vous pouvez selectionner un ou plusieurs tableaux.
             </p>
             {groupedTableOptions.map((group) => (
               <div key={group.dateKey} className="space-y-2">
@@ -495,7 +537,8 @@ export default function TournamentRegistrationForm({
                         type="checkbox"
                         checked={formData.tables.includes(table.value)}
                         disabled={
-                          !isEligible(parsedPoints, formData.gender, table)
+                          !isEligible(parsedPoints, formData.gender, table) ||
+                          (table.isFull && !formData.waitlistTables.includes(table.value))
                         }
                         onChange={() => toggleTable(table.value)}
                         className="mt-1 accent-primary"
@@ -503,8 +546,41 @@ export default function TournamentRegistrationForm({
                       <span className="text-sm text-foreground">
                         <span className="block">{table.label}</span>
                         <span className="block text-muted-foreground">
-                          En ligne : {table.onlinePriceLabel} · Sur place : {table.onsitePriceLabel}
+                          En ligne : {table.onlinePriceLabel} - Sur place : {table.onsitePriceLabel}
                         </span>
+                        {table.isFull ? (
+                          <span className="mt-1 inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-700">
+                            Complet - liste d'attente uniquement
+                          </span>
+                        ) : null}
+                        {table.isFull ? (
+                          <label className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+                            <input
+                              type="checkbox"
+                              checked={formData.waitlistTables.includes(table.value)}
+                              onChange={(event) => {
+                                const wantsWaitlist = event.target.checked;
+                                setFormData((current) => ({
+                                  ...current,
+                                  waitlistTables: wantsWaitlist
+                                    ? [...current.waitlistTables, table.value]
+                                    : current.waitlistTables.filter((value) => value !== table.value),
+                                  tables: wantsWaitlist
+                                    ? current.tables.includes(table.value)
+                                      ? current.tables
+                                      : [...current.tables, table.value]
+                                    : current.tables.filter((value) => value !== table.value),
+                                }));
+                              }}
+                            />
+                            Je souhaite etre sur liste d'attente pour ce tableau
+                          </label>
+                        ) : null}
+                        {table.remainingSpots !== null && !table.isFull ? (
+                          <span className="mt-1 block text-xs text-muted-foreground">
+                            {table.remainingSpots} place{table.remainingSpots > 1 ? "s" : ""} restante{table.remainingSpots > 1 ? "s" : ""}
+                          </span>
+                        ) : null}
                       </span>
                     </label>
                   ))}
@@ -548,9 +624,11 @@ export default function TournamentRegistrationForm({
         className="cursor-pointer inline-flex rounded-md bg-primary px-6 py-3 text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isSubmitting
-          ? "Étape 3 : envoi en cours..."
-          : "Étape 3 : envoyer ma demande"}
+          ? "Etape 3 : envoi en cours..."
+          : "Etape 3 : envoyer ma demande"}
       </button>
     </form>
   );
 }
+
+

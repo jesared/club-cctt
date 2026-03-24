@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { CircleCheckBig, Pencil, Trash2 } from "lucide-react";
+import { CircleCheckBig, Pencil, Trash2, X } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ type PointagesGridPlayer = {
   table: string;
   status: string;
   engagedEventIds: string[];
+  waitlistEventIds: string[];
   checkedDayKeys: string[];
   registrationEventIdsByDay: Record<string, string[]>;
 };
@@ -32,6 +33,8 @@ type TournamentTable = {
   onsitePayment: string;
   minPoints: number | null;
   maxPoints: number | null;
+  maxPlayers: number | null;
+  registrations: number;
 };
 
 type PointagesGridProps = {
@@ -87,7 +90,11 @@ export function PointagesGrid({
   const [selectedEditEventIds, setSelectedEditEventIds] = useState<Set<string>>(
     new Set(),
   );
+  const [selectedWaitlistEventIds, setSelectedWaitlistEventIds] = useState<Set<string>>(
+    new Set(),
+  );
   const [editPending, setEditPending] = useState<boolean>(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const clubOptions = useMemo(() => {
     return Array.from(new Set(playersState.map((player) => player.club))).sort(
@@ -100,7 +107,7 @@ export function PointagesGrid({
       player.table
         .split(",")
         .map((table) => table.trim())
-        .filter((table) => table && table !== "—"),
+        .filter((table) => table && table !== "-"),
     );
 
     const uniqueTables = Array.from(new Set(extractedTables)).sort(
@@ -121,7 +128,7 @@ export function PointagesGrid({
 
       return {
         value: tableCode,
-        label: `${tableCode} — ${matchingTournamentTable.category} (${matchingTournamentTable.date} · ${matchingTournamentTable.time})`,
+        label: `${tableCode} - ${matchingTournamentTable.category} (${matchingTournamentTable.date} - ${matchingTournamentTable.time})`,
       };
     });
   }, [playersState, tournamentTables]);
@@ -151,6 +158,9 @@ export function PointagesGrid({
         selectedTable === "all" || playerTables.includes(selectedTable);
       const matchesPointage =
         selectedPointageFilter === "all" ||
+        (selectedPointageFilter === "waitlist"
+          ? player.waitlistEventIds.length > 0
+          : false) ||
         (() => {
           const [status, dayKey] = selectedPointageFilter.split(":");
           if (!dayKey) {
@@ -187,7 +197,7 @@ export function PointagesGrid({
     if (
       !editingPlayer ||
       !editingPlayer.ranking.trim() ||
-      editingPlayer.ranking === "—"
+      editingPlayer.ranking === "-"
     ) {
       return null;
     }
@@ -201,6 +211,17 @@ export function PointagesGrid({
       .filter((table) => !isEligible(parsedEditingPoints, table))
       .map((table) => table.table);
   }, [parsedEditingPoints, tournamentTables]);
+
+  const fullTableIds = useMemo(() => {
+    return new Set(
+      tournamentTables
+        .filter(
+          (table) =>
+            table.maxPlayers !== null && table.registrations >= table.maxPlayers,
+        )
+        .map((table) => table.id),
+    );
+  }, [tournamentTables]);
 
   async function toggleCheck(player: PointagesGridPlayer, dayKey: string) {
     const key = `${player.id}-${dayKey}`;
@@ -233,6 +254,9 @@ export function PointagesGrid({
       if (!response.ok) {
         throw new Error("Erreur lors de la sauvegarde du pointage");
       }
+
+      setToastMessage("Pointage sauvegardé.");
+      setTimeout(() => setToastMessage(null), 2000);
     } catch {
       setCheckedState((previousState) => ({
         ...previousState,
@@ -246,6 +270,7 @@ export function PointagesGrid({
   function openEditPopup(player: PointagesGridPlayer) {
     setEditingPlayer(player);
     setSelectedEditEventIds(new Set(player.engagedEventIds));
+    setSelectedWaitlistEventIds(new Set(player.waitlistEventIds));
   }
 
   async function saveEngagements() {
@@ -257,26 +282,30 @@ export function PointagesGrid({
     setEditPending(true);
 
     try {
-      const response = await fetch("/api/admin/tournoi/pointages", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          registrationId: editingPlayer.id,
-          eventIds: nextEventIds,
-        }),
-      });
+    const response = await fetch("/api/admin/tournoi/pointages", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        registrationId: editingPlayer.id,
+        eventIds: nextEventIds,
+        waitlistEventIds: Array.from(selectedWaitlistEventIds).filter((id) =>
+          nextEventIds.includes(id),
+        ),
+      }),
+    });
 
       if (!response.ok) {
         throw new Error("Erreur lors de la sauvegarde des engagements");
       }
 
-      const payload = (await response.json()) as {
+        const payload = (await response.json()) as {
         player?: {
           registrationId: string;
           table: string;
           engagedEventIds: string[];
+          waitlistEventIds: string[];
           registrationEventIdsByDay: Record<string, string[]>;
           checkedDayKeys: string[];
         };
@@ -294,6 +323,7 @@ export function PointagesGrid({
                 ...player,
                 table: updatedPlayer.table,
                 engagedEventIds: updatedPlayer.engagedEventIds,
+                waitlistEventIds: updatedPlayer.waitlistEventIds,
                 registrationEventIdsByDay:
                   updatedPlayer.registrationEventIdsByDay,
                 checkedDayKeys: updatedPlayer.checkedDayKeys,
@@ -320,6 +350,7 @@ export function PointagesGrid({
 
       setEditingPlayer(null);
       setSelectedEditEventIds(new Set());
+      setSelectedWaitlistEventIds(new Set());
     } finally {
       setEditPending(false);
     }
@@ -435,6 +466,7 @@ export function PointagesGrid({
             onChange={(event) => setSelectedPointageFilter(event.target.value)}
           >
             <option value="all">Tous les pointages</option>
+            <option value="waitlist">En attente</option>
             {normalizedDayColumns.map((dayColumn) => (
               <optgroup key={dayColumn.key} label={dayColumn.label}>
                 <option value={`unchecked:${dayColumn.key}`}>
@@ -449,9 +481,9 @@ export function PointagesGrid({
 
       <div className="overflow-hidden rounded-lg border border-border  text-foreground">
         <table className="min-w-full text-sm">
-          <thead className="bg-sidebar-border">
-            <tr className="border-b border-slate-800 text-left text-xs uppercase text-muted-foreground">
-              <th className="py-2.5 pl-3 pr-3 font-medium">Joueur</th>
+          <thead className="sticky top-0 z-20 bg-card">
+            <tr className="border-b border-border text-left text-[11px] uppercase tracking-wide text-muted-foreground">
+              <th className="sticky left-0 z-10 bg-card py-2.5 pl-3 pr-3 font-medium">Joueur</th>
               <th className="py-2.5 pr-3 font-medium">Licence</th>
               <th className="py-2.5 pr-3 font-medium">Club</th>
               <th className="py-2.5 pr-3 font-medium">Tableau(x)</th>
@@ -465,12 +497,27 @@ export function PointagesGrid({
           </thead>
           <tbody>
             {filteredPlayers.map((player) => (
+              (() => {
+                const hasAnyCheck = normalizedDayColumns.some(
+                  (dayColumn) =>
+                    checkedState[`${player.id}-${dayColumn.key}`] ?? false,
+                );
+                return (
               <tr
                 key={player.id}
-                className="border-b border-slate-800 last:border-0 hover:bg-accent/10"
+                className={`border-b border-slate-800 last:border-0 hover:bg-accent/10 ${
+                  hasAnyCheck ? "bg-muted/20" : ""
+                }`}
               >
-                <td className="py-3 pl-3 pr-3 font-medium text-foreground">
-                  {player.name}
+                <td className="sticky left-0 z-10 bg-card py-3 pl-3 pr-3 font-medium text-foreground">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span>{player.name}</span>
+                    {player.waitlistEventIds.length > 0 ? (
+                      <span className="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
+                        Attente
+                      </span>
+                    ) : null}
+                  </div>
                 </td>
                 <td className="py-3 pr-3 text-foreground">{player.licence}</td>
                 <td className="py-3 pr-3 text-foreground">{player.club}</td>
@@ -499,6 +546,9 @@ export function PointagesGrid({
                               className="pointer-events-none absolute scale-0 transition-transform peer-checked:scale-100 text-primary"
                             />
                           </span>
+                          {pendingState[key] ? (
+                            <span className="h-3 w-3 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground" />
+                          ) : null}
                         </label>
                       ) : (
                         <span className="text-xs text-muted-foreground">
@@ -535,6 +585,8 @@ export function PointagesGrid({
                   </div>
                 </td>
               </tr>
+                );
+              })()
             ))}
             {filteredPlayers.length === 0 ? (
               <tr>
@@ -555,11 +607,30 @@ export function PointagesGrid({
           className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4"
           role="dialog"
           aria-modal="true"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              setEditingPlayer(null);
+              setSelectedEditEventIds(new Set());
+            }
+          }}
         >
           <div className="w-full max-w-2xl space-y-4 rounded-lg bg-card p-6 shadow-lg">
-            <h3 className="text-lg font-semibold text-foreground">
-              Modifier les engagements
-            </h3>
+            <div className="flex items-start justify-between gap-3">
+              <h3 className="text-lg font-semibold text-foreground">
+                Modifier les engagements
+              </h3>
+              <button
+                type="button"
+                onClick={() => {
+                  setEditingPlayer(null);
+                  setSelectedEditEventIds(new Set());
+                }}
+                className="flex h-8 w-8 items-center justify-center rounded-md border border-border text-sm text-muted-foreground transition-colors hover:bg-muted/50 dark:hover:bg-muted/40"
+                aria-label="Fermer"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
             <p className="text-sm text-muted-foreground">
               Modifiez les tableaux de{" "}
               <span className="font-medium">{editingPlayer.name}</span>.
@@ -569,25 +640,27 @@ export function PointagesGrid({
                 ? "Tous les tableaux sont disponibles pour ce classement."
                 : `Tableaux indisponibles pour ce classement : ${ineligibleTableCodes.join(", ")}.`}
             </p>
-            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 max-h-80 overflow-y-auto pr-1">
-              {tournamentTables.map((table) => {
-                const eligible = isEligible(parsedEditingPoints, table);
-                const checked = selectedEditEventIds.has(table.id);
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 max-h-[70vh] overflow-y-auto pr-1">
+                  {tournamentTables.map((table) => {
+                    const eligible = isEligible(parsedEditingPoints, table);
+                    const checked = selectedEditEventIds.has(table.id);
+                    const waitlisted = selectedWaitlistEventIds.has(table.id);
+                    const isFull = fullTableIds.has(table.id);
 
-                return (
-                  <label
-                    key={table.id}
+                    return (
+                      <label
+                        key={table.id}
                     className={`flex items-start gap-2 rounded-lg border p-3 text-sm transition ${
                       eligible
                         ? "border-border"
-                        : "cursor-not-allowed border-border bg-secondary text-muted-foreground"
+                        : "cursor-not-allowed border-border bg-muted/40 text-muted-foreground"
                     }`}
                   >
                     <span className="relative mt-0.5 inline-flex h-4 w-4 items-center justify-center">
                       <input
                         type="checkbox"
                         value={table.id}
-                        className="peer h-4 w-4 cursor-pointer appearance-none rounded-full border border-border bg-background align-middle transition checked:border-accent checked:bg-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-60"
+                        className="peer h-4 w-4 cursor-pointer appearance-none rounded-full border border-border bg-background align-middle transition checked:border-primary checked:bg-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-60"
                         disabled={!eligible || editPending}
                         checked={checked}
                         onChange={(event) => {
@@ -601,20 +674,50 @@ export function PointagesGrid({
                             }
                             return nextSelection;
                           });
+                          if (!isChecked) {
+                            setSelectedWaitlistEventIds((currentSelection) => {
+                              const nextSelection = new Set(currentSelection);
+                              nextSelection.delete(table.id);
+                              return nextSelection;
+                            });
+                          }
                         }}
                       />
-                      <CircleCheckBig className="pointer-events-none absolute h-3 w-3 scale-0 text-muted-foreground transition-transform peer-checked:scale-100" />
+                      <CircleCheckBig className="pointer-events-none absolute h-3 w-3 scale-0 text-primary-foreground transition-transform peer-checked:scale-100" />
                     </span>
                     <span>
-                      <span className="block font-semibold text-foreground">
+                      <span className={`block font-semibold ${eligible ? "text-foreground" : "line-through"}`}>
                         Tableau {table.table}
                       </span>
-                      <span className="block text-muted-foreground">
+                      <span className={`block text-muted-foreground ${eligible ? "" : "line-through"}`}>
                         {table.category}
                       </span>
-                      <span className="block text-muted-foreground">
+                      <span className={`block text-muted-foreground ${eligible ? "" : "line-through"}`}>
                         Sur place : {table.onsitePayment}
                       </span>
+                      <label className="mt-2 inline-flex items-center gap-2 text-xs text-muted-foreground">
+                        <input
+                          type="checkbox"
+                          disabled={!checked || editPending || (isFull && waitlisted)}
+                          checked={waitlisted}
+                          onChange={(event) => {
+                            const isWaitlisted = event.target.checked;
+                            setSelectedWaitlistEventIds((currentSelection) => {
+                              const nextSelection = new Set(currentSelection);
+                              if (isWaitlisted) {
+                                nextSelection.add(table.id);
+                              } else {
+                                nextSelection.delete(table.id);
+                              }
+                              return nextSelection;
+                            });
+                          }}
+                        />
+                        Conserver en liste d'attente
+                        {isFull ? (
+                          <span className="text-[10px] text-muted-foreground">(tableau complet)</span>
+                        ) : null}
+                      </label>
                     </span>
                   </label>
                 );
@@ -636,7 +739,7 @@ export function PointagesGrid({
                 type="button"
                 onClick={saveEngagements}
                 disabled={editPending}
-                className="rounded-md border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground hover:bg-accent"
+                className="rounded-md border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-muted/60 dark:hover:bg-muted/40"
               >
                 {editPending ? "Enregistrement..." : "Enregistrer"}
               </button>
@@ -681,6 +784,17 @@ export function PointagesGrid({
           </div>
         </div>
       ) : null}
+
+      {toastMessage ? (
+        <div className="fixed bottom-4 right-4 z-[60] rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground shadow-lg">
+          {toastMessage}
+        </div>
+      ) : null}
     </section>
   );
 }
+
+
+
+
+

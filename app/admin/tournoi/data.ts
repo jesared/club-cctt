@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+﻿import { prisma } from "@/lib/prisma";
 import { RegistrationEventStatus, RegistrationStatus } from "@prisma/client";
 
 export type TournamentTable = {
@@ -12,6 +12,8 @@ export type TournamentTable = {
   onsitePayment: string;
   minPoints: number | null;
   maxPoints: number | null;
+  maxPlayers: number | null;
+  registrations: number;
 };
 
 export type RegistrationByTable = {
@@ -24,6 +26,7 @@ export type RegistrationByTable = {
 
 export type AdminPlayerRow = {
   id: string;
+  dossard: number;
   name: string;
   club: string;
   licence: string;
@@ -32,6 +35,7 @@ export type AdminPlayerRow = {
   payment: string;
   status: string;
   engagedEventIds: string[];
+  waitlistEventIds: string[];
   checkedDayKeys: string[];
   registrationEventIdsByDay: Record<string, string[]>;
 };
@@ -48,6 +52,9 @@ export type AdminPaymentGroupRow = {
   totalPaidCents: number;
   totalPendingCents: number;
   paymentStatus: "PAYÉ" | "PARTIEL" | "EN ATTENTE";
+  hasPaymentMismatch?: boolean;
+  note?: string | null;
+  noteMismatch?: boolean;
 };
 
 export type TournamentDashboardStats = {
@@ -57,6 +64,14 @@ export type TournamentDashboardStats = {
   totalTables: number;
   fullTables: number;
   registrationsToday: number;
+};
+
+export type TournamentProgress = {
+  registrationStatus: "CLOSED" | "OPEN" | "UPCOMING";
+  daysToStart: number | null;
+  paymentsPending: number;
+  tablesFull: number;
+  totalTables: number;
 };
 
 const DATE_FORMATTER = new Intl.DateTimeFormat("fr-FR", {
@@ -70,7 +85,7 @@ const TIME_FORMATTER = new Intl.DateTimeFormat("fr-FR", {
 });
 
 function formatEuro(cents: number) {
-  return `${(cents / 100).toFixed(0)}€`;
+  return `${(cents / 100).toFixed(0)} EUR`;
 }
 
 function formatCategory(minPoints: number | null, maxPoints: number | null) {
@@ -90,11 +105,40 @@ function formatCategory(minPoints: number | null, maxPoints: number | null) {
 }
 
 export async function getCurrentTournament() {
+  const published = await prisma.tournament.findFirst({
+    where: { status: "PUBLISHED" },
+    orderBy: [{ startDate: "desc" }],
+    select: {
+      id: true,
+      name: true,
+      startDate: true,
+      endDate: true,
+    },
+  });
+
+  if (published) {
+    return published;
+  }
+
   return prisma.tournament.findFirst({
     orderBy: [{ startDate: "desc" }],
     select: {
       id: true,
       name: true,
+      startDate: true,
+      endDate: true,
+    },
+  });
+}
+
+export async function getAdminTournaments() {
+  return prisma.tournament.findMany({
+    orderBy: [{ startDate: "desc" }],
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      status: true,
       startDate: true,
       endDate: true,
     },
@@ -171,6 +215,97 @@ export async function getTournamentDashboardStats(
   };
 }
 
+export async function getTournamentProgress(
+  tournamentId: string,
+): Promise<TournamentProgress> {
+  const tournament = await prisma.tournament.findUnique({
+    where: { id: tournamentId },
+    select: {
+      registrationOpenAt: true,
+      registrationCloseAt: true,
+      startDate: true,
+      status: true,
+    },
+  });
+
+  if (!tournament) {
+    return {
+      registrationStatus: "CLOSED",
+      daysToStart: null,
+      paymentsPending: 0,
+      tablesFull: 0,
+      totalTables: 0,
+    };
+  }
+
+  const now = new Date();
+  const registrationOpenAt = tournament.registrationOpenAt;
+  const registrationCloseAt = tournament.registrationCloseAt;
+  let registrationStatus: TournamentProgress["registrationStatus"] = "CLOSED";
+
+  if (registrationOpenAt && now < registrationOpenAt) {
+    registrationStatus = "UPCOMING";
+  } else if (
+    registrationOpenAt &&
+    registrationCloseAt &&
+    now >= registrationOpenAt &&
+    now <= registrationCloseAt
+  ) {
+    registrationStatus = "OPEN";
+  }
+
+  const daysToStart = Math.ceil(
+    (tournament.startDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
+  );
+
+  const [totalPlayers, paidPlayers, tables] = await Promise.all([
+    prisma.tournamentRegistration.count({
+      where: { tournamentId },
+    }),
+    prisma.tournamentRegistration.count({
+      where: {
+        tournamentId,
+        payments: { some: { status: "PAID" } },
+      },
+    }),
+    prisma.tournamentEvent.findMany({
+      where: { tournamentId },
+      select: {
+        maxPlayers: true,
+        _count: {
+          select: {
+            registrationEvents: {
+              where: {
+                status: {
+                  in: [
+                    RegistrationEventStatus.REGISTERED,
+                    RegistrationEventStatus.CHECKED_IN,
+                    RegistrationEventStatus.NO_SHOW,
+                    RegistrationEventStatus.FORFEIT,
+                  ],
+                },
+              },
+            },
+          },
+        },
+      },
+    }),
+  ]);
+
+  const totalTables = tables.length;
+  const tablesFull = tables.filter(
+    (table) => table._count.registrationEvents >= table.maxPlayers,
+  ).length;
+
+  return {
+    registrationStatus,
+    daysToStart: Number.isNaN(daysToStart) ? null : daysToStart,
+    paymentsPending: Math.max(totalPlayers - paidPlayers, 0),
+    tablesFull,
+    totalTables,
+  };
+}
+
 export async function getTournamentTables(tournamentId: string): Promise<TournamentTable[]> {
   const events = await prisma.tournamentEvent.findMany({
     where: { tournamentId },
@@ -183,6 +318,21 @@ export async function getTournamentTables(tournamentId: string): Promise<Tournam
       startAt: true,
       feeOnlineCents: true,
       feeOnsiteCents: true,
+      maxPlayers: true,
+      _count: {
+        select: {
+          registrationEvents: {
+            where: {
+              status: {
+                in: [
+                  RegistrationEventStatus.REGISTERED,
+                  RegistrationEventStatus.CHECKED_IN,
+                ],
+              },
+            },
+          },
+        },
+      },
     },
   });
 
@@ -197,6 +347,8 @@ export async function getTournamentTables(tournamentId: string): Promise<Tournam
     onsitePayment: formatEuro(event.feeOnsiteCents),
     minPoints: event.minPoints,
     maxPoints: event.maxPoints,
+    maxPlayers: event.maxPlayers,
+    registrations: event._count.registrationEvents,
   }));
 }
 
@@ -264,6 +416,7 @@ export async function getAdminPlayers(tournamentId: string): Promise<AdminPlayer
     ],
     select: {
       id: true,
+      playerId: true,
       status: true,
       player: {
         select: {
@@ -318,14 +471,18 @@ export async function getAdminPlayers(tournamentId: string): Promise<AdminPlayer
 
     return {
       id: registration.id,
+      dossard: registration.playerId,
       name: `${registration.player.prenom} ${registration.player.nom}`.trim(),
       club: registration.player.club ?? "—",
       licence: registration.player.licence,
       ranking: registration.player.points ? `${registration.player.points}` : "—",
       table: registration.registrationEvents.map((entry) => entry.event.code).join(", ") || "—",
-      payment: hasPaidPayment ? "Anticipé" : "Sur place",
+      payment: hasPaidPayment ? "Payé" : "En attente",
       status: computedStatus,
       engagedEventIds: registration.registrationEvents.map((entry) => entry.eventId),
+      waitlistEventIds: registration.registrationEvents
+        .filter((entry) => entry.status === RegistrationEventStatus.WAITLISTED)
+        .map((entry) => entry.eventId),
       checkedDayKeys: Array.from(
         new Set(
           registration.registrationEvents
@@ -378,6 +535,8 @@ export async function getAdminPaymentGroups(tournamentId: string): Promise<Admin
       id: true,
       contactEmail: true,
       contactPhone: true,
+      paidAmountCents: true,
+      notes: true,
       player: {
         select: {
           nom: true,
@@ -413,9 +572,13 @@ export async function getAdminPaymentGroups(tournamentId: string): Promise<Admin
       (acc, eventEntry) => acc + eventEntry.event.feeOnlineCents,
       0,
     );
-    const totalPaidCents = registration.payments
+    const paymentsPaidCents = registration.payments
       .filter((payment) => payment.status === "PAID")
       .reduce((acc, payment) => acc + payment.amountCents, 0);
+    const hasPaymentMismatch = registration.paidAmountCents !== paymentsPaidCents;
+    const effectivePaidCents = hasPaymentMismatch
+      ? paymentsPaidCents
+      : registration.paidAmountCents;
     const totalPendingCents = registration.payments
       .filter((payment) => payment.status === "PENDING")
       .reduce((acc, payment) => acc + payment.amountCents, 0);
@@ -434,6 +597,8 @@ export async function getAdminPaymentGroups(tournamentId: string): Promise<Admin
         totalPaidCents: 0,
         totalPendingCents: 0,
         paymentStatus: "EN ATTENTE",
+        note: registration.notes?.trim() || null,
+        noteMismatch: false,
       });
     }
 
@@ -441,8 +606,19 @@ export async function getAdminPaymentGroups(tournamentId: string): Promise<Admin
     group.registrations += 1;
     group.players.push(`${registration.player.prenom} ${registration.player.nom}`.trim());
     group.totalAmountDueCents += totalAmountDueCents;
-    group.totalPaidCents += totalPaidCents;
+    group.totalPaidCents += effectivePaidCents;
     group.totalPendingCents += totalPendingCents;
+    if (hasPaymentMismatch) {
+      group.hasPaymentMismatch = true;
+    }
+    const registrationNote = registration.notes?.trim() || null;
+    if (registrationNote) {
+      if (!group.note) {
+        group.note = registrationNote;
+      } else if (group.note !== registrationNote) {
+        group.noteMismatch = true;
+      }
+    }
   }
 
   const rows = Array.from(groups.values()).map((group) => {
@@ -468,3 +644,10 @@ export async function getAdminPaymentGroups(tournamentId: string): Promise<Admin
     return a.payerLabel.localeCompare(b.payerLabel, "fr");
   });
 }
+
+
+
+
+
+
+

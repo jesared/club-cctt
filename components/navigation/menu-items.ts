@@ -215,6 +215,11 @@ export const navigation: MenuSection[] = [
         label: "Exports",
         icon: Download,
       },
+      {
+        href: "/admin/tournoi/templates",
+        label: "Templates",
+        icon: LayoutGrid,
+      },
     ],
   },
 ];

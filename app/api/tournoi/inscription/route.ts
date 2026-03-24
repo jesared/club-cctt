@@ -1,4 +1,4 @@
-import { authOptions } from "@/lib/auth";
+﻿import { authOptions } from "@/lib/auth";
 import {
   checkRateLimit,
   createTournamentRegistration,
@@ -10,6 +10,8 @@ import {
   validateAndNormalizeRegistration,
   type RegistrationPayload,
 } from "@/lib/tournament-registration";
+import { prisma } from "@/lib/prisma";
+import { RegistrationEventStatus } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -23,7 +25,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         message:
-          "Trop de tentatives depuis votre adresse IP. Merci de réessayer dans quelques minutes.",
+          "Trop de tentatives depuis votre adresse IP. Merci de reessayer dans quelques minutes.",
       },
       { status: 429 },
     );
@@ -34,7 +36,7 @@ export async function POST(request: NextRequest) {
   try {
     body = (await request.json()) as RegistrationPayload;
   } catch {
-    return NextResponse.json({ message: "Requête invalide." }, { status: 400 });
+    return NextResponse.json({ message: "Requete invalide." }, { status: 400 });
   }
 
   const website =
@@ -43,7 +45,7 @@ export async function POST(request: NextRequest) {
   if (website.length > 0) {
     return NextResponse.json(
       {
-        message: "Votre demande d'inscription a bien été prise en compte.",
+        message: "Votre demande d'inscription a bien ete prise en compte.",
       },
       { status: 200 },
     );
@@ -98,18 +100,74 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const fullEvents = selectedEvents.filter((event) => {
+    if (event.maxPlayers === null) {
+      return false;
+    }
+    return event._count.registrationEvents >= event.maxPlayers;
+  });
+
+  const missingWaitlistConsent = fullEvents.filter(
+    (event) => !payload.waitlistTables.includes(event.code),
+  );
+
+  if (missingWaitlistConsent.length > 0) {
+    return NextResponse.json(
+      {
+        message:
+          "Un ou plusieurs tableaux sont complets. Cochez la liste d'attente pour continuer.",
+      },
+      { status: 400 },
+    );
+  }
+
+  const selectedEventsWithStatus = selectedEvents.map((event) => ({
+    id: event.id,
+    code: event.code,
+    status:
+      fullEvents.some((fullEvent) => fullEvent.id === event.id) &&
+      payload.waitlistTables.includes(event.code)
+        ? RegistrationEventStatus.WAITLISTED
+        : RegistrationEventStatus.REGISTERED,
+  }));
+
+  const waitlistedTables = selectedEventsWithStatus
+    .filter((event) => event.status === RegistrationEventStatus.WAITLISTED)
+    .map((event) => event.code);
+
   try {
     await createTournamentRegistration({
       tournamentId,
       payload,
-      selectedEvents,
+      selectedEvents: selectedEventsWithStatus.map(({ id, status }) => ({
+        id,
+        status,
+      })),
       sessionUserId,
       ownerId,
     });
   } catch {
+    const existing = await prisma.tournamentRegistration.findFirst({
+      where: {
+        tournamentId,
+        licenseNumber: payload.licenseNumber,
+      },
+      select: { id: true },
+    });
+
+    if (existing) {
+      return NextResponse.json(
+        {
+          message:
+            "Inscription enregistree. Vous recevrez un email de confirmation apres validation.",
+        },
+        { status: 200 },
+      );
+    }
+
     return NextResponse.json(
       {
-        message: "Ce joueur est déjà inscrit sur ce tournoi.",
+        message: "Ce joueur est deja inscrit sur ce tournoi.",
       },
       { status: 409 },
     );
@@ -129,7 +187,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         message:
-          "Inscription reçue. Le service de notification est en maintenance: contactez inscriptions-tournoi@cctt.fr si vous ne recevez pas de confirmation sous 48h.",
+          "Inscription recue. Le service de notification est en maintenance: contactez inscriptions-tournoi@cctt.fr si vous ne recevez pas de confirmation sous 48h.",
       },
       { status: 200 },
     );
@@ -138,9 +196,15 @@ export async function POST(request: NextRequest) {
   return NextResponse.json(
     {
       message:
-        "Inscription envoyée avec succès. Vous recevrez un email de confirmation après validation.",
+        waitlistedTables.length > 0
+          ? `Inscription envoyee. Vous etes sur liste d'attente pour: ${waitlistedTables.join(", ")}.`
+          : "Inscription envoyee avec succes. Vous recevrez un email de confirmation apres validation.",
     },
     { status: 200 },
   );
 }
+
+
+
+
 

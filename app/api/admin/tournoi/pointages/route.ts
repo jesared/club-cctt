@@ -1,4 +1,4 @@
-import { authOptions } from "@/lib/auth";
+﻿import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { withPrismaRetry } from "@/lib/prisma-retry";
 import { isAdminRole } from "@/lib/roles";
@@ -18,6 +18,7 @@ type DeletePlayerPayload = {
 type UpdateEngagementsPayload = {
   registrationId?: unknown;
   eventIds?: unknown;
+  waitlistEventIds?: unknown;
 };
 
 export async function POST(request: Request) {
@@ -95,6 +96,11 @@ export async function PATCH(request: Request) {
         (id: unknown): id is string => typeof id === "string" && id.length > 0,
       )
     : [];
+  const waitlistEventIds = Array.isArray(body.waitlistEventIds)
+    ? body.waitlistEventIds.filter(
+        (id: unknown): id is string => typeof id === "string" && id.length > 0,
+      )
+    : [];
 
   if (!registrationId) {
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
@@ -143,7 +149,24 @@ export async function PATCH(request: Request) {
           in: eventIds,
         },
       },
-      select: { id: true },
+      select: {
+        id: true,
+        maxPlayers: true,
+        _count: {
+          select: {
+            registrationEvents: {
+              where: {
+                status: {
+                  in: [
+                    RegistrationEventStatus.REGISTERED,
+                    RegistrationEventStatus.CHECKED_IN,
+                  ],
+                },
+              },
+            },
+          },
+        },
+      },
     }),
   );
 
@@ -153,6 +176,20 @@ export async function PATCH(request: Request) {
       { status: 400 },
     );
   }
+
+  const allowedEventIds = new Set(allowedEvents.map((event) => event.id));
+  const fullEventIds = allowedEvents
+    .filter(
+      (event) => event.maxPlayers !== null && event._count.registrationEvents >= event.maxPlayers,
+    )
+    .map((event) => event.id);
+
+  const normalizedWaitlistEventIds = Array.from(
+    new Set([
+      ...waitlistEventIds.filter((eventId) => allowedEventIds.has(eventId)),
+      ...fullEventIds,
+    ]),
+  );
 
   const existingEventIds = new Set(
     registration.registrationEvents.map((entry) => entry.eventId),
@@ -186,6 +223,38 @@ export async function PATCH(request: Request) {
             eventId,
           })),
           skipDuplicates: true,
+        });
+      }
+
+      if (normalizedWaitlistEventIds.length > 0) {
+        await tx.tournamentRegistrationEvent.updateMany({
+          where: {
+            registrationId,
+            eventId: { in: normalizedWaitlistEventIds },
+          },
+          data: { status: RegistrationEventStatus.WAITLISTED },
+        });
+      }
+
+      const registerEventIds = eventIds.filter(
+        (eventId) => !normalizedWaitlistEventIds.includes(eventId),
+      );
+
+      if (registerEventIds.length > 0) {
+        await tx.tournamentRegistrationEvent.updateMany({
+          where: {
+            registrationId,
+            eventId: { in: registerEventIds },
+            status: {
+              in: [
+                RegistrationEventStatus.WAITLISTED,
+                RegistrationEventStatus.REGISTERED,
+                RegistrationEventStatus.NO_SHOW,
+                RegistrationEventStatus.FORFEIT,
+              ],
+            },
+          },
+          data: { status: RegistrationEventStatus.REGISTERED },
         });
       }
     }),
@@ -258,10 +327,13 @@ export async function PATCH(request: Request) {
       table:
         updatedRegistration.registrationEvents
           .map((entry) => entry.event.code)
-          .join(", ") || "—",
+          .join(", ") || "-",
       engagedEventIds: updatedRegistration.registrationEvents.map(
         (entry) => entry.eventId,
       ),
+      waitlistEventIds: updatedRegistration.registrationEvents
+        .filter((entry) => entry.status === RegistrationEventStatus.WAITLISTED)
+        .map((entry) => entry.eventId),
       checkedDayKeys,
       registrationEventIdsByDay,
     },
@@ -311,3 +383,6 @@ export async function DELETE(request: Request) {
 
   return NextResponse.json({ ok: true });
 }
+
+
+

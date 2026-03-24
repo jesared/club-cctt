@@ -1,30 +1,17 @@
-import { requireAdminSession } from "@/lib/session";
-import Link from "next/link";
+﻿import { requireAdminSession } from "@/lib/session";
 import type { ReactNode } from "react";
-
-const TOURNAMENT_ADMIN_LINKS = [
-  { href: "/admin/tournoi", label: "Dashboard" },
-  { href: "/admin/tournoi/inscriptions", label: "Inscriptions" },
-  { href: "/admin/tournoi/paiement", label: "Paiements" },
-  { href: "/admin/tournoi/pointages", label: "Pointages" },
-  { href: "/admin/tournoi/joueurs", label: "Joueurs" },
-  { href: "/admin/tournoi/ajout-player", label: "Ajouter un joueur" },
-  { href: "/admin/tournoi/exports", label: "Exports" },
-] as const;
 
 export { requireAdminSession };
 
 type TournamentAdminPageProps = {
   title: string;
   description: string;
-  activeHref: (typeof TOURNAMENT_ADMIN_LINKS)[number]["href"];
   children?: ReactNode;
 };
 
 export function TournamentAdminPage({
   title,
   description,
-  activeHref,
   children,
 }: TournamentAdminPageProps) {
   return (
@@ -37,33 +24,11 @@ export function TournamentAdminPage({
         <p className="text-muted-foreground">{description}</p>
       </header>
 
-      <section className="rounded-xl border bg-card shadow-sm p-5">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-          Navigation rapide
-        </h2>
-
-        <div className="flex flex-wrap gap-2">
-          {TOURNAMENT_ADMIN_LINKS.map((link) => {
-            const isActive = link.href === activeHref;
-
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`rounded-md border px-3 py-1.5 text-sm transition-colors ${
-                  isActive
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "hover:bg-secondary hover:text-secondary-foreground text-foreground"
-                }`}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
-        </div>
-      </section>
-
       {children}
     </div>
   );
 }
+
+
+
+

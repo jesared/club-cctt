@@ -1,38 +1,69 @@
-import { requireAdminSession, TournamentAdminPage } from "./_components";
+﻿import { requireAdminSession, TournamentAdminPage } from "./_components";
 import {
   getCurrentTournament,
+  getAdminTournaments,
   getTournamentDashboardStats,
   getTournamentTables,
+  getTournamentProgress,
 } from "./data";
 import { TournamentDashboard } from "./tournament-dashboard";
+import { TournamentsList } from "./tournaments-list";
+import { ActionsChecklist } from "./actions-checklist";
+import { ProgressSummary } from "./progress-summary";
 
 export default async function AdminTournoiPage() {
   await requireAdminSession();
 
-  const tournament = await getCurrentTournament();
+  const [tournament, tournaments] = await Promise.all([
+    getCurrentTournament(),
+    getAdminTournaments(),
+  ]);
 
   if (!tournament) {
-    return (
+        return (
       <TournamentAdminPage
         title="Dashboard tournoi"
-        description="Aucun tournoi disponible en base pour le moment."
-        activeHref="/admin/tournoi"
-      />
+        description="Aucun tournoi disponible en base pour le moment.">
+        <TournamentsList
+          tournaments={tournaments.map((item) => ({
+            id: item.id,
+            name: item.name,
+            slug: item.slug,
+            status: item.status,
+            startDate: item.startDate.toISOString(),
+            endDate: item.endDate.toISOString(),
+          }))}
+        />
+      </TournamentAdminPage>
     );
   }
 
-  const [tournamentTables, dashboardStats] =
+  const [tournamentTables, dashboardStats, progress] =
     await Promise.all([
       getTournamentTables(tournament.id),
       getTournamentDashboardStats(tournament.id),
+      getTournamentProgress(tournament.id),
     ]);
 
   return (
     <TournamentAdminPage
       title="Dashboard tournoi"
-      description={`Vue consolidée de ${tournament.name} avec les données réelles de la base.`}
-      activeHref="/admin/tournoi"
-    >
+      description={`Vue consolidée de ${tournament.name} avec les données réelles de la base.`}>
+      <TournamentsList
+        tournaments={tournaments.map((item) => ({
+          id: item.id,
+          name: item.name,
+          slug: item.slug,
+          status: item.status,
+          startDate: item.startDate.toISOString(),
+          endDate: item.endDate.toISOString(),
+        }))}
+      />
+
+      <ActionsChecklist />
+
+      <ProgressSummary progress={progress} />
+
       <TournamentDashboard
         tournamentName={tournament.name}
         stats={dashboardStats}
@@ -91,3 +122,10 @@ export default async function AdminTournoiPage() {
     </TournamentAdminPage>
   );
 }
+
+
+
+
+
+
+

@@ -1,4 +1,4 @@
-import { requireAdminSession, TournamentAdminPage } from "../_components";
+﻿import { requireAdminSession, TournamentAdminPage } from "../_components";
 import { getAdminPlayers, getCurrentTournament, getTournamentTables } from "../data";
 import { PointagesGrid } from "./pointages-grid";
 
@@ -20,10 +20,11 @@ export default async function AdminTournoiPointagesPage() {
   return (
     <TournamentAdminPage
       title="Pointages"
-      description="Suivi des présences joueurs avec une grille de pointage sur 3 jours."
-      activeHref="/admin/tournoi/pointages"
-    >
+      description="Suivi des présences joueurs avec une grille de pointage sur 3 jours.">
       <PointagesGrid players={adminPlayers} dayColumns={dayColumns} tournamentTables={tournamentTables} />
     </TournamentAdminPage>
   );
 }
+
+
+

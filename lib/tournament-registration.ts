@@ -1,6 +1,6 @@
-import { prisma } from "@/lib/prisma";
+﻿import { prisma } from "@/lib/prisma";
 import { withPrismaRetry } from "@/lib/prisma-retry";
-import { RegistrationSource, type Role } from "@prisma/client";
+import { RegistrationEventStatus, RegistrationSource, type Role } from "@prisma/client";
 
 export type RegistrationPayload = {
   firstName?: string;
@@ -12,6 +12,7 @@ export type RegistrationPayload = {
   gender?: string;
   club?: string;
   tables?: unknown;
+  waitlistTables?: unknown;
   website?: string;
 };
 
@@ -26,6 +27,7 @@ export type NormalizedRegistrationPayload = {
   gender: string;
   club: string;
   tables: string[];
+  waitlistTables: string[];
   website: string;
 };
 
@@ -105,6 +107,22 @@ function normalizeTables(tables: unknown) {
     .slice(0, 6);
 }
 
+function normalizeWaitlistTables(tables: string[], waitlistTables: unknown) {
+  if (!Array.isArray(waitlistTables)) {
+    return [];
+  }
+
+  const normalizedWaitlist = waitlistTables
+    .filter((value): value is string => typeof value === "string")
+    .map((value) => value.trim().toUpperCase())
+    .filter(
+      (value, index, current) =>
+        value.length > 0 && current.indexOf(value) === index,
+    );
+
+  return normalizedWaitlist.filter((value) => tables.includes(value));
+}
+
 export function validateAndNormalizeRegistration(
   body: RegistrationPayload,
 ): ValidationResult {
@@ -118,18 +136,19 @@ export function validateAndNormalizeRegistration(
   const club = body.club?.trim() ?? "";
   const website = body.website?.trim() ?? "";
   const tables = normalizeTables(body.tables);
+  const waitlistTables = normalizeWaitlistTables(tables, body.waitlistTables);
 
   if (firstName.length < 2 || firstName.length > 100) {
     return {
       ok: false,
-      message: "Le prénom doit contenir entre 2 et 100 caractères.",
+      message: "Le prenom doit contenir entre 2 et 100 caracteres.",
     };
   }
 
   if (lastName.length < 2 || lastName.length > 100) {
     return {
       ok: false,
-      message: "Le nom doit contenir entre 2 et 100 caractères.",
+      message: "Le nom doit contenir entre 2 et 100 caracteres.",
     };
   }
 
@@ -141,39 +160,39 @@ export function validateAndNormalizeRegistration(
     return {
       ok: false,
       message:
-        "Le numéro de téléphone doit contenir entre 10 et 20 caractères.",
+        "Le numero de telephone doit contenir entre 10 et 20 caracteres.",
     };
   }
 
   if (licenseNumber.length < 6 || licenseNumber.length > 20) {
     return {
       ok: false,
-      message: "Le numéro de licence doit contenir entre 6 et 20 caractères.",
+      message: "Le numero de licence doit contenir entre 6 et 20 caracteres.",
     };
   }
 
   if (club.length < 2 || club.length > 120) {
     return {
       ok: false,
-      message: "Le nom du club doit contenir entre 2 et 120 caractères.",
+      message: "Le nom du club doit contenir entre 2 et 120 caracteres.",
     };
   }
 
   if (!/^\d{1,5}$/.test(points)) {
     return {
       ok: false,
-      message: "Les points doivent être un nombre positif.",
+      message: "Les points doivent etre un nombre positif.",
     };
   }
 
   if (!["M", "F"].includes(gender)) {
-    return { ok: false, message: "Le genre doit être M ou F." };
+    return { ok: false, message: "Le genre doit etre M ou F." };
   }
 
   if (tables.length === 0) {
     return {
       ok: false,
-      message: "Merci de sélectionner au moins un tableau.",
+      message: "Merci de selectionner au moins un tableau.",
     };
   }
 
@@ -192,6 +211,7 @@ export function validateAndNormalizeRegistration(
       gender,
       club,
       tables,
+      waitlistTables,
       website,
     },
   };
@@ -255,14 +275,15 @@ async function sendWithResend(payload: NormalizedRegistrationPayload) {
       reply_to: payload.email,
       text: [
         `Nom: ${payload.lastName}`,
-        `Prénom: ${payload.firstName}`,
+        `Prenom: ${payload.firstName}`,
         `Email: ${payload.email}`,
-        `Téléphone: ${payload.phone}`,
-        `N° licence: ${payload.licenseNumber}`,
-        `Points: ${payload.points || "Non renseigné"}`,
-        `Genre: ${payload.gender || "Non renseigné"}`,
+        `Telephone: ${payload.phone}`,
+        `No licence: ${payload.licenseNumber}`,
+        `Points: ${payload.points || "Non renseigne"}`,
+        `Genre: ${payload.gender || "Non renseigne"}`,
         `Club: ${payload.club}`,
         `Tableaux: ${payload.tables.join(", ")}`,
+        `Liste d'attente: ${payload.waitlistTables.join(", ") || "Aucune"}`,
       ].join("\n"),
     }),
   });
@@ -323,9 +344,22 @@ export async function getSelectedEvents(
       select: {
         id: true,
         code: true,
+        status: true,
         gender: true,
         minPoints: true,
         maxPoints: true,
+        maxPlayers: true,
+        _count: {
+          select: {
+            registrationEvents: {
+              where: {
+                status: {
+                  in: ["REGISTERED", "CHECKED_IN"],
+                },
+              },
+            },
+          },
+        },
       },
     }),
   );
@@ -402,7 +436,7 @@ export async function createTournamentRegistration({
 }: {
   tournamentId: string;
   payload: NormalizedRegistrationPayload;
-  selectedEvents: Array<{ id: string }>;
+  selectedEvents: Array<{ id: string; status: RegistrationEventStatus }>;
   sessionUserId: string | null;
   ownerId: string;
 }) {
@@ -453,6 +487,7 @@ export async function createTournamentRegistration({
               create: selectedEvents.map((event) => ({
                 eventId: event.id,
                 seedPointsSnapshot: payload.pointsNumber,
+                status: event.status,
               })),
             },
           },
@@ -462,4 +497,7 @@ export async function createTournamentRegistration({
     ),
   );
 }
+
+
+
 

@@ -21,13 +21,27 @@ export default async function AdminTournoiInscriptionsPage() {
   const totalCheckins = registrationsByTable.reduce((sum, row) => sum + row.checkins, 0);
   const toFollowUp = adminPlayers.filter((player) => player.status === "À confirmer").length;
   const tableCapacity = 96;
+  const getStatusBadgeClass = (status: string) => {
+    switch (status) {
+      case "Pointé":
+        return "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200";
+      case "Liste d'attente":
+        return "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200";
+      case "Annulée":
+        return "bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-200";
+      case "Confirmée":
+        return "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-200";
+      case "À confirmer":
+        return "bg-slate-100 text-slate-800 dark:bg-slate-900/40 dark:text-slate-200";
+      default:
+        return "bg-muted text-foreground";
+    }
+  };
 
   return (
     <TournamentAdminPage
       title="Inscriptions"
-      description="Suivi détaillé des engagements par tableau avec les données Player/TournamentRegistration."
-      activeHref="/admin/tournoi/inscriptions"
-    >
+      description="Suivi détaillé des engagements par tableau avec les données Player/TournamentRegistration.">
       <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {[
           { label: "Inscriptions suivies", value: `${totalRegistrations}`, helper: "Tous tableaux" },
@@ -107,6 +121,7 @@ export default async function AdminTournoiInscriptionsPage() {
           <table className="min-w-full text-sm">
             <thead>
               <tr className="border-b text-left text-muted-foreground">
+                <th className="py-2 pr-3 font-medium">Dossard</th>
                 <th className="py-2 pr-3 font-medium">Joueur</th>
                 <th className="py-2 pr-3 font-medium">Club</th>
                 <th className="py-2 pr-3 font-medium">Licence</th>
@@ -118,7 +133,8 @@ export default async function AdminTournoiInscriptionsPage() {
             </thead>
             <tbody>
               {adminPlayers.map((player) => (
-                <tr key={player.licence} className="border-b last:border-0">
+                <tr key={player.licence} className="border-b last:border-0 hover:bg-muted/30">
+                  <td className="py-3 pr-3 text-muted-foreground">{player.dossard}</td>
                   <td className="py-3 pr-3 text-foreground">{player.name}</td>
                   <td className="py-3 pr-3 text-muted-foreground">{player.club}</td>
                   <td className="py-3 pr-3 text-muted-foreground">{player.licence}</td>
@@ -126,7 +142,7 @@ export default async function AdminTournoiInscriptionsPage() {
                   <td className="py-3 pr-3 text-muted-foreground">{player.table}</td>
                   <td className="py-3 pr-3 text-muted-foreground">{player.payment}</td>
                   <td className="py-3 text-muted-foreground">
-                    <span className="inline-flex rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                    <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${getStatusBadgeClass(player.status)}`}>
                       {player.status}
                     </span>
                   </td>
@@ -139,4 +155,7 @@ export default async function AdminTournoiInscriptionsPage() {
     </TournamentAdminPage>
   );
 }
+
+
+
 

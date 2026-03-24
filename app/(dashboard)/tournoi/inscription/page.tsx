@@ -1,4 +1,4 @@
-import KpiPageViewTracker from "@/components/KpiPageViewTracker";
+﻿import KpiPageViewTracker from "@/components/KpiPageViewTracker";
 import TournamentRegistrationForm from "@/components/TournamentRegistrationForm";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { authOptions } from "@/lib/auth";
@@ -20,12 +20,12 @@ function formatEventLabel(event: {
 
   const pointsRange =
     event.minPoints === null && event.maxPoints === null
-      ? "Toutes catégories"
+      ? "Toutes categories"
       : event.minPoints !== null && event.maxPoints !== null
-        ? `${event.minPoints} à ${event.maxPoints} pts`
+        ? `${event.minPoints} a ${event.maxPoints} pts`
         : event.minPoints !== null
           ? `${event.minPoints}+ pts`
-          : `jusqu'à ${event.maxPoints} pts`;
+          : `jusqu'a ${event.maxPoints} pts`;
 
   const genderLabel =
     event.gender === "M"
@@ -78,7 +78,7 @@ export default async function InscriptionsPage() {
       name: true,
       events: {
         where: {
-          status: "OPEN",
+          status: { in: ["OPEN", "FULL"] },
         },
         orderBy: [{ startAt: "asc" }, { code: "asc" }],
         select: {
@@ -90,22 +90,43 @@ export default async function InscriptionsPage() {
           startAt: true,
           feeOnlineCents: true,
           feeOnsiteCents: true,
+          maxPlayers: true,
+          _count: {
+            select: {
+              registrationEvents: {
+                where: {
+                  status: {
+                    in: ["REGISTERED", "CHECKED_IN"],
+                  },
+                },
+              },
+            },
+          },
         },
       },
     },
   });
 
-  const tableOptions = (tournament?.events ?? []).map((event) => ({
-    value: event.code,
-    label: formatEventLabel(event),
-    dateLabel: formatEventDateLabel(event.startAt),
-    dateKey: event.startAt.toISOString().split("T")[0],
-    minPoints: event.minPoints,
-    maxPoints: event.maxPoints,
-    gender: event.gender,
-    onlinePriceLabel: `${(event.feeOnlineCents / 100).toFixed(0)}€`,
-    onsitePriceLabel: `${(event.feeOnsiteCents / 100).toFixed(0)}€`,
-  }));
+  const tableOptions = (tournament?.events ?? []).map((event) => {
+    const maxPlayers = event.maxPlayers ?? null;
+    const registrations = event._count.registrationEvents;
+    const remainingSpots = maxPlayers !== null ? Math.max(maxPlayers - registrations, 0) : null;
+    const isFull = maxPlayers !== null && registrations >= maxPlayers;
+
+    return {
+      value: event.code,
+      label: formatEventLabel(event),
+      dateLabel: formatEventDateLabel(event.startAt),
+      dateKey: event.startAt.toISOString().split("T")[0],
+      minPoints: event.minPoints,
+      maxPoints: event.maxPoints,
+      gender: event.gender,
+      onlinePriceLabel: `${(event.feeOnlineCents / 100).toFixed(0)} EUR`,
+      onsitePriceLabel: `${(event.feeOnsiteCents / 100).toFixed(0)} EUR`,
+      isFull,
+      remainingSpots,
+    };
+  });
 
   const hasUserRegistration =
     tournament && session?.user?.id
@@ -141,10 +162,10 @@ export default async function InscriptionsPage() {
       <Card className="shadow-sm border-border tournament-panel">
         <CardHeader className="space-y-3">
           <p className="text-muted-foreground">
-            Suivez les 3 étapes du formulaire pour envoyer votre demande
+            Suivez les 3 etapes du formulaire pour envoyer votre demande
             d&apos;inscription. Nous vous confirmons votre place par email sous
-            48 h maximum, après vérification des disponibilités dans les
-            tableaux sélectionnés.
+            48 h maximum, apres verification des disponibilites dans les
+            tableaux selectionnes.
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -162,7 +183,7 @@ export default async function InscriptionsPage() {
               href="/tournoi"
               className="inline-flex justify-center rounded-md border border-primary px-5 py-2 text-primary transition hover:bg-primary/10"
             >
-              Retour à la page tournoi
+              Retour a la page tournoi
             </a>
             {hasUserRegistration ? (
               <a
@@ -178,3 +199,6 @@ export default async function InscriptionsPage() {
     </main>
   );
 }
+
+
+
