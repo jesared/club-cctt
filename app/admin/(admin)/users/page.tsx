@@ -2,7 +2,9 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { requireAdminSession } from "@/lib/session";
 
-const MANAGED_ROLES = ["USER", "JOUEUR", "COACH", "BUREAU"] as const;
+import type { Role } from "@prisma/client";
+
+const MANAGED_ROLES = ["USER", "CLUB", "ADMIN"] as const;
 
 type ManagedRole = (typeof MANAGED_ROLES)[number];
 
@@ -24,7 +26,7 @@ async function updateUserRole(formData: FormData) {
 
   await prisma.user.update({
     where: { id: userId },
-    data: { role },
+    data: { role: role as Role },
   });
 
   revalidatePath("/admin/users");

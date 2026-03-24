@@ -1,3 +1,4 @@
+﻿import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 
 const DEFAULT_LOGO = "/partenaires/default-logo.svg";
@@ -7,6 +8,19 @@ type Partenaire = {
   description: string;
   logo: string;
   url?: string;
+};
+
+type PartenairesData = {
+  institutionnels: Partenaire[];
+  prives: Partenaire[];
+};
+
+type PartenairesResponse = {
+  data: PartenairesData;
+  meta: {
+    stale: boolean;
+    updatedAt: string | null;
+  };
 };
 
 async function getPartenaires() {
@@ -71,7 +85,14 @@ function CardPartenaire({ partenaire }: { partenaire: Partenaire }) {
 }
 
 export default async function PartenairesPage() {
-  const data = await getPartenaires();
+  const payload: PartenairesResponse = await getPartenaires();
+  const { data, meta } = payload;
+  const formattedUpdatedAt = meta.updatedAt
+    ? new Intl.DateTimeFormat("fr-FR", {
+        dateStyle: "long",
+        timeStyle: "short",
+      }).format(new Date(meta.updatedAt))
+    : null;
 
   const institutionnels = data.institutionnels ?? [];
   const prives = data.prives ?? [];
@@ -82,7 +103,20 @@ export default async function PartenairesPage() {
         <p className="hidden text-xs font-mono uppercase tracking-[0.2em] text-accent ">
           CCTT / Partners Network
         </p>
-        <h1 className="mb-4 text-4xl font-bold  ">Partenaires</h1>
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="mb-4 text-4xl font-bold  ">Partenaires</h1>
+          {formattedUpdatedAt ? (
+            <Badge variant={meta.stale ? "secondary" : "outline"}>
+              {meta.stale
+                ? `Dernière mise à jour le ${formattedUpdatedAt}`
+                : `Mis à jour le ${formattedUpdatedAt}`}
+            </Badge>
+          ) : meta.stale ? (
+            <Badge variant="secondary">
+              Dernière mise à jour indisponible
+            </Badge>
+          ) : null}
+        </div>
         <p className="max-w-3xl ">
           Le Châlons-en-Champagne Tennis de Table remercie l’ensemble de ses
           partenaires pour leur soutien et leur engagement auprès du club.
@@ -143,3 +177,4 @@ export default async function PartenairesPage() {
     </div>
   );
 }
+

@@ -1,6 +1,7 @@
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 type Partenaire = {
   nom: string;
@@ -12,6 +13,14 @@ type Partenaire = {
 type PartenairesData = {
   institutionnels: Partenaire[];
   prives: Partenaire[];
+};
+
+type PartenairesResponse = {
+  data: PartenairesData;
+  meta: {
+    stale: boolean;
+    updatedAt: string | null;
+  };
 };
 
 const fallbackPartenaires: PartenairesData = {
@@ -49,7 +58,10 @@ export async function GET() {
   const fileId = process.env.PARTENAIRES_JSON_ID;
 
   if (!fileId) {
-    return NextResponse.json(fallbackPartenaires);
+    return NextResponse.json<PartenairesResponse>({
+      data: fallbackPartenaires,
+      meta: { stale: true, updatedAt: null },
+    });
   }
 
   try {
@@ -69,8 +81,35 @@ export async function GET() {
       throw new Error("Format JSON invalide");
     }
 
-    return NextResponse.json(data);
+    const cached = await prisma.partenairesCache.upsert({
+      where: { id: "default" },
+      update: { data },
+      create: { id: "default", data },
+    });
+
+    return NextResponse.json<PartenairesResponse>({
+      data,
+      meta: { stale: false, updatedAt: cached.updatedAt.toISOString() },
+    });
   } catch {
-    return NextResponse.json(fallbackPartenaires);
+    try {
+      const cached = await prisma.partenairesCache.findUnique({
+        where: { id: "default" },
+      });
+
+      if (cached && isValidPartenairesData(cached.data)) {
+        return NextResponse.json<PartenairesResponse>({
+          data: cached.data,
+          meta: { stale: true, updatedAt: cached.updatedAt.toISOString() },
+        });
+      }
+    } catch {
+      // ignore cache errors and return fallback
+    }
+
+    return NextResponse.json<PartenairesResponse>({
+      data: fallbackPartenaires,
+      meta: { stale: true, updatedAt: null },
+    });
   }
 }

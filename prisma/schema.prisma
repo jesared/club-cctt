@@ -13,7 +13,7 @@ model User {
   email         String?                  @unique
   emailVerified DateTime?
   image         String?
-  role          String                   @default("USER")
+  role          Role                     @default(USER)
   accounts      Account[]
   messages      Message[]
   reads         MessageRead[]
@@ -213,6 +213,27 @@ model MessageRead {
 }
 
 model HorairesCache {
+  id        String   @id
+  data      Json
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model ComiteCache {
+  id        String   @id
+  data      Json
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model TarifsCache {
+  id        String   @id
+  data      Json
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model PartenairesCache {
   id        String   @id
   data      Json
   updatedAt DateTime @updatedAt

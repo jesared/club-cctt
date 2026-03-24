@@ -64,12 +64,22 @@ EXCEPTION
 END $$;
 
 ALTER TABLE "User"
+  ALTER COLUMN "role" DROP DEFAULT;
+
+ALTER TABLE "User"
   ALTER COLUMN "role" TYPE "Role" USING ("role"::"Role"),
   ALTER COLUMN "role" SET DEFAULT 'USER';
 
 ALTER TABLE "Tournament"
+  ALTER COLUMN "status" DROP DEFAULT;
+
+ALTER TABLE "Tournament"
   ALTER COLUMN "status" TYPE "TournamentStatus" USING ("status"::"TournamentStatus"),
   ALTER COLUMN "status" SET DEFAULT 'DRAFT';
+
+ALTER TABLE "TournamentEvent"
+  ALTER COLUMN "gender" DROP DEFAULT,
+  ALTER COLUMN "status" DROP DEFAULT;
 
 ALTER TABLE "TournamentEvent"
   ALTER COLUMN "gender" TYPE "EventGender" USING ("gender"::"EventGender"),
@@ -78,14 +88,24 @@ ALTER TABLE "TournamentEvent"
   ALTER COLUMN "status" SET DEFAULT 'OPEN';
 
 ALTER TABLE "TournamentRegistration"
+  ALTER COLUMN "status" DROP DEFAULT,
+  ALTER COLUMN "source" DROP DEFAULT;
+
+ALTER TABLE "TournamentRegistration"
   ALTER COLUMN "status" TYPE "RegistrationStatus" USING ("status"::"RegistrationStatus"),
   ALTER COLUMN "status" SET DEFAULT 'PENDING',
   ALTER COLUMN "source" TYPE "RegistrationSource" USING ("source"::"RegistrationSource"),
   ALTER COLUMN "source" SET DEFAULT 'WEB';
 
 ALTER TABLE "TournamentRegistrationEvent"
+  ALTER COLUMN "status" DROP DEFAULT;
+
+ALTER TABLE "TournamentRegistrationEvent"
   ALTER COLUMN "status" TYPE "RegistrationEventStatus" USING ("status"::"RegistrationEventStatus"),
   ALTER COLUMN "status" SET DEFAULT 'REGISTERED';
+
+ALTER TABLE "TournamentPayment"
+  ALTER COLUMN "status" DROP DEFAULT;
 
 ALTER TABLE "TournamentPayment"
   ALTER COLUMN "method" TYPE "PaymentMethod" USING ("method"::"PaymentMethod"),

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 type ComiteData = {
   bureau: Array<{
@@ -13,6 +14,14 @@ type ComiteData = {
   salaries: Array<{
     nom: string;
   }>;
+};
+
+type ComiteResponse = {
+  data: ComiteData;
+  meta: {
+    stale: boolean;
+    updatedAt: string | null;
+  };
 };
 
 const fallbackComite: ComiteData = {
@@ -46,7 +55,10 @@ export async function GET() {
   const fileId = process.env.COMITE_JSON_ID;
 
   if (!fileId) {
-    return NextResponse.json(fallbackComite);
+    return NextResponse.json<ComiteResponse>({
+      data: fallbackComite,
+      meta: { stale: true, updatedAt: null },
+    });
   }
 
   try {
@@ -62,8 +74,35 @@ export async function GET() {
       throw new Error("Format JSON invalide");
     }
 
-    return NextResponse.json(data);
+    const cached = await prisma.comiteCache.upsert({
+      where: { id: "default" },
+      update: { data },
+      create: { id: "default", data },
+    });
+
+    return NextResponse.json<ComiteResponse>({
+      data,
+      meta: { stale: false, updatedAt: cached.updatedAt.toISOString() },
+    });
   } catch {
-    return NextResponse.json(fallbackComite);
+    try {
+      const cached = await prisma.comiteCache.findUnique({
+        where: { id: "default" },
+      });
+
+      if (cached && isValidComiteData(cached.data)) {
+        return NextResponse.json<ComiteResponse>({
+          data: cached.data,
+          meta: { stale: true, updatedAt: cached.updatedAt.toISOString() },
+        });
+      }
+    } catch {
+      // ignore cache errors and return fallback
+    }
+
+    return NextResponse.json<ComiteResponse>({
+      data: fallbackComite,
+      meta: { stale: true, updatedAt: null },
+    });
   }
 }

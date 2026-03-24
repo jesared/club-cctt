@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users } from "lucide-react";
 import Image from "next/image";
@@ -21,6 +22,14 @@ type ComiteData = {
   salaries: SimpleMember[];
 };
 
+type ComiteResponse = {
+  data: ComiteData;
+  meta: {
+    stale: boolean;
+    updatedAt: string | null;
+  };
+};
+
 /* ---------- PAGE ---------- */
 
 export default async function ComiteDirecteurPage() {
@@ -28,7 +37,14 @@ export default async function ComiteDirecteurPage() {
     cache: "no-store",
   });
 
-  const data: ComiteData = await res.json();
+  const payload: ComiteResponse = await res.json();
+  const { data, meta } = payload;
+  const formattedUpdatedAt = meta.updatedAt
+    ? new Intl.DateTimeFormat("fr-FR", {
+        dateStyle: "long",
+        timeStyle: "short",
+      }).format(new Date(meta.updatedAt))
+    : null;
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-12 space-y-14">
@@ -37,7 +53,20 @@ export default async function ComiteDirecteurPage() {
         <p className="mb-3 inline-flex items-center rounded-full border border-primary/60 bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em]  ">
           Gouvernance CCTT
         </p>
-        <h1 className="text-4xl font-bold mb-4 ">Comité directeur</h1>
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="text-4xl font-bold mb-4 ">Comité directeur</h1>
+          {formattedUpdatedAt ? (
+            <Badge variant={meta.stale ? "secondary" : "outline"}>
+              {meta.stale
+                ? `Dernière mise à jour le ${formattedUpdatedAt}`
+                : `Mis à jour le ${formattedUpdatedAt}`}
+            </Badge>
+          ) : meta.stale ? (
+            <Badge variant="secondary">
+              Dernière mise à jour indisponible
+            </Badge>
+          ) : null}
+        </div>
         <p className=" max-w-3xl ">
           Le comité directeur du Châlons-en-Champagne Tennis de Table assure la
           gestion, l’organisation et le développement du club.
