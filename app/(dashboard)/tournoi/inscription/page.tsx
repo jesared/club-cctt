@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 
 function formatEventLabel(event: {
   code: string;
@@ -64,6 +65,9 @@ function formatEventDateLabel(startAt: Date) {
 
 export default async function InscriptionsPage() {
   const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    redirect("/api/auth/signin?callbackUrl=/tournoi/inscription");
+  }
   const userEmail = session?.user?.email?.trim().toLowerCase();
 
   const tournament = await prisma.tournament.findFirst({
