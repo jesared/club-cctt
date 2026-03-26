@@ -22,6 +22,7 @@ export type RegistrationByTable = {
   registrations: number;
   waitlist: number;
   checkins: number;
+  maxPlayers: number | null;
 };
 
 export type AdminPlayerRow = {
@@ -38,6 +39,7 @@ export type AdminPlayerRow = {
   waitlistEventIds: string[];
   checkedDayKeys: string[];
   registrationEventIdsByDay: Record<string, string[]>;
+  createdAt: string;
 };
 
 export type AdminPaymentGroupRow = {
@@ -360,6 +362,7 @@ export async function getRegistrationsByTable(tournamentId: string): Promise<Reg
       code: true,
       minPoints: true,
       maxPoints: true,
+      maxPlayers: true,
       registrationEvents: {
         select: {
           status: true,
@@ -383,6 +386,7 @@ export async function getRegistrationsByTable(tournamentId: string): Promise<Reg
       registrations,
       waitlist,
       checkins,
+      maxPlayers: event.maxPlayers ?? null,
     };
   });
 }
@@ -418,6 +422,7 @@ export async function getAdminPlayers(tournamentId: string): Promise<AdminPlayer
       id: true,
       playerId: true,
       status: true,
+      createdAt: true,
       player: {
         select: {
           nom: true,
@@ -500,6 +505,7 @@ export async function getAdminPlayers(tournamentId: string): Promise<AdminPlayer
         acc[dayKey].push(entry.id);
         return acc;
       }, {}),
+      createdAt: registration.createdAt.toISOString(),
     };
   });
 }

@@ -4,9 +4,16 @@ import {
   getCurrentTournament,
   getRegistrationsByTable,
 } from "../data";
+type PageProps = {
+  searchParams?: Promise<{
+    q?: string;
+  }>;
+};
 
-export default async function AdminTournoiInscriptionsPage() {
+export default async function AdminTournoiInscriptionsPage({ searchParams }: PageProps) {
   await requireAdminSession();
+  const resolvedSearchParams = await searchParams;
+  const searchQuery = resolvedSearchParams?.q?.trim().toLowerCase() ?? "";
 
   const tournament = await getCurrentTournament();
   const [registrationsByTable, adminPlayers] = tournament
@@ -20,7 +27,29 @@ export default async function AdminTournoiInscriptionsPage() {
   const totalWaitlist = registrationsByTable.reduce((sum, row) => sum + row.waitlist, 0);
   const totalCheckins = registrationsByTable.reduce((sum, row) => sum + row.checkins, 0);
   const toFollowUp = adminPlayers.filter((player) => player.status === "À confirmer").length;
-  const tableCapacity = 96;
+  const filteredRecent = adminPlayers.filter((player) => {
+    if (!searchQuery) return true;
+    return (
+      player.name.toLowerCase().includes(searchQuery) ||
+      player.club.toLowerCase().includes(searchQuery) ||
+      player.licence.toLowerCase().includes(searchQuery)
+    );
+  });
+
+  const recentPlayers = [...filteredRecent]
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+    .slice(0, 30);
+  const sortedTables = [...registrationsByTable].sort((a, b) => {
+    const aFull = a.maxPlayers !== null && a.registrations >= a.maxPlayers;
+    const bFull = b.maxPlayers !== null && b.registrations >= b.maxPlayers;
+    if (aFull !== bFull) return aFull ? -1 : 1;
+
+    const aFill = a.maxPlayers ? a.registrations / a.maxPlayers : 0;
+    const bFill = b.maxPlayers ? b.registrations / b.maxPlayers : 0;
+    if (aFill !== bFill) return bFill - aFill;
+
+    return a.table.localeCompare(b.table);
+  });
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case "Pointé":
@@ -71,16 +100,22 @@ export default async function AdminTournoiInscriptionsPage() {
                 <th className="py-2 pr-3 font-medium">Catégorie</th>
                 <th className="py-2 pr-3 font-medium">Inscrits</th>
                 <th className="py-2 pr-3 font-medium">Liste d&apos;attente</th>
+                <th className="py-2 pr-3 font-medium">Restants</th>
                 <th className="py-2 font-medium">Remplissage</th>
               </tr>
             </thead>
             <tbody>
-              {registrationsByTable.map((table) => {
-                const fillPercent = Math.min(Math.round((table.registrations / tableCapacity) * 100), 100);
+              {sortedTables.map((table) => {
+                const capacity = table.maxPlayers ?? null;
+                const fillPercent =
+                  capacity && capacity > 0
+                    ? Math.min(Math.round((table.registrations / capacity) * 100), 100)
+                    : null;
+                const isFull = capacity !== null && table.registrations >= capacity;
                 const gaugeColor =
-                  fillPercent >= 90
+                  fillPercent !== null && fillPercent >= 90
                     ? "bg-red-500"
-                    : fillPercent >= 70
+                    : fillPercent !== null && fillPercent >= 70
                       ? "bg-amber-500"
                       : "bg-emerald-500";
 
@@ -90,21 +125,31 @@ export default async function AdminTournoiInscriptionsPage() {
                     <td className="py-3 pr-3 text-muted-foreground">{table.category}</td>
                     <td className="py-3 pr-3 text-muted-foreground">{table.registrations}</td>
                     <td className="py-3 pr-3 text-muted-foreground">{table.waitlist}</td>
+                    <td className="py-3 pr-3 text-muted-foreground">
+                      {capacity !== null ? Math.max(capacity - table.registrations, 0) : "—"}
+                    </td>
                     <td className="py-3">
                       <div className="space-y-1">
                         <div className="flex items-center justify-between text-xs text-muted-foreground">
                           <span>
-                            {table.registrations}/{tableCapacity}
+                            {capacity !== null ? `${table.registrations}/${capacity}` : "—"}
                           </span>
-                          <span className="font-medium text-foreground">{fillPercent}%</span>
+                          <span className="font-medium text-foreground">
+                            {fillPercent !== null ? `${fillPercent}%` : "—"}
+                          </span>
                         </div>
                         <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
                           <div
                             className={`h-full rounded-full transition-all ${gaugeColor}`}
-                            style={{ width: `${fillPercent}%` }}
-                            aria-label={`Remplissage ${table.table}: ${fillPercent}%`}
+                            style={{ width: `${fillPercent ?? 0}%` }}
+                            aria-label={`Remplissage ${table.table}: ${fillPercent ?? 0}%`}
                           />
                         </div>
+                        {isFull ? (
+                          <span className="inline-flex items-center rounded-full bg-rose-100 px-2 py-0.5 text-[11px] font-semibold text-rose-800 dark:bg-rose-900/40 dark:text-rose-200">
+                            Complet
+                          </span>
+                        ) : null}
                       </div>
                     </td>
                   </tr>
@@ -116,7 +161,33 @@ export default async function AdminTournoiInscriptionsPage() {
       </section>
 
       <section className="rounded-xl border bg-card shadow-sm p-6 space-y-4">
-        <h2 className="text-xl font-semibold">Derniers dossiers joueurs</h2>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 className="text-xl font-semibold">Derniers dossiers joueurs</h2>
+            <p className="text-sm text-muted-foreground">
+              30 derniers dossiers crees (tri par date de creation).
+            </p>
+          </div>
+          <form className="flex items-center gap-2" method="GET">
+            <input
+              type="search"
+              name="q"
+              defaultValue={resolvedSearchParams?.q ?? ""}
+              placeholder="Rechercher un joueur..."
+              className="h-9 w-56 rounded-md border bg-background px-3 text-sm"
+            />
+            {searchQuery ? (
+              <button
+                type="submit"
+                name="q"
+                value=""
+                className="inline-flex h-9 items-center rounded-md border px-3 text-xs hover:bg-muted"
+              >
+                Effacer
+              </button>
+            ) : null}
+          </form>
+        </div>
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
             <thead>
@@ -132,7 +203,7 @@ export default async function AdminTournoiInscriptionsPage() {
               </tr>
             </thead>
             <tbody>
-              {adminPlayers.map((player) => (
+              {recentPlayers.map((player) => (
                 <tr key={player.licence} className="border-b last:border-0 hover:bg-muted/30">
                   <td className="py-3 pr-3 text-muted-foreground">{player.dossard}</td>
                   <td className="py-3 pr-3 text-foreground">{player.name}</td>
@@ -155,6 +226,8 @@ export default async function AdminTournoiInscriptionsPage() {
     </TournamentAdminPage>
   );
 }
+
+
 
 
 
