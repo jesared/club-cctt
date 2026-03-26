@@ -1,7 +1,7 @@
 ﻿"use client";
 
-import { CircleCheckBig, Pencil, Trash2, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { CircleCheckBig, MoreVertical, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
@@ -26,6 +26,7 @@ type DayColumn = {
 
 type TournamentTable = {
   id: string;
+  dayKey: string;
   table: string;
   date: string;
   time: string;
@@ -95,6 +96,11 @@ export function PointagesGrid({
   >(new Set());
   const [editPending, setEditPending] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [openMenuPlayerId, setOpenMenuPlayerId] = useState<string | null>(null);
+  const [menuPosition, setMenuPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
 
   const clubOptions = useMemo(() => {
     return Array.from(new Set(playersState.map((player) => player.club))).sort(
@@ -143,6 +149,41 @@ export function PointagesGrid({
       label: `Jour ${index + 1}`,
     }));
   }, [dayColumns]);
+
+  const dayHeaders = useMemo(() => {
+    return normalizedDayColumns.map((dayColumn, index) => {
+      const dayTables = tournamentTables.filter(
+        (table) => table.dayKey === dayColumn.key,
+      );
+      const times = dayTables.map((table) => table.time).filter(Boolean);
+      const timeRange = (() => {
+        if (times.length === 0) {
+          return null;
+        }
+        const sortedTimes = [...times].sort((a, b) => a.localeCompare(b));
+        const first = sortedTimes[0];
+        const last = sortedTimes[sortedTimes.length - 1];
+        if (first === last) {
+          return first;
+        }
+        return `${first}–${last}`;
+      })();
+
+      return {
+        key: dayColumn.key,
+        label: dayColumn.label,
+        orderLabel: `Jour ${index + 1}`,
+        timeRange,
+        tablesCount: dayTables.length,
+      };
+    });
+  }, [normalizedDayColumns, tournamentTables]);
+
+  const hasActiveFilters =
+    selectedClub !== "all" ||
+    selectedTable !== "all" ||
+    selectedPointageFilter !== "all" ||
+    searchTerm.trim().length > 0;
 
   const filteredPlayers = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLocaleLowerCase("fr");
@@ -397,6 +438,41 @@ export function PointagesGrid({
     }
   }
 
+  useEffect(() => {
+    if (!openMenuPlayerId) {
+      return;
+    }
+
+    function handlePointerDown(event: MouseEvent) {
+      const target = event.target as HTMLElement | null;
+      if (!target) {
+        return;
+      }
+
+      const menuRoot = target.closest(
+        `[data-pointage-menu="${openMenuPlayerId}"]`,
+      );
+      const floatingMenu = target.closest(
+        `[data-pointage-menu-floating="${openMenuPlayerId}"]`,
+      );
+      if (!menuRoot && !floatingMenu) {
+        setOpenMenuPlayerId(null);
+      }
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+    };
+  }, [openMenuPlayerId]);
+
+  function resetFilters() {
+    setSelectedClub("all");
+    setSelectedTable("all");
+    setSelectedPointageFilter("all");
+    setSearchTerm("");
+  }
+
   return (
     <section className="rounded-xl border bg-card p-6 shadow-sm space-y-4 overflow-x-auto">
       <header className="space-y-1">
@@ -406,6 +482,79 @@ export function PointagesGrid({
           l&apos;accueil rapidement.
         </p>
       </header>
+
+      <div className="sticky top-0 z-30 -mx-6 border-b border-border bg-card/95 px-6 py-2 backdrop-blur">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Filtres rapides
+          </span>
+          <div className="flex flex-1 flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setSelectedPointageFilter("all")}
+              className={`whitespace-nowrap rounded-full border px-3 py-1 text-xs font-medium transition ${
+                selectedPointageFilter === "all"
+                  ? "border-primary/40 bg-primary/10 text-primary"
+                  : "border-border bg-muted/30 text-muted-foreground hover:bg-muted/50"
+              }`}
+            >
+              Tous
+            </button>
+            <button
+              type="button"
+              onClick={() => setSelectedPointageFilter("waitlist")}
+              className={`whitespace-nowrap rounded-full border px-3 py-1 text-xs font-medium transition ${
+                selectedPointageFilter === "waitlist"
+                  ? "border-amber-400/50 bg-amber-100 text-amber-900 dark:bg-amber-900/40 dark:text-amber-200"
+                  : "border-border bg-muted/30 text-muted-foreground hover:bg-muted/50"
+              }`}
+            >
+              Attente
+            </button>
+            {dayHeaders.map((dayHeader) => (
+              <button
+                key={`${dayHeader.key}-unchecked`}
+                type="button"
+                onClick={() =>
+                  setSelectedPointageFilter(`unchecked:${dayHeader.key}`)
+                }
+                className={`whitespace-nowrap rounded-full border px-3 py-1 text-xs font-medium transition ${
+                  selectedPointageFilter === `unchecked:${dayHeader.key}`
+                    ? "border-primary/40 bg-primary/10 text-primary"
+                    : "border-border bg-muted/30 text-muted-foreground hover:bg-muted/50"
+                }`}
+              >
+                {dayHeader.orderLabel} · Non pointés
+              </button>
+            ))}
+            {dayHeaders.map((dayHeader) => (
+              <button
+                key={`${dayHeader.key}-checked`}
+                type="button"
+                onClick={() =>
+                  setSelectedPointageFilter(`checked:${dayHeader.key}`)
+                }
+                className={`whitespace-nowrap rounded-full border px-3 py-1 text-xs font-medium transition ${
+                  selectedPointageFilter === `checked:${dayHeader.key}`
+                    ? "border-primary/40 bg-primary/10 text-primary"
+                    : "border-border bg-muted/30 text-muted-foreground hover:bg-muted/50"
+                }`}
+              >
+                {dayHeader.orderLabel} · Pointés
+              </button>
+            ))}
+          </div>
+          {hasActiveFilters ? (
+            <button
+              type="button"
+              onClick={resetFilters}
+              className="whitespace-nowrap rounded-full border border-border bg-muted/40 px-3 py-1 text-xs font-medium text-muted-foreground transition hover:bg-muted/60"
+            >
+              Réinitialiser
+            </button>
+          ) : null}
+        </div>
+      </div>
 
       <div className="grid gap-3 md:grid-cols-4">
         <label className="space-y-1">
@@ -480,22 +629,36 @@ export function PointagesGrid({
         </label>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-border  text-foreground">
+      <div className="overflow-x-auto overflow-y-visible rounded-lg border border-border text-foreground">
         <table className="min-w-full text-sm">
           <thead className="sticky top-0 z-20 bg-card">
             <tr className="border-b border-border text-left text-[11px] uppercase tracking-wide text-muted-foreground">
-              <th className="sticky left-0 z-10 bg-card py-2.5 pl-3 pr-3 font-medium">
+              <th className="sticky left-0 z-20 bg-card py-2.5 pl-3 pr-3 font-medium">
                 Joueur
               </th>
               <th className="py-2.5 pr-3 font-medium">Licence</th>
               <th className="py-2.5 pr-3 font-medium">Club</th>
               <th className="py-2.5 pr-3 font-medium">Tableau(x)</th>
-              {normalizedDayColumns.map((dayColumn) => (
-                <th key={dayColumn.key} className="py-2.5 pr-3 font-medium">
-                  {dayColumn.label}
+              {dayHeaders.map((dayHeader) => (
+                <th key={dayHeader.key} className="py-2.5 pr-3 font-medium">
+                  <div className="space-y-0.5">
+                    <span className="block text-[11px] font-semibold text-foreground">
+                      {dayHeader.orderLabel}
+                    </span>
+                    <span className="block text-[11px] text-muted-foreground">
+                      {dayHeader.label}
+                    </span>
+                    {dayHeader.timeRange ? (
+                      <span className="block text-[10px] text-muted-foreground">
+                        {dayHeader.timeRange} · {dayHeader.tablesCount} tableaux
+                      </span>
+                    ) : null}
+                  </div>
                 </th>
               ))}
-              <th className="py-2.5 pr-3 font-medium">Actions</th>
+              <th className="sticky right-0 z-20 bg-card py-2.5 pl-3 pr-3 font-medium">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -508,11 +671,15 @@ export function PointagesGrid({
                 return (
                   <tr
                     key={player.id}
-                    className={`border-b border-slate-800 last:border-0 hover:bg-accent/10 ${
+                    className={`group border-b border-slate-800 last:border-0 hover:bg-accent/10 ${
                       hasAnyCheck ? "bg-muted/20" : ""
                     }`}
                   >
-                    <td className="sticky left-0 z-10 py-3 pl-3 pr-3 font-medium text-foreground">
+                    <td
+                      className={`sticky left-0 z-10 py-3 pl-3 pr-3 font-medium text-foreground ${
+                        hasAnyCheck ? "bg-muted/20" : "bg-card"
+                      } group-hover:bg-accent/10`}
+                    >
                       <div className="flex flex-wrap items-center gap-2">
                         <span>{player.name}</span>
                         {player.waitlistEventIds.length > 0 ? (
@@ -565,29 +732,33 @@ export function PointagesGrid({
                         </td>
                       );
                     })}
-                    <td className="py-3 pr-3 ">
-                      <div className="flex items-center gap-2">
+                    <td className="sticky right-0 z-10 bg-card py-3 pl-3 pr-3 group-hover:bg-accent/10">
+                      <div
+                        className="relative flex items-center justify-end"
+                        data-pointage-menu={player.id}
+                      >
                         <Button
                           type="button"
-                          variant="link"
+                          variant="ghost"
                           size="icon"
-                          onClick={() => openEditPopup(player)}
-                          title="Éditer le joueur"
-                          aria-label={`Éditer ${player.name}`}
-                          className="cursor-pointer rounded-full hover:bg-primary/10 focus-visible:outline-accent"
+                          onClick={(event) => {
+                            const rect = (
+                              event.currentTarget as HTMLElement
+                            ).getBoundingClientRect();
+                            setMenuPosition({
+                              top: rect.bottom + 8,
+                              left: rect.right,
+                            });
+                            setOpenMenuPlayerId((currentId) =>
+                              currentId === player.id ? null : player.id,
+                            );
+                          }}
+                          aria-haspopup="menu"
+                          aria-expanded={openMenuPlayerId === player.id}
+                          aria-label={`Actions pour ${player.name}`}
+                          className="rounded-full"
                         >
-                          <Pencil size={16} />
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="link"
-                          size="icon"
-                          onClick={() => setDeletingPlayer(player)}
-                          title="Supprimer le joueur"
-                          aria-label={`Supprimer ${player.name}`}
-                          className="cursor-pointer rounded-full text-destructive hover:bg-destructive/10 focus-visible:outline-destructive"
-                        >
-                          <Trash2 size={16} />
+                          <MoreVertical className="h-4 w-4" />
                         </Button>
                       </div>
                     </td>
@@ -799,6 +970,52 @@ export function PointagesGrid({
               </button>
             </div>
           </div>
+        </div>
+      ) : null}
+
+      {openMenuPlayerId && menuPosition ? (
+        <div
+          className="fixed z-50 w-44 rounded-md border border-border bg-card p-1 text-sm shadow-xl"
+          style={{
+            top: menuPosition.top,
+            left: menuPosition.left,
+            transform: "translateX(-100%)",
+          }}
+          data-pointage-menu-floating={openMenuPlayerId}
+          role="menu"
+        >
+          <button
+            type="button"
+            onClick={() => {
+              const player = playersState.find(
+                (item) => item.id === openMenuPlayerId,
+              );
+              if (player) {
+                openEditPopup(player);
+              }
+              setOpenMenuPlayerId(null);
+            }}
+            className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-foreground transition hover:bg-muted/60"
+            role="menuitem"
+          >
+            Éditer
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              const player = playersState.find(
+                (item) => item.id === openMenuPlayerId,
+              );
+              if (player) {
+                setDeletingPlayer(player);
+              }
+              setOpenMenuPlayerId(null);
+            }}
+            className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-destructive transition hover:bg-destructive/10"
+            role="menuitem"
+          >
+            Supprimer
+          </button>
         </div>
       ) : null}
 
