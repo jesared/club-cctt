@@ -9,7 +9,7 @@ import {
 } from "./actions";
 
 type PaymentStatus = "PAYÉ" | "PARTIEL" | "EN ATTENTE";
-type FilterStatus = "TOUS" | Exclude<PaymentStatus, "PAYÉ">;
+type FilterStatus = "TOUS" | PaymentStatus;
 
 type PaymentDossier = {
   groupKey: string;
@@ -66,7 +66,6 @@ export function PaymentsToValidate({ initialPayments }: Props) {
   const [noteByGroup, setNoteByGroup] = useState<Record<string, string>>({});
   const [statusFilter, setStatusFilter] = useState<FilterStatus>("TOUS");
   const [nameFilter, setNameFilter] = useState("");
-  const [showPaidPayments, setShowPaidPayments] = useState(false);
   const [focusMode, setFocusMode] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -85,10 +84,6 @@ export function PaymentsToValidate({ initialPayments }: Props) {
     const normalizedNameFilter = nameFilter.trim().toLowerCase();
 
     return payments.filter((group) => {
-      if (!showPaidPayments && group.paymentStatus === "PAYÉ") {
-        return false;
-      }
-
       if (statusFilter !== "TOUS" && group.paymentStatus !== statusFilter) {
         return false;
       }
@@ -102,7 +97,20 @@ export function PaymentsToValidate({ initialPayments }: Props) {
         group.payerLabel.toLowerCase().includes(normalizedNameFilter)
       );
     });
-  }, [payments, statusFilter, nameFilter, showPaidPayments]);
+  }, [payments, statusFilter, nameFilter]);
+
+  const statusCounts = useMemo(() => {
+    return payments.reduce(
+      (acc, group) => {
+        acc.total += 1;
+        if (group.paymentStatus === "EN ATTENTE") acc.pending += 1;
+        if (group.paymentStatus === "PARTIEL") acc.partial += 1;
+        if (group.paymentStatus === "PAYÉ") acc.paid += 1;
+        return acc;
+      },
+      { total: 0, pending: 0, partial: 0, paid: 0 },
+    );
+  }, [payments]);
 
   const relancePayments = useMemo(
     () => payments.filter((group) => group.paymentStatus !== "PAYÉ"),
@@ -422,19 +430,37 @@ export function PaymentsToValidate({ initialPayments }: Props) {
           focusMode ? "" : "mt-4"
         }`}
       >
-        <label className="flex-1 text-sm font-medium text-foreground" htmlFor="payment-status-filter">
-          Filtrer par statut
-          <select
-            id="payment-status-filter"
-            className="mt-2 w-full rounded-lg border border-border bg-card p-2.5 text-sm"
-            value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value as FilterStatus)}
-          >
-            <option value="TOUS">Tous</option>
-            <option value="EN ATTENTE">En attente</option>
-            <option value="PARTIEL">À régulariser</option>
-          </select>
-        </label>
+        <div className="flex flex-wrap items-center gap-2">
+          {[
+            { value: "TOUS" as const, label: "Tous", count: statusCounts.total },
+            { value: "EN ATTENTE" as const, label: "En attente", count: statusCounts.pending },
+            { value: "PARTIEL" as const, label: "A regulariser", count: statusCounts.partial },
+            { value: "PAYÉ" as const, label: "Payes", count: statusCounts.paid },
+          ].map((chip) => {
+            const active = statusFilter === chip.value;
+            return (
+              <button
+                key={chip.value}
+                type="button"
+                onClick={() => setStatusFilter(chip.value)}
+                className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold transition ${
+                  active
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-background text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                {chip.label}
+                <span
+                  className={`rounded-full px-2 py-0.5 text-[10px] ${
+                    active ? "bg-primary-foreground/20 text-primary-foreground" : "bg-muted text-foreground"
+                  }`}
+                >
+                  {chip.count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
 
         <label className="flex-1 text-sm font-medium text-foreground" htmlFor="payment-name-filter">
           Filtrer par nom du payeur
@@ -447,16 +473,6 @@ export function PaymentsToValidate({ initialPayments }: Props) {
             onChange={(event) => setNameFilter(event.target.value)}
             placeholder="Ex: Martin"
           />
-        </label>
-
-        <label className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium text-muted-foreground">
-          <input
-            type="checkbox"
-            className="h-4 w-4"
-            checked={showPaidPayments}
-            onChange={(event) => setShowPaidPayments(event.target.checked)}
-          />
-          Afficher les paiements validés
         </label>
 
         <button
