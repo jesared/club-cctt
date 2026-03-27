@@ -341,7 +341,7 @@ export default function Header() {
           ) : (
             <Link href="/user" className="rounded-md px-3 py-2 text-sm">
               <Image
-                src={session.user.image || "/default-avatar.png"}
+                src={session.user.image || "/avatar-neutral.svg"}
                 alt="Avatar"
                 width={40}
                 height={40}

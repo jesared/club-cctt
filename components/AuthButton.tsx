@@ -104,15 +104,13 @@ export default function AuthButton({ collapsed = false }: AuthButtonProps) {
       <div
         className={cn("flex items-center gap-3", collapsed && "justify-center")}
       >
-        {session.user?.image && (
-          <Image
-            src={session.user.image}
-            alt="Avatar"
-            width={40}
-            height={40}
-            className={cn("rounded-full", collapsed && "h-8 w-8")}
-          />
-        )}
+        <Image
+          src={session.user?.image || "/avatar-neutral.svg"}
+          alt="Avatar"
+          width={40}
+          height={40}
+          className={cn("rounded-full", collapsed && "h-8 w-8")}
+        />
 
         <div className={cn("flex flex-col text-sm", collapsed && "hidden")}>
           <span className="font-semibold leading-tight">
