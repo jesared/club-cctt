@@ -423,6 +423,7 @@ export async function getAdminPlayers(tournamentId: string): Promise<AdminPlayer
       playerId: true,
       status: true,
       createdAt: true,
+      paidAmountCents: true,
       player: {
         select: {
           nom: true,
