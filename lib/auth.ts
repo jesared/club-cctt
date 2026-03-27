@@ -47,6 +47,15 @@ export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
 
   secret: authSecret,
+  debug: process.env.NODE_ENV !== "production",
+  logger: {
+    error(code, metadata) {
+      console.error("[next-auth][error]", code, metadata);
+    },
+    warn(code) {
+      console.warn("[next-auth][warn]", code);
+    },
+  },
 
   providers: [
     GoogleProvider({
