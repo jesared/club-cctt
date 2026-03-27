@@ -483,7 +483,7 @@ export function PointagesGrid({
         </p>
       </header>
 
-      <div className="sticky top-0 z-30 -mx-6 border-b border-border bg-card/95 px-6 py-2 backdrop-blur">
+      <div className="rounded-xl border border-border bg-card/95 p-4 shadow-sm">
         <div className="flex flex-wrap items-center gap-3">
           <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
             Filtres rapides
@@ -556,7 +556,7 @@ export function PointagesGrid({
         </div>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-4">
+      <div className="grid gap-3 rounded-xl border border-border bg-card p-4 shadow-sm md:grid-cols-4">
         <label className="space-y-1">
           <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
             Rechercher un joueur
@@ -629,7 +629,7 @@ export function PointagesGrid({
         </label>
       </div>
 
-      <div className="overflow-x-auto overflow-y-visible rounded-lg border border-border text-foreground">
+      <div className="overflow-x-auto overflow-y-visible rounded-xl border border-border bg-card shadow-sm text-foreground">
         <table className="min-w-full text-sm">
           <thead className="sticky top-0 z-20 bg-card">
             <tr className="border-b border-border text-left text-[11px] uppercase tracking-wide text-muted-foreground">
@@ -639,20 +639,13 @@ export function PointagesGrid({
               <th className="py-2.5 pr-3 font-medium">Licence</th>
               <th className="py-2.5 pr-3 font-medium">Club</th>
               <th className="py-2.5 pr-3 font-medium">Tableau(x)</th>
+              <th className="py-2.5 pr-3 font-medium">Paiement</th>
               {dayHeaders.map((dayHeader) => (
                 <th key={dayHeader.key} className="py-2.5 pr-3 font-medium">
                   <div className="space-y-0.5">
                     <span className="block text-[11px] font-semibold text-foreground">
                       {dayHeader.orderLabel}
                     </span>
-                    <span className="block text-[11px] text-muted-foreground">
-                      {dayHeader.label}
-                    </span>
-                    {dayHeader.timeRange ? (
-                      <span className="block text-[10px] text-muted-foreground">
-                        {dayHeader.timeRange} · {dayHeader.tablesCount} tableaux
-                      </span>
-                    ) : null}
                   </div>
                 </th>
               ))}
@@ -668,6 +661,14 @@ export function PointagesGrid({
                   (dayColumn) =>
                     checkedState[`${player.id}-${dayColumn.key}`] ?? false,
                 );
+                const paymentStatus = player.payment?.toLowerCase?.() ?? "";
+                const paymentBadgeLabel = paymentStatus.includes("partiel") ||
+                  paymentStatus.includes("régulariser") ||
+                  paymentStatus.includes("regulariser")
+                  ? "Paiement à régulariser"
+                  : paymentStatus.includes("payé")
+                    ? null
+                    : "Paiement en attente";
                 return (
                   <tr
                     key={player.id}
@@ -687,6 +688,11 @@ export function PointagesGrid({
                             Attente
                           </span>
                         ) : null}
+                        {paymentBadgeLabel ? (
+                          <span className="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
+                            {paymentBadgeLabel}
+                          </span>
+                        ) : null}
                       </div>
                     </td>
                     <td className="py-3 pr-3 text-foreground">
@@ -695,6 +701,21 @@ export function PointagesGrid({
                     <td className="py-3 pr-3 text-foreground">{player.club}</td>
                     <td className="py-3 pr-3 text-foreground">
                       {player.table}
+                    </td>
+                    <td className="py-3 pr-3 text-foreground">
+                      {paymentStatus.includes("payé") ? (
+                        <span className="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200">
+                          Payé
+                        </span>
+                      ) : paymentBadgeLabel ? (
+                        <span className="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
+                          {paymentBadgeLabel}
+                        </span>
+                      ) : (
+                        <span className="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-700 dark:bg-slate-800/60 dark:text-slate-200">
+                          En attente
+                        </span>
+                      )}
                     </td>
                     {normalizedDayColumns.map((dayColumn) => {
                       const key = `${player.id}-${dayColumn.key}`;

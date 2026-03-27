@@ -460,7 +460,14 @@ export async function getAdminPlayers(tournamentId: string): Promise<AdminPlayer
   });
 
   return registrations.map((registration) => {
+    const totalDueCents = registration.registrationEvents.reduce(
+      (acc, entry) => acc + entry.event.feeOnlineCents,
+      0,
+    );
     const hasPaidPayment = registration.payments.some((payment) => payment.status === "PAID");
+    const isPartialPayment =
+      registration.paidAmountCents > 0 &&
+      registration.paidAmountCents < totalDueCents;
     const hasCheckedIn = registration.registrationEvents.some(
       (registrationEvent) => registrationEvent.status === RegistrationEventStatus.CHECKED_IN,
     );
@@ -482,7 +489,11 @@ export async function getAdminPlayers(tournamentId: string): Promise<AdminPlayer
       licence: registration.player.licence,
       ranking: registration.player.points ? `${registration.player.points}` : "—",
       table: registration.registrationEvents.map((entry) => entry.event.code).join(", ") || "—",
-      payment: hasPaidPayment ? "Payé" : "En attente",
+      payment: hasPaidPayment
+        ? isPartialPayment
+          ? "À régulariser"
+          : "Payé"
+        : "En attente",
       status: computedStatus,
       engagedEventIds: registration.registrationEvents.map((entry) => entry.eventId),
       waitlistEventIds: registration.registrationEvents
