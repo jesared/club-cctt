@@ -4,6 +4,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import EmailProvider from "next-auth/providers/email";
 import GoogleProvider from "next-auth/providers/google";
+import { createTransport } from "nodemailer";
 
 const googleClientId =
   process.env.GOOGLE_CLIENT_ID ??
@@ -16,6 +17,7 @@ const googleClientSecret =
   process.env.GOOGLE_SECRET;
 
 const authSecret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
+const appName = process.env.NEXT_PUBLIC_APP_NAME ?? "CCTT";
 const emailServer =
   process.env.EMAIL_SERVER ??
   process.env.GOOGLE_EMAIL_SERVER ??
@@ -67,6 +69,45 @@ export const authOptions: NextAuthOptions = {
           EmailProvider({
             server: emailServer,
             from: emailFrom,
+            sendVerificationRequest: async ({
+              identifier,
+              url,
+              provider,
+            }) => {
+              const { host } = new URL(url);
+              const transport = createTransport(provider.server);
+
+              const result = await transport.sendMail({
+                to: identifier,
+                from: provider.from,
+                subject: `Votre lien de connexion ${appName}`,
+                text: `Bonjour,\n\nVoici votre lien de connexion pour ${appName} :\n${url}\n\nSi vous n’êtes pas à l’origine de cette demande, ignorez cet email.\n`,
+                html: `
+                  <div style="font-family:Arial,Helvetica,sans-serif;line-height:1.6;color:#111;">
+                    <h2 style="margin:0 0 12px;">Connexion à ${appName}</h2>
+                    <p>Bonjour,</p>
+                    <p>Voici votre lien de connexion sécurisé :</p>
+                    <p style="margin:20px 0;">
+                      <a href="${url}" style="background:#111;color:#fff;padding:10px 16px;border-radius:6px;text-decoration:none;display:inline-block;">
+                        Se connecter
+                      </a>
+                    </p>
+                    <p style="font-size:12px;color:#555;">
+                      Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :<br/>
+                      <span>${url}</span>
+                    </p>
+                    <p style="font-size:12px;color:#777;">
+                      Demande effectuée pour <strong>${host}</strong>. Si vous n’êtes pas à l’origine de cette demande, ignorez cet email.
+                    </p>
+                  </div>
+                `,
+              });
+
+              const failed = result.rejected.concat(result.pending).filter(Boolean);
+              if (failed.length > 0) {
+                throw new Error(`Email(s) failed: ${failed.join(", ")}`);
+              }
+            },
           }),
         ]
       : []),
@@ -115,6 +156,10 @@ export const authOptions: NextAuthOptions = {
 
       return true;
     },
+  },
+  pages: {
+    verifyRequest: "/auth/verify-request",
+    signIn: "/auth/signin",
   },
 };
 
