@@ -13,6 +13,7 @@ type PointagesGridPlayer = {
   ranking: string;
   table: string;
   status: string;
+  payment: string;
   engagedEventIds: string[];
   waitlistEventIds: string[];
   checkedDayKeys: string[];
@@ -101,6 +102,7 @@ export function PointagesGrid({
     top: number;
     left: number;
   } | null>(null);
+  const [paymentDrawerOpen, setPaymentDrawerOpen] = useState(false);
 
   const clubOptions = useMemo(() => {
     return Array.from(new Set(playersState.map((player) => player.club))).sort(
@@ -189,6 +191,12 @@ export function PointagesGrid({
     const normalizedSearch = searchTerm.trim().toLocaleLowerCase("fr");
 
     return playersState.filter((player) => {
+      const paymentStatus = player.payment?.toLowerCase?.() ?? "";
+      const isPaymentPending =
+        paymentStatus.includes("partiel") ||
+        paymentStatus.includes("régulariser") ||
+        paymentStatus.includes("regulariser") ||
+        (!paymentStatus.includes("payé") && !paymentStatus.includes("paye"));
       const matchesClub =
         selectedClub === "all" || player.club === selectedClub;
       const playerTables = player.table
@@ -223,7 +231,13 @@ export function PointagesGrid({
         player.name.toLocaleLowerCase("fr").includes(normalizedSearch) ||
         player.licence.toLocaleLowerCase("fr").includes(normalizedSearch);
 
-      return matchesClub && matchesTable && matchesPointage && matchesSearch;
+      return (
+        matchesClub &&
+        matchesTable &&
+        matchesPointage &&
+        matchesSearch &&
+        (paymentDrawerOpen ? isPaymentPending : true)
+      );
     });
   }, [
     checkedState,
@@ -232,6 +246,7 @@ export function PointagesGrid({
     selectedClub,
     selectedPointageFilter,
     selectedTable,
+    paymentDrawerOpen,
   ]);
 
   const parsedEditingPoints = useMemo(() => {
@@ -553,6 +568,17 @@ export function PointagesGrid({
               Réinitialiser
             </button>
           ) : null}
+          <button
+            type="button"
+            onClick={() => setPaymentDrawerOpen((current) => !current)}
+            className={`whitespace-nowrap rounded-full border px-3 py-1 text-xs font-medium transition ${
+              paymentDrawerOpen
+                ? "border-amber-400/50 bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200"
+                : "border-border bg-muted/30 text-muted-foreground hover:bg-muted/50"
+            }`}
+          >
+            {paymentDrawerOpen ? "Paiements en attente" : "Filtrer paiements"}
+          </button>
         </div>
       </div>
 
@@ -662,19 +688,26 @@ export function PointagesGrid({
                     checkedState[`${player.id}-${dayColumn.key}`] ?? false,
                 );
                 const paymentStatus = player.payment?.toLowerCase?.() ?? "";
-                const paymentBadgeLabel = paymentStatus.includes("partiel") ||
+                const paymentBadgeLabel =
+                  paymentStatus.includes("partiel") ||
                   paymentStatus.includes("régulariser") ||
                   paymentStatus.includes("regulariser")
-                  ? "Paiement à régulariser"
-                  : paymentStatus.includes("payé")
-                    ? null
-                    : "Paiement en attente";
+                    ? "Paiement à régulariser"
+                    : paymentStatus.includes("payé")
+                      ? null
+                      : "Paiement en attente";
+                const isPaymentPending =
+                  paymentStatus.includes("partiel") ||
+                  paymentStatus.includes("régulariser") ||
+                  paymentStatus.includes("regulariser") ||
+                  (!paymentStatus.includes("payé") &&
+                    !paymentStatus.includes("paye"));
                 return (
                   <tr
                     key={player.id}
                     className={`group border-b border-slate-800 last:border-0 hover:bg-accent/10 ${
                       hasAnyCheck ? "bg-muted/20" : ""
-                    }`}
+                    } ${isPaymentPending ? "bg-amber-50/40 dark:bg-amber-900/10" : ""}`}
                   >
                     <td
                       className={`sticky left-0 z-10 py-3 pl-3 pr-3 font-medium text-foreground ${
@@ -683,16 +716,6 @@ export function PointagesGrid({
                     >
                       <div className="flex flex-wrap items-center gap-2">
                         <span>{player.name}</span>
-                        {player.waitlistEventIds.length > 0 ? (
-                          <span className="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
-                            Attente
-                          </span>
-                        ) : null}
-                        {paymentBadgeLabel ? (
-                          <span className="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
-                            {paymentBadgeLabel}
-                          </span>
-                        ) : null}
                       </div>
                     </td>
                     <td className="py-3 pr-3 text-foreground">
