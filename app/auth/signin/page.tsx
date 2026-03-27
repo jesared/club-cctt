@@ -8,9 +8,15 @@ export default function SignInPage() {
         <div className="absolute bottom-10 right-10 h-40 w-40 rounded-full bg-secondary/40 blur-2xl" />
       </div>
       <SignInClient />
-      <p className="mt-6 text-xs text-muted-foreground">
-        Besoin d'aide ? Contactez le club si vous ne recevez pas le lien.
-      </p>
+      <div className="mt-6 flex flex-col items-center gap-2 text-xs text-muted-foreground">
+        <p>Besoin d'aide ? Contactez le club si vous ne recevez pas le lien.</p>
+        <a
+          href="/"
+          className="text-foreground underline-offset-4 hover:underline"
+        >
+          Retour au site
+        </a>
+      </div>
     </main>
   );
 }
