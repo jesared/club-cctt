@@ -220,6 +220,11 @@ export const navigation: MenuSection[] = [
         label: "Templates",
         icon: LayoutGrid,
       },
+      {
+        href: "/admin/tournoi/documentation",
+        label: "Documentation",
+        icon: FileText,
+      },
     ],
   },
 ];
