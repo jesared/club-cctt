@@ -440,6 +440,7 @@ export async function getAdminPlayers(tournamentId: string): Promise<AdminPlayer
             select: {
               code: true,
               startAt: true,
+              feeOnlineCents: true,
             },
           },
           status: true,
