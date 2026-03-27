@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import SignInClient from "./signin-client";
 
 export default function SignInPage() {
@@ -7,7 +9,9 @@ export default function SignInPage() {
         <div className="absolute left-1/2 top-8 h-64 w-64 -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
         <div className="absolute bottom-10 right-10 h-40 w-40 rounded-full bg-secondary/40 blur-2xl" />
       </div>
-      <SignInClient />
+      <Suspense fallback={null}>
+        <SignInClient />
+      </Suspense>
       <div className="mt-6 flex flex-col items-center gap-2 text-xs text-muted-foreground">
         <p>Besoin d'aide ? Contactez le club si vous ne recevez pas le lien.</p>
         <a
