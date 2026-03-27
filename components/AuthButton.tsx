@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { useState } from "react";
 import Image from "next/image";
 
 type AuthButtonProps = {
@@ -11,6 +12,10 @@ type AuthButtonProps = {
 
 export default function AuthButton({ collapsed = false }: AuthButtonProps) {
   const { data: session, status } = useSession();
+  const [email, setEmail] = useState<string>("");
+  const [emailStatus, setEmailStatus] = useState<
+    "idle" | "sending" | "sent" | "error"
+  >("idle");
 
   // Chargement
   if (status === "loading") {
@@ -36,6 +41,54 @@ export default function AuthButton({ collapsed = false }: AuthButtonProps) {
         >
           {collapsed ? "Login" : "Se connecter"}
         </Button>
+        {!collapsed ? (
+          <div className="mt-3 space-y-2">
+            <label className="block text-xs font-medium text-muted-foreground">
+              Lien magique (Google)
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="vous@exemple.com"
+                className="h-9 flex-1 rounded-md border border-border bg-card px-3 text-sm text-foreground"
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={async () => {
+                  if (!email.trim()) {
+                    setEmailStatus("error");
+                    return;
+                  }
+                  setEmailStatus("sending");
+                  const result = await signIn("email", {
+                    email: email.trim(),
+                    redirect: false,
+                  });
+                  if (result?.ok) {
+                    setEmailStatus("sent");
+                  } else {
+                    setEmailStatus("error");
+                  }
+                }}
+              >
+                {emailStatus === "sending" ? "Envoi..." : "Recevoir le lien"}
+              </Button>
+            </div>
+            {emailStatus === "sent" ? (
+              <p className="text-xs text-emerald-500">
+                Lien envoyé. Vérifiez votre email.
+              </p>
+            ) : null}
+            {emailStatus === "error" ? (
+              <p className="text-xs text-destructive">
+                Email invalide ou envoi impossible.
+              </p>
+            ) : null}
+          </div>
+        ) : null}
       </div>
     );
   }

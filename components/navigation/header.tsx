@@ -335,7 +335,7 @@ export default function Header() {
             </>
           )}
           {!session ? (
-            <Button size="sm" onClick={() => void signIn("google")}>
+            <Button size="sm" onClick={() => void signIn()}>
               Connexion
             </Button>
           ) : (

@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import type { Role } from "@prisma/client";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import NextAuth, { NextAuthOptions } from "next-auth";
+import EmailProvider from "next-auth/providers/email";
 import GoogleProvider from "next-auth/providers/google";
 
 const googleClientId =
@@ -15,6 +16,14 @@ const googleClientSecret =
   process.env.GOOGLE_SECRET;
 
 const authSecret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
+const emailServer =
+  process.env.EMAIL_SERVER ??
+  process.env.GOOGLE_EMAIL_SERVER ??
+  process.env.GOOGLE_SMTP_SERVER;
+const emailFrom =
+  process.env.EMAIL_FROM ??
+  process.env.GOOGLE_EMAIL_FROM ??
+  process.env.GOOGLE_SMTP_FROM;
 
 if (!googleClientId || !googleClientSecret) {
   console.error(
@@ -28,6 +37,12 @@ if (!authSecret) {
   );
 }
 
+if (!emailServer || !emailFrom) {
+  console.warn(
+    "[auth] Missing EMAIL_SERVER/EMAIL_FROM for magic link emails. Email provider disabled.",
+  );
+}
+
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
 
@@ -38,6 +53,14 @@ export const authOptions: NextAuthOptions = {
       clientId: googleClientId!,
       clientSecret: googleClientSecret!,
     }),
+    ...(emailServer && emailFrom
+      ? [
+          EmailProvider({
+            server: emailServer,
+            from: emailFrom,
+          }),
+        ]
+      : []),
   ],
 
   session: {
