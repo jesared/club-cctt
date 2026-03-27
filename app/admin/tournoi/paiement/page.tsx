@@ -160,9 +160,12 @@ export default async function AdminTournoiPaiementPage() {
             <p className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">
               OK : aucun paiement en attente de validation.
             </p>
-          ) : (
-            <PaymentsToValidate initialPayments={paymentsToValidate} />
-          )}
+          ) : null}
+
+          <PaymentsToValidate
+            initialPayments={paymentsToValidate}
+            defaultStatusFilter={pendingPaymentsCount === 0 ? "PAYÉ" : "TOUS"}
+          />
         </article>
       </section>
     </TournamentAdminPage>

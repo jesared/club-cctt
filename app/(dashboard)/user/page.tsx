@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import ProfileClient from "./profile-client";
 
 const quickActions = [
   {
@@ -34,15 +35,14 @@ const quickActions = [
 export default function UserProfilePage() {
   return (
     <main className="max-w-7xl mx-auto px-4 py-8 space-y-6">
-      <header className="mb-6 flex items-center justify-between ">
+      <header className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Dashboard utilisateur</h1>
+          <h1 className="text-2xl font-semibold">Espace membre</h1>
           <p className="text-sm text-muted-foreground">
-            Gérez vos inscriptions, paiements et documents depuis un seul
-            espace.
+            Retrouvez vos inscriptions, paiements et documents en un seul endroit.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button asChild variant="secondary">
             <Link href="/tournoi">Voir le tournoi</Link>
           </Button>
@@ -51,6 +51,8 @@ export default function UserProfilePage() {
           </Button>
         </div>
       </header>
+
+      <ProfileClient />
 
       <section className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {quickActions.map((action) => {

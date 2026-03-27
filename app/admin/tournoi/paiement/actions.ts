@@ -171,18 +171,54 @@ export async function updatePaymentGroupPaidAmount(groupKey: string, paidAmountC
   const allocations = registrationsWithDue.map((registration) => {
     const allocation = Math.min(registration.totalAmountDueCents, remainingToAllocate);
     remainingToAllocate -= allocation;
-    return { id: registration.id, paidAmountCents: allocation };
+    return {
+      id: registration.id,
+      paidAmountCents: allocation,
+      totalAmountDueCents: registration.totalAmountDueCents,
+    };
   });
 
   await prisma.$transaction(
-    allocations.map((allocation) =>
-      prisma.tournamentRegistration.update({
+    allocations.map((allocation) => {
+      const pendingCents = Math.max(
+        allocation.totalAmountDueCents - allocation.paidAmountCents,
+        0,
+      );
+
+      return prisma.tournamentRegistration.update({
         where: { id: allocation.id },
         data: {
           paidAmountCents: allocation.paidAmountCents,
+          payments: {
+            deleteMany: {},
+            create: [
+              ...(allocation.paidAmountCents > 0
+                ? [
+                    {
+                      amountCents: allocation.paidAmountCents,
+                      status: PaymentStatus.PAID,
+                      method: PaymentMethod.CASH,
+                      provider: "ADMIN_PANEL",
+                      paidAt: new Date(),
+                    },
+                  ]
+                : []),
+              ...(pendingCents > 0
+                ? [
+                    {
+                      amountCents: pendingCents,
+                      status: PaymentStatus.PENDING,
+                      method: PaymentMethod.CASH,
+                      provider: "ADMIN_PANEL",
+                      paidAt: null,
+                    },
+                  ]
+                : []),
+            ],
+          },
         },
-      }),
-    ),
+      });
+    }),
   );
 
   revalidatePath("/admin/tournoi/paiement");

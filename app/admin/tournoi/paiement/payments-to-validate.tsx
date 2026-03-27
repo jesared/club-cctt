@@ -34,6 +34,7 @@ type PaymentDossier = {
 
 type Props = {
   initialPayments: PaymentDossier[];
+  defaultStatusFilter?: FilterStatus;
 };
 
 function formatEuro(cents: number) {
@@ -60,11 +61,16 @@ function getSuggestedAction(status: PaymentStatus) {
   return "Contrôler le paiement en ligne puis marquer le dossier comme réglé";
 }
 
-export function PaymentsToValidate({ initialPayments }: Props) {
+export function PaymentsToValidate({
+  initialPayments,
+  defaultStatusFilter,
+}: Props) {
   const [payments, setPayments] = useState(initialPayments);
   const [selectedGroupKey, setSelectedGroupKey] = useState<string | null>(null);
   const [noteByGroup, setNoteByGroup] = useState<Record<string, string>>({});
-  const [statusFilter, setStatusFilter] = useState<FilterStatus>("TOUS");
+  const [statusFilter, setStatusFilter] = useState<FilterStatus>(
+    defaultStatusFilter ?? "TOUS",
+  );
   const [nameFilter, setNameFilter] = useState("");
   const [focusMode, setFocusMode] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -149,6 +155,11 @@ export function PaymentsToValidate({ initialPayments }: Props) {
     setNoteValue(existingNote);
     setSavedNoteValue(existingNote);
   }, [selectedPayment]);
+
+  useEffect(() => {
+    if (!defaultStatusFilter) return;
+    setStatusFilter(defaultStatusFilter);
+  }, [defaultStatusFilter]);
 
   useEffect(() => {
     if (!focusMode) return;
@@ -289,7 +300,7 @@ export function PaymentsToValidate({ initialPayments }: Props) {
         }),
       );
 
-      setToastMessage("Note enregistree.");
+      setToastMessage("Note enregistrée.");
       setTimeout(() => setToastMessage(null), 2500);
     });
   };
@@ -358,8 +369,9 @@ export function PaymentsToValidate({ initialPayments }: Props) {
         }),
       );
 
-      setToastMessage("Montant encaisse mis a jour.");
+      setToastMessage("Montant enregistré. Dossier mis à jour.");
       setTimeout(() => setToastMessage(null), 2500);
+      closeModal();
     });
   };
 
@@ -379,7 +391,7 @@ export function PaymentsToValidate({ initialPayments }: Props) {
 
   const exportRelanceCsv = () => {
     if (relancePayments.length === 0) {
-      setToastMessage("Aucun dossier a relancer.");
+      setToastMessage("Aucun dossier à relancer.");
       setTimeout(() => setToastMessage(null), 2500);
       return;
     }
@@ -434,8 +446,8 @@ export function PaymentsToValidate({ initialPayments }: Props) {
           {[
             { value: "TOUS" as const, label: "Tous", count: statusCounts.total },
             { value: "EN ATTENTE" as const, label: "En attente", count: statusCounts.pending },
-            { value: "PARTIEL" as const, label: "A regulariser", count: statusCounts.partial },
-            { value: "PAYÉ" as const, label: "Payes", count: statusCounts.paid },
+            { value: "PARTIEL" as const, label: "À régulariser", count: statusCounts.partial },
+            { value: "PAYÉ" as const, label: "Payés", count: statusCounts.paid },
           ].map((chip) => {
             const active = statusFilter === chip.value;
             return (
@@ -493,7 +505,7 @@ export function PaymentsToValidate({ initialPayments }: Props) {
 
         {focusMode ? (
           <div className="ml-auto text-xs text-muted-foreground md:text-[11px]">
-            ↑/↓ naviguer · Entree ouvrir · Esc fermer
+            ↑/↓ naviguer · Entrée ouvrir · Esc fermer
           </div>
         ) : null}
       </div>
@@ -613,14 +625,8 @@ export function PaymentsToValidate({ initialPayments }: Props) {
               </button>
             </div>
 
-            <div className="mt-4 flex flex-col gap-3 rounded-lg border border-border bg-secondary/20 p-4">
-              <div className="flex items-baseline justify-between gap-3">
-                <p className="text-sm text-muted-foreground">Reste a encaisser</p>
-                <p className="text-2xl font-semibold text-foreground">
-                  {formatEuro(selectedPayment.remainingCents)}
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2 text-[11px] font-semibold">
+            <div className="mt-4 space-y-3 rounded-lg border border-border bg-secondary/20 p-4">
+              <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold">
                 <span
                   className={`rounded-full px-2 py-1 ${
                     selectedPayment.paymentStatus === "PAYÉ"
@@ -635,30 +641,51 @@ export function PaymentsToValidate({ initialPayments }: Props) {
                 <span className="rounded-full border border-border px-2 py-1 text-foreground">
                   Type : {selectedPayment.dossierType}
                 </span>
-                <span className="rounded-full border border-border px-2 py-1 text-foreground">
-                  Deja paye : {formatEuro(selectedPayment.totalPaidCents)}
-                </span>
-                <span className="rounded-full border border-border px-2 py-1 text-foreground">
-                  Montant du : {formatEuro(selectedPayment.totalAmountDueCents)}
-                </span>
               </div>
+
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div className="rounded-lg border border-border bg-card px-3 py-2">
+                  <p className="text-xs text-muted-foreground">Montant dû</p>
+                  <p className="text-lg font-semibold text-foreground">
+                    {formatEuro(selectedPayment.totalAmountDueCents)}
+                  </p>
+                </div>
+                <div className="rounded-lg border border-border bg-card px-3 py-2">
+                  <p className="text-xs text-muted-foreground">Déjà payé</p>
+                  <p className="text-lg font-semibold text-foreground">
+                    {formatEuro(selectedPayment.totalPaidCents)}
+                  </p>
+                </div>
+                <div className="rounded-lg border border-border bg-card px-3 py-2">
+                  <p className="text-xs text-muted-foreground">Reste à encaisser</p>
+                  <p className="text-lg font-semibold text-foreground">
+                    {formatEuro(selectedPayment.remainingCents)}
+                  </p>
+                </div>
+              </div>
+
               <p className="text-xs text-muted-foreground">
-                Contact : {selectedPayment.payerEmail || "-"} / {selectedPayment.payerPhone || "-"}
+                Contact : {selectedPayment.payerEmail || "-"} /{" "}
+                {selectedPayment.payerPhone || "-"}
               </p>
             </div>
 
             <p className="mt-3 text-xs text-muted-foreground">
               Joueurs : {selectedPayment.players.join(", ")}
             </p>
-            {selectedPayment.hasPaymentMismatch ? (
-              <p className="mt-2 text-xs font-medium text-amber-700 dark:text-amber-300">
-                Incoherence detectee entre le montant saisi et les paiements enregistrés.
-              </p>
+            {selectedPayment.hasPaymentMismatch &&
+            selectedPayment.totalPaidCents > 0 ? (
+              <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-200">
+                Montant ajusté manuellement. Vérifie le récapitulatif.
+              </div>
             ) : null}
 
             <div className="mt-4 grid gap-2 rounded-lg border border-border bg-card p-3 text-sm">
-              <label className="text-xs font-medium text-muted-foreground" htmlFor="paid-amount">
-                Montant a encaisser (EUR)
+              <label
+                className="text-xs font-medium text-muted-foreground"
+                htmlFor="paid-amount"
+              >
+                Montant à encaisser (EUR)
               </label>
               <div className="flex flex-wrap items-center gap-2">
                 <input
@@ -692,7 +719,10 @@ export function PaymentsToValidate({ initialPayments }: Props) {
               </div>
             </div>
 
-            <label className="mt-4 block text-sm font-medium text-foreground" htmlFor="payment-note">
+            <label
+              className="mt-4 block text-sm font-medium text-foreground"
+              htmlFor="payment-note"
+            >
               Note interne
             </label>
             <textarea
@@ -706,15 +736,15 @@ export function PaymentsToValidate({ initialPayments }: Props) {
               <div className="flex items-center gap-2">
                 {selectedPayment.noteMismatch ? (
                   <span className="text-amber-700 dark:text-amber-300">
-                    Notes differentes detectees dans le dossier.
+                    Notes différentes détectées dans le dossier.
                   </span>
                 ) : null}
                 {noteValue.trim() !== savedNoteValue.trim() ? (
                   <span className="text-amber-700 dark:text-amber-300">
-                    Modifie (non sauvegarde).
+                    Modifié (non sauvegardé).
                   </span>
                 ) : (
-                  <span>Enregistre.</span>
+                  <span>Enregistré.</span>
                 )}
                 <span
                   className={`rounded-full border px-2 py-0.5 text-[10px] ${
@@ -763,6 +793,16 @@ export function PaymentsToValidate({ initialPayments }: Props) {
                 </button>
               ) : null}
               {selectedPayment.paymentStatus === "PARTIEL" ? (
+                <button
+                  type="button"
+                  onClick={resetPaymentToPending}
+                  disabled={isPending}
+                  className="rounded-lg border border-border bg-muted/30 px-4 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted/50 dark:hover:bg-muted/40 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  Repasser en attente
+                </button>
+              ) : null}
+              {selectedPayment.paymentStatus === "PAYÉ" ? (
                 <button
                   type="button"
                   onClick={resetPaymentToPending}

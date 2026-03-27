@@ -1,7 +1,7 @@
 ﻿"use client";
 
-import { FormEvent, useMemo, useState } from "react";
 import { trackKpiEvent } from "@/lib/kpi";
+import { FormEvent, useMemo, useState } from "react";
 
 type FeedbackState =
   | { type: "success"; message: string }
@@ -515,7 +515,7 @@ export default function TournamentRegistrationForm({
         {formData.points.trim() ? (
           <div className="space-y-4">
             <legend className="text-sm font-medium">Tableaux souhaites</legend>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm">
               Etape 2 : vous pouvez selectionner un ou plusieurs tableaux.
             </p>
             {groupedTableOptions.map((group) => (
@@ -538,7 +538,8 @@ export default function TournamentRegistrationForm({
                         checked={formData.tables.includes(table.value)}
                         disabled={
                           !isEligible(parsedPoints, formData.gender, table) ||
-                          (table.isFull && !formData.waitlistTables.includes(table.value))
+                          (table.isFull &&
+                            !formData.waitlistTables.includes(table.value))
                         }
                         onChange={() => toggleTable(table.value)}
                         className="mt-1 accent-primary"
@@ -546,39 +547,49 @@ export default function TournamentRegistrationForm({
                       <span className="text-sm text-foreground">
                         <span className="block">{table.label}</span>
                         <span className="block text-muted-foreground">
-                          En ligne : {table.onlinePriceLabel} - Sur place : {table.onsitePriceLabel}
+                          En ligne : {table.onlinePriceLabel} - Sur place :{" "}
+                          {table.onsitePriceLabel}
                         </span>
                         {table.isFull ? (
                           <span className="mt-1 inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-700">
-                            Complet - liste d'attente uniquement
+                            Complet - liste d&apos;attente uniquement
                           </span>
                         ) : null}
                         {table.isFull ? (
                           <label className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
                             <input
                               type="checkbox"
-                              checked={formData.waitlistTables.includes(table.value)}
+                              checked={formData.waitlistTables.includes(
+                                table.value,
+                              )}
                               onChange={(event) => {
                                 const wantsWaitlist = event.target.checked;
                                 setFormData((current) => ({
                                   ...current,
                                   waitlistTables: wantsWaitlist
                                     ? [...current.waitlistTables, table.value]
-                                    : current.waitlistTables.filter((value) => value !== table.value),
+                                    : current.waitlistTables.filter(
+                                        (value) => value !== table.value,
+                                      ),
                                   tables: wantsWaitlist
                                     ? current.tables.includes(table.value)
                                       ? current.tables
                                       : [...current.tables, table.value]
-                                    : current.tables.filter((value) => value !== table.value),
+                                    : current.tables.filter(
+                                        (value) => value !== table.value,
+                                      ),
                                 }));
                               }}
                             />
-                            Je souhaite etre sur liste d'attente pour ce tableau
+                            Je souhaite etre sur liste d&apos;attente pour ce
+                            tableau
                           </label>
                         ) : null}
                         {table.remainingSpots !== null && !table.isFull ? (
                           <span className="mt-1 block text-xs text-muted-foreground">
-                            {table.remainingSpots} place{table.remainingSpots > 1 ? "s" : ""} restante{table.remainingSpots > 1 ? "s" : ""}
+                            {table.remainingSpots} place
+                            {table.remainingSpots > 1 ? "s" : ""} restante
+                            {table.remainingSpots > 1 ? "s" : ""}
                           </span>
                         ) : null}
                       </span>
@@ -630,5 +641,3 @@ export default function TournamentRegistrationForm({
     </form>
   );
 }
-
-

@@ -581,8 +581,10 @@ export async function getAdminPaymentGroups(tournamentId: string): Promise<Admin
     const paymentsPaidCents = registration.payments
       .filter((payment) => payment.status === "PAID")
       .reduce((acc, payment) => acc + payment.amountCents, 0);
-    const hasPaymentMismatch = registration.paidAmountCents !== paymentsPaidCents;
-    const effectivePaidCents = hasPaymentMismatch
+    const hasRecordedPayments = registration.payments.length > 0;
+    const hasPaymentMismatch =
+      hasRecordedPayments && registration.paidAmountCents !== paymentsPaidCents;
+    const effectivePaidCents = hasRecordedPayments
       ? paymentsPaidCents
       : registration.paidAmountCents;
     const totalPendingCents = registration.payments
