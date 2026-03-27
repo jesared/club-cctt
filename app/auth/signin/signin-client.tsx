@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getProviders, signIn } from "next-auth/react";
+import { getProviders, signIn, useSession } from "next-auth/react";
 import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 
@@ -21,10 +22,22 @@ export default function SignInClient() {
   const [emailStatus, setEmailStatus] = useState<
     "idle" | "sending" | "sent" | "error"
   >("idle");
+  const { status } = useSession();
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     getProviders().then((result) => setProviders(result ?? null));
   }, []);
+
+  useEffect(() => {
+    if (status !== "authenticated") {
+      return;
+    }
+
+    const callbackUrl = searchParams?.get("callbackUrl");
+    router.replace(callbackUrl || "/user");
+  }, [router, searchParams, status]);
 
   const hasEmailProvider = providers
     ? Object.values(providers).some((provider) => provider.id === "email")
