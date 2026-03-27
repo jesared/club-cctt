@@ -44,7 +44,7 @@ export default function AuthButton({ collapsed = false }: AuthButtonProps) {
         {!collapsed ? (
           <div className="mt-3 space-y-2">
             <label className="block text-xs font-medium text-muted-foreground">
-              Lien magique (Google)
+              Lien magique
             </label>
             <div className="flex gap-2">
               <input
