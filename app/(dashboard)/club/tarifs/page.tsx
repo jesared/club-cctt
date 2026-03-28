@@ -1,5 +1,8 @@
 ﻿import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
+import { Activity, Clock, IdCard } from "lucide-react";
 
 type TarifLigne = {
   nom: string;
@@ -119,13 +122,15 @@ export default async function TarifsPage() {
           </CardHeader>
 
           <CardContent className="space-y-6">
-            <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 ">
+            <div className="flex flex-wrap gap-2">
               {data.paiement.lignes.map((ligne) => (
-                <li key={ligne}>{ligne}</li>
+                <Badge key={ligne} variant="secondary" className="px-3 py-1">
+                  {ligne}
+                </Badge>
               ))}
-            </ul>
+            </div>
 
-            <div className="space-y-2  ">
+            <div className="space-y-2">
               {data.paiement.mentions.map((mention) => (
                 <p key={mention}>{mention}</p>
               ))}
@@ -141,29 +146,91 @@ export default async function TarifsPage() {
           </h2>
 
           <ul className="grid max-w-4xl grid-cols-1 gap-4 sm:grid-cols-2">
-            {data.inclus.map((item) => (
-              <li key={item} className="flex items-start gap-3">
-                <span className="font-bold text-primary ">•</span>
-                <span>{item}</span>
-              </li>
-            ))}
+            {data.inclus.map((item) => {
+              const label = item.toLowerCase();
+              const Icon =
+                label.includes("licence") || label.includes("licence fftt")
+                  ? IdCard
+                  : label.includes("créneau") || label.includes("entrainement")
+                    ? Clock
+                    : Activity;
+
+              return (
+                <li key={item} className="flex items-start gap-3">
+                  <span className="mt-0.5 text-primary">
+                    <Icon className="h-4 w-4" />
+                  </span>
+                  <span>{item}</span>
+                </li>
+              );
+            })}
           </ul>
         </div>
       </section>
 
       <section>
-        <div className="mb-4 border-l-4 border-primary pl-6 ">
-          <h2 className="mb-2 text-xl font-semibold ">{data.inscription.titre}</h2>
-          <p className="max-w-3xl">{data.inscription.description}</p>
+        <h2 className="mb-6 text-2xl font-semibold">FAQ</h2>
+        <div className="grid gap-4 md:grid-cols-3">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">
+                Peut-on payer en plusieurs fois ?
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-muted-foreground">
+              Oui, contactez-nous pour mettre en place un règlement échelonné.
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">
+                Tarif réduit pour étudiants ?
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-muted-foreground">
+              Des tarifs spécifiques peuvent s’appliquer selon le profil.
+              Renseignez-vous auprès du club.
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Licence incluse ?</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-muted-foreground">
+              Oui, la cotisation inclut la licence FFTT (compétition ou loisir
+              selon l’offre).
+            </CardContent>
+          </Card>
         </div>
-        <a
-          href={data.inscription.ctaHref}
-          className="inline-flex justify-center rounded-md border border-primary px-6 py-3 text-primary transition hover:bg-muted/40 "
-        >
-          {data.inscription.ctaLabel}
-        </a>
+      </section>
+
+      <section>
+        <Card className="border-primary/40 bg-gradient-to-br from-primary/5 via-background to-background">
+          <CardContent className="space-y-6 px-6 py-8 md:px-10">
+            <div className="border-l-4 border-primary pl-6">
+              <h2 className="mb-2 text-xl font-semibold">
+                {data.inscription.titre}
+              </h2>
+              <p className="max-w-3xl text-muted-foreground">
+                {data.inscription.description}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <Button asChild size="lg" className="min-w-[200px]">
+                <Link href={data.inscription.ctaHref}>
+                  {data.inscription.ctaLabel}
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <Link href="/club/contact">Nous contacter</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </section>
     </div>
   );
 }
+
 

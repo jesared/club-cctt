@@ -20,10 +20,6 @@ export default function Home() {
             <Button asChild>
               <Link href="/club/horaires">Voir les horaires</Link>
             </Button>
-
-            <Button asChild variant="secondary">
-              <Link href="/theme">Voir le thème</Link>
-            </Button>
           </div>
         </div>
       </section>

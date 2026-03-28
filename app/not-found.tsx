@@ -1,8 +1,10 @@
 import Link from "next/link";
+import NotFoundAnimation from "./not-found-animation";
 
 export default function NotFoundPage() {
   return (
     <main className="mx-auto flex min-h-[70vh] max-w-3xl flex-col items-center justify-center gap-4 px-4 text-center">
+      <NotFoundAnimation />
       <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
         Erreur 404
       </p>
