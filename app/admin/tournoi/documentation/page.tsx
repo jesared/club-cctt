@@ -24,6 +24,7 @@ const sections = [
   {
     title: "Templates",
     icon: LayoutGrid,
+    href: "/admin/tournoi/documentation/templates",
     items: [
       "Mettre à jour le template tournoi et les templates tableaux.",
       "Utiliser les templates pour créer un nouveau tournoi plus vite.",
@@ -63,6 +64,7 @@ const sections = [
   {
     title: "Exports",
     icon: Download,
+    href: "/admin/tournoi/documentation/exports",
     items: [
       "Exporter les inscriptions par tableau (CSV).",
       "Télécharger le ZIP complet par tableau si nécessaire.",

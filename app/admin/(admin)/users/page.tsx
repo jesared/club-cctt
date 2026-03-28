@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdminSession } from "@/lib/session";
 
 import type { Role } from "@prisma/client";
+import UsersTable from "./users-table";
 
 const MANAGED_ROLES = ["USER", "CLUB", "ADMIN"] as const;
 
@@ -27,6 +28,24 @@ async function updateUserRole(formData: FormData) {
   await prisma.user.update({
     where: { id: userId },
     data: { role: role as Role },
+  });
+
+  revalidatePath("/admin/users");
+}
+
+async function deleteUser(formData: FormData) {
+  "use server";
+
+  await requireAdminSession();
+
+  const userId = formData.get("userId");
+
+  if (typeof userId !== "string") {
+    return;
+  }
+
+  await prisma.user.delete({
+    where: { id: userId },
   });
 
   revalidatePath("/admin/users");
@@ -59,76 +78,12 @@ export default async function AdminUsersPage() {
         </p>
       </div>
 
-      <div className="rounded-xl border  shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-card border-b">
-              <tr>
-                <th className="text-left font-semibold px-4 py-3">Nom</th>
-                <th className="text-left font-semibold px-4 py-3">Email</th>
-                <th className="text-left font-semibold px-4 py-3">Rôle</th>
-                <th className="text-left font-semibold px-4 py-3">Licenciés</th>
-                <th className="text-left font-semibold px-4 py-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => {
-                const isManagedRole = MANAGED_ROLES.includes(
-                  user.role as ManagedRole,
-                );
-
-                return (
-                  <tr key={user.id} className="border-b last:border-b-0">
-                    <td className="px-4 py-3">{user.name || "—"}</td>
-                    <td className="px-4 py-3">{user.email || "—"}</td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                          user.role === "ADMIN"
-                            ? "bg-primary/15 text-primary"
-                            : "bg-secondary text-muted-foreground"
-                        }`}
-                      >
-                        {user.role}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">{user.players.length}</td>
-                    <td className="px-4 py-3">
-                      <div className="flex flex-col md:flex-row gap-2">
-                        <form
-                          action={updateUserRole}
-                          className="flex items-center gap-2"
-                        >
-                          <input type="hidden" name="userId" value={user.id} />
-                          <select
-                            name="role"
-                            className="rounded-md border px-2 py-1 text-xs"
-                            defaultValue={isManagedRole ? user.role : "JOUEUR"}
-                            disabled={user.role === "ADMIN"}
-                          >
-                            {MANAGED_ROLES.map((role) => (
-                              <option key={role} value={role}>
-                                {role}
-                              </option>
-                            ))}
-                          </select>
-                          <button
-                            type="submit"
-                            className="rounded-md border px-2 py-1 text-xs font-medium hover:bg-secondary disabled:opacity-50"
-                            disabled={user.role === "ADMIN"}
-                          >
-                            Changer rôle
-                          </button>
-                        </form>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <UsersTable
+        users={users}
+        updateUserRole={updateUserRole}
+        deleteUser={deleteUser}
+        managedRoles={[...MANAGED_ROLES]}
+      />
     </div>
   );
 }

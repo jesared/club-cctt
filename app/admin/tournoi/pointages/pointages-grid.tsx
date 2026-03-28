@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { CircleCheckBig, MoreVertical, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
@@ -79,6 +79,7 @@ export function PointagesGrid({
     },
   );
   const [pendingState, setPendingState] = useState<Record<string, boolean>>({});
+  const [recentlySavedRow, setRecentlySavedRow] = useState<string | null>(null);
   const [selectedClub, setSelectedClub] = useState<string>("all");
   const [selectedTable, setSelectedTable] = useState<string>("all");
   const [selectedPointageFilter, setSelectedPointageFilter] =
@@ -103,6 +104,8 @@ export function PointagesGrid({
     left: number;
   } | null>(null);
   const [paymentDrawerOpen, setPaymentDrawerOpen] = useState(false);
+  const [quickMode, setQuickMode] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   const clubOptions = useMemo(() => {
     return Array.from(new Set(playersState.map((player) => player.club))).sort(
@@ -181,6 +184,7 @@ export function PointagesGrid({
     });
   }, [normalizedDayColumns, tournamentTables]);
 
+
   const hasActiveFilters =
     selectedClub !== "all" ||
     selectedTable !== "all" ||
@@ -249,6 +253,12 @@ export function PointagesGrid({
     paymentDrawerOpen,
   ]);
 
+  useEffect(() => {
+    if (quickMode) {
+      searchInputRef.current?.focus();
+    }
+  }, [quickMode]);
+
   const parsedEditingPoints = useMemo(() => {
     if (
       !editingPlayer ||
@@ -312,8 +322,8 @@ export function PointagesGrid({
         throw new Error("Erreur lors de la sauvegarde du pointage");
       }
 
-      setToastMessage("Pointage sauvegardé.");
-      setTimeout(() => setToastMessage(null), 2000);
+      setRecentlySavedRow(player.id);
+      setTimeout(() => setRecentlySavedRow(null), 2000);
     } catch {
       setCheckedState((previousState) => ({
         ...previousState,
@@ -579,6 +589,17 @@ export function PointagesGrid({
           >
             {paymentDrawerOpen ? "Paiements en attente" : "Filtrer paiements"}
           </button>
+          <button
+            type="button"
+            onClick={() => setQuickMode((current) => !current)}
+            className={`whitespace-nowrap rounded-full border px-3 py-1 text-xs font-medium transition ${
+              quickMode
+                ? "border-primary/40 bg-primary/10 text-primary"
+                : "border-border bg-muted/30 text-muted-foreground hover:bg-muted/50"
+            }`}
+          >
+            {quickMode ? "Mode rapide" : "Pointage rapide"}
+          </button>
         </div>
       </div>
 
@@ -592,67 +613,72 @@ export function PointagesGrid({
             className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground"
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
+            ref={searchInputRef}
             placeholder="Nom, prénom ou numéro de licence"
           />
         </label>
 
-        <label className="space-y-1">
-          <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Filtrer par club
-          </span>
-          <select
-            className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground"
-            value={selectedClub}
-            onChange={(event) => setSelectedClub(event.target.value)}
-          >
-            <option value="all">Tous les clubs</option>
-            {clubOptions.map((club) => (
-              <option key={club} value={club}>
-                {club}
-              </option>
-            ))}
-          </select>
-        </label>
+        {!quickMode ? (
+          <>
+            <label className="space-y-1">
+              <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Filtrer par club
+              </span>
+              <select
+                className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground"
+                value={selectedClub}
+                onChange={(event) => setSelectedClub(event.target.value)}
+              >
+                <option value="all">Tous les clubs</option>
+                {clubOptions.map((club) => (
+                  <option key={club} value={club}>
+                    {club}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-        <label className="space-y-1">
-          <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Filtrer par tableau
-          </span>
-          <select
-            className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground"
-            value={selectedTable}
-            onChange={(event) => setSelectedTable(event.target.value)}
-          >
-            <option value="all">Tous les tableaux</option>
-            {tableOptions.map((tableOption) => (
-              <option key={tableOption.value} value={tableOption.value}>
-                {tableOption.label}
-              </option>
-            ))}
-          </select>
-        </label>
+            <label className="space-y-1">
+              <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Filtrer par tableau
+              </span>
+              <select
+                className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground"
+                value={selectedTable}
+                onChange={(event) => setSelectedTable(event.target.value)}
+              >
+                <option value="all">Tous les tableaux</option>
+                {tableOptions.map((tableOption) => (
+                  <option key={tableOption.value} value={tableOption.value}>
+                    {tableOption.label}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-        <label className="space-y-1">
-          <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Filtrer par pointage
-          </span>
-          <select
-            className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground"
-            value={selectedPointageFilter}
-            onChange={(event) => setSelectedPointageFilter(event.target.value)}
-          >
-            <option value="all">Tous les pointages</option>
-            <option value="waitlist">En attente</option>
-            {normalizedDayColumns.map((dayColumn) => (
-              <optgroup key={dayColumn.key} label={dayColumn.label}>
-                <option value={`unchecked:${dayColumn.key}`}>
-                  Non pointés
-                </option>
-                <option value={`checked:${dayColumn.key}`}>Pointés</option>
-              </optgroup>
-            ))}
-          </select>
-        </label>
+            <label className="space-y-1">
+              <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Filtrer par pointage
+              </span>
+              <select
+                className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground"
+                value={selectedPointageFilter}
+                onChange={(event) => setSelectedPointageFilter(event.target.value)}
+              >
+                <option value="all">Tous les pointages</option>
+                <option value="waitlist">En attente</option>
+                {normalizedDayColumns.map((dayColumn) => (
+                  <optgroup key={dayColumn.key} label={dayColumn.label}>
+                    <option value={`unchecked:${dayColumn.key}`}>
+                      Non pointés
+                    </option>
+                    <option value={`checked:${dayColumn.key}`}>Pointés</option>
+                  </optgroup>
+                ))}
+              </select>
+            </label>
+          </>
+        ) : null}
       </div>
 
       <div className="overflow-x-auto overflow-y-visible rounded-xl border border-border bg-card shadow-sm text-foreground">
@@ -662,16 +688,30 @@ export function PointagesGrid({
               <th className="sticky left-0 z-20 bg-card py-2.5 pl-3 pr-3 font-medium">
                 Joueur
               </th>
-              <th className="py-2.5 pr-3 font-medium">Licence</th>
-              <th className="py-2.5 pr-3 font-medium">Club</th>
-              <th className="py-2.5 pr-3 font-medium">Tableau(x)</th>
-              <th className="py-2.5 pr-3 font-medium">Paiement</th>
+              {!quickMode ? (
+                <>
+                  <th className="py-2.5 pr-3 font-medium">Licence</th>
+                  <th className="py-2.5 pr-3 font-medium">Club</th>
+                  <th className="py-2.5 pr-3 font-medium">Tableau(x)</th>
+                </>
+              ) : null}
+              <th className="sticky right-24 z-20 bg-card py-2.5 pr-3 font-medium">
+                Paiement
+              </th>
               {dayHeaders.map((dayHeader) => (
                 <th key={dayHeader.key} className="py-2.5 pr-3 font-medium">
                   <div className="space-y-0.5">
                     <span className="block text-[11px] font-semibold text-foreground">
                       {dayHeader.orderLabel}
                     </span>
+                    <span className="block text-[11px] text-muted-foreground">
+                      {dayHeader.label}
+                    </span>
+                    {dayHeader.timeRange ? (
+                      <span className="block text-[10px] text-muted-foreground">
+                        {dayHeader.timeRange} · {dayHeader.tablesCount} tableaux
+                      </span>
+                    ) : null}
                   </div>
                 </th>
               ))}
@@ -692,10 +732,10 @@ export function PointagesGrid({
                   paymentStatus.includes("partiel") ||
                   paymentStatus.includes("régulariser") ||
                   paymentStatus.includes("regulariser")
-                    ? "Paiement à régulariser"
+                    ? "Partiel"
                     : paymentStatus.includes("payé")
                       ? null
-                      : "Paiement en attente";
+                      : "Attente";
                 const isPaymentPending =
                   paymentStatus.includes("partiel") ||
                   paymentStatus.includes("régulariser") ||
@@ -707,7 +747,7 @@ export function PointagesGrid({
                     key={player.id}
                     className={`group border-b border-slate-800 last:border-0 hover:bg-accent/10 ${
                       hasAnyCheck ? "bg-muted/20" : ""
-                    } ${isPaymentPending ? "bg-amber-50/40 dark:bg-amber-900/10" : ""}`}
+                    }`}
                   >
                     <td
                       className={`sticky left-0 z-10 py-3 pl-3 pr-3 font-medium text-foreground ${
@@ -716,26 +756,39 @@ export function PointagesGrid({
                     >
                       <div className="flex flex-wrap items-center gap-2">
                         <span>{player.name}</span>
+                        {recentlySavedRow === player.id ? (
+                          <span className="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200">
+                            OK
+                          </span>
+                        ) : null}
                       </div>
                     </td>
-                    <td className="py-3 pr-3 text-foreground">
-                      {player.licence}
-                    </td>
-                    <td className="py-3 pr-3 text-foreground">{player.club}</td>
-                    <td className="py-3 pr-3 text-foreground">
-                      {player.table}
-                    </td>
-                    <td className="py-3 pr-3 text-foreground">
+                    {!quickMode ? (
+                      <>
+                        <td className="py-3 pr-3 text-foreground">
+                          {player.licence}
+                        </td>
+                        <td className="py-3 pr-3 text-foreground">
+                          {player.club}
+                        </td>
+                        <td className="py-3 pr-3 text-foreground">
+                          {player.table}
+                        </td>
+                      </>
+                    ) : null}
+                    <td className="sticky right-24 z-10 bg-card py-3 pr-3 text-foreground group-hover:bg-accent/10">
                       {paymentStatus.includes("payé") ? (
                         <span className="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200">
                           Payé
                         </span>
                       ) : paymentBadgeLabel ? (
-                        <span className="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
+                          <span className="text-[10px] leading-none">⦿</span>
                           {paymentBadgeLabel}
                         </span>
                       ) : (
-                        <span className="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-700 dark:bg-slate-800/60 dark:text-slate-200">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-700 dark:bg-slate-800/60 dark:text-slate-200">
+                          <span className="text-[10px] leading-none">⦿</span>
                           En attente
                         </span>
                       )}

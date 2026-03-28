@@ -44,6 +44,14 @@ const steps = [
       "Surveiller les premiers dossiers et ajuster si besoin.",
     ],
   },
+  {
+    title: "6) Tests rapides avant ouverture",
+    items: [
+      "Tester un paiement complet puis un paiement partiel.",
+      "Vérifier l'affichage des badges (en attente / régulariser / payé).",
+      "S'assurer que les exports se téléchargent correctement.",
+    ],
+  },
 ];
 
 export default async function AdminTournoiDocumentationPreparerPage() {
