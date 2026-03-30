@@ -2,6 +2,7 @@
 
 import { trackKpiEvent } from "@/lib/kpi";
 import { FormEvent, useMemo, useState } from "react";
+import { Check, Loader2 } from "lucide-react";
 
 type FeedbackState =
   | { type: "success"; message: string }
@@ -89,6 +90,7 @@ export default function TournamentRegistrationForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<FeedbackState>(null);
   const [hasStarted, setHasStarted] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const trackStartIfNeeded = () => {
     if (hasStarted) {
@@ -161,7 +163,7 @@ export default function TournamentRegistrationForm({
 
       if (table.isFull && !current.waitlistTables.includes(tableCode)) {
         const accepted = window.confirm(
-          "Ce tableau est complet. Voulez-vous etre ajoute sur la liste d'attente ?",
+          "Ce tableau est complet. Voulez-vous être ajouté sur la liste d'attente ?",
         );
         if (!accepted) {
           return current;
@@ -191,11 +193,12 @@ export default function TournamentRegistrationForm({
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setHasSubmitted(true);
 
     if (!canSubmit) {
       setFeedback({
         type: "error",
-        message: "Etape 2 : selectionnez au moins un tableau pour continuer.",
+        message: "Étape 2 : sélectionnez au moins un tableau pour continuer.",
       });
       return;
     }
@@ -222,7 +225,7 @@ export default function TournamentRegistrationForm({
         type: "success",
         message:
           payload.message ??
-          "Demande envoyee. Vous recevrez un email de confirmation sous 48 h maximum (apres verification des places).",
+          "Demande envoyée. Vous recevrez un e-mail de confirmation sous 48 h maximum (après vérification des places).",
       });
       trackKpiEvent({
         eventType: "SUBMIT",
@@ -237,7 +240,7 @@ export default function TournamentRegistrationForm({
         message:
           error instanceof Error
             ? error.message
-            : "Envoi impossible pour le moment. Verifiez vos informations, puis reessayez dans quelques minutes.",
+            : "Envoi impossible pour le moment. Vérifiez vos informations, puis réessayez dans quelques minutes.",
       });
     } finally {
       setIsSubmitting(false);
@@ -246,7 +249,7 @@ export default function TournamentRegistrationForm({
 
   const infoMessage = useMemo(() => {
     if (!formData.points.trim()) {
-      return "Etape 1 : indiquez vos points pour afficher vos tableaux disponibles.";
+      return "Étape 1 : indiquez vos points pour afficher vos tableaux disponibles.";
     }
 
     if (parsedPoints === null || parsedPoints < 0) {
@@ -261,7 +264,11 @@ export default function TournamentRegistrationForm({
   }, [formData.points, ineligibleTableCodes, parsedPoints]);
 
   return (
-    <form className="space-y-6" onSubmit={handleSubmit}>
+    <form
+      className={`space-y-6 ${hasSubmitted ? "form-submitted" : ""}`}
+      onSubmit={handleSubmit}
+      noValidate
+    >
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="lastName" className="block text-sm font-medium mb-1">
@@ -282,13 +289,13 @@ export default function TournamentRegistrationForm({
               }))
             }
             onFocus={trackStartIfNeeded}
-            className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            className="form-field"
             placeholder="DUPONT"
           />
         </div>
         <div>
           <label htmlFor="firstName" className="block text-sm font-medium mb-1">
-            Prenom
+            Prénom
           </label>
           <input
             id="firstName"
@@ -305,7 +312,7 @@ export default function TournamentRegistrationForm({
               }))
             }
             onFocus={trackStartIfNeeded}
-            className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            className="form-field"
             placeholder="Jean"
           />
         </div>
@@ -314,7 +321,7 @@ export default function TournamentRegistrationForm({
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="email" className="block text-sm font-medium mb-1">
-            Email de contact
+            E-mail de contact
           </label>
           <input
             id="email"
@@ -330,13 +337,13 @@ export default function TournamentRegistrationForm({
               }))
             }
             onFocus={trackStartIfNeeded}
-            className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            className="form-field"
             placeholder="joueur@email.fr"
           />
         </div>
         <div>
           <label htmlFor="phone" className="block text-sm font-medium mb-1">
-            Telephone
+            Téléphone
           </label>
           <input
             id="phone"
@@ -353,7 +360,7 @@ export default function TournamentRegistrationForm({
               }))
             }
             onFocus={trackStartIfNeeded}
-            className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            className="form-field"
             placeholder="06 12 34 56 78"
           />
         </div>
@@ -365,7 +372,7 @@ export default function TournamentRegistrationForm({
             htmlFor="licenseNumber"
             className="block text-sm font-medium mb-1"
           >
-            No licence FFTT
+            N° licence FFTT
           </label>
           <input
             id="licenseNumber"
@@ -382,7 +389,7 @@ export default function TournamentRegistrationForm({
               }))
             }
             onFocus={trackStartIfNeeded}
-            className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            className="form-field"
             placeholder="1234567"
           />
         </div>
@@ -430,7 +437,7 @@ export default function TournamentRegistrationForm({
               })
             }
             onFocus={trackStartIfNeeded}
-            className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            className="form-field"
             placeholder="1248"
           />
         </div>
@@ -470,10 +477,10 @@ export default function TournamentRegistrationForm({
               })
             }
             onFocus={trackStartIfNeeded}
-            className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            className="form-field"
           >
             <option className="bg-card text-foreground" value="">
-              Selectionner
+              Sélectionner
             </option>
             <option className="bg-card text-foreground" value="M">
               M
@@ -502,7 +509,7 @@ export default function TournamentRegistrationForm({
               }))
             }
             onFocus={trackStartIfNeeded}
-            className="w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            className="form-field"
             placeholder="Nom du club"
           />
         </div>
@@ -514,9 +521,9 @@ export default function TournamentRegistrationForm({
         </p>
         {formData.points.trim() ? (
           <div className="space-y-4">
-            <legend className="text-sm font-medium">Tableaux souhaites</legend>
+            <legend className="text-sm font-medium">Tableaux souhaités</legend>
             <p className="text-sm">
-              Etape 2 : vous pouvez selectionner un ou plusieurs tableaux.
+              Étape 2 : vous pouvez sélectionner un ou plusieurs tableaux.
             </p>
             {groupedTableOptions.map((group) => (
               <div key={group.dateKey} className="space-y-2">
@@ -581,7 +588,7 @@ export default function TournamentRegistrationForm({
                                 }));
                               }}
                             />
-                            Je souhaite etre sur liste d&apos;attente pour ce
+                            Je souhaite être sur liste d&apos;attente pour ce
                             tableau
                           </label>
                         ) : null}
@@ -622,9 +629,14 @@ export default function TournamentRegistrationForm({
 
       {feedback ? (
         <p
-          className={`text-sm ${feedback.type === "success" ? "text-green-600" : "text-red-500"}`}
+          className={`text-sm flex items-center gap-2 ${
+            feedback.type === "success" ? "text-primary" : "text-destructive"
+          }`}
           role="status"
         >
+          {feedback.type === "success" ? (
+            <Check className="h-4 w-4" />
+          ) : null}
           {feedback.message}
         </p>
       ) : null}
@@ -632,11 +644,16 @@ export default function TournamentRegistrationForm({
       <button
         type="submit"
         disabled={isSubmitting || !canSubmit}
-        className="cursor-pointer inline-flex rounded-md bg-primary px-6 py-3 text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+        className="cursor-pointer inline-flex rounded-md bg-primary px-6 py-3 text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60 focus-ring active:scale-[0.98]"
       >
-        {isSubmitting
-          ? "Etape 3 : envoi en cours..."
-          : "Etape 3 : envoyer ma demande"}
+        {isSubmitting ? (
+          <span className="inline-flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Étape 3 : envoi en cours...
+          </span>
+        ) : (
+          "Étape 3 : envoyer ma demande"
+        )}
       </button>
     </form>
   );

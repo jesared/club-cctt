@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Reveal from "@/components/Reveal";
 import Link from "next/link";
-import { WinnersCarousel } from "./winners-carousel";
+import WinnersCarouselLazy from "./winners-carousel-lazy";
 
 type Winner = {
   nom: string;
@@ -300,7 +300,7 @@ export default function TournoiPalmaresPage() {
       </Reveal>
 
       <Reveal>
-        <WinnersCarousel items={featuredWinners} />
+        <WinnersCarouselLazy items={featuredWinners} />
       </Reveal>
 
       <Reveal>

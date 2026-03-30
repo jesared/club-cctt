@@ -1,9 +1,38 @@
-﻿import Link from "next/link";
+﻿import type { Metadata } from "next";
+import Link from "next/link";
 
 import Reveal from "@/components/Reveal";
-import TournoiHero from "@/components/TournoiHero";
+import TournoiHeroLazy from "@/components/TournoiHeroLazy";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+export const metadata: Metadata = {
+  title: "CCTT – Club de tennis de table à Châlons-en-Champagne",
+  description:
+    "Le CCTT accueille joueurs débutants comme confirmés. Horaires, tarifs, contact et actualités du club de tennis de table à Châlons-en-Champagne.",
+  openGraph: {
+    title: "CCTT – Club de tennis de table",
+    description:
+      "Découvrez le CCTT : horaires, tarifs et vie du club à Châlons-en-Champagne.",
+    url: "/",
+    type: "website",
+    images: [
+      {
+        url: "/logo.jpg",
+        width: 512,
+        height: 512,
+        alt: "Logo CCTT",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary",
+    title: "CCTT – Club de tennis de table",
+    description:
+      "Horaires, tarifs et vie du club de tennis de table à Châlons-en-Champagne.",
+    images: ["/logo.jpg"],
+  },
+};
 
 export default function Home() {
   return (
@@ -113,7 +142,7 @@ export default function Home() {
         </Reveal>
         <Reveal delay={120}>
           <div className="mt-6">
-            <TournoiHero />
+            <TournoiHeroLazy />
           </div>
         </Reveal>
       </section>

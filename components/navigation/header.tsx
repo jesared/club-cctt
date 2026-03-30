@@ -4,7 +4,7 @@ import { ChevronDown, Home, Menu, ShieldMinus } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import ThemeToggle from "@/components/ThemeToggle";
@@ -41,6 +41,7 @@ function isItemActive(pathname: string, href: string) {
 
 export default function Header() {
   const pathname = usePathname();
+  const router = useRouter();
   const { data: session } = useSession();
   const [openSection, setOpenSection] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -141,6 +142,17 @@ export default function Header() {
   }
 
   const isAdmin = isAdminRole(session?.user?.role);
+
+  useEffect(() => {
+    router.prefetch("/tournoi");
+    router.prefetch("/tournoi/inscription");
+    router.prefetch("/tournoi/liste-inscrits");
+    if (isAdmin) {
+      router.prefetch("/admin/tournoi");
+      router.prefetch("/admin/tournoi/paiement");
+      router.prefetch("/admin/tournoi/pointages");
+    }
+  }, [router, isAdmin]);
 
   return (
     <header

@@ -1,4 +1,5 @@
-﻿import KpiPageViewTracker from "@/components/KpiPageViewTracker";
+﻿import type { Metadata } from "next";
+import KpiPageViewTracker from "@/components/KpiPageViewTracker";
 import Reveal from "@/components/Reveal";
 import TrackedLink from "@/components/TrackedLink";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,6 +7,33 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { tournamentRegistrationContent } from "@/lib/tournament-registration-content";
 import { getServerSession } from "next-auth";
+
+export const metadata: Metadata = {
+  title: "Tournoi national de Pâques – CCTT",
+  description:
+    "Toutes les infos du tournoi : dates, tableaux, inscriptions, résultats et contact organisation.",
+  openGraph: {
+    title: "Tournoi national de Pâques – CCTT",
+    description:
+      "Infos tournoi CCTT : dates, tableaux, inscriptions et résultats.",
+    url: "/tournoi",
+    type: "website",
+    images: [
+      {
+        url: "/couv-facebook.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Tournoi de Pâques CCTT",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Tournoi national de Pâques – CCTT",
+    description: "Dates, tableaux et inscriptions au tournoi CCTT.",
+    images: ["/couv-facebook.jpg"],
+  },
+};
 
 const informationsTournoi = {
   nom: "Tournoi National de Pâques 2026",
@@ -123,6 +151,17 @@ export default async function TournoiHomePage() {
     select: { id: true },
   });
 
+  const registrationCount = tournament
+    ? await prisma.tournamentRegistration.count({
+        where: {
+          tournamentId: tournament.id,
+          status: {
+            not: "CANCELLED",
+          },
+        },
+      })
+    : 0;
+
   const hasUserRegistration =
     tournament && session?.user?.id
       ? (await prisma.tournamentRegistration.count({
@@ -184,24 +223,31 @@ export default async function TournoiHomePage() {
               kpiPage="tournoi"
               kpiLabel="cta-inscription"
               href={tournamentRegistrationContent.cta.href}
-              className="inline-flex justify-center rounded-md bg-primary px-6 py-3 text-primary-foreground transition hover:opacity-90"
+              className="inline-flex justify-center rounded-md bg-primary px-7 py-3.5 text-base font-semibold text-primary-foreground shadow-sm shadow-primary/20 transition hover:opacity-90 focus-ring"
             >
               {tournamentRegistrationContent.cta.label}
             </TrackedLink>
             <a
               href="/tournoi/reglement"
-              className="inline-flex justify-center rounded-md border border-primary px-6 py-3 text-primary transition hover:bg-primary/10"
+              className="inline-flex justify-center rounded-md border border-primary px-6 py-3 text-primary transition hover:bg-primary/10 focus-ring"
             >
               Consulter le règlement 2026
             </a>
             {hasUserRegistration ? (
               <a
                 href="/user/inscriptions"
-                className="inline-flex justify-center rounded-md border border-border px-6 py-3 text-foreground transition hover:bg-accent/40"
+                className="inline-flex justify-center rounded-md border border-border px-6 py-3 text-foreground transition hover:bg-accent/40 focus-ring"
               >
                 Voir mes inscriptions
               </a>
             ) : null}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <span className="rounded-full bg-primary/10 px-2.5 py-1 text-primary">
+              Déjà {registrationCount} inscrit(s)
+            </span>
+            <span>Édition 2026</span>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -274,7 +320,7 @@ export default async function TournoiHomePage() {
                 {informationsTournoi.contact.telephone}
               </p>
               <p>
-                <strong>Email :</strong> {informationsTournoi.contact.email}
+                <strong>E-mail :</strong> {informationsTournoi.contact.email}
               </p>
               <p>
                 <strong>Site :</strong> {informationsTournoi.contact.site}
@@ -336,3 +382,4 @@ export default async function TournoiHomePage() {
     </main>
   );
 }
+

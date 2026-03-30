@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 
 import Providers from "@/components/Providers";
 import Header from "@/components/layout/header";
@@ -7,6 +7,9 @@ import Footer from "@/components/layout/footer";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://club.cctt.fr",
+  ),
   title: "Châlons-en-Champagne Tennis de Table",
   description: "Club de tennis de table à Châlons-en-Champagne",
   icons: {

@@ -58,17 +58,19 @@ export default async function HorairesPage() {
             <h1 className="text-4xl font-bold mb-2 animate-fade-up-2">
               Horaires d’entraînement
             </h1>
-            {formattedUpdatedAt ? (
-              <Badge variant={meta.stale ? "secondary" : "outline"}>
-                {meta.stale
-                  ? `Dernière mise à jour le ${formattedUpdatedAt}`
-                  : `Mis à jour le ${formattedUpdatedAt}`}
-              </Badge>
-            ) : meta.stale ? (
-              <Badge variant="secondary">
-                Dernière mise à jour indisponible
-              </Badge>
-            ) : null}
+          {formattedUpdatedAt ? (
+            <Badge variant={meta.stale ? "secondary" : "outline"}>
+              {meta.stale
+                ? `Dernière mise à jour le ${formattedUpdatedAt}`
+                : `Mis à jour le ${formattedUpdatedAt}`}
+            </Badge>
+          ) : meta.stale ? (
+            <Badge variant="secondary">
+              Dernière mise à jour indisponible
+            </Badge>
+          ) : (
+            <Badge variant="outline">Mise à jour en cours</Badge>
+          )}
           </div>
 
           <p className=" max-w-3xl ">

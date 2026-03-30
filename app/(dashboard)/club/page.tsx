@@ -1,6 +1,35 @@
-﻿import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+﻿import type { Metadata } from "next";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Reveal from "@/components/Reveal";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Le club CCTT – Horaires, tarifs et contact",
+  description:
+    "Découvrez le club CCTT à Châlons-en-Champagne : horaires, tarifs, comité, partenaires et contact.",
+  openGraph: {
+    title: "Le club CCTT – Horaires, tarifs et contact",
+    description:
+      "Infos club CCTT : horaires, tarifs, comité directeur, partenaires et contact.",
+    url: "/club",
+    type: "website",
+    images: [
+      {
+        url: "/logo.jpg",
+        width: 512,
+        height: 512,
+        alt: "Logo CCTT",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary",
+    title: "Le club CCTT – Horaires, tarifs et contact",
+    description:
+      "Infos club CCTT : horaires, tarifs, comité directeur, partenaires et contact.",
+    images: ["/logo.jpg"],
+  },
+};
 
 export default function ClubPage() {
   return (

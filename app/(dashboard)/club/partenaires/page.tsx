@@ -119,7 +119,9 @@ export default async function PartenairesPage() {
               <Badge variant="secondary">
                 Dernière mise à jour indisponible
               </Badge>
-            ) : null}
+            ) : (
+              <Badge variant="outline">Mise à jour en cours</Badge>
+            )}
           </div>
           <p className="max-w-3xl ">
             Le Châlons-en-Champagne Tennis de Table remercie l’ensemble de ses

@@ -245,7 +245,7 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
                     <th className="px-4 py-3 text-left">Club</th>
                     <th className="px-4 py-3 text-left">Tableau</th>
                     <th className="px-4 py-3 text-left">Points</th>
-                    <th className="px-4 py-3 text-left">No licence</th>
+                    <th className="px-4 py-3 text-left">N° licence</th>
                   </tr>
                 </thead>
 
@@ -312,7 +312,7 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
                   ))}
                 </div>
                 <p className="mt-2 text-xs text-muted-foreground">
-                  No licence : {player.licence}
+                  N° licence : {player.licence}
                 </p>
               </div>
             ))}
@@ -334,3 +334,4 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
     </main>
   );
 }
+

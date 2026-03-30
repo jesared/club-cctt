@@ -189,6 +189,15 @@
   [data-interactive="true"] {
     @apply transition-all duration-300 ease-out;
   }
+
+  a:focus-visible,
+  button:focus-visible,
+  [role="button"]:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
+  }
 }
 
 @layer base {
@@ -308,5 +317,39 @@
 
 .card-hover:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-sm),
+    0 0 0 1px color-mix(in oklch, var(--primary) 18%, transparent);
+}
+
+.card-hover:focus-within {
+  box-shadow: 0 0 0 2px var(--primary),
+    0 0 0 6px color-mix(in oklch, var(--primary) 18%, transparent);
+}
+
+.form-field {
+  @apply w-full rounded-md border border-border bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground;
+  transition: box-shadow 200ms var(--ease-out-quart),
+    border-color 200ms var(--ease-out-quart);
+}
+
+.form-field:focus-visible {
+  box-shadow: 0 0 0 2px var(--primary),
+    0 0 0 6px color-mix(in oklch, var(--primary) 18%, transparent);
+  border-color: var(--primary);
+  outline: none;
+}
+
+.form-submitted .form-field:invalid {
+  border-color: var(--destructive);
+}
+
+.form-submitted .form-field:invalid:focus-visible {
+  box-shadow: 0 0 0 2px var(--destructive),
+    0 0 0 6px color-mix(in oklch, var(--destructive) 18%, transparent);
+}
+
+@layer utilities {
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
 }

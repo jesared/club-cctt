@@ -1,6 +1,7 @@
-"use client";
+﻿"use client";
 
 import { FormEvent, useState } from "react";
+import { Check, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -20,9 +21,11 @@ export default function ContactForm() {
   const [formData, setFormData] = useState(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<FeedbackState>(null);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setHasSubmitted(true);
     setIsSubmitting(true);
     setFeedback(null);
 
@@ -39,7 +42,7 @@ export default function ContactForm() {
 
       if (!response.ok) {
         throw new Error(
-          payload.message ?? "Une erreur est survenue. Merci de réessayer."
+          payload.message ?? "Une erreur est survenue. Merci de réessayer.",
         );
       }
 
@@ -62,7 +65,11 @@ export default function ContactForm() {
   };
 
   return (
-    <form className="space-y-6" onSubmit={handleSubmit}>
+    <form
+      className={`space-y-6 ${hasSubmitted ? "form-submitted" : ""}`}
+      onSubmit={handleSubmit}
+      noValidate
+    >
       <div>
         <label htmlFor="name" className="block text-sm font-medium mb-1">
           Nom
@@ -79,13 +86,13 @@ export default function ContactForm() {
           onChange={(event) =>
             setFormData((current) => ({ ...current, name: event.target.value }))
           }
-          className="w-full border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="form-field"
         />
       </div>
 
       <div>
         <label htmlFor="email" className="block text-sm font-medium mb-1">
-          Email
+          E-mail
         </label>
         <input
           type="email"
@@ -98,7 +105,7 @@ export default function ContactForm() {
           onChange={(event) =>
             setFormData((current) => ({ ...current, email: event.target.value }))
           }
-          className="w-full border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="form-field"
         />
       </div>
 
@@ -121,7 +128,7 @@ export default function ContactForm() {
               message: event.target.value,
             }))
           }
-          className="w-full border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="form-field"
         />
       </div>
 
@@ -145,17 +152,31 @@ export default function ContactForm() {
 
       {feedback ? (
         <p
-          className={`text-sm ${
+          className={`text-sm flex items-center gap-2 ${
             feedback.type === "success" ? "text-primary" : "text-destructive"
           }`}
           role="status"
         >
+          {feedback.type === "success" ? (
+            <Check className="h-4 w-4" />
+          ) : null}
           {feedback.message}
         </p>
       ) : null}
 
-      <Button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Envoi en cours..." : "Envoyer le message"}
+      <Button
+        type="submit"
+        disabled={isSubmitting}
+        className="focus-ring active:scale-[0.98]"
+      >
+        {isSubmitting ? (
+          <span className="inline-flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Envoi en cours…
+          </span>
+        ) : (
+          "Envoyer le message"
+        )}
       </Button>
     </form>
   );
