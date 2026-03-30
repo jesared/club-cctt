@@ -264,7 +264,7 @@
 
 @keyframes fade-soft {
   from {
-    opacity: 0;
+    opacity: 0.9;
   }
   to {
     opacity: 1;
