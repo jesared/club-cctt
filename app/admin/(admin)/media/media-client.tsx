@@ -22,9 +22,15 @@ type UploadResult = {
   height?: number;
 };
 
+type MediaHistoryItem = UploadResult & {
+  id: string;
+  createdAt: string;
+};
+
 const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? "";
 const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ?? "";
 const defaultFolder = process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER ?? "cctt-club";
+const historyKey = "cctt-cloudinary-history";
 
 function formatBytes(bytes?: number) {
   if (!bytes || Number.isNaN(bytes)) return "—";
@@ -42,6 +48,7 @@ export default function MediaUploadClient() {
   const [status, setStatus] = useState<UploadState>("idle");
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<UploadResult | null>(null);
+  const [history, setHistory] = useState<MediaHistoryItem[]>([]);
   const [copied, setCopied] = useState(false);
 
   const cloudinaryReady = cloudName && uploadPreset;
@@ -55,6 +62,19 @@ export default function MediaUploadClient() {
     setPreviewUrl(url);
     return () => URL.revokeObjectURL(url);
   }, [file]);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(historyKey);
+      if (!stored) return;
+      const parsed = JSON.parse(stored) as MediaHistoryItem[];
+      if (Array.isArray(parsed)) {
+        setHistory(parsed);
+      }
+    } catch {
+      // Ignore storage errors
+    }
+  }, []);
 
   const meta = useMemo(() => {
     if (!result) return null;
@@ -99,6 +119,20 @@ export default function MediaUploadClient() {
       }
 
       setResult(json);
+      const entry: MediaHistoryItem = {
+        id: `${json.public_id}-${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        ...json,
+      };
+      setHistory((prev) => {
+        const next = [entry, ...prev].slice(0, 30);
+        try {
+          localStorage.setItem(historyKey, JSON.stringify(next));
+        } catch {
+          // Ignore storage errors
+        }
+        return next;
+      });
       setStatus("done");
     } catch (err) {
       setStatus("error");
@@ -117,6 +151,28 @@ export default function MediaUploadClient() {
     } catch {
       setCopied(false);
     }
+  }
+
+  async function copyFromHistory(url: string) {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
+    }
+  }
+
+  function removeFromHistory(id: string) {
+    setHistory((prev) => {
+      const next = prev.filter((item) => item.id !== id);
+      try {
+        localStorage.setItem(historyKey, JSON.stringify(next));
+      } catch {
+        // Ignore storage errors
+      }
+      return next;
+    });
   }
 
   return (
@@ -246,6 +302,82 @@ export default function MediaUploadClient() {
               )}
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Derniers medias uploades</CardTitle>
+          <CardDescription>
+            Historique local (stocke dans le navigateur).
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {history.length === 0 ? (
+            <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+              Aucun media encore. Uploadez une image pour voir l&apos;historique.
+            </div>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {history.map((item) => (
+                <div
+                  key={item.id}
+                  className="overflow-hidden rounded-xl border border-border bg-card"
+                >
+                  <div className="aspect-[4/3] bg-muted/40">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={item.secure_url}
+                      alt={item.public_id}
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="space-y-2 p-3 text-xs text-muted-foreground">
+                    <div className="truncate font-medium text-foreground">
+                      {item.public_id}
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span>{formatBytes(item.bytes)}</span>
+                      <span>
+                        {item.width && item.height
+                          ? `${item.width}x${item.height}`
+                          : "—"}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => copyFromHistory(item.secure_url)}
+                      >
+                        Copier URL
+                      </Button>
+                      <Button size="sm" variant="outline" asChild>
+                        <a
+                          href={item.secure_url}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          Ouvrir
+                        </a>
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => removeFromHistory(item.id)}
+                      >
+                        Retirer
+                      </Button>
+                    </div>
+                    <div className="text-[11px]">
+                      {new Date(item.createdAt).toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
 
