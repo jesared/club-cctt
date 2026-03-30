@@ -59,6 +59,7 @@
   --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .dark {
@@ -178,6 +179,16 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  [role="button"],
+  [data-interactive="true"] {
+    @apply transition-all duration-300 ease-out;
+  }
 }
 
 @layer base {
@@ -218,4 +229,84 @@
     background-color: var(--card);
     color: var(--foreground);
   }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-fade-up {
+    animation: fade-up 0.4s var(--ease-out-quart) both;
+  }
+
+  .animate-fade-up-1 {
+    animation: fade-up 0.4s var(--ease-out-quart) both;
+    animation-delay: 80ms;
+  }
+
+  .animate-fade-up-2 {
+    animation: fade-up 0.4s var(--ease-out-quart) both;
+    animation-delay: 160ms;
+  }
+
+  .animate-fade-soft {
+    animation: fade-soft 0.35s var(--ease-out-quart) both;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-soft {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 360ms var(--ease-out-quart),
+    transform 360ms var(--ease-out-quart);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  [role="button"],
+  [data-interactive="true"] {
+    transition: none !important;
+  }
+}
+
+.card-hover {
+  transition: transform 200ms var(--ease-out-quart),
+    box-shadow 200ms var(--ease-out-quart);
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
 }

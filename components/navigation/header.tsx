@@ -147,15 +147,21 @@ export default function Header() {
       ref={headerRef}
       className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur"
     >
-      <div className="flex h-16 items-center px-4 md:px-6 mx-auto w-full max-w-7xl">
+      <div className="relative flex h-16 items-center px-4 md:px-6 mx-auto w-full max-w-7xl">
         {/* LOGO */}
-        <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo.jpg" alt="Logo" width={32} height={32} />
-          <span className="hidden font-semibold md:block">CCTT</span>
+        <Link href="/" className="flex items-center gap-3">
+          <Image
+            src="/logo.jpg"
+            alt="Logo"
+            width={88}
+            height={44}
+            className="h-11 w-auto object-contain"
+          />
+          <span className="hidden font-semibold md:block text-base">CCTT</span>
         </Link>
 
         {/* NAV DESKTOP */}
-        <nav className="ml-8 hidden items-center gap-2 md:flex">
+        <nav className="hidden items-center gap-2 md:flex absolute left-1/2 -translate-x-1/2">
           {desktopLinks.map((item) => {
             if ("items" in item) {
               const section = publicSections.find(
