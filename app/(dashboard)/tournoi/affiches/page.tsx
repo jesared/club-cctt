@@ -75,8 +75,8 @@ export default function TournoiAffichesPage() {
         <header className="space-y-2">
           <h1 className="text-2xl font-semibold">Affiches du tournoi</h1>
           <p className="max-w-3xl text-sm text-muted-foreground">
-            Cette page est prête pour accueillir environ 10 affiches du tournoi.
-            Chaque carte représente un emplacement prévu pour un visuel final.
+            Retrouvez ici les affiches officielles du tournoi, année par année.
+            Cliquez sur un visuel pour l’agrandir ou le partager.
           </p>
         </header>
       </Reveal>
@@ -91,6 +91,7 @@ export default function TournoiAffichesPage() {
                     src={affiche.url}
                     alt={affiche.titre}
                     title={affiche.titre}
+                    shareLabel={`Affiche ${affiche.titre}`}
                     width={320}
                     height={400}
                     previewClassName="cover rounded-md border border-dashed border-muted-foreground/30 bg-muted/50"

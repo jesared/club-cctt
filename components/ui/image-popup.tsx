@@ -12,6 +12,7 @@ type ImagePopupProps = {
   height?: number;
   previewClassName?: string;
   popupImageClassName?: string;
+  shareLabel?: string;
 };
 
 export function ImagePopup({
@@ -22,6 +23,7 @@ export function ImagePopup({
   height = 400,
   previewClassName,
   popupImageClassName,
+  shareLabel,
 }: ImagePopupProps) {
   const [isOpen, setIsOpen] = useState(false);
   const portalTarget = typeof document !== "undefined" ? document.body : null;
@@ -34,6 +36,27 @@ export function ImagePopup({
       document.body.style.overflow = original;
     };
   }, [isOpen]);
+
+  const handleShare = async () => {
+    if (typeof window === "undefined") return;
+    const absoluteUrl = new URL(src, window.location.origin).toString();
+    const titleText = shareLabel ?? title ?? alt;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: titleText,
+          text: titleText,
+          url: absoluteUrl,
+        });
+      } catch {
+        // ignore share cancel
+      }
+      return;
+    }
+
+    await navigator.clipboard.writeText(absoluteUrl);
+  };
 
   return (
     <>
@@ -61,14 +84,26 @@ export function ImagePopup({
               aria-label={title ?? alt}
               onClick={() => setIsOpen(false)}
             >
-              <button
-                type="button"
-                className="cursor-pointer absolute right-4 top-4 rounded-md bg-white/10 px-3 py-2 text-sm font-medium text-white hover:bg-white/20"
-                onClick={() => setIsOpen(false)}
-                aria-label="Fermer l'aperçu"
-              >
-                Fermer
-              </button>
+              <div className="absolute right-4 top-4 flex items-center gap-2">
+                <button
+                  type="button"
+                  className="rounded-md border border-white/30 bg-white/10 px-3 py-2 text-xs font-medium text-white hover:bg-white/20"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    void handleShare();
+                  }}
+                >
+                  Partager
+                </button>
+                <button
+                  type="button"
+                  className="rounded-md bg-white/10 px-3 py-2 text-xs font-medium text-white hover:bg-white/20"
+                  onClick={() => setIsOpen(false)}
+                  aria-label="Fermer l'aperçu"
+                >
+                  Fermer
+                </button>
+              </div>
 
               <div
                 className="max-h-[90vh] max-w-[90vw]"
