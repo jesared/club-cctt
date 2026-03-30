@@ -324,21 +324,14 @@ export default function Header() {
           </button>
 
           {isAdmin && (
-            <>
-              <Link
-                href="/admin/tournoi"
-                className="hidden sm:inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
-              >
-                <ShieldMinus className="h-4 w-4" />
-                Administration
-              </Link>
-              <Link
-                href="/admin/tournoi"
-                className="sm:hidden inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
-              >
-                <ShieldMinus className="h-4 w-4" />
-              </Link>
-            </>
+            <Link
+              href="/admin/tournoi"
+              aria-label="Administration"
+              title="Administration"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full border bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
+            >
+              <ShieldMinus className="h-5 w-5" />
+            </Link>
           )}
           {!session ? (
             <Button size="sm" onClick={() => void signIn()}>

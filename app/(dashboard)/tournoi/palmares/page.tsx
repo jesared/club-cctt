@@ -1,5 +1,6 @@
-import { Badge } from "@/components/ui/badge";
+﻿import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Reveal from "@/components/Reveal";
 import Link from "next/link";
 import { WinnersCarousel } from "./winners-carousel";
 
@@ -69,7 +70,7 @@ const palmaresRecents: PalmaresYear[] = [
       },
       {
         code: "I",
-        label: "NC a No400",
+        label: "NC à No400",
         winner: { nom: "ZHAO Dongyi", club: "ANNECY TT" },
       },
       {
@@ -106,7 +107,7 @@ const palmaresRecents: PalmaresYear[] = [
       },
       {
         code: "I",
-        label: "NC a No400",
+        label: "NC à No400",
         winner: { nom: "MARTEAU Berenice", club: "NARBONNE" },
       },
       {
@@ -148,7 +149,7 @@ const palmaresRecents: PalmaresYear[] = [
       },
       {
         code: "I",
-        label: "NC a No400",
+        label: "NC à No400",
         winner: { nom: "SALPIN Anais", club: "ALCL GD QUEV." },
       },
       {
@@ -185,7 +186,7 @@ const palmaresRecents: PalmaresYear[] = [
       },
       {
         code: "I",
-        label: "NC a No400",
+        label: "NC à No400",
         winner: { nom: "ERHART Maurice", club: "MULHOUSE TT" },
       },
       {
@@ -288,129 +289,138 @@ export default function TournoiPalmaresPage() {
 
   return (
     <main className="mx-auto max-w-7xl space-y-8 px-4 py-10">
-      <header className="space-y-2">
-        <h1 className="text-3xl font-semibold">Palmares du tournoi</h1>
-        <p className="text-sm text-muted-foreground">
-          Retrouvez les vainqueurs des tableaux recents et les archives du
-          tournoi national de Paques du CCTT.
-        </p>
-      </header>
+      <Reveal>
+        <header className="space-y-2">
+          <h1 className="text-3xl font-semibold">Palmarès du tournoi</h1>
+          <p className="text-sm text-muted-foreground">
+            Retrouvez les vainqueurs des tableaux récents et les archives du
+            tournoi national de Pâques du CCTT.
+          </p>
+        </header>
+      </Reveal>
 
-      <WinnersCarousel items={featuredWinners} />
+      <Reveal>
+        <WinnersCarousel items={featuredWinners} />
+      </Reveal>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Resume par annee (2022-2025)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[560px] text-left text-sm">
-              <thead>
-                <tr className="border-b text-muted-foreground">
-                  <th className="py-3 pr-4 font-medium">Annee</th>
-                  <th className="py-3 pr-4 font-medium">TC</th>
-                  <th className="py-3 font-medium">Dames TC</th>
-                </tr>
-              </thead>
-              <tbody>
-                {palmaresRecents.map((entree) => (
-                  <tr key={entree.annee} className="border-b last:border-b-0">
-                    <td className="py-3 pr-4 font-medium">{entree.annee}</td>
-                    <td className="py-3 pr-4">
-                      <p>{entree.tc?.nom ?? "-"}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {entree.tc?.club ?? "-"}
-                      </p>
-                    </td>
-                    <td className="py-3">
-                      <p>{entree.dames?.nom ?? "-"}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {entree.dames?.club ?? "-"}
-                      </p>
-                    </td>
+      <Reveal>
+        <Card className="card-hover">
+          <CardHeader>
+            <CardTitle>Résumé par année (2022-2025)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[560px] text-left text-sm">
+                <thead>
+                  <tr className="border-b text-muted-foreground">
+                    <th className="py-3 pr-4 font-medium">Année</th>
+                    <th className="py-3 pr-4 font-medium">TC</th>
+                    <th className="py-3 font-medium">Dames TC</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+                </thead>
+                <tbody>
+                  {palmaresRecents.map((entree) => (
+                    <tr key={entree.annee} className="border-b last:border-b-0">
+                      <td className="py-3 pr-4 font-medium">{entree.annee}</td>
+                      <td className="py-3 pr-4">
+                        <p>{entree.tc?.nom ?? "-"}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {entree.tc?.club ?? "-"}
+                        </p>
+                      </td>
+                      <td className="py-3">
+                        <p>{entree.dames?.nom ?? "-"}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {entree.dames?.club ?? "-"}
+                        </p>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      </Reveal>
 
       <section className="grid gap-4 lg:grid-cols-2">
-        {palmaresRecents.map((annee) => (
-          <Card key={annee.annee}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0">
-              <CardTitle>Palmares {annee.annee}</CardTitle>
-              <Badge variant="secondary">
-                {annee.tableaux.length} tableaux renseignes
-              </Badge>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2 text-sm">
-                {annee.tableaux.map((tableau) => (
-                  <li
-                    key={`${annee.annee}-${tableau.code}`}
-                    className="rounded-md border p-2"
-                  >
-                    <p className="font-medium">
-                      {tableau.code} - {tableau.label}
-                    </p>
-                    <p className="text-muted-foreground">
-                      {tableau.winner
-                        ? `${tableau.winner.nom} (${tableau.winner.club})`
-                        : "Non communique"}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
+        {palmaresRecents.map((annee, index) => (
+          <Reveal key={annee.annee} delay={index * 120}>
+            <Card className="card-hover">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0">
+                <CardTitle>Palmarès {annee.annee}</CardTitle>
+                <Badge variant="secondary">
+                  {annee.tableaux.length} tableaux renseignés
+                </Badge>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-sm">
+                  {annee.tableaux.map((tableau) => (
+                    <li
+                      key={`${annee.annee}-${tableau.code}`}
+                      className="rounded-md border p-2"
+                    >
+                      <p className="font-medium">
+                        {tableau.code} - {tableau.label}
+                      </p>
+                      <p className="text-muted-foreground">
+                        {tableau.winner
+                          ? `${tableau.winner.nom} (${tableau.winner.club})`
+                          : "Non communiqué"}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          </Reveal>
         ))}
       </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Archives TC & Dames TC (2009-2019)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="mb-4 text-sm text-muted-foreground">
-            2020 et 2021 : pas de tournoi.
-          </p>
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[700px] text-left text-sm">
-              <thead>
-                <tr className="border-b text-muted-foreground">
-                  <th className="py-3 pr-4 font-medium">Annee</th>
-                  <th className="py-3 pr-4 font-medium">Vainqueur TC</th>
-                  <th className="py-3 font-medium">Vainqueure Dames TC</th>
-                </tr>
-              </thead>
-              <tbody>
-                {archivesTc.map((entry) => (
-                  <tr key={entry.annee} className="border-b last:border-b-0">
-                    <td className="py-3 pr-4 font-medium">{entry.annee}</td>
-                    <td className="py-3 pr-4">{entry.tc}</td>
-                    <td className="py-3">{entry.dames}</td>
+      <Reveal>
+        <Card className="card-hover">
+          <CardHeader>
+            <CardTitle>Archives TC & Dames TC (2009-2019)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-4 text-sm text-muted-foreground">
+              2020 et 2021 : pas de tournoi.
+            </p>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[700px] text-left text-sm">
+                <thead>
+                  <tr className="border-b text-muted-foreground">
+                    <th className="py-3 pr-4 font-medium">Année</th>
+                    <th className="py-3 pr-4 font-medium">Vainqueur TC</th>
+                    <th className="py-3 font-medium">Vainqueure Dames TC</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <p className="mt-4 text-xs text-muted-foreground">
-            Source des donnees :{" "}
-            <Link
-              href="https://tournoi.cctt.fr/palmares/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline underline-offset-2"
-            >
-              tournoi.cctt.fr/palmares
-            </Link>
-            .
-          </p>
-        </CardContent>
-      </Card>
+                </thead>
+                <tbody>
+                  {archivesTc.map((entry) => (
+                    <tr key={entry.annee} className="border-b last:border-b-0">
+                      <td className="py-3 pr-4 font-medium">{entry.annee}</td>
+                      <td className="py-3 pr-4">{entry.tc}</td>
+                      <td className="py-3">{entry.dames}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="mt-4 text-xs text-muted-foreground">
+              Source des données :{" "}
+              <Link
+                href="https://tournoi.cctt.fr/palmares/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-2"
+              >
+                tournoi.cctt.fr/palmares
+              </Link>
+              .
+            </p>
+          </CardContent>
+        </Card>
+      </Reveal>
     </main>
   );
 }
-

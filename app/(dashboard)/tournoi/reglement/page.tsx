@@ -1,4 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+﻿import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Reveal from "@/components/Reveal";
 
 const pointsCles = [
   "Le tournoi est ouvert aux licenciés FFTT et suit les règles sportives fédérales en vigueur.",
@@ -11,46 +12,49 @@ const pointsCles = [
 export default function ReglementPage() {
   return (
     <main className="max-w-4xl mx-auto px-4 py-16">
-      <Card>
-        <CardHeader>
-          <CardTitle>Règlement du tournoi 2026 (synthèse)</CardTitle>
-        </CardHeader>
+      <Reveal>
+        <Card className="card-hover">
+          <CardHeader>
+            <CardTitle>Règlement du tournoi 2026 (synthèse)</CardTitle>
+          </CardHeader>
 
-        <CardContent className="space-y-5 text-muted-foreground">
-          <p>
-            Cette page reprend les points essentiels du règlement 2026 pour vous
-            aider à préparer votre participation. Les modalités détaillées
-            (tableaux, horaires exacts, droits d&apos;engagement et cas
-            particuliers) restent celles du document officiel de l&apos;organisation.
-          </p>
+          <CardContent className="space-y-5 text-muted-foreground">
+            <p>
+              Cette page reprend les points essentiels du règlement 2026 pour
+              vous aider à préparer votre participation. Les modalités
+              détaillées (tableaux, horaires exacts, droits d&apos;engagement et
+              cas particuliers) restent celles du document officiel de
+              l&apos;organisation.
+            </p>
 
-          <ul className="list-disc pl-6 space-y-2">
-            {pointsCles.map((point) => (
-              <li key={point}>{point}</li>
-            ))}
-          </ul>
+            <ul className="list-disc pl-6 space-y-2">
+              {pointsCles.map((point) => (
+                <li key={point}>{point}</li>
+              ))}
+            </ul>
 
-          <p>
-            Règlement complet :{" "}
+            <p>
+              Règlement complet :{" "}
+              <a
+                href="https://tournoi.cctt.fr/wp-content/uploads/2026/01/reglement-tournoi-2026-ffttv2.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary underline hover:text-primary/80"
+              >
+                consulter le document officiel 2026
+              </a>
+              .
+            </p>
+
             <a
-              href="https://tournoi.cctt.fr/wp-content/uploads/2026/01/reglement-tournoi-2026-ffttv2.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-purple-700 underline hover:text-purple-900"
+              href="/tournoi"
+              className="inline-flex justify-center border border-primary text-primary px-5 py-2 rounded-md hover:bg-primary/10 transition"
             >
-              consulter le document officiel 2026
+              Retour à la page tournoi
             </a>
-            .
-          </p>
-
-          <a
-            href="/tournoi"
-            className="inline-flex justify-center border border-purple-600 text-purple-600 px-5 py-2 rounded-md hover:bg-purple-50 transition"
-          >
-            Retour à la page tournoi
-          </a>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </Reveal>
     </main>
   );
 }
