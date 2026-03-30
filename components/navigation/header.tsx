@@ -137,13 +137,10 @@ export default function Header() {
     };
   }, [mobileOpen]);
 
-  if (!isPublicRoute(pathname)) {
-    return null;
-  }
-
   const isAdmin = isAdminRole(session?.user?.role);
 
   useEffect(() => {
+    if (!isPublicRoute(pathname)) return;
     router.prefetch("/tournoi");
     router.prefetch("/tournoi/inscription");
     router.prefetch("/tournoi/liste-inscrits");
@@ -152,7 +149,11 @@ export default function Header() {
       router.prefetch("/admin/tournoi/paiement");
       router.prefetch("/admin/tournoi/pointages");
     }
-  }, [router, isAdmin]);
+  }, [router, isAdmin, pathname]);
+
+  if (!isPublicRoute(pathname)) {
+    return null;
+  }
 
   return (
     <header
