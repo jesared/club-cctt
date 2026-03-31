@@ -172,6 +172,7 @@ export const navigation: MenuSection[] = [
         badge: "3",
       },
       { href: "/admin/users", label: "Utilisateurs", icon: Users },
+      { href: "/admin/home", label: "Home", icon: LayoutGrid },
       { href: "/admin/media", label: "Medias", icon: ImageIcon },
       { href: "/admin/contact", label: "Contact", icon: Mail },
       { href: "/admin/audit-ux", label: "Audit UX", icon: FileText },

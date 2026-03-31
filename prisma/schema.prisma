@@ -260,6 +260,31 @@ model ContactContent {
   createdAt        DateTime @default(now())
 }
 
+model HomeContent {
+  id              String   @id
+  heroTitle       String
+  heroSubtitle    String
+  heroCtaLabel    String
+  heroCtaHref     String
+  heroImageUrl    String
+  welcomeTitle    String
+  welcomeText1    String
+  welcomeText2    String
+  highlight1Title String
+  highlight1Text  String
+  highlight2Title String
+  highlight2Text  String
+  highlight3Title String
+  highlight3Text  String
+  ctaTitle        String
+  ctaText         String
+  ctaButtonLabel  String
+  ctaButtonHref   String
+  eventTitle      String
+  updatedAt       DateTime @updatedAt
+  createdAt       DateTime @default(now())
+}
+
 model RateLimitBucket {
   id        String   @id
   count     Int      @default(0)

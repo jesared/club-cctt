@@ -293,12 +293,13 @@ export default async function TournoiHomePage() {
               </div>
             </div>
 
-            <div className="group w-full overflow-hidden rounded-2xl border border-border bg-card shadow-sm lg:max-w-md lg:justify-self-end">
+            <div className="group w-full overflow-hidden rounded-2xl border border-border bg-card shadow-sm lg:justify-self-end">
               <div
                 className="aspect-[16/9] w-full bg-cover bg-center transition-transform duration-500 ease-out group-hover:scale-[1.02]"
                 style={{
                   backgroundImage:
                     "url(https://res.cloudinary.com/diimhrbx7/image/upload/v1774953383/couv-facebook_ktnewg.jpg)",
+                  backgroundPosition: "50% 50%",
                 }}
                 aria-hidden="true"
               />
