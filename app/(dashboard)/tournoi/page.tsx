@@ -4,7 +4,9 @@ import Reveal from "@/components/Reveal";
 import TrackedLink from "@/components/TrackedLink";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { authOptions } from "@/lib/auth";
+import { normalizeContactContent } from "@/lib/contact-content";
 import { prisma } from "@/lib/prisma";
+import { isAdminRole } from "@/lib/roles";
 import { tournamentRegistrationContent } from "@/lib/tournament-registration-content";
 import { getServerSession } from "next-auth";
 
@@ -106,41 +108,45 @@ function formatDateTime(value?: Date | null) {
 export default async function TournoiHomePage() {
   const session = await getServerSession(authOptions);
   const userEmail = session?.user?.email?.trim().toLowerCase();
-  const tournament = await prisma.tournament.findFirst({
-    where: {
-      status: {
-        in: ["PUBLISHED", "DRAFT"],
-      },
-    },
-    orderBy: [{ startDate: "desc" }],
-    select: {
-      id: true,
-      slug: true,
-      name: true,
-      description: true,
-      venue: true,
-      registrationOpenAt: true,
-      registrationCloseAt: true,
-      startDate: true,
-      endDate: true,
-      status: true,
-      events: {
-        where: { status: "OPEN" },
-        orderBy: [{ startAt: "asc" }, { code: "asc" }],
-        select: {
-          id: true,
-          code: true,
-          label: true,
-          startAt: true,
-          minPoints: true,
-          maxPoints: true,
-          feeOnlineCents: true,
-          feeOnsiteCents: true,
+  const [tournament, contactContentRaw] = await Promise.all([
+    prisma.tournament.findFirst({
+      where: {
+        status: {
+          in: ["PUBLISHED", "DRAFT"],
         },
       },
-    },
-  });
+      orderBy: [{ startDate: "desc" }],
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        description: true,
+        venue: true,
+        registrationOpenAt: true,
+        registrationCloseAt: true,
+        startDate: true,
+        endDate: true,
+        status: true,
+        events: {
+          where: { status: "OPEN" },
+          orderBy: [{ startAt: "asc" }, { code: "asc" }],
+          select: {
+            id: true,
+            code: true,
+            label: true,
+            startAt: true,
+            minPoints: true,
+            maxPoints: true,
+            feeOnlineCents: true,
+            feeOnsiteCents: true,
+          },
+        },
+      },
+    }),
+    prisma.contactContent.findUnique({ where: { id: "default" } }),
+  ]);
   const tournamentEvents = tournament?.events ?? [];
+  const contactContent = normalizeContactContent(contactContentRaw ?? undefined);
 
   const registrationCount = tournament
     ? await prisma.tournamentRegistration.count({
@@ -184,6 +190,18 @@ export default async function TournoiHomePage() {
     online: `${(event.feeOnlineCents / 100).toFixed(0)} EUR`,
     surPlace: `${(event.feeOnsiteCents / 100).toFixed(0)} EUR`,
   }));
+
+  const registrationStatusLabel = tournament
+    ? (() => {
+        const now = new Date();
+        const openAt = tournament.registrationOpenAt;
+        const closeAt = tournament.registrationCloseAt;
+        if (openAt && now < openAt) return "Inscriptions a venir";
+        if (closeAt && now > closeAt) return "Inscriptions fermees";
+        if (openAt || closeAt) return "Inscriptions ouvertes";
+        return "Inscriptions a confirmer";
+      })()
+    : null;
 
   return (
     <main className="max-w-7xl mx-auto px-4 py-10 space-y-10">
@@ -241,6 +259,16 @@ export default async function TournoiHomePage() {
             </span>
             {tournament?.status ? (
               <span>{tournament.status}</span>
+            ) : null}
+            {registrationStatusLabel ? (
+              <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-emerald-600">
+                {registrationStatusLabel}
+              </span>
+            ) : null}
+            {tournament && session && isAdminRole(session.user.role) ? (
+              <span className="rounded-full border border-dashed px-2.5 py-1 text-[11px]">
+                ID: {tournament.id} • slug: {tournament.slug}
+              </span>
             ) : null}
           </div>
 
@@ -307,10 +335,14 @@ export default async function TournoiHomePage() {
             </CardHeader>
             <CardContent className="space-y-3 text-muted-foreground">
               <p>
-                <strong>Contact :</strong> Consultez la page contact du club.
+                <strong>Contact :</strong> {contactContent.email}
               </p>
               <p>
-                <strong>Lien :</strong> /club/contact
+                <strong>Delai :</strong> {contactContent.responseDelay}
+              </p>
+              <p>
+                <strong>Adresse :</strong> {contactContent.addressName},{" "}
+                {contactContent.addressLine}, {contactContent.addressCity}
               </p>
             </CardContent>
           </Card>
