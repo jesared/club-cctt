@@ -67,6 +67,7 @@ export default function MediaUploadClient() {
   const [historyLoading, setHistoryLoading] = useState(true);
   const [historyError, setHistoryError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [search, setSearch] = useState("");
 
   const cloudinaryReady = cloudName && uploadPreset;
 
@@ -210,6 +211,25 @@ export default function MediaUploadClient() {
     return item.secure_url || item.url || "";
   }
 
+  const filteredHistory = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return history;
+    return history.filter((item) => {
+      const haystack = [
+        item.public_id,
+        item.publicId,
+        item.url,
+        item.secure_url,
+        item.uploadedByUser?.name,
+        item.uploadedByUser?.email,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(query);
+    });
+  }, [history, search]);
+
   return (
     <div className="space-y-8">
       <Card>
@@ -348,6 +368,18 @@ export default function MediaUploadClient() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="text-xs text-muted-foreground">
+              {history.length} media{history.length > 1 ? "s" : ""}
+            </div>
+            <input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Rechercher (nom, url, admin)"
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm sm:max-w-xs"
+            />
+          </div>
+
           {historyLoading ? (
             <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
               Chargement...
@@ -356,13 +388,13 @@ export default function MediaUploadClient() {
             <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
               {historyError}
             </div>
-          ) : history.length === 0 ? (
+          ) : filteredHistory.length === 0 ? (
             <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-              Aucun media encore. Uploadez une image pour voir l&apos;historique.
+              Aucun media trouve.
             </div>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {history.map((item) => (
+              {filteredHistory.map((item) => (
                 <div
                   key={item.id}
                   className="overflow-hidden rounded-xl border border-border bg-card"
