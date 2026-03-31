@@ -140,16 +140,18 @@ export default async function Home() {
           </section>
       </Reveal>
 
-      <section>
-        <Reveal>
-          <h2 className="text-3xl font-bold">{content.eventTitle}</h2>
-        </Reveal>
-        <Reveal delay={120}>
-          <div className="mt-6">
-            <TournoiHeroLazy />
-          </div>
-        </Reveal>
-      </section>
+      {content.eventEnabled ? (
+        <section>
+          <Reveal>
+            <h2 className="text-3xl font-bold">{content.eventTitle}</h2>
+          </Reveal>
+          <Reveal delay={120}>
+            <div className="mt-6">
+              <TournoiHeroLazy />
+            </div>
+          </Reveal>
+        </section>
+      ) : null}
     </main>
   );
 }

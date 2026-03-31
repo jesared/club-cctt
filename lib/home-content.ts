@@ -18,6 +18,7 @@ export type HomeContentData = {
   ctaButtonLabel: string;
   ctaButtonHref: string;
   eventTitle: string;
+  eventEnabled: boolean;
 };
 
 export const defaultHomeContent: HomeContentData = {
@@ -48,6 +49,7 @@ export const defaultHomeContent: HomeContentData = {
   ctaButtonLabel: "Nous contacter",
   ctaButtonHref: "/club/contact",
   eventTitle: "Evenement du club",
+  eventEnabled: true,
 };
 
 function coerceString(value: unknown, fallback: string) {
@@ -103,5 +105,9 @@ export function normalizeHomeContent(
       defaultHomeContent.ctaButtonHref,
     ),
     eventTitle: coerceString(data.eventTitle, defaultHomeContent.eventTitle),
+    eventEnabled:
+      typeof data.eventEnabled === "boolean"
+        ? data.eventEnabled
+        : defaultHomeContent.eventEnabled,
   };
 }
