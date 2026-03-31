@@ -36,6 +36,9 @@ export async function middleware(request: NextRequest) {
       "callbackUrl",
       isAdminRoute ? "/admin" : pathname,
     );
+    if (!isAdminRoute) {
+      url.searchParams.set("reason", "auth");
+    }
     return NextResponse.redirect(url);
   }
 

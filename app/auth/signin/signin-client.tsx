@@ -39,6 +39,8 @@ export default function SignInClient() {
     router.replace(callbackUrl || "/user");
   }, [router, searchParams, status]);
 
+  const reason = searchParams?.get("reason");
+
   const hasEmailProvider = providers
     ? Object.values(providers).some((provider) => provider.id === "email")
     : false;
@@ -49,6 +51,11 @@ export default function SignInClient() {
 
   return (
     <div className="w-full max-w-md space-y-6 rounded-2xl border border-border bg-card/95 p-8 shadow-xl">
+      {reason === "auth" ? (
+        <div className="rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary">
+          Connectez-vous pour acceder a cette page.
+        </div>
+      ) : null}
       <div className="flex flex-col items-center gap-3 text-center">
         <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-border bg-white shadow-sm">
           <Image
