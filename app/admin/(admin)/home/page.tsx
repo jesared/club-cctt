@@ -224,28 +224,6 @@ export default function AdminHomePage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Section evenement</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-2">
-            <label className="inline-flex items-center gap-2 text-sm font-medium">
-              <input
-                type="checkbox"
-                checked={form.eventEnabled}
-                onChange={(e) => updateField("eventEnabled", e.target.checked)}
-              />
-              Afficher le bloc evenement
-            </label>
-            <label className="text-sm font-medium">Titre</label>
-            <input
-              className="w-full rounded border px-3 py-2"
-              value={form.eventTitle}
-              onChange={(e) => updateField("eventTitle", e.target.value)}
-            />
-          </CardContent>
-        </Card>
-
         <button
           type="submit"
           disabled={saving || loading}

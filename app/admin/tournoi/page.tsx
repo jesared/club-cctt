@@ -13,6 +13,7 @@ import { ProgressSummary } from "./progress-summary";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { Calendar, Clock, DollarSign, ListChecks } from "lucide-react";
+import EventBlockEditor from "./event-block-editor";
 
 const rythmeEditorial = [
   {
@@ -158,6 +159,8 @@ export default async function AdminTournoiPage() {
       </section>
 
       <ActionsChecklist />
+
+      <EventBlockEditor />
 
       <ProgressSummary progress={progress} />
 
