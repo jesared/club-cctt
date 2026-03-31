@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 
 const adminPaths = ["/admin", "/api/admin"];
 const authPaths = ["/user", "/tournoi/inscription", "/api/user"];
@@ -12,7 +13,7 @@ function hasSessionCookie(request: NextRequest) {
   );
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const isAdminRoute = adminPaths.some((path) => pathname.startsWith(path));
@@ -22,21 +23,38 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (hasSessionCookie(request)) {
-    return NextResponse.next();
+  const hasCookie = hasSessionCookie(request);
+
+  if (!hasCookie) {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const url = request.nextUrl.clone();
+    url.pathname = "/auth/signin";
+    url.searchParams.set(
+      "callbackUrl",
+      isAdminRoute ? "/admin" : pathname,
+    );
+    return NextResponse.redirect(url);
   }
 
-  if (pathname.startsWith("/api/")) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (isAdminRoute) {
+    const token = await getToken({ req: request });
+    const role =
+      typeof token?.role === "string" ? token.role.toLowerCase() : "user";
+
+    if (role !== "admin") {
+      if (pathname.startsWith("/api/")) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+      const url = request.nextUrl.clone();
+      url.pathname = "/user";
+      return NextResponse.redirect(url);
+    }
   }
 
-  const url = request.nextUrl.clone();
-  url.pathname = "/auth/signin";
-  url.searchParams.set(
-    "callbackUrl",
-    isAdminRoute ? "/admin" : pathname,
-  );
-  return NextResponse.redirect(url);
+  return NextResponse.next();
 }
 
 export const config = {
