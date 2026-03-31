@@ -33,12 +33,13 @@ const quickActions = [
   },
 ];
 
-export default function UserProfilePage({
+export default async function UserProfilePage({
   searchParams,
 }: {
-  searchParams?: { forbidden?: string };
+  searchParams?: Promise<{ forbidden?: string }>;
 }) {
-  const showForbidden = searchParams?.forbidden === "admin";
+  const resolved = await searchParams;
+  const showForbidden = resolved?.forbidden === "admin";
 
   return (
     <main className="max-w-7xl mx-auto px-4 py-8 space-y-6">
