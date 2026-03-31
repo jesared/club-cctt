@@ -9,6 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { isAdminRole } from "@/lib/roles";
 import { tournamentRegistrationContent } from "@/lib/tournament-registration-content";
 import { getServerSession } from "next-auth";
+import RegistrationBadge from "./registration-badge";
 
 export const metadata: Metadata = {
   title: "Tournoi national de Pâques – CCTT",
@@ -208,6 +209,11 @@ export default async function TournoiHomePage() {
         return { label: "Inscriptions a confirmer", tone: "unknown" as const };
       })()
     : null;
+  const registrationTooltip = tournament
+    ? `Ouverture: ${formatDateTime(
+        tournament.registrationOpenAt,
+      )} · Cloture: ${formatDateTime(tournament.registrationCloseAt)}`
+    : undefined;
 
   return (
     <main className="max-w-7xl mx-auto px-4 py-10 space-y-10">
@@ -267,24 +273,11 @@ export default async function TournoiHomePage() {
               <span>{tournament.status}</span>
             ) : null}
             {registrationStatus ? (
-              <span
-                title={`Ouverture: ${formatDateTime(
-                  tournament?.registrationOpenAt,
-                )} · Cloture: ${formatDateTime(
-                  tournament?.registrationCloseAt,
-                )}`}
-                className={
-                  registrationStatus.tone === "open"
-                    ? "rounded-full bg-emerald-500/10 px-2.5 py-1 text-emerald-600"
-                    : registrationStatus.tone === "upcoming"
-                      ? "rounded-full bg-amber-500/10 px-2.5 py-1 text-amber-600"
-                      : registrationStatus.tone === "closed"
-                        ? "rounded-full bg-rose-500/10 px-2.5 py-1 text-rose-600"
-                        : "rounded-full bg-muted/60 px-2.5 py-1 text-muted-foreground"
-                }
-              >
-                {registrationStatus.label}
-              </span>
+              <RegistrationBadge
+                label={registrationStatus.label}
+                tone={registrationStatus.tone}
+                tooltip={registrationTooltip}
+              />
             ) : null}
             {tournament && session && isAdminRole(session.user.role) ? (
               <span className="rounded-full border border-dashed px-2.5 py-1 text-[11px]">
