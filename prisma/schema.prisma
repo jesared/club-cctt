@@ -282,6 +282,8 @@ model HomeContent {
   ctaButtonHref   String
   eventTitle      String
   eventEnabled    Boolean  @default(true)
+  eventImageUrl   String   @default("https://res.cloudinary.com/diimhrbx7/image/upload/v1774953383/couv-facebook_ktnewg.jpg")
+  eventDateLabel  String   @default("Avril 2026 - Chalons-en-Champagne")
   updatedAt       DateTime @updatedAt
   createdAt       DateTime @default(now())
 }

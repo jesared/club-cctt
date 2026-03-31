@@ -147,7 +147,10 @@ export default async function Home() {
           </Reveal>
           <Reveal delay={120}>
             <div className="mt-6">
-              <TournoiHeroLazy />
+            <TournoiHeroLazy
+              imageUrl={content.eventImageUrl}
+              dateLabel={content.eventDateLabel}
+            />
             </div>
           </Reveal>
         </section>

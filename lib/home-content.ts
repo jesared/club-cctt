@@ -19,6 +19,8 @@ export type HomeContentData = {
   ctaButtonHref: string;
   eventTitle: string;
   eventEnabled: boolean;
+  eventImageUrl: string;
+  eventDateLabel: string;
 };
 
 export const defaultHomeContent: HomeContentData = {
@@ -50,6 +52,9 @@ export const defaultHomeContent: HomeContentData = {
   ctaButtonHref: "/club/contact",
   eventTitle: "Evenement du club",
   eventEnabled: true,
+  eventImageUrl:
+    "https://res.cloudinary.com/diimhrbx7/image/upload/v1774953383/couv-facebook_ktnewg.jpg",
+  eventDateLabel: "Avril 2026 - Chalons-en-Champagne",
 };
 
 function coerceString(value: unknown, fallback: string) {
@@ -109,5 +114,13 @@ export function normalizeHomeContent(
       typeof data.eventEnabled === "boolean"
         ? data.eventEnabled
         : defaultHomeContent.eventEnabled,
+    eventImageUrl: coerceString(
+      data.eventImageUrl,
+      defaultHomeContent.eventImageUrl,
+    ),
+    eventDateLabel: coerceString(
+      data.eventDateLabel,
+      defaultHomeContent.eventDateLabel,
+    ),
   };
 }

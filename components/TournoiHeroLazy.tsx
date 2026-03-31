@@ -12,6 +12,14 @@ const TournoiHero = dynamic(() => import("@/components/TournoiHero"), {
   ),
 });
 
-export default function TournoiHeroLazy() {
-  return <TournoiHero />;
+type TournoiHeroLazyProps = {
+  imageUrl: string;
+  dateLabel: string;
+};
+
+export default function TournoiHeroLazy({
+  imageUrl,
+  dateLabel,
+}: TournoiHeroLazyProps) {
+  return <TournoiHero imageUrl={imageUrl} dateLabel={dateLabel} />;
 }
