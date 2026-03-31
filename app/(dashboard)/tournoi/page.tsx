@@ -35,33 +35,6 @@ export const metadata: Metadata = {
   },
 };
 
-const informationsTournoi = {
-  nom: "Tournoi National de Pâques 2026",
-  organisateur: "Châlons-en-Champagne TT",
-  lieu: "Gymnase Kiezer, 150 avenue des Alliés, Châlons-en-Champagne",
-  tables: 30,
-  homologation: "FFTT",
-  format: {
-    matchs: "Best of 5 games",
-    poules: "Poules de 3 joueurs",
-    qualifies: "2 qualifiés par poule",
-    phaseFinale: "Élimination directe",
-  },
-  inscriptions: {
-    dateLimite: "04/04/2026",
-    chequeLimite: "02/04/2026",
-    paiementEnLigne: "04/04/2026",
-    remboursement: "50% remboursement sur justificatif médical uniquement",
-  },
-  contact: {
-    nom: "Jean Marc HAUTIER",
-    telephone: "06 66 09 69 16",
-    email: "jean-marc.hautier@wanadoo.fr",
-    site: "https://cctt.fr",
-    paiement: "https://tournoi.cctt.fr",
-  },
-};
-
 function formatCategory(
   minPoints: number | null,
   maxPoints: number | null,
@@ -101,46 +74,38 @@ function formatTimeLabel(startAt: Date) {
   }).format(startAt);
 }
 
-async function getOpenTournamentEvents() {
-  try {
-    const tournament = await prisma.tournament.findFirst({
-      where: {
-        status: {
-          in: ["PUBLISHED", "DRAFT"],
-        },
-      },
-      orderBy: [{ startDate: "desc" }],
-      select: {
-        events: {
-          where: {
-            status: "OPEN",
-          },
-          orderBy: [{ startAt: "asc" }, { code: "asc" }],
-          select: {
-            id: true,
-            code: true,
-            label: true,
-            startAt: true,
-            minPoints: true,
-            maxPoints: true,
-            feeOnlineCents: true,
-            feeOnsiteCents: true,
-          },
-        },
-      },
-    });
+function formatDateRange(startDate?: Date | null, endDate?: Date | null) {
+  if (!startDate || !endDate) return "Dates a confirmer";
+  const sameDay =
+    startDate.toDateString() === endDate.toDateString();
+  const startLabel = new Intl.DateTimeFormat("fr-FR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  }).format(startDate);
+  if (sameDay) return startLabel;
+  const endLabel = new Intl.DateTimeFormat("fr-FR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  }).format(endDate);
+  return `${startLabel} au ${endLabel}`;
+}
 
-    return tournament?.events ?? [];
-  } catch {
-    return [];
-  }
+function formatDateTime(value?: Date | null) {
+  if (!value) return "A confirmer";
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(value);
 }
 
 export default async function TournoiHomePage() {
   const session = await getServerSession(authOptions);
   const userEmail = session?.user?.email?.trim().toLowerCase();
-  const tournamentEvents = await getOpenTournamentEvents();
-
   const tournament = await prisma.tournament.findFirst({
     where: {
       status: {
@@ -148,8 +113,34 @@ export default async function TournoiHomePage() {
       },
     },
     orderBy: [{ startDate: "desc" }],
-    select: { id: true },
+    select: {
+      id: true,
+      slug: true,
+      name: true,
+      description: true,
+      venue: true,
+      registrationOpenAt: true,
+      registrationCloseAt: true,
+      startDate: true,
+      endDate: true,
+      status: true,
+      events: {
+        where: { status: "OPEN" },
+        orderBy: [{ startAt: "asc" }, { code: "asc" }],
+        select: {
+          id: true,
+          code: true,
+          label: true,
+          startAt: true,
+          minPoints: true,
+          maxPoints: true,
+          feeOnlineCents: true,
+          feeOnsiteCents: true,
+        },
+      },
+    },
   });
+  const tournamentEvents = tournament?.events ?? [];
 
   const registrationCount = tournament
     ? await prisma.tournamentRegistration.count({
@@ -201,22 +192,23 @@ export default async function TournoiHomePage() {
       <Reveal>
         <section className="rounded-2xl border bg-card/50 p-6 md:p-8 shadow-sm space-y-6 card-hover">
           <div className="space-y-2">
-            <p className="text-xs uppercase tracking-[0.2em] text-primary animate-fade-up-1">
-              {informationsTournoi.organisateur}
-            </p>
             <h1 className="text-3xl md:text-4xl font-semibold text-foreground animate-fade-up-2">
-              {informationsTournoi.nom}
+              {tournament?.name ?? "Tournoi CCTT"}
             </h1>
             <p className="text-sm md:text-base text-muted-foreground">
-              Tournoi homologué {informationsTournoi.homologation} sur{" "}
-              {informationsTournoi.tables} tables, du samedi 4 au lundi 6 avril
-              2026.
+              {formatDateRange(tournament?.startDate, tournament?.endDate)}
             </p>
           </div>
 
-          <p className="text-sm text-muted-foreground">
-            {tournamentRegistrationContent.message}
-          </p>
+          {tournament?.description ? (
+            <p className="text-sm text-muted-foreground">
+              {tournament.description}
+            </p>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              {tournamentRegistrationContent.message}
+            </p>
+          )}
 
           <div className="flex flex-col sm:flex-row gap-3">
             <TrackedLink
@@ -247,17 +239,28 @@ export default async function TournoiHomePage() {
             <span className="rounded-full bg-primary/10 px-2.5 py-1 text-primary">
               Déjà {registrationCount} inscrit(s)
             </span>
-            <span>Édition 2026</span>
+            {tournament?.status ? (
+              <span>{tournament.status}</span>
+            ) : null}
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { label: "Dates", value: "4 - 6 avril 2026" },
-              { label: "Lieu", value: informationsTournoi.lieu },
-              { label: "Tables", value: `${informationsTournoi.tables} tables` },
               {
-                label: "Paiement en ligne",
-                value: `Jusqu'au ${informationsTournoi.inscriptions.paiementEnLigne}`,
+                label: "Dates",
+                value: formatDateRange(
+                  tournament?.startDate,
+                  tournament?.endDate,
+                ),
+              },
+              { label: "Lieu", value: tournament?.venue ?? "A confirmer" },
+              {
+                label: "Ouverture",
+                value: formatDateTime(tournament?.registrationOpenAt),
+              },
+              {
+                label: "Cloture",
+                value: formatDateTime(tournament?.registrationCloseAt),
               },
             ].map((item, index) => (
               <Reveal key={item.label} delay={index * 100}>
@@ -283,24 +286,15 @@ export default async function TournoiHomePage() {
             </CardHeader>
             <CardContent className="space-y-3 text-muted-foreground">
               <p>
-                <strong>Lieu :</strong> {informationsTournoi.lieu}
+                <strong>Lieu :</strong> {tournament?.venue ?? "A confirmer"}
               </p>
               <p>
-                <strong>Format :</strong> {informationsTournoi.format.matchs},{" "}
-                {informationsTournoi.format.poules},{" "}
-                {informationsTournoi.format.qualifies}, puis{" "}
-                {informationsTournoi.format.phaseFinale}.
+                <strong>Dates :</strong>{" "}
+                {formatDateRange(tournament?.startDate, tournament?.endDate)}
               </p>
               <p>
                 <strong>Inscriptions :</strong> jusqu&apos;au{" "}
-                {informationsTournoi.inscriptions.dateLimite} (paiement en ligne
-                possible jusqu&apos;au{" "}
-                {informationsTournoi.inscriptions.paiementEnLigne}).
-              </p>
-              <p>
-                <strong>Chèque :</strong> jusqu&apos;au{" "}
-                {informationsTournoi.inscriptions.chequeLimite}.{" "}
-                {informationsTournoi.inscriptions.remboursement}.
+                {formatDateTime(tournament?.registrationCloseAt)}.
               </p>
             </CardContent>
           </Card>
@@ -313,17 +307,10 @@ export default async function TournoiHomePage() {
             </CardHeader>
             <CardContent className="space-y-3 text-muted-foreground">
               <p>
-                <strong>Responsable :</strong> {informationsTournoi.contact.nom}
+                <strong>Contact :</strong> Consultez la page contact du club.
               </p>
               <p>
-                <strong>Téléphone :</strong>{" "}
-                {informationsTournoi.contact.telephone}
-              </p>
-              <p>
-                <strong>E-mail :</strong> {informationsTournoi.contact.email}
-              </p>
-              <p>
-                <strong>Site :</strong> {informationsTournoi.contact.site}
+                <strong>Lien :</strong> /club/contact
               </p>
             </CardContent>
           </Card>
