@@ -25,12 +25,15 @@ type UploadResult = {
 type MediaHistoryItem = UploadResult & {
   id: string;
   createdAt: string;
+  uploadedByUser?: {
+    name: string | null;
+    email: string | null;
+  } | null;
 };
 
 const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? "";
 const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ?? "";
 const defaultFolder = process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER ?? "cctt-club";
-const historyKey = "cctt-cloudinary-history";
 
 function formatBytes(bytes?: number) {
   if (!bytes || Number.isNaN(bytes)) return "—";
@@ -49,6 +52,8 @@ export default function MediaUploadClient() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<UploadResult | null>(null);
   const [history, setHistory] = useState<MediaHistoryItem[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(true);
+  const [historyError, setHistoryError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
   const cloudinaryReady = cloudName && uploadPreset;
@@ -63,17 +68,27 @@ export default function MediaUploadClient() {
     return () => URL.revokeObjectURL(url);
   }, [file]);
 
-  useEffect(() => {
+  async function loadHistory() {
     try {
-      const stored = localStorage.getItem(historyKey);
-      if (!stored) return;
-      const parsed = JSON.parse(stored) as MediaHistoryItem[];
-      if (Array.isArray(parsed)) {
-        setHistory(parsed);
+      setHistoryLoading(true);
+      setHistoryError(null);
+      const res = await fetch("/api/admin/media");
+      const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json?.error ?? "Chargement impossible.");
       }
-    } catch {
-      // Ignore storage errors
+      setHistory(json.items ?? []);
+    } catch (err) {
+      setHistoryError(
+        err instanceof Error ? err.message : "Chargement impossible.",
+      );
+    } finally {
+      setHistoryLoading(false);
     }
+  }
+
+  useEffect(() => {
+    loadHistory();
   }, []);
 
   const meta = useMemo(() => {
@@ -119,20 +134,26 @@ export default function MediaUploadClient() {
       }
 
       setResult(json);
-      const entry: MediaHistoryItem = {
-        id: `${json.public_id}-${Date.now()}`,
-        createdAt: new Date().toISOString(),
-        ...json,
-      };
-      setHistory((prev) => {
-        const next = [entry, ...prev].slice(0, 30);
-        try {
-          localStorage.setItem(historyKey, JSON.stringify(next));
-        } catch {
-          // Ignore storage errors
-        }
-        return next;
+
+      const saved = await fetch("/api/admin/media", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          url: json.secure_url,
+          publicId: json.public_id,
+          format: json.format,
+          bytes: json.bytes,
+          width: json.width,
+          height: json.height,
+        }),
       });
+
+      const savedJson = await saved.json();
+      if (saved.ok && savedJson?.item) {
+        setHistory((prev) => [savedJson.item, ...prev].slice(0, 50));
+      } else {
+        loadHistory();
+      }
       setStatus("done");
     } catch (err) {
       setStatus("error");
@@ -163,16 +184,14 @@ export default function MediaUploadClient() {
     }
   }
 
-  function removeFromHistory(id: string) {
-    setHistory((prev) => {
-      const next = prev.filter((item) => item.id !== id);
-      try {
-        localStorage.setItem(historyKey, JSON.stringify(next));
-      } catch {
-        // Ignore storage errors
-      }
-      return next;
-    });
+  async function removeFromHistory(id: string) {
+    try {
+      const res = await fetch(`/api/admin/media/${id}`, { method: "DELETE" });
+      if (!res.ok) return;
+      setHistory((prev) => prev.filter((item) => item.id !== id));
+    } catch {
+      // ignore
+    }
   }
 
   return (
@@ -309,11 +328,19 @@ export default function MediaUploadClient() {
         <CardHeader>
           <CardTitle>Derniers medias uploades</CardTitle>
           <CardDescription>
-            Historique local (stocke dans le navigateur).
+            Historique partage entre admins.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {history.length === 0 ? (
+          {historyLoading ? (
+            <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+              Chargement...
+            </div>
+          ) : historyError ? (
+            <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
+              {historyError}
+            </div>
+          ) : history.length === 0 ? (
             <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
               Aucun media encore. Uploadez une image pour voir l&apos;historique.
             </div>
@@ -373,6 +400,12 @@ export default function MediaUploadClient() {
                     <div className="text-[11px]">
                       {new Date(item.createdAt).toLocaleString()}
                     </div>
+                    {item.uploadedByUser?.name ||
+                    item.uploadedByUser?.email ? (
+                      <div className="text-[11px] text-muted-foreground">
+                        Par {item.uploadedByUser.name ?? item.uploadedByUser.email}
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               ))}
