@@ -268,6 +268,11 @@ export default async function TournoiHomePage() {
             ) : null}
             {registrationStatus ? (
               <span
+                title={`Ouverture: ${formatDateTime(
+                  tournament?.registrationOpenAt,
+                )} · Cloture: ${formatDateTime(
+                  tournament?.registrationCloseAt,
+                )}`}
                 className={
                   registrationStatus.tone === "open"
                     ? "rounded-full bg-emerald-500/10 px-2.5 py-1 text-emerald-600"
