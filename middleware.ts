@@ -45,9 +45,9 @@ export async function middleware(request: NextRequest) {
   if (isAdminRoute) {
     const token = await getToken({ req: request });
     const role =
-      typeof token?.role === "string" ? token.role.toLowerCase() : "user";
+      typeof token?.role === "string" ? token.role.toLowerCase() : null;
 
-    if (role !== "admin") {
+    if (role && role !== "admin") {
       if (pathname.startsWith("/api/")) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
