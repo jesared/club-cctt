@@ -316,7 +316,7 @@ export default function MediaUploadClient() {
                     className="max-h-[220px] w-full rounded-lg object-contain"
                   />
                 ) : (
-                  <span className="text-sm">AperÃ§u de l&apos;image</span>
+                  <span className="text-sm">Apercu de l&apos;image</span>
                 )}
               </div>
 
