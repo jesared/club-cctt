@@ -9,7 +9,7 @@ function TooltipProvider({ children }: { children: ReactNode; delayDuration?: nu
 }
 
 function Tooltip({ children }: { children: ReactNode }) {
-  return <div className="group/tooltip relative">{children}</div>;
+  return <div className="group relative">{children}</div>;
 }
 
 function TooltipTrigger({ children }: { children: ReactElement; asChild?: boolean }) {
@@ -20,7 +20,7 @@ function TooltipContent({ children, className }: { children: ReactNode; side?: "
   return (
     <span
       className={cn(
-        "pointer-events-none absolute left-full top-1/2 ml-2 -translate-y-1/2 whitespace-nowrap rounded-md bg-primary px-2 py-1 text-xs text-primary-foreground opacity-0 transition-opacity group-hover/tooltip:opacity-100",
+        "pointer-events-none absolute left-full top-1/2 ml-2 -translate-y-1/2 whitespace-nowrap rounded-md bg-primary px-2 py-1 text-xs text-primary-foreground opacity-0 transition-opacity group-hover:opacity-100",
         className,
       )}
     >
