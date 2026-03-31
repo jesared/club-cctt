@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import ProfileClient from "./profile-client";
+import UserToast from "./user-toast";
 
 const quickActions = [
   {
@@ -32,9 +33,19 @@ const quickActions = [
   },
 ];
 
-export default function UserProfilePage() {
+export default function UserProfilePage({
+  searchParams,
+}: {
+  searchParams?: { forbidden?: string };
+}) {
+  const showForbidden = searchParams?.forbidden === "admin";
+
   return (
     <main className="max-w-7xl mx-auto px-4 py-8 space-y-6">
+      <UserToast
+        show={showForbidden}
+        message="Acces reserve aux admins."
+      />
       <header className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Espace membre</h1>

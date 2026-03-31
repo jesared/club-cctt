@@ -50,6 +50,7 @@ export async function middleware(request: NextRequest) {
       }
       const url = request.nextUrl.clone();
       url.pathname = "/user";
+      url.searchParams.set("forbidden", "admin");
       return NextResponse.redirect(url);
     }
   }
