@@ -25,6 +25,8 @@ type UploadResult = {
 type MediaHistoryItem = UploadResult & {
   id: string;
   createdAt: string;
+  url?: string;
+  publicId?: string;
   uploadedByUser?: {
     name: string | null;
     email: string | null;
@@ -42,6 +44,16 @@ function formatBytes(bytes?: number) {
   if (kb < 1024) return `${kb.toFixed(1)} Ko`;
   const mb = kb / 1024;
   return `${mb.toFixed(1)} Mo`;
+}
+
+async function readJsonSafe(response: Response) {
+  const text = await response.text();
+  if (!text) return null;
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
 }
 
 export default function MediaUploadClient() {
@@ -73,7 +85,7 @@ export default function MediaUploadClient() {
       setHistoryLoading(true);
       setHistoryError(null);
       const res = await fetch("/api/admin/media");
-      const json = await res.json();
+      const json = await readJsonSafe(res);
       if (!res.ok) {
         throw new Error(json?.error ?? "Chargement impossible.");
       }
@@ -148,7 +160,7 @@ export default function MediaUploadClient() {
         }),
       });
 
-      const savedJson = await saved.json();
+      const savedJson = await readJsonSafe(saved);
       if (saved.ok && savedJson?.item) {
         setHistory((prev) => [savedJson.item, ...prev].slice(0, 50));
       } else {
@@ -192,6 +204,10 @@ export default function MediaUploadClient() {
     } catch {
       // ignore
     }
+  }
+
+  function getItemUrl(item: MediaHistoryItem) {
+    return item.secure_url || item.url || "";
   }
 
   return (
@@ -354,15 +370,15 @@ export default function MediaUploadClient() {
                   <div className="aspect-[4/3] bg-muted/40">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={item.secure_url}
-                      alt={item.public_id}
+                      src={getItemUrl(item)}
+                      alt={item.public_id ?? item.publicId ?? "Media"}
                       className="h-full w-full object-cover"
                       loading="lazy"
                     />
                   </div>
                   <div className="space-y-2 p-3 text-xs text-muted-foreground">
                     <div className="truncate font-medium text-foreground">
-                      {item.public_id}
+                      {item.public_id ?? item.publicId ?? "Media"}
                     </div>
                     <div className="flex items-center justify-between">
                       <span>{formatBytes(item.bytes)}</span>
@@ -376,13 +392,13 @@ export default function MediaUploadClient() {
                       <Button
                         size="sm"
                         variant="secondary"
-                        onClick={() => copyFromHistory(item.secure_url)}
+                        onClick={() => copyFromHistory(getItemUrl(item))}
                       >
                         Copier URL
                       </Button>
                       <Button size="sm" variant="outline" asChild>
                         <a
-                          href={item.secure_url}
+                          href={getItemUrl(item)}
                           target="_blank"
                           rel="noreferrer"
                         >
