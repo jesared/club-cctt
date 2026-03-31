@@ -71,16 +71,28 @@ export default function ClubPage() {
               </div>
             </div>
 
-            <Card className="border-primary/30 bg-background/80 card-hover">
-              <CardHeader>
-                <CardTitle>En bref</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm text-muted-foreground">
-                <p>Loisir et compétition, enfants et adultes.</p>
-                <p>Encadrement sérieux, progression garantie.</p>
-                <p>Club affilié à la FFTT.</p>
-              </CardContent>
-            </Card>
+            <div className="space-y-4">
+              <Card className="border-primary/30 bg-background/80 card-hover">
+                <CardHeader>
+                  <CardTitle>En bref</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3 text-sm text-muted-foreground">
+                  <p>Loisir et compétition, enfants et adultes.</p>
+                  <p>Encadrement sérieux, progression garantie.</p>
+                  <p>Club affilié à la FFTT.</p>
+                </CardContent>
+              </Card>
+              <div className="group overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+                <div
+                  className="h-full min-h-[200px] bg-cover bg-center transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                  style={{
+                    backgroundImage:
+                      "url(https://res.cloudinary.com/diimhrbx7/image/upload/v1774953003/481667842_663772202843768_4729083360154549573_n_ff3jkc.jpg)",
+                  }}
+                  aria-hidden="true"
+                />
+              </div>
+            </div>
           </div>
         </header>
       </Reveal>

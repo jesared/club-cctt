@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/couv-facebook.jpg",
+        url: "https://res.cloudinary.com/diimhrbx7/image/upload/v1774953383/couv-facebook_ktnewg.jpg",
         width: 1200,
         height: 630,
         alt: "Tournoi de Pâques CCTT",
@@ -33,7 +33,9 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Tournoi national de Pâques – CCTT",
     description: "Dates, tableaux et inscriptions au tournoi CCTT.",
-    images: ["/couv-facebook.jpg"],
+    images: [
+      "https://res.cloudinary.com/diimhrbx7/image/upload/v1774953383/couv-facebook_ktnewg.jpg",
+    ],
   },
 };
 
@@ -234,58 +236,73 @@ export default async function TournoiHomePage() {
             </p>
           )}
 
-          <div className="flex flex-col sm:flex-row gap-3">
-            <TrackedLink
-              kpiPage="tournoi"
-              kpiLabel="cta-inscription"
-              href={tournamentRegistrationContent.cta.href}
-              className="inline-flex justify-center rounded-md bg-primary px-7 py-3.5 text-base font-semibold text-primary-foreground shadow-sm shadow-primary/20 transition hover:opacity-90 focus-ring"
-            >
-              {tournamentRegistrationContent.cta.label}
-            </TrackedLink>
-            <a
-              href="/tournoi/reglement"
-              className="inline-flex justify-center rounded-md border border-primary px-6 py-3 text-primary transition hover:bg-primary/10 focus-ring"
-            >
-              Consulter le règlement 2026
-            </a>
-            {hasUserRegistration ? (
-              <a
-                href="/user/inscriptions"
-                className="inline-flex justify-center rounded-md border border-border px-6 py-3 text-foreground transition hover:bg-accent/40 focus-ring"
-              >
-                Voir mes inscriptions
-              </a>
-            ) : null}
-          </div>
+          <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
+            <div className="space-y-4 lg:flex lg:flex-col lg:justify-between">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <TrackedLink
+                  kpiPage="tournoi"
+                  kpiLabel="cta-inscription"
+                  href={tournamentRegistrationContent.cta.href}
+                  className="inline-flex justify-center rounded-md bg-primary px-7 py-3.5 text-base font-semibold text-primary-foreground shadow-sm shadow-primary/20 transition hover:opacity-90 focus-ring"
+                >
+                  {tournamentRegistrationContent.cta.label}
+                </TrackedLink>
+                <a
+                  href="/tournoi/reglement"
+                  className="inline-flex justify-center rounded-md border border-primary px-6 py-3 text-primary transition hover:bg-primary/10 focus-ring"
+                >
+                  Consulter le règlement 2026
+                </a>
+                {hasUserRegistration ? (
+                  <a
+                    href="/user/inscriptions"
+                    className="inline-flex justify-center rounded-md border border-border px-6 py-3 text-foreground transition hover:bg-accent/40 focus-ring"
+                  >
+                    Voir mes inscriptions
+                  </a>
+                ) : null}
+              </div>
 
-          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-            <span className="rounded-full bg-primary/10 px-2.5 py-1 text-primary">
-              Déjà {registrationCount} inscrit(s)
-            </span>
-            {tournament?.status ? (
-              <span>{tournament.status}</span>
-            ) : null}
-            {registrationStatus ? (
-              <span
-                className={
-                  registrationStatus.tone === "open"
-                    ? "rounded-full bg-emerald-500/10 px-2.5 py-1 text-emerald-600"
-                    : registrationStatus.tone === "upcoming"
-                      ? "rounded-full bg-amber-500/10 px-2.5 py-1 text-amber-600"
-                      : registrationStatus.tone === "closed"
-                        ? "rounded-full bg-rose-500/10 px-2.5 py-1 text-rose-600"
-                        : "rounded-full bg-muted/60 px-2.5 py-1 text-muted-foreground"
-                }
-              >
-                {registrationStatus.label}
-              </span>
-            ) : null}
-            {tournament && session && isAdminRole(session.user.role) ? (
-              <span className="rounded-full border border-dashed px-2.5 py-1 text-[11px]">
-                ID: {tournament.id} • slug: {tournament.slug}
-              </span>
-            ) : null}
+              <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <span className="rounded-full bg-primary/10 px-2.5 py-1 text-primary">
+                  Déjà {registrationCount} inscrit(s)
+                </span>
+                {tournament?.status ? (
+                  <span>{tournament.status}</span>
+                ) : null}
+                {registrationStatus ? (
+                  <span
+                    className={
+                      registrationStatus.tone === "open"
+                        ? "rounded-full bg-emerald-500/10 px-2.5 py-1 text-emerald-600"
+                        : registrationStatus.tone === "upcoming"
+                          ? "rounded-full bg-amber-500/10 px-2.5 py-1 text-amber-600"
+                          : registrationStatus.tone === "closed"
+                            ? "rounded-full bg-rose-500/10 px-2.5 py-1 text-rose-600"
+                            : "rounded-full bg-muted/60 px-2.5 py-1 text-muted-foreground"
+                    }
+                  >
+                    {registrationStatus.label}
+                  </span>
+                ) : null}
+                {tournament && session && isAdminRole(session.user.role) ? (
+                  <span className="rounded-full border border-dashed px-2.5 py-1 text-[11px]">
+                    ID: {tournament.id} • slug: {tournament.slug}
+                  </span>
+                ) : null}
+              </div>
+            </div>
+
+            <div className="group w-full overflow-hidden rounded-2xl border border-border bg-card shadow-sm lg:max-w-md lg:justify-self-end">
+              <div
+                className="aspect-[16/9] w-full bg-cover bg-center transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+                style={{
+                  backgroundImage:
+                    "url(https://res.cloudinary.com/diimhrbx7/image/upload/v1774953383/couv-facebook_ktnewg.jpg)",
+                }}
+                aria-hidden="true"
+              />
+            </div>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

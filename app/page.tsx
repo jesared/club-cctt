@@ -59,24 +59,36 @@ export default function Home() {
 
       <Reveal>
         <section className="py-4">
-          <Card className="border-0 bg-primary/5 card-hover">
-            <CardHeader>
-              <CardTitle className="text-xl font-semibold">
-                Bienvenue au CCTT
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                Le <strong>Châlons-en-Champagne Tennis de Table (CCTT)</strong>
-                accueille joueurs débutants comme confirmés dans un cadre
-                convivial et structuré.
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Encadré par une équipe d&apos;entraîneurs diplômés, le club met
-                l&apos;accent sur la progression, le respect et le plaisir du jeu.
-              </p>
-            </CardContent>
-          </Card>
+          <div className="grid gap-6 md:grid-cols-[1.1fr_0.9fr]">
+            <Card className="border-0 bg-primary/5 card-hover">
+              <CardHeader>
+                <CardTitle className="text-xl font-semibold">
+                  Bienvenue au CCTT
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Le <strong>Châlons-en-Champagne Tennis de Table (CCTT)</strong>
+                  accueille joueurs débutants comme confirmés dans un cadre
+                  convivial et structuré.
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Encadré par une équipe d&apos;entraîneurs diplômés, le club met
+                  l&apos;accent sur la progression, le respect et le plaisir du jeu.
+                </p>
+              </CardContent>
+            </Card>
+            <div className="group overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+              <div
+                className="h-full min-h-[220px] bg-cover bg-center transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                style={{
+                  backgroundImage:
+                    "url(https://res.cloudinary.com/diimhrbx7/image/upload/v1774952725/600559768_888023470418639_3507961945519905437_n_ayerkl.jpg)",
+                }}
+                aria-hidden="true"
+              />
+            </div>
+          </div>
         </section>
       </Reveal>
 
