@@ -191,15 +191,21 @@ export default async function TournoiHomePage() {
     surPlace: `${(event.feeOnsiteCents / 100).toFixed(0)} EUR`,
   }));
 
-  const registrationStatusLabel = tournament
+  const registrationStatus = tournament
     ? (() => {
         const now = new Date();
         const openAt = tournament.registrationOpenAt;
         const closeAt = tournament.registrationCloseAt;
-        if (openAt && now < openAt) return "Inscriptions a venir";
-        if (closeAt && now > closeAt) return "Inscriptions fermees";
-        if (openAt || closeAt) return "Inscriptions ouvertes";
-        return "Inscriptions a confirmer";
+        if (openAt && now < openAt) {
+          return { label: "Inscriptions a venir", tone: "upcoming" as const };
+        }
+        if (closeAt && now > closeAt) {
+          return { label: "Inscriptions fermees", tone: "closed" as const };
+        }
+        if (openAt || closeAt) {
+          return { label: "Inscriptions ouvertes", tone: "open" as const };
+        }
+        return { label: "Inscriptions a confirmer", tone: "unknown" as const };
       })()
     : null;
 
@@ -260,9 +266,19 @@ export default async function TournoiHomePage() {
             {tournament?.status ? (
               <span>{tournament.status}</span>
             ) : null}
-            {registrationStatusLabel ? (
-              <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-emerald-600">
-                {registrationStatusLabel}
+            {registrationStatus ? (
+              <span
+                className={
+                  registrationStatus.tone === "open"
+                    ? "rounded-full bg-emerald-500/10 px-2.5 py-1 text-emerald-600"
+                    : registrationStatus.tone === "upcoming"
+                      ? "rounded-full bg-amber-500/10 px-2.5 py-1 text-amber-600"
+                      : registrationStatus.tone === "closed"
+                        ? "rounded-full bg-rose-500/10 px-2.5 py-1 text-rose-600"
+                        : "rounded-full bg-muted/60 px-2.5 py-1 text-muted-foreground"
+                }
+              >
+                {registrationStatus.label}
               </span>
             ) : null}
             {tournament && session && isAdminRole(session.user.role) ? (
