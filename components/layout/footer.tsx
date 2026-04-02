@@ -15,7 +15,17 @@ export default function Footer() {
   return (
     <footer className="border-t bg-background">
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-4 text-xs text-muted-foreground sm:flex-row">
-        <span>(c) {new Date().getFullYear()} CCTT</span>
+        <span>
+          (c) {new Date().getFullYear()} CCTT ·{" "}
+          <a
+            href="https://jesared.fr"
+            target="_blank"
+            rel="noreferrer"
+            className="hover:text-foreground"
+          >
+            Createur Jerome HENRY
+          </a>
+        </span>
         <div className="flex items-center gap-4">
           <Link href="/club/contact" className="hover:text-foreground">
             Contact
@@ -26,14 +36,6 @@ export default function Footer() {
           <Link href="/club" className="hover:text-foreground">
             Club
           </Link>
-          <a
-            href="https://jesared.fr"
-            target="_blank"
-            rel="noreferrer"
-            className="hover:text-foreground"
-          >
-            jesared.fr
-          </a>
         </div>
       </div>
     </footer>
