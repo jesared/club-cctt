@@ -23,7 +23,7 @@ export default function Footer() {
             rel="noreferrer"
             className="hover:text-foreground"
           >
-            Createur Jerome HENRY
+            Créateur Jérôme HENRY
           </a>
         </span>
         <div className="flex items-center gap-4">
