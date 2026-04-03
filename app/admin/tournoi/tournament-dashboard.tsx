@@ -38,15 +38,15 @@ export function TournamentDashboard({
       Icon: Users,
     },
     {
-      label: "Paiements validés",
+      label: "Dossiers soldés",
       value: stats.paidPlayers,
-      description: "Inscriptions avec paiement confirmé",
+      description: "Inscriptions intégralement réglées",
       Icon: CreditCard,
     },
     {
-      label: "Paiements en attente",
+      label: "Soldes à régler",
       value: stats.pendingPayments,
-      description: "Inscriptions sans paiement validé",
+      description: "Inscriptions avec un reste à encaisser",
       Icon: LoaderCircle,
     },
     {

@@ -254,7 +254,7 @@ export default async function AdminTournoiPage() {
             <CardContent className="space-y-4 text-muted-foreground">
               <p>
                 Pour garder le tournoi visible et regulier, nous publions des
-                contenus avant, pendant et apres l'evenement selon un planning clair.
+                contenus avant, pendant et apres l&apos;evenement selon un planning clair.
               </p>
 
               <div className="space-y-4">
@@ -280,7 +280,7 @@ export default async function AdminTournoiPage() {
             <CardContent className="space-y-4 text-muted-foreground">
               <p>
                 Les preuves sociales permettent de montrer la credibilite du
-                tournoi et d'encourager de nouvelles inscriptions.
+                tournoi et d&apos;encourager de nouvelles inscriptions.
               </p>
 
               <div className="grid gap-3">

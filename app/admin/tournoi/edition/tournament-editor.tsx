@@ -34,6 +34,40 @@ type EventForm = {
   status: "OPEN" | "FULL" | "CLOSED" | "CANCELLED";
 };
 
+type TournamentEditorEventPayload = {
+  id: string;
+  code?: string | null;
+  label?: string | null;
+  gender?: EventForm["gender"] | null;
+  minPoints?: number | null;
+  maxPoints?: number | null;
+  maxPlayers?: number | null;
+  startAt?: string | null;
+  feeOnlineCents?: number | null;
+  feeOnsiteCents?: number | null;
+  status?: EventForm["status"] | null;
+};
+
+type TournamentEditorPayload = {
+  id: string;
+  slug?: string | null;
+  name?: string | null;
+  description?: string | null;
+  venue?: string | null;
+  registrationOpenAt?: string | null;
+  registrationCloseAt?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
+  status?: TournamentForm["status"] | null;
+  events?: TournamentEditorEventPayload[] | null;
+};
+
+type TournamentEditorResponse = {
+  error?: string;
+  tournament?: TournamentEditorPayload | null;
+  event?: TournamentEditorEventPayload | null;
+};
+
 type TournamentEditorProps = {
   tournamentId: string;
 };
@@ -74,7 +108,7 @@ function toInputValue(value: string | null | undefined) {
   return local.toISOString().slice(0, 16);
 }
 
-async function readJson<T = any>(response: Response): Promise<T | null> {
+async function readJson<T = unknown>(response: Response): Promise<T | null> {
   const text = await response.text();
   if (!text) return null;
   try {
@@ -82,6 +116,22 @@ async function readJson<T = any>(response: Response): Promise<T | null> {
   } catch {
     return null;
   }
+}
+
+function toEventForm(event: TournamentEditorEventPayload): EventForm {
+  return {
+    id: event.id,
+    code: event.code ?? "",
+    label: event.label ?? "",
+    gender: event.gender ?? "MIXED",
+    minPoints: event.minPoints?.toString() ?? "",
+    maxPoints: event.maxPoints?.toString() ?? "",
+    maxPlayers: event.maxPlayers?.toString() ?? "32",
+    startAt: toInputValue(event.startAt),
+    feeOnlineCents: event.feeOnlineCents?.toString() ?? "",
+    feeOnsiteCents: event.feeOnsiteCents?.toString() ?? "",
+    status: event.status ?? "OPEN",
+  };
 }
 
 export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
@@ -121,7 +171,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
       setLoadError(null);
       try {
         const res = await fetch(`/api/admin/tournoi/${tournamentId}`);
-        const json = await readJson(res);
+        const json = await readJson<TournamentEditorResponse>(res);
         if (!res.ok) {
           const statusInfo = `${res.status} ${res.statusText || "Erreur"}`.trim();
           setLoadError(
@@ -150,19 +200,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
           status: tournamentData.status ?? "DRAFT",
         });
 
-        const eventList = (tournamentData.events ?? []).map((event: any) => ({
-          id: event.id,
-          code: event.code ?? "",
-          label: event.label ?? "",
-          gender: event.gender ?? "MIXED",
-          minPoints: event.minPoints?.toString() ?? "",
-          maxPoints: event.maxPoints?.toString() ?? "",
-          maxPlayers: event.maxPlayers?.toString() ?? "32",
-          startAt: toInputValue(event.startAt),
-          feeOnlineCents: event.feeOnlineCents?.toString() ?? "",
-          feeOnsiteCents: event.feeOnsiteCents?.toString() ?? "",
-          status: event.status ?? "OPEN",
-        }));
+        const eventList = (tournamentData.events ?? []).map(toEventForm);
 
         setEvents(eventList);
       } finally {
@@ -185,7 +223,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(tournament),
       });
-      const json = await readJson(res);
+      const json = await readJson<TournamentEditorResponse>(res);
       if (!res.ok) {
         alert(json?.error ?? "Enregistrement impossible.");
         return;
@@ -208,7 +246,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newEvent),
       });
-      const json = await readJson(res);
+      const json = await readJson<TournamentEditorResponse>(res);
       if (!res.ok) {
         alert(json?.error ?? "Creation impossible.");
         return;
@@ -217,22 +255,8 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
         alert("Tableau ajoute.");
         return;
       }
-      setEvents((current) => [
-        ...current,
-        {
-          id: json.event.id,
-          code: json.event.code,
-          label: json.event.label,
-          gender: json.event.gender,
-          minPoints: json.event.minPoints?.toString() ?? "",
-          maxPoints: json.event.maxPoints?.toString() ?? "",
-          maxPlayers: json.event.maxPlayers?.toString() ?? "32",
-          startAt: toInputValue(json.event.startAt),
-          feeOnlineCents: json.event.feeOnlineCents?.toString() ?? "",
-          feeOnsiteCents: json.event.feeOnsiteCents?.toString() ?? "",
-          status: json.event.status,
-        },
-      ]);
+      const createdEvent = json.event;
+      setEvents((current) => [...current, toEventForm(createdEvent)]);
       setNewEvent(emptyEvent);
     } finally {
       setSavingEvent(null);
@@ -254,7 +278,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
           body: JSON.stringify(event),
         },
       );
-      const json = await readJson(res);
+      const json = await readJson<TournamentEditorResponse>(res);
       if (!res.ok) {
         alert(json?.error ?? "Mise a jour impossible.");
         return;
@@ -277,7 +301,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
         `/api/admin/tournoi/${tournamentId}/events/${id}`,
         { method: "DELETE" },
       );
-      const json = await readJson(res);
+      const json = await readJson<TournamentEditorResponse>(res);
       if (!res.ok) {
         alert(json?.error ?? "Suppression impossible.");
         return;

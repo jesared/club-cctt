@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 
@@ -31,6 +32,9 @@ export async function PUT(req: Request) {
     update: data,
     create: { id: "default", ...data },
   });
+
+  revalidatePath("/");
+  revalidatePath("/home");
 
   return NextResponse.json({ data: saved });
 }

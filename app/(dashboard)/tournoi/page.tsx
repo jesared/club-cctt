@@ -8,6 +8,7 @@ import { normalizeContactContent } from "@/lib/contact-content";
 import { prisma } from "@/lib/prisma";
 import { isAdminRole } from "@/lib/roles";
 import { tournamentRegistrationContent } from "@/lib/tournament-registration-content";
+import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-window";
 import { getServerSession } from "next-auth";
 
 export const metadata: Metadata = {
@@ -113,9 +114,7 @@ export default async function TournoiHomePage() {
   const [tournament, contactContentRaw] = await Promise.all([
     prisma.tournament.findFirst({
       where: {
-        status: {
-          in: ["PUBLISHED", "DRAFT"],
-        },
+        status: "PUBLISHED",
       },
       orderBy: [{ startDate: "desc" }],
       select: {
@@ -149,6 +148,7 @@ export default async function TournoiHomePage() {
   ]);
   const tournamentEvents = tournament?.events ?? [];
   const contactContent = normalizeContactContent(contactContentRaw ?? undefined);
+  const registrationStatus = getTournamentRegistrationStatus(tournament);
 
   const registrationCount = tournament
     ? await prisma.tournamentRegistration.count({
@@ -193,24 +193,6 @@ export default async function TournoiHomePage() {
     surPlace: `${(event.feeOnsiteCents / 100).toFixed(0)} EUR`,
   }));
 
-  const registrationStatus = tournament
-    ? (() => {
-        const now = new Date();
-        const openAt = tournament.registrationOpenAt;
-        const closeAt = tournament.registrationCloseAt;
-        if (openAt && now < openAt) {
-          return { label: "Inscriptions a venir", tone: "upcoming" as const };
-        }
-        if (closeAt && now > closeAt) {
-          return { label: "Inscriptions fermees", tone: "closed" as const };
-        }
-        if (openAt || closeAt) {
-          return { label: "Inscriptions ouvertes", tone: "open" as const };
-        }
-        return { label: "Inscriptions a confirmer", tone: "unknown" as const };
-      })()
-    : null;
-
   return (
     <main className="max-w-7xl mx-auto px-4 py-10 space-y-10">
       <KpiPageViewTracker page="tournoi" label="tournoi-page" />
@@ -239,14 +221,20 @@ export default async function TournoiHomePage() {
           <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
             <div className="space-y-4 lg:flex lg:flex-col lg:justify-between">
               <div className="flex flex-col sm:flex-row gap-3">
-                <TrackedLink
-                  kpiPage="tournoi"
-                  kpiLabel="cta-inscription"
-                  href={tournamentRegistrationContent.cta.href}
-                  className="inline-flex justify-center rounded-md bg-primary px-7 py-3.5 text-base font-semibold text-primary-foreground shadow-sm shadow-primary/20 transition hover:opacity-90 focus-ring"
-                >
-                  {tournamentRegistrationContent.cta.label}
-                </TrackedLink>
+                {registrationStatus.canRegister ? (
+                  <TrackedLink
+                    kpiPage="tournoi"
+                    kpiLabel="cta-inscription"
+                    href={tournamentRegistrationContent.cta.href}
+                    className="inline-flex justify-center rounded-md bg-primary px-7 py-3.5 text-base font-semibold text-primary-foreground shadow-sm shadow-primary/20 transition hover:opacity-90 focus-ring"
+                  >
+                    {tournamentRegistrationContent.cta.label}
+                  </TrackedLink>
+                ) : (
+                  <span className="inline-flex justify-center rounded-md bg-muted px-7 py-3.5 text-base font-semibold text-muted-foreground">
+                    {registrationStatus.label}
+                  </span>
+                )}
                 <a
                   href="/tournoi/reglement"
                   className="inline-flex justify-center rounded-md border border-primary px-6 py-3 text-primary transition hover:bg-primary/10 focus-ring"
@@ -262,6 +250,11 @@ export default async function TournoiHomePage() {
                   </a>
                 ) : null}
               </div>
+              {!registrationStatus.canRegister ? (
+                <p className="text-sm text-muted-foreground">
+                  {registrationStatus.message}
+                </p>
+              ) : null}
 
               <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                 <span className="rounded-full bg-primary/10 px-2.5 py-1 text-primary">
@@ -273,11 +266,11 @@ export default async function TournoiHomePage() {
                 {registrationStatus ? (
                   <span
                     className={
-                      registrationStatus.tone === "open"
+                      registrationStatus.state === "OPEN"
                         ? "rounded-full bg-emerald-500/10 px-2.5 py-1 text-emerald-600"
-                        : registrationStatus.tone === "upcoming"
+                        : registrationStatus.state === "UPCOMING"
                           ? "rounded-full bg-amber-500/10 px-2.5 py-1 text-amber-600"
-                          : registrationStatus.tone === "closed"
+                          : registrationStatus.state === "CLOSED"
                             ? "rounded-full bg-rose-500/10 px-2.5 py-1 text-rose-600"
                             : "rounded-full bg-muted/60 px-2.5 py-1 text-muted-foreground"
                     }

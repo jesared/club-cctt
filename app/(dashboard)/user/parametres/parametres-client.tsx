@@ -93,7 +93,7 @@ export default function ParametresClient() {
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
             <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Nom d'affichage
+              Nom d&apos;affichage
             </label>
             <input
               type="text"
@@ -116,7 +116,7 @@ export default function ParametresClient() {
             ) : null}
             {saveState === "error" ? (
               <p className="text-xs text-destructive">
-                Impossible d'enregistrer. Vérifiez le nom.
+                Impossible d&apos;enregistrer. Vérifiez le nom.
               </p>
             ) : null}
           </CardContent>

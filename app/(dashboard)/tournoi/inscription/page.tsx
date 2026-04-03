@@ -4,6 +4,7 @@ import TournamentRegistrationForm from "@/components/TournamentRegistrationForm"
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-window";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
@@ -73,14 +74,15 @@ export default async function InscriptionsPage() {
 
   const tournament = await prisma.tournament.findFirst({
     where: {
-      status: {
-        in: ["PUBLISHED", "DRAFT"],
-      },
+      status: "PUBLISHED",
     },
     orderBy: [{ startDate: "desc" }],
     select: {
       id: true,
       name: true,
+      status: true,
+      registrationOpenAt: true,
+      registrationCloseAt: true,
       events: {
         where: {
           status: { in: ["OPEN", "FULL"] },
@@ -111,6 +113,7 @@ export default async function InscriptionsPage() {
       },
     },
   });
+  const registrationStatus = getTournamentRegistrationStatus(tournament);
 
   const tableOptions = (tournament?.events ?? []).map((event) => {
     const maxPlayers = event.maxPlayers ?? null;
@@ -169,9 +172,9 @@ export default async function InscriptionsPage() {
             Inscription {tournament?.name ? `au ${tournament.name}` : "au Tournoi"}
           </h1>
           <p className="text-sm text-muted-foreground">
-            Remplissez le formulaire, choisissez vos tableaux, puis validez. Une
-            confirmation vous sera envoyée par email après vérification des
-            disponibilités.
+            {registrationStatus.canRegister
+              ? "Remplissez le formulaire, choisissez vos tableaux, puis validez. Une confirmation vous sera envoyée par email après vérification des disponibilités."
+              : registrationStatus.message}
           </p>
         </header>
       </Reveal>
@@ -197,68 +200,105 @@ export default async function InscriptionsPage() {
 
       <Reveal>
         <Card className="shadow-sm border-border tournament-panel card-hover">
-          <CardHeader className="space-y-4">
-            <div className="grid gap-3 sm:grid-cols-3">
-              {[
-                {
-                  step: "1",
-                  title: "Compléter le profil",
-                  detail: "Nom, licence, points, contact.",
-                },
-                {
-                  step: "2",
-                  title: "Choisir les tableaux",
-                  detail: "Disponibilités en temps réel.",
-                },
-                {
-                  step: "3",
-                  title: "Valider la demande",
-                  detail: "Email de confirmation sous 48h.",
-                },
-              ].map((item) => (
-                <div key={item.step} className="rounded-lg border bg-background p-3">
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                    Étape {item.step}
-                  </p>
-                  <p className="mt-1 font-semibold text-foreground">
-                    {item.title}
-                  </p>
-                  <p className="text-xs text-muted-foreground">{item.detail}</p>
+          {registrationStatus.canRegister ? (
+            <>
+              <CardHeader className="space-y-4">
+                <div className="grid gap-3 sm:grid-cols-3">
+                  {[
+                    {
+                      step: "1",
+                      title: "Compléter le profil",
+                      detail: "Nom, licence, points, contact.",
+                    },
+                    {
+                      step: "2",
+                      title: "Choisir les tableaux",
+                      detail: "Disponibilités en temps réel.",
+                    },
+                    {
+                      step: "3",
+                      title: "Valider la demande",
+                      detail: "Email de confirmation sous 48h.",
+                    },
+                  ].map((item) => (
+                    <div key={item.step} className="rounded-lg border bg-background p-3">
+                      <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                        Étape {item.step}
+                      </p>
+                      <p className="mt-1 font-semibold text-foreground">
+                        {item.title}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{item.detail}</p>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Les tableaux complets peuvent proposer une liste d&apos;attente si
-              vous choisissez de rester candidat.
-            </p>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <TournamentRegistrationForm tableOptions={tableOptions} />
-            <div className="rounded-lg border border-primary/20 bg-primary/10 p-4 text-sm text-foreground">
-              <p>
-                <strong>Besoin d&apos;aide&nbsp;?</strong> Contact inscriptions :{" "}
-                <a className="underline" href="mailto:communication@cctt.fr">
-                  communication@cctt.fr
-                </a>
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <a
-                href="/tournoi"
-                className="inline-flex justify-center rounded-md border border-primary px-5 py-2 text-primary transition hover:bg-primary/10"
-              >
-                Retour à la page tournoi
-              </a>
-              {hasUserRegistration ? (
+                <p className="text-sm text-muted-foreground">
+                  Les tableaux complets peuvent proposer une liste d&apos;attente si
+                  vous choisissez de rester candidat.
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <TournamentRegistrationForm tableOptions={tableOptions} />
+                <div className="rounded-lg border border-primary/20 bg-primary/10 p-4 text-sm text-foreground">
+                  <p>
+                    <strong>Besoin d&apos;aide&nbsp;?</strong> Contact inscriptions :{" "}
+                    <a className="underline" href="mailto:communication@cctt.fr">
+                      communication@cctt.fr
+                    </a>
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  <a
+                    href="/tournoi"
+                    className="inline-flex justify-center rounded-md border border-primary px-5 py-2 text-primary transition hover:bg-primary/10"
+                  >
+                    Retour à la page tournoi
+                  </a>
+                  {hasUserRegistration ? (
+                    <a
+                      href="/user/inscriptions"
+                      className="inline-flex justify-center rounded-md border border-border px-5 py-2 text-foreground transition hover:bg-accent/40"
+                    >
+                      Voir mes inscriptions
+                    </a>
+                  ) : null}
+                </div>
+              </CardContent>
+            </>
+          ) : (
+            <CardContent className="space-y-4 p-6">
+              <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-4 text-sm text-foreground">
+                <p className="font-medium">{registrationStatus.label}</p>
+                <p className="mt-1 text-muted-foreground">
+                  {registrationStatus.message}
+                </p>
+              </div>
+              <div className="rounded-lg border border-primary/20 bg-primary/10 p-4 text-sm text-foreground">
+                <p>
+                  <strong>Besoin d&apos;aide&nbsp;?</strong> Contact inscriptions :{" "}
+                  <a className="underline" href="mailto:communication@cctt.fr">
+                    communication@cctt.fr
+                  </a>
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-3">
                 <a
-                  href="/user/inscriptions"
-                  className="inline-flex justify-center rounded-md border border-border px-5 py-2 text-foreground transition hover:bg-accent/40"
+                  href="/tournoi"
+                  className="inline-flex justify-center rounded-md border border-primary px-5 py-2 text-primary transition hover:bg-primary/10"
                 >
-                  Voir mes inscriptions
+                  Retour à la page tournoi
                 </a>
-              ) : null}
-            </div>
-          </CardContent>
+                {hasUserRegistration ? (
+                  <a
+                    href="/user/inscriptions"
+                    className="inline-flex justify-center rounded-md border border-border px-5 py-2 text-foreground transition hover:bg-accent/40"
+                  >
+                    Voir mes inscriptions
+                  </a>
+                ) : null}
+              </div>
+            </CardContent>
+          )}
         </Card>
       </Reveal>
     </main>

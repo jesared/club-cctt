@@ -4,12 +4,13 @@ import {
   createTournamentRegistration,
   ensureWebRegistrationOwnerId,
   getInvalidTables,
-  getLatestTournamentId,
+  getLatestPublishedTournamentForRegistration,
   getSelectedEvents,
   sendRegistrationNotifications,
   validateAndNormalizeRegistration,
   type RegistrationPayload,
 } from "@/lib/tournament-registration";
+import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-window";
 import { prisma } from "@/lib/prisma";
 import { RegistrationEventStatus } from "@prisma/client";
 import { getServerSession } from "next-auth";
@@ -59,17 +60,28 @@ export async function POST(request: NextRequest) {
 
   const { payload } = validation;
 
-  const tournamentId = await getLatestTournamentId();
+  const tournament = await getLatestPublishedTournamentForRegistration();
+  const registrationStatus = getTournamentRegistrationStatus(tournament);
 
-  if (!tournamentId) {
+  if (!tournament) {
     return NextResponse.json(
       {
-        message: "Aucun tournoi actif n'est disponible pour le moment.",
+        message: registrationStatus.message,
       },
       { status: 400 },
     );
   }
 
+  if (!registrationStatus.canRegister) {
+    return NextResponse.json(
+      {
+        message: registrationStatus.message,
+      },
+      { status: 403 },
+    );
+  }
+
+  const tournamentId = tournament.id;
   const ownerId = await ensureWebRegistrationOwnerId();
   const session = await getServerSession(authOptions);
   const sessionUserId = session?.user?.id ?? null;

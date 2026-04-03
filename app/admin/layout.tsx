@@ -18,7 +18,7 @@ export default async function AdminLayout({
   }
 
   if (!isAdminRole(session.user.role)) {
-    redirect("/");
+    redirect("/user?forbidden=admin");
   }
 
   return <AppShell title="Administration">{children}</AppShell>;

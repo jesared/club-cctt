@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-assign-module-variable */
 "use client";
 
 import Link from "next/link";

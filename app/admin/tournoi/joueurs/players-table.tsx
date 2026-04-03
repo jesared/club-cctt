@@ -108,7 +108,7 @@ export function PlayersTable({ players }: PlayersTableProps) {
           </span>
           {stats.waitlist > 0 ? (
             <span className="rounded-full border border-border bg-slate-500/10 px-3 py-1 text-slate-400">
-              {stats.waitlist} liste d'attente
+              {stats.waitlist} liste d&apos;attente
             </span>
           ) : null}
           {stats.checked > 0 ? (

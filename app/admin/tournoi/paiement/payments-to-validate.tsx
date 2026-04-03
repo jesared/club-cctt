@@ -1,6 +1,13 @@
 ﻿"use client";
 
-import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { X } from "lucide-react";
 import {
   updatePaymentGroupNote,
@@ -67,7 +74,6 @@ export function PaymentsToValidate({
 }: Props) {
   const [payments, setPayments] = useState(initialPayments);
   const [selectedGroupKey, setSelectedGroupKey] = useState<string | null>(null);
-  const [noteByGroup, setNoteByGroup] = useState<Record<string, string>>({});
   const [statusFilter, setStatusFilter] = useState<FilterStatus>(
     defaultStatusFilter ?? "TOUS",
   );
@@ -151,7 +157,7 @@ export function PaymentsToValidate({
   useEffect(() => {
     if (!selectedPayment) return;
     setManualPaidValue("");
-    const existingNote = selectedPayment.note ?? noteByGroup[selectedPayment.groupKey] ?? "";
+    const existingNote = selectedPayment.note ?? "";
     setNoteValue(existingNote);
     setSavedNoteValue(existingNote);
   }, [selectedPayment]);
@@ -270,7 +276,7 @@ export function PaymentsToValidate({
 
   const markPaymentAsPartial = () => updatePaymentStatus("PARTIEL");
 
-  const saveNoteOnly = () => {
+  const saveNoteOnly = useCallback(() => {
     if (!selectedPayment || isPending) return;
 
     const targetGroupKey = selectedPayment.groupKey;
@@ -285,7 +291,6 @@ export function PaymentsToValidate({
         return;
       }
 
-      setNoteByGroup((current) => ({ ...current, [targetGroupKey]: note }));
       setSavedNoteValue(note);
       setPayments((current) =>
         current.map<PaymentDossier>((group): PaymentDossier => {
@@ -303,7 +308,7 @@ export function PaymentsToValidate({
       setToastMessage("Note enregistrée.");
       setTimeout(() => setToastMessage(null), 2500);
     });
-  };
+  }, [isPending, noteValue, selectedPayment, startTransition]);
 
   useEffect(() => {
     if (!selectedPayment) return;
@@ -315,7 +320,7 @@ export function PaymentsToValidate({
     }, 2000);
 
     return () => clearTimeout(timeout);
-  }, [noteValue, savedNoteValue, selectedPayment, isPending]);
+  }, [noteValue, savedNoteValue, selectedPayment, isPending, saveNoteOnly]);
 
   const saveManualPaidAmount = () => {
     if (!selectedPayment || isPending) return;

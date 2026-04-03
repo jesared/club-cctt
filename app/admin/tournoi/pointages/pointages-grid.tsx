@@ -97,7 +97,6 @@ export function PointagesGrid({
     Set<string>
   >(new Set());
   const [editPending, setEditPending] = useState<boolean>(false);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [openMenuPlayerId, setOpenMenuPlayerId] = useState<string | null>(null);
   const [menuPosition, setMenuPosition] = useState<{
     top: number;
@@ -736,12 +735,6 @@ export function PointagesGrid({
                     : paymentStatus.includes("payé")
                       ? null
                       : "Attente";
-                const isPaymentPending =
-                  paymentStatus.includes("partiel") ||
-                  paymentStatus.includes("régulariser") ||
-                  paymentStatus.includes("regulariser") ||
-                  (!paymentStatus.includes("payé") &&
-                    !paymentStatus.includes("paye"));
                 return (
                   <tr
                     key={player.id}
@@ -1123,11 +1116,6 @@ export function PointagesGrid({
         </div>
       ) : null}
 
-      {toastMessage ? (
-        <div className="fixed bottom-4 right-4 z-[60] rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground shadow-lg">
-          {toastMessage}
-        </div>
-      ) : null}
     </section>
   );
 }

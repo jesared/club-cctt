@@ -1,5 +1,11 @@
 ﻿import { prisma } from "@/lib/prisma";
 import { RegistrationEventStatus, RegistrationStatus } from "@prisma/client";
+import {
+  getEffectivePaidCents,
+  getPaymentStatusFromAmounts,
+  getRecordedPaidCents,
+  getRegistrationTotalDueCents,
+} from "./payment-utils";
 
 export type TournamentTable = {
   id: string;
@@ -156,16 +162,24 @@ export async function getTournamentDashboardStats(
   const startOfTomorrow = new Date(startOfToday);
   startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
 
-  const [totalPlayers, paidPlayers, registrationsToday, tables] = await Promise.all([
-    prisma.tournamentRegistration.count({
+  const [registrations, registrationsToday, tables] = await Promise.all([
+    prisma.tournamentRegistration.findMany({
       where: { tournamentId },
-    }),
-    prisma.tournamentRegistration.count({
-      where: {
-        tournamentId,
+      select: {
+        paidAmountCents: true,
+        registrationEvents: {
+          select: {
+            event: {
+              select: {
+                feeOnlineCents: true,
+              },
+            },
+          },
+        },
         payments: {
-          some: {
-            status: "PAID",
+          select: {
+            amountCents: true,
+            status: true,
           },
         },
       },
@@ -202,6 +216,18 @@ export async function getTournamentDashboardStats(
       },
     }),
   ]);
+  const totalPlayers = registrations.length;
+  const paidPlayers = registrations.filter((registration) => {
+    const totalDueCents = getRegistrationTotalDueCents(
+      registration.registrationEvents,
+    );
+    const totalPaidCents = getEffectivePaidCents({
+      paidAmountCents: registration.paidAmountCents,
+      payments: registration.payments,
+    });
+
+    return getPaymentStatusFromAmounts(totalDueCents, totalPaidCents) === "PAYÉ";
+  }).length;
 
   const totalTables = tables.length;
   const fullTables = tables.filter((table) => table._count.registrationEvents >= table.maxPlayers).length;
@@ -260,14 +286,26 @@ export async function getTournamentProgress(
     (tournament.startDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
   );
 
-  const [totalPlayers, paidPlayers, tables] = await Promise.all([
-    prisma.tournamentRegistration.count({
+  const [registrations, tables] = await Promise.all([
+    prisma.tournamentRegistration.findMany({
       where: { tournamentId },
-    }),
-    prisma.tournamentRegistration.count({
-      where: {
-        tournamentId,
-        payments: { some: { status: "PAID" } },
+      select: {
+        paidAmountCents: true,
+        registrationEvents: {
+          select: {
+            event: {
+              select: {
+                feeOnlineCents: true,
+              },
+            },
+          },
+        },
+        payments: {
+          select: {
+            amountCents: true,
+            status: true,
+          },
+        },
       },
     }),
     prisma.tournamentEvent.findMany({
@@ -293,6 +331,18 @@ export async function getTournamentProgress(
       },
     }),
   ]);
+  const totalPlayers = registrations.length;
+  const paidPlayers = registrations.filter((registration) => {
+    const totalDueCents = getRegistrationTotalDueCents(
+      registration.registrationEvents,
+    );
+    const totalPaidCents = getEffectivePaidCents({
+      paidAmountCents: registration.paidAmountCents,
+      payments: registration.payments,
+    });
+
+    return getPaymentStatusFromAmounts(totalDueCents, totalPaidCents) === "PAYÉ";
+  }).length;
 
   const totalTables = tables.length;
   const tablesFull = tables.filter(
@@ -454,22 +504,25 @@ export async function getAdminPlayers(tournamentId: string): Promise<AdminPlayer
       },
       payments: {
         select: {
+          amountCents: true,
           status: true,
         },
       },
     },
-    take: 100,
   });
 
   return registrations.map((registration) => {
-    const totalDueCents = registration.registrationEvents.reduce(
-      (acc, entry) => acc + entry.event.feeOnlineCents,
-      0,
+    const totalDueCents = getRegistrationTotalDueCents(
+      registration.registrationEvents,
     );
-    const hasPaidPayment = registration.payments.some((payment) => payment.status === "PAID");
-    const isPartialPayment =
-      registration.paidAmountCents > 0 &&
-      registration.paidAmountCents < totalDueCents;
+    const totalPaidCents = getEffectivePaidCents({
+      paidAmountCents: registration.paidAmountCents,
+      payments: registration.payments,
+    });
+    const paymentStatus = getPaymentStatusFromAmounts(
+      totalDueCents,
+      totalPaidCents,
+    );
     const hasCheckedIn = registration.registrationEvents.some(
       (registrationEvent) => registrationEvent.status === RegistrationEventStatus.CHECKED_IN,
     );
@@ -491,11 +544,12 @@ export async function getAdminPlayers(tournamentId: string): Promise<AdminPlayer
       licence: registration.player.licence,
       ranking: registration.player.points ? `${registration.player.points}` : "—",
       table: registration.registrationEvents.map((entry) => entry.event.code).join(", ") || "—",
-      payment: hasPaidPayment
-        ? isPartialPayment
-          ? "À régulariser"
-          : "Payé"
-        : "En attente",
+      payment:
+        paymentStatus === "PAYÉ"
+          ? "Payé"
+          : paymentStatus === "PARTIEL"
+            ? "À régulariser"
+            : "En attente",
       status: computedStatus,
       engagedEventIds: registration.registrationEvents.map((entry) => entry.eventId),
       waitlistEventIds: registration.registrationEvents
@@ -591,18 +645,17 @@ export async function getAdminPaymentGroups(tournamentId: string): Promise<Admin
       (acc, eventEntry) => acc + eventEntry.event.feeOnlineCents,
       0,
     );
-    const paymentsPaidCents = registration.payments
-      .filter((payment) => payment.status === "PAID")
-      .reduce((acc, payment) => acc + payment.amountCents, 0);
+    const paymentsPaidCents = getRecordedPaidCents(registration.payments);
     const hasRecordedPayments = registration.payments.length > 0;
     const hasPaymentMismatch =
       hasRecordedPayments && registration.paidAmountCents !== paymentsPaidCents;
     const effectivePaidCents = hasRecordedPayments
       ? paymentsPaidCents
       : registration.paidAmountCents;
-    const totalPendingCents = registration.payments
-      .filter((payment) => payment.status === "PENDING")
-      .reduce((acc, payment) => acc + payment.amountCents, 0);
+    const totalPendingCents = Math.max(
+      totalAmountDueCents - effectivePaidCents,
+      0,
+    );
 
     if (!groups.has(groupKey)) {
       const payerName = `${registration.player.prenom} ${registration.player.nom}`.trim() || "Payeur inconnu";
@@ -643,12 +696,10 @@ export async function getAdminPaymentGroups(tournamentId: string): Promise<Admin
   }
 
   const rows = Array.from(groups.values()).map((group) => {
-    let paymentStatus: AdminPaymentGroupRow["paymentStatus"] = "EN ATTENTE";
-    if (group.totalPaidCents >= group.totalAmountDueCents && group.totalAmountDueCents > 0) {
-      paymentStatus = "PAYÉ";
-    } else if (group.totalPaidCents > 0) {
-      paymentStatus = "PARTIEL";
-    }
+    const paymentStatus = getPaymentStatusFromAmounts(
+      group.totalAmountDueCents,
+      group.totalPaidCents,
+    );
 
     return {
       ...group,

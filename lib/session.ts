@@ -7,11 +7,11 @@ export async function requireAdminSession() {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    redirect("/api/auth/signin");
+    redirect("/auth/signin?callbackUrl=/admin");
   }
 
   if (!isAdminRole(session.user.role)) {
-    redirect("/");
+    redirect("/user?forbidden=admin");
   }
 
   return session;

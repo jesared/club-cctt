@@ -27,12 +27,6 @@ import {
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-const DATE_FORMATTER = new Intl.DateTimeFormat("fr-FR", {
-  day: "2-digit",
-  month: "long",
-  year: "numeric",
-});
-
 const DATE_TIME_FORMATTER = new Intl.DateTimeFormat("fr-FR", {
   day: "2-digit",
   month: "short",
@@ -298,7 +292,7 @@ export default async function MesInscriptionsPage({ searchParams }: PageProps) {
             <CardTitle>Aucun joueur inscrit</CardTitle>
             <CardDescription>
               Vous pouvez ajouter votre premier joueur depuis le formulaire
-              d'inscription.
+              d&apos;inscription.
             </CardDescription>
           </CardHeader>
           <CardContent>

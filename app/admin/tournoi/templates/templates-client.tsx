@@ -33,6 +33,40 @@ type EventTemplateForm = {
   status: "OPEN" | "FULL" | "CLOSED" | "CANCELLED";
 };
 
+type TournamentTemplateEventPayload = {
+  id: string;
+  code?: string | null;
+  label?: string | null;
+  gender?: EventTemplateForm["gender"] | null;
+  minPoints?: number | null;
+  maxPoints?: number | null;
+  maxPlayers?: number | null;
+  startAt?: string | null;
+  feeOnlineCents?: number | null;
+  feeOnsiteCents?: number | null;
+  status?: EventTemplateForm["status"] | null;
+};
+
+type TournamentTemplatePayload = {
+  slug?: string | null;
+  name?: string | null;
+  description?: string | null;
+  venue?: string | null;
+  registrationOpenAt?: string | null;
+  registrationCloseAt?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
+  status?: TournamentTemplateForm["status"] | null;
+};
+
+type TournamentTemplatesResponse = {
+  error?: string;
+  tournamentTemplate?: TournamentTemplatePayload | null;
+  eventTemplates?: TournamentTemplateEventPayload[] | null;
+  tournament?: { name?: string | null } | null;
+  template?: TournamentTemplateEventPayload | null;
+};
+
 const emptyTournamentTemplate: TournamentTemplateForm = {
   slug: "",
   name: "",
@@ -67,7 +101,7 @@ function toInputValue(value: string | null | undefined) {
   local.setMinutes(local.getMinutes() - local.getTimezoneOffset());
   return local.toISOString().slice(0, 16);
 }
-async function readJson<T = any>(response: Response): Promise<T | null> {
+async function readJson<T = unknown>(response: Response): Promise<T | null> {
   const text = await response.text();
   if (!text) return null;
   try {
@@ -75,6 +109,24 @@ async function readJson<T = any>(response: Response): Promise<T | null> {
   } catch {
     return null;
   }
+}
+
+function toEventTemplateForm(
+  event: TournamentTemplateEventPayload,
+): EventTemplateForm {
+  return {
+    id: event.id,
+    code: event.code ?? "",
+    label: event.label ?? "",
+    gender: event.gender ?? "MIXED",
+    minPoints: event.minPoints?.toString() ?? "",
+    maxPoints: event.maxPoints?.toString() ?? "",
+    maxPlayers: event.maxPlayers?.toString() ?? "32",
+    startAt: toInputValue(event.startAt),
+    feeOnlineCents: event.feeOnlineCents?.toString() ?? "",
+    feeOnsiteCents: event.feeOnsiteCents?.toString() ?? "",
+    status: event.status ?? "OPEN",
+  };
 }
 
 export function TemplatesClient() {
@@ -112,7 +164,7 @@ export function TemplatesClient() {
     setLoadError(null);
     try {
       const res = await fetch("/api/admin/tournoi/templates");
-      const json = await readJson(res);
+      const json = await readJson<TournamentTemplatesResponse>(res);
       if (!res.ok) {
         const statusInfo = `${res.status} ${res.statusText || "Erreur"}`.trim();
         setLoadError(
@@ -142,19 +194,7 @@ export function TemplatesClient() {
         });
       }
 
-      const events = (json?.eventTemplates ?? []).map((event: any) => ({
-        id: event.id,
-        code: event.code ?? "",
-        label: event.label ?? "",
-        gender: event.gender ?? "MIXED",
-        minPoints: event.minPoints?.toString() ?? "",
-        maxPoints: event.maxPoints?.toString() ?? "",
-        maxPlayers: event.maxPlayers?.toString() ?? "32",
-        startAt: toInputValue(event.startAt),
-        feeOnlineCents: event.feeOnlineCents?.toString() ?? "",
-        feeOnsiteCents: event.feeOnsiteCents?.toString() ?? "",
-        status: event.status ?? "OPEN",
-      }));
+      const events = (json?.eventTemplates ?? []).map(toEventTemplateForm);
 
       setEventTemplates(events);
     } finally {
@@ -190,7 +230,7 @@ export function TemplatesClient() {
       const res = await fetch("/api/admin/tournoi/create-from-template", {
         method: "POST",
       });
-      const json = await readJson(res);
+      const json = await readJson<TournamentTemplatesResponse>(res);
       if (!res.ok) {
         alert(json?.error ?? "Erreur lors de la création.");
         return;
@@ -212,7 +252,7 @@ export function TemplatesClient() {
       const res = await fetch("/api/admin/tournoi/templates/seed-defaults", {
         method: "POST",
       });
-      const json = await readJson(res);
+      const json = await readJson<TournamentTemplatesResponse>(res);
       if (!res.ok) {
         if (res.status === 409) {
           const overwrite = confirm(
@@ -223,7 +263,7 @@ export function TemplatesClient() {
               "/api/admin/tournoi/templates/seed-defaults?force=1",
               { method: "POST" },
             );
-            const forcedJson = await readJson(forced);
+            const forcedJson = await readJson<TournamentTemplatesResponse>(forced);
             if (!forced.ok) {
               alert(forcedJson?.error ?? "Impossible de pre-remplir.");
               return;
@@ -251,7 +291,7 @@ export function TemplatesClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newEvent),
       });
-      const json = await readJson(res);
+      const json = await readJson<TournamentTemplatesResponse>(res);
       if (!res.ok) {
         alert(json?.error ?? "Erreur lors de la création.");
         return;
@@ -260,21 +300,10 @@ export function TemplatesClient() {
         alert("Template créé.");
         return;
       }
+      const createdTemplate = json.template;
       setEventTemplates((current) => [
         ...current,
-        {
-          id: json.template.id,
-          code: json.template.code,
-          label: json.template.label,
-          gender: json.template.gender,
-          minPoints: json.template.minPoints?.toString() ?? "",
-          maxPoints: json.template.maxPoints?.toString() ?? "",
-          maxPlayers: json.template.maxPlayers?.toString() ?? "32",
-          startAt: toInputValue(json.template.startAt),
-          feeOnlineCents: json.template.feeOnlineCents?.toString() ?? "",
-          feeOnsiteCents: json.template.feeOnsiteCents?.toString() ?? "",
-          status: json.template.status,
-        },
+        toEventTemplateForm(createdTemplate),
       ]);
       setNewEvent(emptyEventTemplate);
     } finally {

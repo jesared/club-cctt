@@ -91,7 +91,7 @@ export function TournamentsList({ tournaments }: TournamentListProps) {
             Liste des tournois
           </h2>
           <p className="text-sm text-muted-foreground">
-            Activez un tournoi pour qu'il devienne le tournoi en cours.
+            Activez un tournoi pour qu&apos;il devienne le tournoi en cours.
           </p>
         </div>
       </div>

@@ -10,6 +10,7 @@ export default function AdminHomePage() {
   const [form, setForm] = useState<HomeContentData>(defaultHomeContent);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const heroImageUrl = form.heroImageUrl.trim();
 
   useEffect(() => {
     async function load() {
@@ -65,7 +66,8 @@ export default function AdminHomePage() {
           <CardHeader>
             <CardTitle>Hero</CardTitle>
           </CardHeader>
-          <CardContent className="grid gap-4">
+          <CardContent className="grid gap-6 md:grid-cols-[minmax(0,1fr)_280px]">
+            <div className="grid gap-4">
             <div className="grid gap-2">
               <label className="text-sm font-medium">Titre</label>
               <input
@@ -106,6 +108,28 @@ export default function AdminHomePage() {
                 value={form.heroCtaHref}
                 onChange={(e) => updateField("heroCtaHref", e.target.value)}
               />
+            </div>
+            </div>
+
+            <div className="grid gap-2">
+              <label className="text-sm font-medium">Aperçu image</label>
+              <div className="overflow-hidden rounded-xl border bg-muted/20">
+                {heroImageUrl ? (
+                  <div
+                    className="h-48 w-full bg-cover bg-center"
+                    style={{ backgroundImage: `url(${heroImageUrl})` }}
+                    aria-label="Aperçu de l'image hero"
+                    role="img"
+                  />
+                ) : (
+                  <div className="flex h-48 items-center justify-center px-4 text-center text-sm text-muted-foreground">
+                    Ajoutez une URL pour afficher l&apos;aperçu.
+                  </div>
+                )}
+              </div>
+              <p className="break-all text-xs text-muted-foreground">
+                {heroImageUrl || "Aucune URL renseignée."}
+              </p>
             </div>
           </CardContent>
         </Card>

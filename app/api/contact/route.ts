@@ -1,3 +1,4 @@
+import { checkPersistentRateLimit } from "@/lib/rate-limit";
 import { NextRequest, NextResponse } from "next/server";
 
 type ContactPayload = {
@@ -9,21 +10,12 @@ type ContactPayload = {
 
 const WINDOW_MS = 10 * 60 * 1000;
 const MAX_REQUESTS = 5;
-const requestTracker = new Map<string, number[]>();
-
 function checkRateLimit(clientIp: string) {
-  const now = Date.now();
-  const timestamps = requestTracker.get(clientIp) ?? [];
-  const validTimestamps = timestamps.filter((time) => now - time < WINDOW_MS);
-
-  if (validTimestamps.length >= MAX_REQUESTS) {
-    requestTracker.set(clientIp, validTimestamps);
-    return false;
-  }
-
-  validTimestamps.push(now);
-  requestTracker.set(clientIp, validTimestamps);
-  return true;
+  return checkPersistentRateLimit({
+    bucketId: `contact:${clientIp}`,
+    maxRequests: MAX_REQUESTS,
+    windowMs: WINDOW_MS,
+  });
 }
 
 function isValidEmail(email: string) {
@@ -86,7 +78,7 @@ export async function POST(request: NextRequest) {
     request.headers.get("x-real-ip") ??
     "unknown";
 
-  if (!checkRateLimit(clientIp)) {
+  if (!(await checkRateLimit(clientIp))) {
     return NextResponse.json(
       {
         message:

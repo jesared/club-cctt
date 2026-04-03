@@ -1,5 +1,6 @@
 ﻿import { requireAdminSession, TournamentAdminPage } from "../_components";
 import { getCurrentTournament, getTournamentTables } from "../data";
+import Link from "next/link";
 
 const exportsList = [
   { name: "inscriptions-tableaux.csv", description: "Inscriptions regroupées par tableau et catégorie." },
@@ -30,33 +31,37 @@ export default async function AdminTournoiExportsPage() {
                   <p className="text-sm text-muted-foreground">{entry.description}</p>
                 </div>
                 {entry.name === "inscriptions-tableaux.csv" ? (
-                  <a
+                  <Link
                     href="/api/admin/tournoi/exports/inscriptions-tableaux"
+                    prefetch={false}
                     className="inline-flex items-center rounded-md border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground transition hover:bg-muted/60 dark:hover:bg-muted/40"
                   >
                     Telecharger
-                  </a>
+                  </Link>
                 ) : entry.name === "pointages-creneaux.csv" ? (
-                  <a
+                  <Link
                     href="/api/admin/tournoi/exports/pointages-creneaux"
+                    prefetch={false}
                     className="inline-flex items-center rounded-md border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground transition hover:bg-muted/60 dark:hover:bg-muted/40"
                   >
                     Telecharger
-                  </a>
+                  </Link>
                 ) : entry.name === "joueurs-tableaux.csv" ? (
-                  <a
+                  <Link
                     href="/api/admin/tournoi/exports/joueurs-tableaux"
+                    prefetch={false}
                     className="inline-flex items-center rounded-md border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground transition hover:bg-muted/60 dark:hover:bg-muted/40"
                   >
                     Telecharger
-                  </a>
+                  </Link>
                 ) : entry.name === "tableaux.zip" ? (
-                  <a
+                  <Link
                     href="/api/admin/tournoi/exports/tableaux-zip"
+                    prefetch={false}
                     className="inline-flex items-center rounded-md border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground transition hover:bg-muted/60 dark:hover:bg-muted/40"
                   >
                     Telecharger
-                  </a>
+                  </Link>
                 ) : null}
               </div>
             </li>
@@ -68,7 +73,7 @@ export default async function AdminTournoiExportsPage() {
         <div>
           <h2 className="text-xl font-semibold">Exports par tableau</h2>
           <p className="text-sm text-muted-foreground">
-            Un CSV par tableau, utile pour la table de pointage et l'affichage local.
+            Un CSV par tableau, utile pour la table de pointage et l&apos;affichage local.
           </p>
         </div>
         {tournamentTables.length === 0 ? (
@@ -84,12 +89,13 @@ export default async function AdminTournoiExportsPage() {
                       {table.category} · {table.registrations} joueurs
                     </p>
                   </div>
-                  <a
+                  <Link
                     href={`/api/admin/tournoi/exports/tableaux/${table.id}`}
+                    prefetch={false}
                     className="inline-flex items-center rounded-md border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground transition hover:bg-muted/60 dark:hover:bg-muted/40"
                   >
                     Telecharger
-                  </a>
+                  </Link>
                 </div>
               </li>
             ))}

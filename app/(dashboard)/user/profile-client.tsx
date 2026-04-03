@@ -59,7 +59,7 @@ export default function ProfileClient() {
               {status === "authenticated" ? session.user.email : "Mon profil"}
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              Personnalisez votre nom affiche dans l'espace membre.
+              Personnalisez votre nom affiche dans l&apos;espace membre.
             </p>
           </div>
         </div>
@@ -74,7 +74,7 @@ export default function ProfileClient() {
       </CardHeader>
       <CardContent className="space-y-2">
         <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Nom d'affichage
+          Nom d&apos;affichage
         </label>
         <input
           type="text"
@@ -88,7 +88,7 @@ export default function ProfileClient() {
         ) : null}
         {saveState === "error" ? (
           <p className="text-xs text-destructive">
-            Impossible d'enregistrer. Verifiez le champ.
+            Impossible d&apos;enregistrer. Verifiez le champ.
           </p>
         ) : null}
       </CardContent>

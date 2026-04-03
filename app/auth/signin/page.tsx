@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 
 import SignInClient from "./signin-client";
 
@@ -13,13 +14,13 @@ export default function SignInPage() {
         <SignInClient />
       </Suspense>
       <div className="mt-6 flex flex-col items-center gap-2 text-xs text-muted-foreground">
-        <p>Besoin d'aide ? Contactez le club si vous ne recevez pas le lien.</p>
-        <a
+        <p>Besoin d&apos;aide ? Contactez le club si vous ne recevez pas le lien.</p>
+        <Link
           href="/"
           className="text-foreground underline-offset-4 hover:underline"
         >
           Retour au site
-        </a>
+        </Link>
       </div>
     </main>
   );

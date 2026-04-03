@@ -1,5 +1,4 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
 
 const adminPaths = ["/admin", "/api/admin"];
 const authPaths = ["/user", "/tournoi/inscription", "/api/user"];
@@ -40,22 +39,6 @@ export async function middleware(request: NextRequest) {
       url.searchParams.set("reason", "auth");
     }
     return NextResponse.redirect(url);
-  }
-
-  if (isAdminRoute) {
-    const token = await getToken({ req: request });
-    const role =
-      typeof token?.role === "string" ? token.role.toLowerCase() : null;
-
-    if (role && role !== "admin") {
-      if (pathname.startsWith("/api/")) {
-        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-      }
-      const url = request.nextUrl.clone();
-      url.pathname = "/user";
-      url.searchParams.set("forbidden", "admin");
-      return NextResponse.redirect(url);
-    }
   }
 
   return NextResponse.next();

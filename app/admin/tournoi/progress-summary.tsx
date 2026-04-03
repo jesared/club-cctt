@@ -18,7 +18,7 @@ export function ProgressSummary({ progress }: ProgressSummaryProps) {
       <div>
         <h2 className="text-lg font-semibold text-foreground">Avancement</h2>
         <p className="text-sm text-muted-foreground">
-          Synthèse automatique pour suivre l'état du tournoi.
+          Synthèse automatique pour suivre l&apos;état du tournoi.
         </p>
       </div>
 
