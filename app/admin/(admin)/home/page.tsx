@@ -11,6 +11,7 @@ export default function AdminHomePage() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const heroImageUrl = form.heroImageUrl.trim();
+  const eventImageUrl = form.eventImageUrl.trim();
 
   useEffect(() => {
     async function load() {
@@ -244,6 +245,73 @@ export default function AdminHomePage() {
                 value={form.ctaButtonHref}
                 onChange={(e) => updateField("ctaButtonHref", e.target.value)}
               />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Événement du club</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-6 md:grid-cols-[minmax(0,1fr)_280px]">
+            <div className="grid gap-4">
+              <label className="flex items-center gap-3 text-sm font-medium">
+                <input
+                  type="checkbox"
+                  checked={form.eventEnabled}
+                  onChange={(e) => updateField("eventEnabled", e.target.checked)}
+                  className="h-4 w-4"
+                />
+                Afficher le bloc événement sur la home
+              </label>
+
+              <div className="grid gap-2">
+                <label className="text-sm font-medium">Titre</label>
+                <input
+                  className="w-full rounded border px-3 py-2"
+                  value={form.eventTitle}
+                  onChange={(e) => updateField("eventTitle", e.target.value)}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <label className="text-sm font-medium">Image (URL)</label>
+                <input
+                  className="w-full rounded border px-3 py-2"
+                  value={form.eventImageUrl}
+                  onChange={(e) => updateField("eventImageUrl", e.target.value)}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <label className="text-sm font-medium">Date / libellé</label>
+                <input
+                  className="w-full rounded border px-3 py-2"
+                  value={form.eventDateLabel}
+                  onChange={(e) => updateField("eventDateLabel", e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-2">
+              <label className="text-sm font-medium">Aperçu image</label>
+              <div className="overflow-hidden rounded-xl border bg-muted/20">
+                {eventImageUrl ? (
+                  <div
+                    className="h-48 w-full bg-cover bg-center"
+                    style={{ backgroundImage: `url(${eventImageUrl})` }}
+                    aria-label="Aperçu de l'image événement"
+                    role="img"
+                  />
+                ) : (
+                  <div className="flex h-48 items-center justify-center px-4 text-center text-sm text-muted-foreground">
+                    Ajoutez une URL pour afficher l&apos;aperçu.
+                  </div>
+                )}
+              </div>
+              <p className="break-all text-xs text-muted-foreground">
+                {eventImageUrl || "Aucune URL renseignée."}
+              </p>
             </div>
           </CardContent>
         </Card>
