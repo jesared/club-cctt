@@ -1,9 +1,19 @@
 ﻿"use client";
 
-import { CircleCheckBig, MoreVertical, X } from "lucide-react";
+import {
+  CircleAlert,
+  CircleCheckBig,
+  ListFilter,
+  MoreVertical,
+  Search,
+  Users,
+  Wallet,
+  X,
+} from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type PointagesGridPlayer = {
   id: string;
@@ -61,6 +71,39 @@ function isEligible(points: number | null, table: TournamentTable) {
   return true;
 }
 
+function getPaymentMeta(payment: string) {
+  const paymentStatus = payment?.toLowerCase?.() ?? "";
+
+  if (
+    paymentStatus.includes("partiel") ||
+    paymentStatus.includes("régulariser") ||
+    paymentStatus.includes("regulariser")
+  ) {
+    return {
+      label: "Partiel",
+      isPending: true,
+      className:
+        "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200",
+    };
+  }
+
+  if (paymentStatus.includes("payé") || paymentStatus.includes("paye")) {
+    return {
+      label: "Payé",
+      isPending: false,
+      className:
+        "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200",
+    };
+  }
+
+  return {
+    label: "En attente",
+    isPending: true,
+    className:
+      "bg-slate-100 text-slate-700 dark:bg-slate-800/60 dark:text-slate-200",
+  };
+}
+
 export function PointagesGrid({
   players,
   dayColumns,
@@ -104,6 +147,7 @@ export function PointagesGrid({
   } | null>(null);
   const [paymentDrawerOpen, setPaymentDrawerOpen] = useState(false);
   const [quickMode, setQuickMode] = useState(false);
+  const [statsCompact, setStatsCompact] = useState(false);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   const clubOptions = useMemo(() => {
@@ -190,16 +234,24 @@ export function PointagesGrid({
     selectedPointageFilter !== "all" ||
     searchTerm.trim().length > 0;
 
+  const filterChipClassName = (
+    active: boolean,
+    tone: "default" | "warning" = "default",
+  ) =>
+    cn(
+      "inline-flex cursor-pointer whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-medium transition",
+      active
+        ? tone === "warning"
+          ? "border-amber-400/50 bg-amber-100 text-amber-900 dark:bg-amber-900/40 dark:text-amber-200"
+          : "border-primary/40 bg-primary/10 text-primary"
+        : "border-border bg-muted/30 text-muted-foreground hover:bg-muted/50",
+    );
+
   const filteredPlayers = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLocaleLowerCase("fr");
 
     return playersState.filter((player) => {
-      const paymentStatus = player.payment?.toLowerCase?.() ?? "";
-      const isPaymentPending =
-        paymentStatus.includes("partiel") ||
-        paymentStatus.includes("régulariser") ||
-        paymentStatus.includes("regulariser") ||
-        (!paymentStatus.includes("payé") && !paymentStatus.includes("paye"));
+      const isPaymentPending = getPaymentMeta(player.payment).isPending;
       const matchesClub =
         selectedClub === "all" || player.club === selectedClub;
       const playerTables = player.table
@@ -497,41 +549,311 @@ export function PointagesGrid({
     setSearchTerm("");
   }
 
+  const daySummaries = useMemo(() => {
+    return normalizedDayColumns.map((dayColumn, index) => {
+      const registeredPlayers = filteredPlayers.filter(
+        (player) =>
+          (player.registrationEventIdsByDay[dayColumn.key] ?? []).length > 0,
+      );
+      const checkedCount = registeredPlayers.filter(
+        (player) => checkedState[`${player.id}-${dayColumn.key}`] ?? false,
+      ).length;
+
+      return {
+        ...dayHeaders[index],
+        registeredCount: registeredPlayers.length,
+        checkedCount,
+        uncheckedCount: registeredPlayers.length - checkedCount,
+      };
+    });
+  }, [checkedState, dayHeaders, filteredPlayers, normalizedDayColumns]);
+
+  const playersWithAnyCheck = useMemo(() => {
+    return filteredPlayers.filter((player) =>
+      normalizedDayColumns.some(
+        (dayColumn) => checkedState[`${player.id}-${dayColumn.key}`] ?? false,
+      ),
+    ).length;
+  }, [checkedState, filteredPlayers, normalizedDayColumns]);
+
+  const pendingPaymentsCount = useMemo(() => {
+    return filteredPlayers.filter((player) => getPaymentMeta(player.payment).isPending)
+      .length;
+  }, [filteredPlayers]);
+
+  const waitlistCount = useMemo(() => {
+    return filteredPlayers.filter((player) => player.waitlistEventIds.length > 0)
+      .length;
+  }, [filteredPlayers]);
+
+  const tableColumnCount = (quickMode ? 3 : 6) + normalizedDayColumns.length;
+
   return (
-    <section className="rounded-xl border bg-card p-6 shadow-sm space-y-4 overflow-x-auto">
-      <header className="space-y-1">
-        <h2 className="text-xl font-semibold">Pointage joueurs sur 3 jours</h2>
-        <p className="text-sm text-muted-foreground">
-          Cochez la présence de chaque joueur par jour pour piloter
-          l&apos;accueil rapidement.
-        </p>
+    <section className="space-y-5 rounded-2xl border border-border/70 bg-gradient-to-b from-card via-card to-muted/10 p-5 shadow-sm">
+      <header className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+            <ListFilter className="h-3.5 w-3.5" />
+            Accueil tournoi
+          </div>
+          <div className="space-y-1">
+            <h2 className="text-2xl font-semibold tracking-tight">
+              Pointage joueurs sur 3 jours
+            </h2>
+            <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
+              Cochez la présence de chaque joueur par jour, filtrez rapidement
+              les situations en attente et gardez un suivi clair de l&apos;accueil.
+            </p>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="rounded-full border border-border/70 bg-background/80 px-3 py-1.5 text-xs font-medium text-muted-foreground">
+            {filteredPlayers.length} affichés / {playersState.length} inscrits
+          </span>
+          <button
+            type="button"
+            onClick={() => setStatsCompact((current) => !current)}
+            className={cn(
+              "rounded-full border px-3 py-1.5 text-xs font-medium transition",
+              statsCompact
+                ? "border-primary/30 bg-primary/10 text-primary"
+                : "border-border/70 bg-background/80 text-muted-foreground hover:bg-muted/40",
+            )}
+          >
+            {statsCompact ? "Stats compactes" : "Réduire les stats"}
+          </button>
+          <span
+            className={cn(
+              "rounded-full border px-3 py-1.5 text-xs font-medium",
+              quickMode
+                ? "border-primary/30 bg-primary/10 text-primary"
+                : "border-border/70 bg-background/80 text-muted-foreground",
+            )}
+          >
+            {quickMode ? "Mode rapide actif" : "Mode complet"}
+          </span>
+        </div>
       </header>
 
-      <div className="rounded-xl border border-border bg-card/95 p-4 shadow-sm">
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Filtres rapides
-          </span>
-          <div className="flex flex-1 flex-wrap items-center gap-2">
+      <div
+        className={cn(
+          "grid gap-3 md:grid-cols-2 xl:grid-cols-4",
+          statsCompact && "gap-2",
+        )}
+      >
+        <div
+          className={cn(
+            "rounded-2xl border border-border/70 bg-background/80 shadow-xs",
+            statsCompact ? "p-3" : "p-4",
+          )}
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                Joueurs affichés
+              </p>
+              <p
+                className={cn(
+                  "font-semibold text-foreground",
+                  statsCompact ? "mt-1 text-2xl" : "mt-2 text-3xl",
+                )}
+              >
+                {filteredPlayers.length}
+              </p>
+              {!statsCompact ? (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  sur {playersState.length} inscriptions actuellement chargées
+                </p>
+              ) : null}
+            </div>
+            <span className="rounded-full bg-primary/10 p-2 text-primary">
+              <Users className="h-4 w-4" />
+            </span>
+          </div>
+        </div>
+        <div
+          className={cn(
+            "rounded-2xl border border-border/70 bg-background/80 shadow-xs",
+            statsCompact ? "p-3" : "p-4",
+          )}
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                Paiements à traiter
+              </p>
+              <p
+                className={cn(
+                  "font-semibold text-foreground",
+                  statsCompact ? "mt-1 text-2xl" : "mt-2 text-3xl",
+                )}
+              >
+                {pendingPaymentsCount}
+              </p>
+              {!statsCompact ? (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  joueurs avec paiement partiel ou en attente
+                </p>
+              ) : null}
+            </div>
+            <span className="rounded-full bg-amber-100 p-2 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
+              <Wallet className="h-4 w-4" />
+            </span>
+          </div>
+        </div>
+        <div
+          className={cn(
+            "rounded-2xl border border-border/70 bg-background/80 shadow-xs",
+            statsCompact ? "p-3" : "p-4",
+          )}
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                Déjà pointés
+              </p>
+              <p
+                className={cn(
+                  "font-semibold text-foreground",
+                  statsCompact ? "mt-1 text-2xl" : "mt-2 text-3xl",
+                )}
+              >
+                {playersWithAnyCheck}
+              </p>
+              {!statsCompact ? (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  joueurs validés sur au moins une journée
+                </p>
+              ) : null}
+            </div>
+            <span className="rounded-full bg-emerald-100 p-2 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200">
+              <CircleCheckBig className="h-4 w-4" />
+            </span>
+          </div>
+        </div>
+        <div
+          className={cn(
+            "rounded-2xl border border-border/70 bg-background/80 shadow-xs",
+            statsCompact ? "p-3" : "p-4",
+          )}
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                Liste d&apos;attente
+              </p>
+              <p
+                className={cn(
+                  "font-semibold text-foreground",
+                  statsCompact ? "mt-1 text-2xl" : "mt-2 text-3xl",
+                )}
+              >
+                {waitlistCount}
+              </p>
+              {!statsCompact ? (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  joueurs ayant encore un engagement en attente
+                </p>
+              ) : null}
+            </div>
+            <span className="rounded-full bg-slate-100 p-2 text-slate-700 dark:bg-slate-800/60 dark:text-slate-200">
+              <CircleAlert className="h-4 w-4" />
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div
+        className={cn(
+          "grid gap-3 lg:grid-cols-3",
+          statsCompact && "gap-2",
+        )}
+      >
+        {daySummaries.map((daySummary) => (
+          <div
+            key={daySummary.key}
+            className={cn(
+              "rounded-2xl border border-border/70 bg-background/80 shadow-xs",
+              statsCompact ? "p-3" : "p-4",
+            )}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                  {daySummary.orderLabel}
+                </p>
+                <h3
+                  className={cn(
+                    "font-semibold text-foreground",
+                    statsCompact ? "mt-0.5 text-xs" : "mt-1 text-sm",
+                  )}
+                >
+                  {daySummary.label}
+                </h3>
+                {!statsCompact ? (
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {daySummary.timeRange
+                      ? `${daySummary.timeRange} · ${daySummary.tablesCount} tableaux`
+                      : `${daySummary.tablesCount} tableaux`}
+                  </p>
+                ) : null}
+              </div>
+              <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+                {daySummary.checkedCount}/{daySummary.registeredCount}
+              </span>
+            </div>
+            <div className={cn("space-y-2", statsCompact ? "mt-2" : "mt-4")}>
+              <div className="h-2 overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-full rounded-full bg-primary transition-all"
+                  style={{
+                    width:
+                      daySummary.registeredCount === 0
+                        ? "0%"
+                        : `${(daySummary.checkedCount / daySummary.registeredCount) * 100}%`,
+                  }}
+                />
+              </div>
+              {statsCompact ? (
+                <div className="text-[11px] text-muted-foreground">
+                  {daySummary.uncheckedCount} à accueillir
+                </div>
+              ) : (
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>{daySummary.checkedCount} pointés</span>
+                  <span>{daySummary.uncheckedCount} à accueillir</span>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="space-y-4 rounded-2xl border border-border/70 bg-card/95 p-4 shadow-sm">
+        <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+          <div className="space-y-1">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+              Filtres rapides
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Passez du suivi global au pointage terrain en quelques clics.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
               onClick={() => setSelectedPointageFilter("all")}
-              className={`whitespace-nowrap rounded-full border px-3 py-1 text-xs font-medium transition ${
-                selectedPointageFilter === "all"
-                  ? "border-primary/40 bg-primary/10 text-primary"
-                  : "border-border bg-muted/30 text-muted-foreground hover:bg-muted/50"
-              }`}
+              className={filterChipClassName(selectedPointageFilter === "all")}
             >
               Tous
             </button>
             <button
               type="button"
               onClick={() => setSelectedPointageFilter("waitlist")}
-              className={`whitespace-nowrap rounded-full border px-3 py-1 text-xs font-medium transition ${
-                selectedPointageFilter === "waitlist"
-                  ? "border-amber-400/50 bg-amber-100 text-amber-900 dark:bg-amber-900/40 dark:text-amber-200"
-                  : "border-border bg-muted/30 text-muted-foreground hover:bg-muted/50"
-              }`}
+              className={filterChipClassName(
+                selectedPointageFilter === "waitlist",
+                "warning",
+              )}
             >
               Attente
             </button>
@@ -542,11 +864,9 @@ export function PointagesGrid({
                 onClick={() =>
                   setSelectedPointageFilter(`unchecked:${dayHeader.key}`)
                 }
-                className={`whitespace-nowrap rounded-full border px-3 py-1 text-xs font-medium transition ${
-                  selectedPointageFilter === `unchecked:${dayHeader.key}`
-                    ? "border-primary/40 bg-primary/10 text-primary"
-                    : "border-border bg-muted/30 text-muted-foreground hover:bg-muted/50"
-                }`}
+                className={filterChipClassName(
+                  selectedPointageFilter === `unchecked:${dayHeader.key}`,
+                )}
               >
                 {dayHeader.orderLabel} · Non pointés
               </button>
@@ -558,147 +878,156 @@ export function PointagesGrid({
                 onClick={() =>
                   setSelectedPointageFilter(`checked:${dayHeader.key}`)
                 }
-                className={`whitespace-nowrap rounded-full border px-3 py-1 text-xs font-medium transition ${
-                  selectedPointageFilter === `checked:${dayHeader.key}`
-                    ? "border-primary/40 bg-primary/10 text-primary"
-                    : "border-border bg-muted/30 text-muted-foreground hover:bg-muted/50"
-                }`}
+                className={filterChipClassName(
+                  selectedPointageFilter === `checked:${dayHeader.key}`,
+                )}
               >
                 {dayHeader.orderLabel} · Pointés
               </button>
             ))}
-          </div>
-          {hasActiveFilters ? (
             <button
               type="button"
-              onClick={resetFilters}
-              className="whitespace-nowrap rounded-full border border-border bg-muted/40 px-3 py-1 text-xs font-medium text-muted-foreground transition hover:bg-muted/60"
+              onClick={() => setPaymentDrawerOpen((current) => !current)}
+              className={filterChipClassName(paymentDrawerOpen, "warning")}
             >
-              Réinitialiser
+              {paymentDrawerOpen ? "Paiements en attente" : "Filtrer paiements"}
             </button>
-          ) : null}
-          <button
-            type="button"
-            onClick={() => setPaymentDrawerOpen((current) => !current)}
-            className={`whitespace-nowrap rounded-full border px-3 py-1 text-xs font-medium transition ${
-              paymentDrawerOpen
-                ? "border-amber-400/50 bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200"
-                : "border-border bg-muted/30 text-muted-foreground hover:bg-muted/50"
-            }`}
-          >
-            {paymentDrawerOpen ? "Paiements en attente" : "Filtrer paiements"}
-          </button>
-          <button
-            type="button"
-            onClick={() => setQuickMode((current) => !current)}
-            className={`whitespace-nowrap rounded-full border px-3 py-1 text-xs font-medium transition ${
-              quickMode
-                ? "border-primary/40 bg-primary/10 text-primary"
-                : "border-border bg-muted/30 text-muted-foreground hover:bg-muted/50"
-            }`}
-          >
-            {quickMode ? "Mode rapide" : "Pointage rapide"}
-          </button>
+            <button
+              type="button"
+              onClick={() => setQuickMode((current) => !current)}
+              className={filterChipClassName(quickMode)}
+            >
+              {quickMode ? "Mode rapide" : "Pointage rapide"}
+            </button>
+            {hasActiveFilters ? (
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="inline-flex cursor-pointer whitespace-nowrap rounded-full border border-border bg-muted/40 px-3 py-1.5 text-xs font-medium text-muted-foreground transition hover:bg-muted/60"
+              >
+                Réinitialiser
+              </button>
+            ) : null}
+          </div>
+        </div>
+
+        <div
+          className={cn(
+            "grid gap-3",
+            quickMode ? "md:grid-cols-1" : "md:grid-cols-2 xl:grid-cols-4",
+          )}
+        >
+          <label className="space-y-1">
+            <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Rechercher un joueur
+            </span>
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="search"
+                className="admin-input pl-9"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                ref={searchInputRef}
+                placeholder="Nom, prénom ou numéro de licence"
+              />
+            </div>
+          </label>
+
+          {!quickMode ? (
+            <>
+              <label className="space-y-1">
+                <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  Filtrer par club
+                </span>
+                <select
+                  className="admin-select"
+                  value={selectedClub}
+                  onChange={(event) => setSelectedClub(event.target.value)}
+                >
+                  <option value="all">Tous les clubs</option>
+                  {clubOptions.map((club) => (
+                    <option key={club} value={club}>
+                      {club}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="space-y-1">
+                <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  Filtrer par tableau
+                </span>
+                <select
+                  className="admin-select"
+                  value={selectedTable}
+                  onChange={(event) => setSelectedTable(event.target.value)}
+                >
+                  <option value="all">Tous les tableaux</option>
+                  {tableOptions.map((tableOption) => (
+                    <option key={tableOption.value} value={tableOption.value}>
+                      {tableOption.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="space-y-1">
+                <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  Filtrer par pointage
+                </span>
+                <select
+                  className="admin-select"
+                  value={selectedPointageFilter}
+                  onChange={(event) =>
+                    setSelectedPointageFilter(event.target.value)
+                  }
+                >
+                  <option value="all">Tous les pointages</option>
+                  <option value="waitlist">En attente</option>
+                  {normalizedDayColumns.map((dayColumn) => (
+                    <optgroup key={dayColumn.key} label={dayColumn.label}>
+                      <option value={`unchecked:${dayColumn.key}`}>
+                        Non pointés
+                      </option>
+                      <option value={`checked:${dayColumn.key}`}>Pointés</option>
+                    </optgroup>
+                  ))}
+                </select>
+              </label>
+            </>
+          ) : (
+            <div className="rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-muted-foreground">
+              Le mode rapide masque les colonnes secondaires pour pointer plus vite à l&apos;accueil.
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="grid gap-3 rounded-xl border border-border bg-card p-4 shadow-sm md:grid-cols-4">
-        <label className="space-y-1">
-          <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Rechercher un joueur
-          </span>
-          <input
-            type="search"
-            className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground"
-            value={searchTerm}
-            onChange={(event) => setSearchTerm(event.target.value)}
-            ref={searchInputRef}
-            placeholder="Nom, prénom ou numéro de licence"
-          />
-        </label>
-
-        {!quickMode ? (
-          <>
-            <label className="space-y-1">
-              <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                Filtrer par club
-              </span>
-              <select
-                className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground"
-                value={selectedClub}
-                onChange={(event) => setSelectedClub(event.target.value)}
-              >
-                <option value="all">Tous les clubs</option>
-                {clubOptions.map((club) => (
-                  <option key={club} value={club}>
-                    {club}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="space-y-1">
-              <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                Filtrer par tableau
-              </span>
-              <select
-                className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground"
-                value={selectedTable}
-                onChange={(event) => setSelectedTable(event.target.value)}
-              >
-                <option value="all">Tous les tableaux</option>
-                {tableOptions.map((tableOption) => (
-                  <option key={tableOption.value} value={tableOption.value}>
-                    {tableOption.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="space-y-1">
-              <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                Filtrer par pointage
-              </span>
-              <select
-                className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground"
-                value={selectedPointageFilter}
-                onChange={(event) => setSelectedPointageFilter(event.target.value)}
-              >
-                <option value="all">Tous les pointages</option>
-                <option value="waitlist">En attente</option>
-                {normalizedDayColumns.map((dayColumn) => (
-                  <optgroup key={dayColumn.key} label={dayColumn.label}>
-                    <option value={`unchecked:${dayColumn.key}`}>
-                      Non pointés
-                    </option>
-                    <option value={`checked:${dayColumn.key}`}>Pointés</option>
-                  </optgroup>
-                ))}
-              </select>
-            </label>
-          </>
-        ) : null}
-      </div>
-
-      <div className="overflow-x-auto overflow-y-visible rounded-xl border border-border bg-card shadow-sm text-foreground">
+      <div className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm text-foreground">
+        <div className="border-b border-border/70 bg-muted/20 px-4 py-3 text-sm text-muted-foreground">
+          Faites défiler horizontalement si besoin. Les colonnes joueur,
+          paiement et actions restent visibles.
+        </div>
+        <div className="overflow-x-auto overflow-y-visible">
         <table className="min-w-full text-sm">
           <thead className="sticky top-0 z-20 bg-card">
-            <tr className="border-b border-border text-left text-[11px] uppercase tracking-wide text-muted-foreground">
-              <th className="sticky left-0 z-20 bg-card py-2.5 pl-3 pr-3 font-medium">
+            <tr className="border-b border-border/70 text-left text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+              <th className="sticky left-0 z-20 bg-card py-3 pl-4 pr-3 font-medium">
                 Joueur
               </th>
               {!quickMode ? (
                 <>
-                  <th className="py-2.5 pr-3 font-medium">Licence</th>
-                  <th className="py-2.5 pr-3 font-medium">Club</th>
-                  <th className="py-2.5 pr-3 font-medium">Tableau(x)</th>
+                  <th className="py-3 pr-3 font-medium">Licence</th>
+                  <th className="py-3 pr-3 font-medium">Club</th>
+                  <th className="py-3 pr-3 font-medium">Tableau(x)</th>
                 </>
               ) : null}
-              <th className="sticky right-24 z-20 bg-card py-2.5 pr-3 font-medium">
+              <th className="sticky right-24 z-20 bg-card py-3 pr-3 font-medium">
                 Paiement
               </th>
               {dayHeaders.map((dayHeader) => (
-                <th key={dayHeader.key} className="py-2.5 pr-3 font-medium">
+                <th key={dayHeader.key} className="py-3 pr-3 font-medium">
                   <div className="space-y-0.5">
                     <span className="block text-[11px] font-semibold text-foreground">
                       {dayHeader.orderLabel}
@@ -714,7 +1043,7 @@ export function PointagesGrid({
                   </div>
                 </th>
               ))}
-              <th className="sticky right-0 z-20 bg-card py-2.5 pl-3 pr-3 font-medium">
+              <th className="sticky right-0 z-20 bg-card py-3 pl-3 pr-4 font-medium">
                 Actions
               </th>
             </tr>
@@ -726,33 +1055,36 @@ export function PointagesGrid({
                   (dayColumn) =>
                     checkedState[`${player.id}-${dayColumn.key}`] ?? false,
                 );
-                const paymentStatus = player.payment?.toLowerCase?.() ?? "";
-                const paymentBadgeLabel =
-                  paymentStatus.includes("partiel") ||
-                  paymentStatus.includes("régulariser") ||
-                  paymentStatus.includes("regulariser")
-                    ? "Partiel"
-                    : paymentStatus.includes("payé")
-                      ? null
-                      : "Attente";
+                const paymentMeta = getPaymentMeta(player.payment);
+                const rowBackgroundClass = hasAnyCheck ? "bg-primary/5" : "bg-card";
                 return (
                   <tr
                     key={player.id}
-                    className={`group border-b border-slate-800 last:border-0 hover:bg-accent/10 ${
-                      hasAnyCheck ? "bg-muted/20" : ""
+                    className={`group border-b border-border/60 last:border-0 hover:bg-accent/10 ${
+                      hasAnyCheck ? rowBackgroundClass : ""
                     }`}
                   >
                     <td
-                      className={`sticky left-0 z-10 py-3 pl-3 pr-3 font-medium text-foreground ${
-                        hasAnyCheck ? "bg-muted/20" : "bg-card"
-                      } group-hover:bg-accent/10`}
+                      className={`sticky left-0 z-10 py-3 pl-4 pr-3 font-medium text-foreground ${rowBackgroundClass} group-hover:bg-accent/10`}
                     >
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span>{player.name}</span>
-                        {recentlySavedRow === player.id ? (
-                          <span className="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200">
-                            OK
-                          </span>
+                      <div className="space-y-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span>{player.name}</span>
+                          {recentlySavedRow === player.id ? (
+                            <span className="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200">
+                              OK
+                            </span>
+                          ) : null}
+                          {player.waitlistEventIds.length > 0 ? (
+                            <span className="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
+                              Attente
+                            </span>
+                          ) : null}
+                        </div>
+                        {quickMode ? (
+                          <p className="text-xs font-normal text-muted-foreground">
+                            {player.club} · {player.licence} · {player.table || "Sans tableau"}
+                          </p>
                         ) : null}
                       </div>
                     </td>
@@ -769,22 +1101,18 @@ export function PointagesGrid({
                         </td>
                       </>
                     ) : null}
-                    <td className="sticky right-24 z-10 bg-card py-3 pr-3 text-foreground group-hover:bg-accent/10">
-                      {paymentStatus.includes("payé") ? (
-                        <span className="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200">
-                          Payé
-                        </span>
-                      ) : paymentBadgeLabel ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
-                          <span className="text-[10px] leading-none">⦿</span>
-                          {paymentBadgeLabel}
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-700 dark:bg-slate-800/60 dark:text-slate-200">
-                          <span className="text-[10px] leading-none">⦿</span>
-                          En attente
-                        </span>
-                      )}
+                    <td
+                      className={`sticky right-24 z-10 py-3 pr-3 text-foreground ${rowBackgroundClass} group-hover:bg-accent/10`}
+                    >
+                      <span
+                        className={cn(
+                          "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold",
+                          paymentMeta.className,
+                        )}
+                      >
+                        <span className="text-[10px] leading-none">⦿</span>
+                        {paymentMeta.label}
+                      </span>
                     </td>
                     {normalizedDayColumns.map((dayColumn) => {
                       const key = `${player.id}-${dayColumn.key}`;
@@ -794,11 +1122,11 @@ export function PointagesGrid({
                       return (
                         <td key={key} className="py-3 pr-3 text-foreground">
                           {hasEventForDay ? (
-                            <label className="inline-flex items-center gap-2 ">
+                            <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-border/60 bg-background/80 px-2.5 py-1.5 transition hover:bg-accent/10">
                               <span className="relative inline-flex h-4 w-4 items-center justify-center">
                                 <input
                                   type="checkbox"
-                                  className="peer h-4 w-4 cursor-pointer appearance-none rounded-full border border-slate-500  checked:border-transparent align-middle transition  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-60"
+                                  className="peer h-4 w-4 cursor-pointer appearance-none rounded-full border border-slate-500 checked:border-transparent align-middle transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-60"
                                   checked={checkedState[key] ?? false}
                                   disabled={pendingState[key]}
                                   onChange={() =>
@@ -809,6 +1137,9 @@ export function PointagesGrid({
                                   size={18}
                                   className="pointer-events-none absolute scale-0 transition-transform peer-checked:scale-100 text-primary"
                                 />
+                              </span>
+                              <span className="text-xs font-medium text-muted-foreground">
+                                {checkedState[key] ? "Pointé" : "À cocher"}
                               </span>
                               {pendingState[key] ? (
                                 <span className="h-3 w-3 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground" />
@@ -822,7 +1153,9 @@ export function PointagesGrid({
                         </td>
                       );
                     })}
-                    <td className="sticky right-0 z-10 bg-card py-3 pl-3 pr-3 group-hover:bg-accent/10">
+                    <td
+                      className={`sticky right-0 z-10 py-3 pl-3 pr-4 ${rowBackgroundClass} group-hover:bg-accent/10`}
+                    >
                       <div
                         className="relative flex items-center justify-end"
                         data-pointage-menu={player.id}
@@ -859,8 +1192,8 @@ export function PointagesGrid({
             {filteredPlayers.length === 0 ? (
               <tr>
                 <td
-                  colSpan={5 + normalizedDayColumns.length}
-                  className="py-6 text-center text-sm text-slate-300"
+                  colSpan={tableColumnCount}
+                  className="py-10 text-center text-sm text-muted-foreground"
                 >
                   Aucun joueur ne correspond aux filtres sélectionnés.
                 </td>
@@ -868,6 +1201,7 @@ export function PointagesGrid({
             ) : null}
           </tbody>
         </table>
+        </div>
       </div>
 
       {editingPlayer ? (

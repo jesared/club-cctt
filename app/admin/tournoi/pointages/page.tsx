@@ -20,7 +20,8 @@ export default async function AdminTournoiPointagesPage() {
   return (
     <TournamentAdminPage
       title="Pointages"
-      description="Suivi des présences joueurs avec une grille de pointage sur 3 jours.">
+      description="Suivi des présences joueurs avec une grille de pointage sur 3 jours."
+      showHeader={false}>
       <PointagesGrid players={adminPlayers} dayColumns={dayColumns} tournamentTables={tournamentTables} />
     </TournamentAdminPage>
   );

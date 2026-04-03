@@ -2,10 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 type TournamentForm = {
   id: string;
@@ -333,29 +333,21 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
         </div>
       ) : null}
 
-      <Card>
-        <CardHeader className="pb-2">
+      <Card className="admin-form-card">
+        <CardHeader className="admin-form-header">
           <CardTitle className="text-lg">Tournoi</CardTitle>
+          <CardDescription>
+            Réglages généraux du tournoi, avec ses dates clés et informations d&apos;affichage.
+          </CardDescription>
         </CardHeader>
-        <CardContent className="grid gap-3 p-4 text-sm">
-          <div className="grid gap-2">
-            <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Slug</label>
-            <input
-              className="w-full rounded border px-2.5 py-1.5 text-sm"
-              value={tournament.slug}
-              onChange={(event) =>
-                setTournament((current) => ({
-                  ...current,
-                  slug: event.target.value,
-                }))
-              }
-              disabled={!editable}
-            />
+        <CardContent className="admin-form-content">
+          <div className="admin-form-note">
+            Ajustez les informations principales du tournoi. Les horaires utilisés ici sont en heure locale.
           </div>
-          <div className="grid gap-2">
-            <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Nom</label>
+          <div className="admin-field-wide">
+            <label className="admin-label">Nom</label>
             <input
-              className="w-full rounded border px-2.5 py-1.5 text-sm"
+              className="admin-input"
               value={tournament.name}
               onChange={(event) =>
                 setTournament((current) => ({
@@ -363,106 +355,30 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                   name: event.target.value,
                 }))
               }
+              placeholder="Tournoi national du CCTT"
               disabled={!editable}
             />
           </div>
-          <div className="grid gap-2">
-            <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Description</label>
-            <textarea
-              className="w-full rounded border px-2.5 py-1.5 text-sm"
-              rows={2}
-              value={tournament.description}
-              onChange={(event) =>
-                setTournament((current) => ({
-                  ...current,
-                  description: event.target.value,
-                }))
-              }
-              disabled={!editable}
-            />
-          </div>
-          <div className="grid gap-2">
-            <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Lieu</label>
+          <div className="admin-field">
+            <label className="admin-label">Slug</label>
             <input
-              className="w-full rounded border px-2.5 py-1.5 text-sm"
-              value={tournament.venue}
+              className="admin-input font-mono text-[13px]"
+              value={tournament.slug}
               onChange={(event) =>
                 setTournament((current) => ({
                   ...current,
-                  venue: event.target.value,
+                  slug: event.target.value,
                 }))
               }
+              placeholder="tournoi-national-2026"
+              spellCheck={false}
               disabled={!editable}
             />
           </div>
-          <div className="grid gap-3 md:grid-cols-2">
-            <div className="grid gap-2 has-calendar-icon">
-              <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Ouverture inscriptions</label>
-              <input
-                type="datetime-local"
-                className="w-full rounded border px-2.5 py-1.5 text-sm pr-9"
-                value={tournament.registrationOpenAt}
-                onChange={(event) =>
-                  setTournament((current) => ({
-                    ...current,
-                    registrationOpenAt: event.target.value,
-                  }))
-                }
-                disabled={!editable}
-              />
-            </div>
-            <div className="grid gap-2 has-calendar-icon">
-              <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Fermeture inscriptions</label>
-              <input
-                type="datetime-local"
-                className="w-full rounded border px-2.5 py-1.5 text-sm pr-9"
-                value={tournament.registrationCloseAt}
-                onChange={(event) =>
-                  setTournament((current) => ({
-                    ...current,
-                    registrationCloseAt: event.target.value,
-                  }))
-                }
-                disabled={!editable}
-              />
-            </div>
-          </div>
-          <div className="grid gap-3 md:grid-cols-2">
-            <div className="grid gap-2 has-calendar-icon">
-              <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Debut tournoi</label>
-              <input
-                type="datetime-local"
-                className="w-full rounded border px-2.5 py-1.5 text-sm pr-9"
-                value={tournament.startDate}
-                onChange={(event) =>
-                  setTournament((current) => ({
-                    ...current,
-                    startDate: event.target.value,
-                  }))
-                }
-                disabled={!editable}
-              />
-            </div>
-            <div className="grid gap-2 has-calendar-icon">
-              <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Fin tournoi</label>
-              <input
-                type="datetime-local"
-                className="w-full rounded border px-2.5 py-1.5 text-sm pr-9"
-                value={tournament.endDate}
-                onChange={(event) =>
-                  setTournament((current) => ({
-                    ...current,
-                    endDate: event.target.value,
-                  }))
-                }
-                disabled={!editable}
-              />
-            </div>
-          </div>
-          <div className="grid gap-2 max-w-xs">
-            <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Statut</label>
+          <div className="admin-field">
+            <label className="admin-label">Statut</label>
             <select
-              className="w-full rounded border px-2.5 py-1.5 text-sm"
+              className="admin-select"
               value={tournament.status}
               onChange={(event) =>
                 setTournament((current) => ({
@@ -478,8 +394,110 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
               <option value="ARCHIVED">ARCHIVED</option>
             </select>
           </div>
-
-          <div className="flex flex-wrap gap-3">
+          <div className="admin-field-wide">
+            <label className="admin-label">Description</label>
+            <textarea
+              className="admin-textarea"
+              rows={3}
+              value={tournament.description}
+              onChange={(event) =>
+                setTournament((current) => ({
+                  ...current,
+                  description: event.target.value,
+                }))
+              }
+              placeholder="Présentation courte du tournoi, ambiance, public visé, informations utiles..."
+              disabled={!editable}
+            />
+          </div>
+          <div className="admin-field-wide">
+            <label className="admin-label">Lieu</label>
+            <input
+              className="admin-input"
+              value={tournament.venue}
+              onChange={(event) =>
+                setTournament((current) => ({
+                  ...current,
+                  venue: event.target.value,
+                }))
+              }
+              placeholder="Salle omnisports, Reims"
+              disabled={!editable}
+            />
+          </div>
+          <div className="admin-field-pair">
+            <div className="admin-field">
+              <label className="admin-label">Ouverture inscriptions</label>
+              <div className="has-calendar-icon">
+                <input
+                  type="datetime-local"
+                  className="admin-input pr-10"
+                  value={tournament.registrationOpenAt}
+                  onChange={(event) =>
+                    setTournament((current) => ({
+                      ...current,
+                      registrationOpenAt: event.target.value,
+                    }))
+                  }
+                  disabled={!editable}
+                />
+              </div>
+            </div>
+            <div className="admin-field">
+              <label className="admin-label">Fermeture inscriptions</label>
+              <div className="has-calendar-icon">
+                <input
+                  type="datetime-local"
+                  className="admin-input pr-10"
+                  value={tournament.registrationCloseAt}
+                  onChange={(event) =>
+                    setTournament((current) => ({
+                      ...current,
+                      registrationCloseAt: event.target.value,
+                    }))
+                  }
+                  disabled={!editable}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="admin-field-pair">
+            <div className="admin-field">
+              <label className="admin-label">Début tournoi</label>
+              <div className="has-calendar-icon">
+                <input
+                  type="datetime-local"
+                  className="admin-input pr-10"
+                  value={tournament.startDate}
+                  onChange={(event) =>
+                    setTournament((current) => ({
+                      ...current,
+                      startDate: event.target.value,
+                    }))
+                  }
+                  disabled={!editable}
+                />
+              </div>
+            </div>
+            <div className="admin-field">
+              <label className="admin-label">Fin tournoi</label>
+              <div className="has-calendar-icon">
+                <input
+                  type="datetime-local"
+                  className="admin-input pr-10"
+                  value={tournament.endDate}
+                  onChange={(event) =>
+                    setTournament((current) => ({
+                      ...current,
+                      endDate: event.target.value,
+                    }))
+                  }
+                  disabled={!editable}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="admin-actions">
             <Button type="button" onClick={saveTournament} disabled={savingTournament || !editable}>
               {savingTournament ? "Enregistrement..." : "Enregistrer"}
             </Button>
@@ -664,11 +682,14 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                   <td className="py-2">
                     <Button
                       type="button"
-                      size="sm"
+                      size="icon"
+                      className="rounded-full"
                       onClick={createEvent}
                       disabled={savingEvent === "new" || !editable}
+                      aria-label={savingEvent === "new" ? "Création en cours" : "Ajouter"}
+                      title={savingEvent === "new" ? "Création..." : "Ajouter"}
                     >
-                      {savingEvent === "new" ? "Création..." : "Ajouter"}
+                      <Plus className="size-4" />
                     </Button>
                   </td>
                 </tr>
