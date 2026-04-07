@@ -39,7 +39,7 @@ export const defaultHomeContent: HomeContentData = {
   highlight1Title: "Tous les niveaux",
   highlight1Text:
     "Enfants, adultes, débutants ou joueurs confirmés : chacun trouve sa place au CCTT.",
-  highlight2Title: "Loisir & competition",
+  highlight2Title: "Loisir & compétition",
   highlight2Text:
     "Une pratique adaptée à vos objectifs, du loisir à la compétition officielle.",
   highlight3Title: "Esprit club",
@@ -57,8 +57,44 @@ export const defaultHomeContent: HomeContentData = {
   eventDateLabel: "Avril 2026 - Châlons-en-Champagne",
 };
 
+const LEGACY_HOME_TEXT_FIXES = new Map<string, string>([
+  ["Chalons-en-Champagne Tennis de Table", defaultHomeContent.heroTitle],
+  [
+    "Club de tennis de table a Chalons-en-Champagne - loisirs et competition, jeunes et adultes.",
+    defaultHomeContent.heroSubtitle,
+  ],
+  [
+    "Le Chalons-en-Champagne Tennis de Table (CCTT) accueille joueurs debutants comme confirmes dans un cadre convivial et structure.",
+    defaultHomeContent.welcomeText1,
+  ],
+  [
+    "Encadre par une equipe d'entraineurs diplomes, le club met l'accent sur la progression, le respect et le plaisir du jeu.",
+    defaultHomeContent.welcomeText2,
+  ],
+  [
+    "Enfants, adultes, debutants ou joueurs confirmes : chacun trouve sa place au CCTT.",
+    defaultHomeContent.highlight1Text,
+  ],
+  ["Loisir & competition", defaultHomeContent.highlight2Title],
+  [
+    "Une pratique adaptee a vos objectifs, du loisir a la competition officielle.",
+    defaultHomeContent.highlight2Text,
+  ],
+  [
+    "Convivialite, respect et engagement sont au coeur de la vie du club.",
+    defaultHomeContent.highlight3Text,
+  ],
+  ["Evenement du club", defaultHomeContent.eventTitle],
+  ["Avril 2026 - Chalons-en-Champagne", defaultHomeContent.eventDateLabel],
+]);
+
 function coerceString(value: unknown, fallback: string) {
-  return typeof value === "string" && value.trim() !== "" ? value.trim() : fallback;
+  if (typeof value !== "string" || value.trim() === "") {
+    return fallback;
+  }
+
+  const normalizedValue = value.trim();
+  return LEGACY_HOME_TEXT_FIXES.get(normalizedValue) ?? normalizedValue;
 }
 
 export function normalizeHomeContent(
