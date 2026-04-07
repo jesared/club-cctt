@@ -10,6 +10,8 @@ import { prisma } from "@/lib/prisma";
 
 const TOURNAMENT_2026_RESULTS_URL =
   "https://drive.google.com/drive/u/0/folders/1LBgasYtx4UkDSvjuvBu789wdRG_R6ODE";
+const TOURNAMENT_2026_RESULTS_IMAGE_URL: string =
+  "https://res.cloudinary.com/diimhrbx7/image/upload/v1775559610/cctt-club/bocyffusevbfulgbjffw.jpg";
 
 export const metadata: Metadata = {
   title: "CCTT – Club de tennis de table à Châlons-en-Champagne",
@@ -68,31 +70,54 @@ export default async function Home() {
 
       <Reveal>
         <section className="rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8">
-          <div className="grid gap-6 md:grid-cols-[1fr_auto] md:items-center">
-            <div className="max-w-3xl space-y-3">
-              <p className="inline-flex rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
-                Tournoi 2026
-              </p>
-              <h2 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
-                Les résultats sont disponibles
-              </h2>
-              <p className="text-sm leading-relaxed text-muted-foreground md:text-base">
-                Retrouvez les tableaux, classements et documents de
-                l&apos;édition 2026 dans le dossier officiel du tournoi.
-              </p>
-            </div>
-            <Button
-              asChild
-              className="w-full rounded-md px-6 transition-transform duration-200 hover:scale-[1.02] md:w-auto"
-            >
-              <a
-                href={TOURNAMENT_2026_RESULTS_URL}
-                target="_blank"
-                rel="noopener noreferrer"
+          <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_280px] md:items-center">
+            <div className="max-w-3xl space-y-4">
+              <div className="space-y-3">
+                <p className="inline-flex rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
+                  Tournoi 2026
+                </p>
+                <h2 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
+                  Les résultats sont disponibles
+                </h2>
+                <p className="text-sm leading-relaxed text-muted-foreground md:text-base">
+                  Retrouvez les tableaux, classements et documents de
+                  l&apos;édition 2026 dans le dossier officiel du tournoi.
+                </p>
+              </div>
+              <Button
+                asChild
+                className="w-full rounded-md px-6 transition-transform duration-200 hover:scale-[1.02] sm:w-auto"
               >
-                Voir les résultats 2026
-              </a>
-            </Button>
+                <a
+                  href={TOURNAMENT_2026_RESULTS_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Voir les résultats 2026
+                </a>
+              </Button>
+            </div>
+            <div className="overflow-hidden rounded-xl border border-border bg-muted/30">
+              {TOURNAMENT_2026_RESULTS_IMAGE_URL ? (
+                <div
+                  className="aspect-[4/3] min-h-40 bg-cover bg-center"
+                  style={{
+                    backgroundImage: `url(${TOURNAMENT_2026_RESULTS_IMAGE_URL})`,
+                  }}
+                  aria-label="Visuel des résultats du tournoi 2026"
+                  role="img"
+                />
+              ) : (
+                <div className="flex aspect-[4/3] min-h-40 flex-col items-center justify-center gap-2 px-4 text-center">
+                  <span className="text-sm font-semibold text-foreground">
+                    Image résultats 2026
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    Emplacement prévu pour le visuel du tournoi
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
         </section>
       </Reveal>
