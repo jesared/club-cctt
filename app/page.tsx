@@ -8,6 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { normalizeHomeContent } from "@/lib/home-content";
 import { prisma } from "@/lib/prisma";
 
+const TOURNAMENT_2026_RESULTS_URL =
+  "https://drive.google.com/drive/u/0/folders/1LBgasYtx4UkDSvjuvBu789wdRG_R6ODE";
+
 export const metadata: Metadata = {
   title: "CCTT – Club de tennis de table à Châlons-en-Champagne",
   description:
@@ -62,6 +65,37 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      <Reveal>
+        <section className="rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8">
+          <div className="grid gap-6 md:grid-cols-[1fr_auto] md:items-center">
+            <div className="max-w-3xl space-y-3">
+              <p className="inline-flex rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
+                Tournoi 2026
+              </p>
+              <h2 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
+                Les résultats sont disponibles
+              </h2>
+              <p className="text-sm leading-relaxed text-muted-foreground md:text-base">
+                Retrouvez les tableaux, classements et documents de
+                l&apos;édition 2026 dans le dossier officiel du tournoi.
+              </p>
+            </div>
+            <Button
+              asChild
+              className="w-full rounded-md px-6 transition-transform duration-200 hover:scale-[1.02] md:w-auto"
+            >
+              <a
+                href={TOURNAMENT_2026_RESULTS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Voir les résultats 2026
+              </a>
+            </Button>
+          </div>
+        </section>
+      </Reveal>
 
       <Reveal>
         <section className="py-4">
@@ -122,22 +156,22 @@ export default async function Home() {
 
       <Reveal>
         <section className="py-8">
-            <Card className="border-primary/30 bg-primary/5 card-hover">
-              <CardHeader>
-                <CardTitle className="text-xl font-semibold">
-                  {content.ctaTitle}
-                </CardTitle>
-              </CardHeader>
+          <Card className="border-primary/30 bg-primary/5 card-hover">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold">
+                {content.ctaTitle}
+              </CardTitle>
+            </CardHeader>
             <CardContent className="space-y-6">
-                <p className="text-sm text-muted-foreground">{content.ctaText}</p>
-                <Button asChild>
-                  <Link href={content.ctaButtonHref}>
-                    {content.ctaButtonLabel}
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-          </section>
+              <p className="text-sm text-muted-foreground">{content.ctaText}</p>
+              <Button asChild>
+                <Link href={content.ctaButtonHref}>
+                  {content.ctaButtonLabel}
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </section>
       </Reveal>
 
       {content.eventEnabled ? (
@@ -147,10 +181,10 @@ export default async function Home() {
           </Reveal>
           <Reveal delay={120}>
             <div className="mt-6">
-            <TournoiHeroLazy
-              imageUrl={content.eventImageUrl}
-              dateLabel={content.eventDateLabel}
-            />
+              <TournoiHeroLazy
+                imageUrl={content.eventImageUrl}
+                dateLabel={content.eventDateLabel}
+              />
             </div>
           </Reveal>
         </section>

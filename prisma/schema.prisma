@@ -288,6 +288,14 @@ model HomeContent {
   createdAt       DateTime @default(now())
 }
 
+model MenuVisibility {
+  key       String   @id
+  label     String?
+  enabled   Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
 model RateLimitBucket {
   id        String   @id
   count     Int      @default(0)

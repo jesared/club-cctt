@@ -22,6 +22,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { Session } from "next-auth";
+import type { PublicMenuVisibility } from "@/lib/menu-settings";
+import { isPublicMenuVisible } from "@/lib/menu-settings";
 import { normalizeRole } from "@/lib/roles";
 
 export type Role = "user" | "admin";
@@ -43,30 +45,40 @@ export type MenuSection = {
 export function getVisibleSections({
   role,
   session,
+  menuVisibility,
 }: {
   role: unknown;
   session: Session | null;
+  menuVisibility?: PublicMenuVisibility;
 }) {
   const normalizedRole = normalizeRole(role);
 
   return navigation.filter((section) => {
     if (!section.roles.includes(normalizedRole)) return false;
     if (section.auth && !session) return false;
+    if (section.title === "Tournoi" && !isPublicMenuVisible(menuVisibility, "tournoi")) {
+      return false;
+    }
     return true;
   });
 }
 export function getVisibleSectionsHeader({
   role,
   session,
+  menuVisibility,
 }: {
   role: unknown;
   session: Session | null;
+  menuVisibility?: PublicMenuVisibility;
 }) {
   const normalizedRole = normalizeRole(role);
 
   return navigationHeader.filter((section) => {
     if (!section.roles.includes(normalizedRole)) return false;
     if (section.auth && !session) return false;
+    if (section.title === "Tournoi" && !isPublicMenuVisible(menuVisibility, "tournoi")) {
+      return false;
+    }
     return true;
   });
 }
@@ -173,6 +185,7 @@ export const navigation: MenuSection[] = [
       },
       { href: "/admin/users", label: "Utilisateurs", icon: Users },
       { href: "/admin/home", label: "Home", icon: LayoutGrid },
+      { href: "/admin/menu", label: "Menus", icon: Settings },
       { href: "/admin/media", label: "Medias", icon: ImageIcon },
       { href: "/admin/contact", label: "Contact", icon: Mail },
       { href: "/admin/audit-ux", label: "Audit UX", icon: FileText },

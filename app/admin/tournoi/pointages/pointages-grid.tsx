@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 
 type PointagesGridPlayer = {
   id: string;
+  paymentGroupKey: string;
   licence: string;
   name: string;
   club: string;
@@ -100,7 +101,7 @@ function getPaymentMeta(payment: string) {
     label: "En attente",
     isPending: true,
     className:
-      "bg-slate-100 text-slate-700 dark:bg-slate-800/60 dark:text-slate-200",
+      "bg-slate-100 text-red-700 dark:bg-slate-800/60 dark:text-red-200",
   };
 }
 
@@ -146,8 +147,8 @@ export function PointagesGrid({
     left: number;
   } | null>(null);
   const [paymentDrawerOpen, setPaymentDrawerOpen] = useState(false);
-  const [quickMode, setQuickMode] = useState(false);
-  const [statsCompact, setStatsCompact] = useState(false);
+  const [quickMode, setQuickMode] = useState(true);
+  const [statsCompact, setStatsCompact] = useState(true);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   const clubOptions = useMemo(() => {
@@ -226,7 +227,6 @@ export function PointagesGrid({
       };
     });
   }, [normalizedDayColumns, tournamentTables]);
-
 
   const hasActiveFilters =
     selectedClub !== "all" ||
@@ -577,16 +577,21 @@ export function PointagesGrid({
   }, [checkedState, filteredPlayers, normalizedDayColumns]);
 
   const pendingPaymentsCount = useMemo(() => {
-    return filteredPlayers.filter((player) => getPaymentMeta(player.payment).isPending)
-      .length;
+    return filteredPlayers.filter(
+      (player) => getPaymentMeta(player.payment).isPending,
+    ).length;
   }, [filteredPlayers]);
 
   const waitlistCount = useMemo(() => {
-    return filteredPlayers.filter((player) => player.waitlistEventIds.length > 0)
-      .length;
+    return filteredPlayers.filter(
+      (player) => player.waitlistEventIds.length > 0,
+    ).length;
   }, [filteredPlayers]);
 
   const tableColumnCount = (quickMode ? 3 : 6) + normalizedDayColumns.length;
+  const openMenuPlayer = openMenuPlayerId
+    ? (playersState.find((player) => player.id === openMenuPlayerId) ?? null)
+    : null;
 
   return (
     <section className="space-y-5 rounded-2xl border border-border/70 bg-gradient-to-b from-card via-card to-muted/10 p-5 shadow-sm">
@@ -602,7 +607,8 @@ export function PointagesGrid({
             </h2>
             <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
               Cochez la présence de chaque joueur par jour, filtrez rapidement
-              les situations en attente et gardez un suivi clair de l&apos;accueil.
+              les situations en attente et gardez un suivi clair de
+              l&apos;accueil.
             </p>
           </div>
         </div>
@@ -620,7 +626,7 @@ export function PointagesGrid({
                 : "border-border/70 bg-background/80 text-muted-foreground hover:bg-muted/40",
             )}
           >
-            {statsCompact ? "Stats compactes" : "Réduire les stats"}
+            {statsCompact ? "Afficher les stats" : "Masquer les stats"}
           </button>
           <span
             className={cn(
@@ -635,199 +641,154 @@ export function PointagesGrid({
         </div>
       </header>
 
-      <div
-        className={cn(
-          "grid gap-3 md:grid-cols-2 xl:grid-cols-4",
-          statsCompact && "gap-2",
-        )}
-      >
-        <div
-          className={cn(
-            "rounded-2xl border border-border/70 bg-background/80 shadow-xs",
-            statsCompact ? "p-3" : "p-4",
-          )}
-        >
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                Joueurs affichés
-              </p>
-              <p
-                className={cn(
-                  "font-semibold text-foreground",
-                  statsCompact ? "mt-1 text-2xl" : "mt-2 text-3xl",
-                )}
-              >
-                {filteredPlayers.length}
-              </p>
-              {!statsCompact ? (
-                <p className="mt-1 text-xs text-muted-foreground">
-                  sur {playersState.length} inscriptions actuellement chargées
-                </p>
-              ) : null}
-            </div>
-            <span className="rounded-full bg-primary/10 p-2 text-primary">
-              <Users className="h-4 w-4" />
-            </span>
-          </div>
-        </div>
-        <div
-          className={cn(
-            "rounded-2xl border border-border/70 bg-background/80 shadow-xs",
-            statsCompact ? "p-3" : "p-4",
-          )}
-        >
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                Paiements à traiter
-              </p>
-              <p
-                className={cn(
-                  "font-semibold text-foreground",
-                  statsCompact ? "mt-1 text-2xl" : "mt-2 text-3xl",
-                )}
-              >
-                {pendingPaymentsCount}
-              </p>
-              {!statsCompact ? (
-                <p className="mt-1 text-xs text-muted-foreground">
-                  joueurs avec paiement partiel ou en attente
-                </p>
-              ) : null}
-            </div>
-            <span className="rounded-full bg-amber-100 p-2 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
-              <Wallet className="h-4 w-4" />
-            </span>
-          </div>
-        </div>
-        <div
-          className={cn(
-            "rounded-2xl border border-border/70 bg-background/80 shadow-xs",
-            statsCompact ? "p-3" : "p-4",
-          )}
-        >
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                Déjà pointés
-              </p>
-              <p
-                className={cn(
-                  "font-semibold text-foreground",
-                  statsCompact ? "mt-1 text-2xl" : "mt-2 text-3xl",
-                )}
-              >
-                {playersWithAnyCheck}
-              </p>
-              {!statsCompact ? (
-                <p className="mt-1 text-xs text-muted-foreground">
-                  joueurs validés sur au moins une journée
-                </p>
-              ) : null}
-            </div>
-            <span className="rounded-full bg-emerald-100 p-2 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200">
-              <CircleCheckBig className="h-4 w-4" />
-            </span>
-          </div>
-        </div>
-        <div
-          className={cn(
-            "rounded-2xl border border-border/70 bg-background/80 shadow-xs",
-            statsCompact ? "p-3" : "p-4",
-          )}
-        >
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                Liste d&apos;attente
-              </p>
-              <p
-                className={cn(
-                  "font-semibold text-foreground",
-                  statsCompact ? "mt-1 text-2xl" : "mt-2 text-3xl",
-                )}
-              >
-                {waitlistCount}
-              </p>
-              {!statsCompact ? (
-                <p className="mt-1 text-xs text-muted-foreground">
-                  joueurs ayant encore un engagement en attente
-                </p>
-              ) : null}
-            </div>
-            <span className="rounded-full bg-slate-100 p-2 text-slate-700 dark:bg-slate-800/60 dark:text-slate-200">
-              <CircleAlert className="h-4 w-4" />
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div
-        className={cn(
-          "grid gap-3 lg:grid-cols-3",
-          statsCompact && "gap-2",
-        )}
-      >
-        {daySummaries.map((daySummary) => (
-          <div
-            key={daySummary.key}
-            className={cn(
-              "rounded-2xl border border-border/70 bg-background/80 shadow-xs",
-              statsCompact ? "p-3" : "p-4",
-            )}
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                  {daySummary.orderLabel}
-                </p>
-                <h3
-                  className={cn(
-                    "font-semibold text-foreground",
-                    statsCompact ? "mt-0.5 text-xs" : "mt-1 text-sm",
-                  )}
-                >
-                  {daySummary.label}
-                </h3>
-                {!statsCompact ? (
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {daySummary.timeRange
-                      ? `${daySummary.timeRange} · ${daySummary.tablesCount} tableaux`
-                      : `${daySummary.tablesCount} tableaux`}
+      {!statsCompact ? (
+        <>
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            <div className="rounded-2xl border border-border/70 bg-background/80 p-4 shadow-xs">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                    Joueurs affichés
                   </p>
-                ) : null}
+                  <p
+                    className={cn(
+                      "font-semibold text-foreground",
+                      "mt-2 text-3xl",
+                    )}
+                  >
+                    {filteredPlayers.length}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    sur {playersState.length} inscriptions actuellement chargées
+                  </p>
+                </div>
+                <span className="rounded-full bg-primary/10 p-2 text-primary">
+                  <Users className="h-4 w-4" />
+                </span>
               </div>
-              <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
-                {daySummary.checkedCount}/{daySummary.registeredCount}
-              </span>
             </div>
-            <div className={cn("space-y-2", statsCompact ? "mt-2" : "mt-4")}>
-              <div className="h-2 overflow-hidden rounded-full bg-muted">
-                <div
-                  className="h-full rounded-full bg-primary transition-all"
-                  style={{
-                    width:
-                      daySummary.registeredCount === 0
-                        ? "0%"
-                        : `${(daySummary.checkedCount / daySummary.registeredCount) * 100}%`,
-                  }}
-                />
+            <div className="rounded-2xl border border-border/70 bg-background/80 p-4 shadow-xs">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                    Paiements à traiter
+                  </p>
+                  <p
+                    className={cn(
+                      "font-semibold text-foreground",
+                      "mt-2 text-3xl",
+                    )}
+                  >
+                    {pendingPaymentsCount}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    joueurs avec paiement partiel ou en attente
+                  </p>
+                </div>
+                <span className="rounded-full bg-amber-100 p-2 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
+                  <Wallet className="h-4 w-4" />
+                </span>
               </div>
-              {statsCompact ? (
-                <div className="text-[11px] text-muted-foreground">
-                  {daySummary.uncheckedCount} à accueillir
+            </div>
+            <div className="rounded-2xl border border-border/70 bg-background/80 p-4 shadow-xs">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                    Déjà pointés
+                  </p>
+                  <p
+                    className={cn(
+                      "font-semibold text-foreground",
+                      "mt-2 text-3xl",
+                    )}
+                  >
+                    {playersWithAnyCheck}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    joueurs validés sur au moins une journée
+                  </p>
                 </div>
-              ) : (
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>{daySummary.checkedCount} pointés</span>
-                  <span>{daySummary.uncheckedCount} à accueillir</span>
+                <span className="rounded-full bg-emerald-100 p-2 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200">
+                  <CircleCheckBig className="h-4 w-4" />
+                </span>
+              </div>
+            </div>
+            <div className="rounded-2xl border border-border/70 bg-background/80 p-4 shadow-xs">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                    Liste d&apos;attente
+                  </p>
+                  <p
+                    className={cn(
+                      "font-semibold text-foreground",
+                      "mt-2 text-3xl",
+                    )}
+                  >
+                    {waitlistCount}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    joueurs ayant encore un engagement en attente
+                  </p>
                 </div>
-              )}
+                <span className="rounded-full bg-slate-100 p-2 text-slate-700 dark:bg-slate-800/60 dark:text-slate-200">
+                  <CircleAlert className="h-4 w-4" />
+                </span>
+              </div>
             </div>
           </div>
-        ))}
-      </div>
+
+          <div className="grid gap-3 lg:grid-cols-3">
+            {daySummaries.map((daySummary) => (
+              <div
+                key={daySummary.key}
+                className="rounded-2xl border border-border/70 bg-background/80 p-4 shadow-xs"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                      {daySummary.orderLabel}
+                    </p>
+                    <h3
+                      className={cn(
+                        "font-semibold text-foreground",
+                        "mt-1 text-sm",
+                      )}
+                    >
+                      {daySummary.label}
+                    </h3>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {daySummary.timeRange
+                        ? `${daySummary.timeRange} · ${daySummary.tablesCount} tableaux`
+                        : `${daySummary.tablesCount} tableaux`}
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+                    {daySummary.checkedCount}/{daySummary.registeredCount}
+                  </span>
+                </div>
+                <div className="mt-4 space-y-2">
+                  <div className="h-2 overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full rounded-full bg-primary transition-all"
+                      style={{
+                        width:
+                          daySummary.registeredCount === 0
+                            ? "0%"
+                            : `${(daySummary.checkedCount / daySummary.registeredCount) * 100}%`,
+                      }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>{daySummary.checkedCount} pointés</span>
+                    <span>{daySummary.uncheckedCount} à accueillir</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      ) : null}
 
       <div className="space-y-4 rounded-2xl border border-border/70 bg-card/95 p-4 shadow-sm">
         <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
@@ -990,7 +951,9 @@ export function PointagesGrid({
                       <option value={`unchecked:${dayColumn.key}`}>
                         Non pointés
                       </option>
-                      <option value={`checked:${dayColumn.key}`}>Pointés</option>
+                      <option value={`checked:${dayColumn.key}`}>
+                        Pointés
+                      </option>
                     </optgroup>
                   ))}
                 </select>
@@ -998,7 +961,8 @@ export function PointagesGrid({
             </>
           ) : (
             <div className="rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-muted-foreground">
-              Le mode rapide masque les colonnes secondaires pour pointer plus vite à l&apos;accueil.
+              Le mode rapide masque les colonnes secondaires pour pointer plus
+              vite à l&apos;accueil.
             </div>
           )}
         </div>
@@ -1010,197 +974,181 @@ export function PointagesGrid({
           paiement et actions restent visibles.
         </div>
         <div className="overflow-x-auto overflow-y-visible">
-        <table className="min-w-full text-sm">
-          <thead className="sticky top-0 z-20 bg-card">
-            <tr className="border-b border-border/70 text-left text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-              <th className="sticky left-0 z-20 bg-card py-3 pl-4 pr-3 font-medium">
-                Joueur
-              </th>
-              {!quickMode ? (
-                <>
-                  <th className="py-3 pr-3 font-medium">Licence</th>
-                  <th className="py-3 pr-3 font-medium">Club</th>
-                  <th className="py-3 pr-3 font-medium">Tableau(x)</th>
-                </>
-              ) : null}
-              <th className="sticky right-24 z-20 bg-card py-3 pr-3 font-medium">
-                Paiement
-              </th>
-              {dayHeaders.map((dayHeader) => (
-                <th key={dayHeader.key} className="py-3 pr-3 font-medium">
-                  <div className="space-y-0.5">
-                    <span className="block text-[11px] font-semibold text-foreground">
-                      {dayHeader.orderLabel}
-                    </span>
-                    <span className="block text-[11px] text-muted-foreground">
-                      {dayHeader.label}
-                    </span>
-                    {dayHeader.timeRange ? (
-                      <span className="block text-[10px] text-muted-foreground">
-                        {dayHeader.timeRange} · {dayHeader.tablesCount} tableaux
-                      </span>
-                    ) : null}
-                  </div>
+          <table className="min-w-full text-sm">
+            <thead className="sticky top-0 z-20 bg-card">
+              <tr className="border-b border-border/70 text-left text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                <th className="sticky left-0 z-20 bg-card py-3 pl-4 pr-3 font-medium">
+                  Joueur
                 </th>
-              ))}
-              <th className="sticky right-0 z-20 bg-card py-3 pl-3 pr-4 font-medium">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredPlayers.map((player) =>
-              (() => {
-                const hasAnyCheck = normalizedDayColumns.some(
-                  (dayColumn) =>
-                    checkedState[`${player.id}-${dayColumn.key}`] ?? false,
-                );
-                const paymentMeta = getPaymentMeta(player.payment);
-                const rowBackgroundClass = hasAnyCheck ? "bg-primary/5" : "bg-card";
-                return (
-                  <tr
-                    key={player.id}
-                    className={`group border-b border-border/60 last:border-0 hover:bg-accent/10 ${
-                      hasAnyCheck ? rowBackgroundClass : ""
-                    }`}
-                  >
-                    <td
-                      className={`sticky left-0 z-10 py-3 pl-4 pr-3 font-medium text-foreground ${rowBackgroundClass} group-hover:bg-accent/10`}
+                {!quickMode ? (
+                  <>
+                    <th className="py-3 pr-3 font-medium">Licence</th>
+                    <th className="py-3 pr-3 font-medium">Club</th>
+                    <th className="py-3 pr-3 font-medium">Tableau(x)</th>
+                  </>
+                ) : null}
+                <th className="sticky text-center right-24 z-20 bg-card py-3 pr-3 font-medium">
+                  Paiement
+                </th>
+                {dayHeaders.map((dayHeader) => (
+                  <th key={dayHeader.key} className="py-3 pr-3 font-medium">
+                    <div className="space-y-0.5">
+                      <span className="block text-[11px] font-semibold text-foreground">
+                        {dayHeader.orderLabel}
+                      </span>
+                    </div>
+                  </th>
+                ))}
+                <th className="sticky text-center right-0 z-20 bg-card py-3 pl-3 pr-4 font-medium">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredPlayers.map((player) =>
+                (() => {
+                  const paymentMeta = getPaymentMeta(player.payment);
+
+                  return (
+                    <tr
+                      key={player.id}
+                      className={`group border-b border-border/60 last:border-0 hover:bg-accent/10 `}
                     >
-                      <div className="space-y-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span>{player.name}</span>
-                          {recentlySavedRow === player.id ? (
-                            <span className="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200">
-                              OK
-                            </span>
-                          ) : null}
-                          {player.waitlistEventIds.length > 0 ? (
-                            <span className="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
-                              Attente
-                            </span>
+                      <td
+                        className={`sticky left-0 z-10 py-3 pl-4 pr-3 font-medium text-foreground`}
+                      >
+                        <div className="space-y-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span>{player.name}</span>
+                            {recentlySavedRow === player.id ? (
+                              <span className="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200">
+                                OK
+                              </span>
+                            ) : null}
+                            {player.waitlistEventIds.length > 0 ? (
+                              <span className="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
+                                Attente
+                              </span>
+                            ) : null}
+                          </div>
+                          {quickMode ? (
+                            <p className="text-xs font-normal text-muted-foreground">
+                              {player.club} · {player.licence} ·{" "}
+                              {player.table || "Sans tableau"}
+                            </p>
                           ) : null}
                         </div>
-                        {quickMode ? (
-                          <p className="text-xs font-normal text-muted-foreground">
-                            {player.club} · {player.licence} · {player.table || "Sans tableau"}
-                          </p>
-                        ) : null}
-                      </div>
-                    </td>
-                    {!quickMode ? (
-                      <>
-                        <td className="py-3 pr-3 text-foreground">
-                          {player.licence}
-                        </td>
-                        <td className="py-3 pr-3 text-foreground">
-                          {player.club}
-                        </td>
-                        <td className="py-3 pr-3 text-foreground">
-                          {player.table}
-                        </td>
-                      </>
-                    ) : null}
-                    <td
-                      className={`sticky right-24 z-10 py-3 pr-3 text-foreground ${rowBackgroundClass} group-hover:bg-accent/10`}
-                    >
-                      <span
-                        className={cn(
-                          "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold",
-                          paymentMeta.className,
-                        )}
+                      </td>
+                      {!quickMode ? (
+                        <>
+                          <td className="py-3 pr-3 text-foreground">
+                            {player.licence}
+                          </td>
+                          <td className="py-3 pr-3 text-foreground">
+                            {player.club}
+                          </td>
+                          <td className="py-3 pr-3 text-foreground">
+                            {player.table}
+                          </td>
+                        </>
+                      ) : null}
+                      <td
+                        className={`sticky text-center right-24 z-10 py-3 pr-3 text-foreground`}
                       >
-                        <span className="text-[10px] leading-none">⦿</span>
-                        {paymentMeta.label}
-                      </span>
-                    </td>
-                    {normalizedDayColumns.map((dayColumn) => {
-                      const key = `${player.id}-${dayColumn.key}`;
-                      const hasEventForDay =
-                        (player.registrationEventIdsByDay[dayColumn.key] ?? [])
-                          .length > 0;
-                      return (
-                        <td key={key} className="py-3 pr-3 text-foreground">
-                          {hasEventForDay ? (
-                            <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-border/60 bg-background/80 px-2.5 py-1.5 transition hover:bg-accent/10">
-                              <span className="relative inline-flex h-4 w-4 items-center justify-center">
-                                <input
-                                  type="checkbox"
-                                  className="peer h-4 w-4 cursor-pointer appearance-none rounded-full border border-slate-500 checked:border-transparent align-middle transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-60"
-                                  checked={checkedState[key] ?? false}
-                                  disabled={pendingState[key]}
-                                  onChange={() =>
-                                    toggleCheck(player, dayColumn.key)
-                                  }
-                                />
-                                <CircleCheckBig
-                                  size={18}
-                                  className="pointer-events-none absolute scale-0 transition-transform peer-checked:scale-100 text-primary"
-                                />
-                              </span>
-                              <span className="text-xs font-medium text-muted-foreground">
-                                {checkedState[key] ? "Pointé" : "À cocher"}
-                              </span>
-                              {pendingState[key] ? (
-                                <span className="h-3 w-3 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground" />
-                              ) : null}
-                            </label>
-                          ) : (
-                            <span className="text-xs text-muted-foreground">
-                              Non inscrit
-                            </span>
+                        <span
+                          className={cn(
+                            " items-center font-semibold",
+                            paymentMeta.className,
                           )}
-                        </td>
-                      );
-                    })}
-                    <td
-                      className={`sticky right-0 z-10 py-3 pl-3 pr-4 ${rowBackgroundClass} group-hover:bg-accent/10`}
-                    >
-                      <div
-                        className="relative flex items-center justify-end"
-                        data-pointage-menu={player.id}
-                      >
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={(event) => {
-                            const rect = (
-                              event.currentTarget as HTMLElement
-                            ).getBoundingClientRect();
-                            setMenuPosition({
-                              top: rect.bottom + 8,
-                              left: rect.right,
-                            });
-                            setOpenMenuPlayerId((currentId) =>
-                              currentId === player.id ? null : player.id,
-                            );
-                          }}
-                          aria-haspopup="menu"
-                          aria-expanded={openMenuPlayerId === player.id}
-                          aria-label={`Actions pour ${player.name}`}
-                          className="rounded-full"
                         >
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })(),
-            )}
-            {filteredPlayers.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={tableColumnCount}
-                  className="py-10 text-center text-sm text-muted-foreground"
-                >
-                  Aucun joueur ne correspond aux filtres sélectionnés.
-                </td>
-              </tr>
-            ) : null}
-          </tbody>
-        </table>
+                          <span className="text-[20px] leading-none">⦿</span>
+                        </span>
+                      </td>
+                      {normalizedDayColumns.map((dayColumn) => {
+                        const key = `${player.id}-${dayColumn.key}`;
+                        const hasEventForDay =
+                          (
+                            player.registrationEventIdsByDay[dayColumn.key] ??
+                            []
+                          ).length > 0;
+                        return (
+                          <td key={key} className="py-3 pr-3 text-foreground">
+                            {hasEventForDay ? (
+                              <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-border/60 bg-background/80 px-2 py-2 transition ">
+                                <span className="relative inline-flex h-4 w-4 items-center justify-center">
+                                  <input
+                                    type="checkbox"
+                                    className="peer h-4 w-4 cursor-pointer appearance-none rounded-full border border-slate-500 checked:border-transparent align-middle transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-60"
+                                    checked={checkedState[key] ?? false}
+                                    disabled={pendingState[key]}
+                                    onChange={() =>
+                                      toggleCheck(player, dayColumn.key)
+                                    }
+                                  />
+                                  <CircleCheckBig
+                                    size={18}
+                                    className="pointer-events-none absolute scale-0 transition-transform peer-checked:scale-100 text-primary"
+                                  />
+                                </span>
+
+                                {pendingState[key] ? (
+                                  <span className="h-3 w-3 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground" />
+                                ) : null}
+                              </label>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">
+                                Non inscrit
+                              </span>
+                            )}
+                          </td>
+                        );
+                      })}
+                      <td className={`sticky right-0 z-10 py-3 pl-3 pr-4`}>
+                        <div
+                          className="relative flex items-center justify-center"
+                          data-pointage-menu={player.id}
+                        >
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={(event) => {
+                              const rect = (
+                                event.currentTarget as HTMLElement
+                              ).getBoundingClientRect();
+                              setMenuPosition({
+                                top: rect.bottom + 8,
+                                left: rect.right,
+                              });
+                              setOpenMenuPlayerId((currentId) =>
+                                currentId === player.id ? null : player.id,
+                              );
+                            }}
+                            aria-haspopup="menu"
+                            aria-expanded={openMenuPlayerId === player.id}
+                            aria-label={`Actions pour ${player.name}`}
+                            className="rounded-full"
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })(),
+              )}
+              {filteredPlayers.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={tableColumnCount}
+                    className="py-10 text-center text-sm text-muted-foreground"
+                  >
+                    Aucun joueur ne correspond aux filtres sélectionnés.
+                  </td>
+                </tr>
+              ) : null}
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -1409,7 +1357,11 @@ export function PointagesGrid({
           role="menu"
         >
           <a
-            href="/admin/tournoi/paiement"
+            href={
+              openMenuPlayer
+                ? `/admin/tournoi/paiement?dossier=${encodeURIComponent(openMenuPlayer.paymentGroupKey)}`
+                : "/admin/tournoi/paiement"
+            }
             className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-foreground transition hover:bg-muted/60"
             onClick={() => setOpenMenuPlayerId(null)}
           >
@@ -1449,7 +1401,6 @@ export function PointagesGrid({
           </button>
         </div>
       ) : null}
-
     </section>
   );
 }

@@ -19,9 +19,19 @@ function formatPaymentStatus(status: "PAYÉ" | "PARTIEL" | "EN ATTENTE") {
   return status;
 }
 
-export default async function AdminTournoiPaiementPage() {
+type PageProps = {
+  searchParams?: Promise<{
+    dossier?: string;
+  }>;
+};
+
+export default async function AdminTournoiPaiementPage({
+  searchParams,
+}: PageProps) {
   await requireAdminSession();
 
+  const params = (await searchParams) ?? {};
+  const initialSelectedGroupKey = params.dossier?.trim() || null;
   const tournament = await getCurrentTournament();
   const [adminPlayers, registrationsByTable, paymentGroups] = tournament
     ? await Promise.all([
@@ -165,6 +175,7 @@ export default async function AdminTournoiPaiementPage() {
           <PaymentsToValidate
             initialPayments={paymentsToValidate}
             defaultStatusFilter={pendingPaymentsCount === 0 ? "PAYÉ" : "TOUS"}
+            initialSelectedGroupKey={initialSelectedGroupKey}
           />
         </article>
       </section>

@@ -10,6 +10,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { getVisibleSections } from "@/components/navigation/menu-items";
 import { Button } from "@/components/ui/button";
+import type { PublicMenuVisibility } from "@/lib/menu-settings";
+import { isPublicMenuVisible } from "@/lib/menu-settings";
 import { isAdminRole } from "@/lib/roles";
 import { isPublicRoute } from "@/lib/routes";
 import { cn } from "@/lib/utils";
@@ -39,7 +41,11 @@ function isItemActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(href + "/");
 }
 
-export default function Header() {
+type HeaderProps = {
+  menuVisibility?: PublicMenuVisibility;
+};
+
+export default function Header({ menuVisibility }: HeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = useSession();
@@ -90,13 +96,14 @@ export default function Header() {
       getVisibleSections({
         role: session?.user?.role,
         session: session ?? null,
+        menuVisibility,
       }).filter((section) =>
         section.items.every(
           (item) =>
             item.href.startsWith("/club") || item.href.startsWith("/tournoi"),
         ),
       ),
-    [session],
+    [session, menuVisibility],
   );
 
   const desktopLinks = useMemo(
@@ -141,15 +148,17 @@ export default function Header() {
 
   useEffect(() => {
     if (!isPublicRoute(pathname)) return;
-    router.prefetch("/tournoi");
-    router.prefetch("/tournoi/inscription");
-    router.prefetch("/tournoi/liste-inscrits");
+    if (isPublicMenuVisible(menuVisibility, "tournoi")) {
+      router.prefetch("/tournoi");
+      router.prefetch("/tournoi/inscription");
+      router.prefetch("/tournoi/liste-inscrits");
+    }
     if (isAdmin) {
       router.prefetch("/admin/tournoi");
       router.prefetch("/admin/tournoi/paiement");
       router.prefetch("/admin/tournoi/pointages");
     }
-  }, [router, isAdmin, pathname]);
+  }, [router, isAdmin, pathname, menuVisibility]);
 
   if (!isPublicRoute(pathname)) {
     return null;
@@ -449,16 +458,18 @@ export default function Header() {
               >
                 Contact
               </Link>
-              <Link
-                href="/tournoi/inscription"
-                onClick={() => {
-                  setMobileOpen(false);
-                  setMobileSection(null);
-                }}
-                className="inline-flex items-center justify-center rounded-md border px-3 py-2 text-sm hover:bg-muted"
-              >
-                Inscription tournoi
-              </Link>
+              {isPublicMenuVisible(menuVisibility, "tournoi") ? (
+                <Link
+                  href="/tournoi/inscription"
+                  onClick={() => {
+                    setMobileOpen(false);
+                    setMobileSection(null);
+                  }}
+                  className="inline-flex items-center justify-center rounded-md border px-3 py-2 text-sm hover:bg-muted"
+                >
+                  Inscription tournoi
+                </Link>
+              ) : null}
             </div>
           </div>
 

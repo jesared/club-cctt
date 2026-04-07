@@ -42,6 +42,7 @@ type PaymentDossier = {
 type Props = {
   initialPayments: PaymentDossier[];
   defaultStatusFilter?: FilterStatus;
+  initialSelectedGroupKey?: string | null;
 };
 
 function formatEuro(cents: number) {
@@ -71,9 +72,17 @@ function getSuggestedAction(status: PaymentStatus) {
 export function PaymentsToValidate({
   initialPayments,
   defaultStatusFilter,
+  initialSelectedGroupKey,
 }: Props) {
   const [payments, setPayments] = useState(initialPayments);
-  const [selectedGroupKey, setSelectedGroupKey] = useState<string | null>(null);
+  const [selectedGroupKey, setSelectedGroupKey] = useState<string | null>(
+    () =>
+      initialPayments.some(
+        (payment) => payment.groupKey === initialSelectedGroupKey,
+      )
+        ? initialSelectedGroupKey ?? null
+        : null,
+  );
   const [statusFilter, setStatusFilter] = useState<FilterStatus>(
     defaultStatusFilter ?? "TOUS",
   );

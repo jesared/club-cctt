@@ -30,6 +30,7 @@ async function createPlayerRegistration(formData: FormData) {
   const nom = String(formData.get("nom") ?? "").trim();
   const prenom = String(formData.get("prenom") ?? "").trim();
   const pointsValue = String(formData.get("points") ?? "").trim();
+  const gender = String(formData.get("gender") ?? "").trim().toUpperCase();
   const club = String(formData.get("club") ?? "").trim();
   const contactEmail = String(formData.get("contactEmail") ?? "").trim();
   const contactPhone = String(formData.get("contactPhone") ?? "").trim();
@@ -45,6 +46,7 @@ async function createPlayerRegistration(formData: FormData) {
     !nom ||
     !prenom ||
     !pointsValue ||
+    !["M", "F"].includes(gender) ||
     !club ||
     !contactEmail ||
     !contactPhone ||
@@ -76,6 +78,7 @@ async function createPlayerRegistration(formData: FormData) {
     },
     select: {
       code: true,
+      gender: true,
       minPoints: true,
       maxPoints: true,
     },
@@ -89,6 +92,14 @@ async function createPlayerRegistration(formData: FormData) {
 
   const ineligibleTables = selectedTournamentEvents
     .filter((event) => {
+      if (event.gender === "F" && gender !== "F") {
+        return true;
+      }
+
+      if (event.gender === "M" && gender !== "M") {
+        return true;
+      }
+
       if (event.minPoints !== null && points < event.minPoints) {
         return true;
       }
@@ -145,6 +156,7 @@ async function createPlayerRegistration(formData: FormData) {
             userId: session.user.id,
             licenseNumber: licence,
             clubName: club,
+            gender,
             contactEmail,
             contactPhone,
             notes,
@@ -182,6 +194,7 @@ async function updatePlayerRegistration(formData: FormData) {
   const nom = String(formData.get("nom") ?? "").trim();
   const prenom = String(formData.get("prenom") ?? "").trim();
   const pointsValue = String(formData.get("points") ?? "").trim();
+  const gender = String(formData.get("gender") ?? "").trim().toUpperCase();
   const club = String(formData.get("club") ?? "").trim();
   const contactEmail = String(formData.get("contactEmail") ?? "").trim();
   const contactPhone = String(formData.get("contactPhone") ?? "").trim();
@@ -198,6 +211,7 @@ async function updatePlayerRegistration(formData: FormData) {
     !nom ||
     !prenom ||
     !pointsValue ||
+    !["M", "F"].includes(gender) ||
     !club ||
     !contactEmail ||
     !contactPhone ||
@@ -261,6 +275,7 @@ async function updatePlayerRegistration(formData: FormData) {
     },
     select: {
       code: true,
+      gender: true,
       minPoints: true,
       maxPoints: true,
     },
@@ -274,6 +289,14 @@ async function updatePlayerRegistration(formData: FormData) {
 
   const ineligibleTables = selectedTournamentEvents
     .filter((event) => {
+      if (event.gender === "F" && gender !== "F") {
+        return true;
+      }
+
+      if (event.gender === "M" && gender !== "M") {
+        return true;
+      }
+
       if (event.minPoints !== null && points < event.minPoints) {
         return true;
       }
@@ -310,6 +333,7 @@ async function updatePlayerRegistration(formData: FormData) {
       data: {
         licenseNumber: licence,
         clubName: club,
+        gender,
         contactEmail,
         contactPhone,
         notes,
@@ -358,18 +382,27 @@ export default async function AdminTournoiAjoutPlayerPage({
       })
     : null;
   const initialData =
-    editRegistration && tournament && editRegistration.tournamentId === tournament.id
+    editRegistration &&
+    tournament &&
+    editRegistration.tournamentId === tournament.id
       ? {
           registrationId: editRegistration.id,
           nom: editRegistration.player.nom,
           prenom: editRegistration.player.prenom,
           licence: editRegistration.player.licence,
           points: editRegistration.player.points?.toString() ?? "",
+          gender: (
+            editRegistration.gender === "M" || editRegistration.gender === "F"
+              ? editRegistration.gender
+              : ""
+          ) as "M" | "F" | "",
           club: editRegistration.player.club ?? "",
           contactEmail: editRegistration.contactEmail ?? "",
           contactPhone: editRegistration.contactPhone ?? "",
           notes: editRegistration.notes ?? "",
-          eventIds: editRegistration.registrationEvents.map((event) => event.eventId),
+          eventIds: editRegistration.registrationEvents.map(
+            (event) => event.eventId,
+          ),
         }
       : undefined;
   const editMode = Boolean(initialData);
@@ -383,7 +416,7 @@ export default async function AdminTournoiAjoutPlayerPage({
       description={
         editMode
           ? "Mettez à jour le profil joueur et les tableaux sélectionnés tant que le tournoi n'a pas démarré."
-          : "Formulaire d&apos;inscription sur place avec création immédiate du dossier joueur dans le tournoi courant."
+          : "Formulaire d'inscription sur place avec création immédiate du dossier joueur dans le tournoi courant."
       }
     >
       {params.success ? (
@@ -399,12 +432,9 @@ export default async function AdminTournoiAjoutPlayerPage({
 
       <section className="rounded-xl border bg-card p-6 shadow-sm space-y-6">
         <div>
-          <h2 className="text-xl font-semibold">
-            {editMode ? "Formulaire de modification joueur" : "Formulaire d&apos;ajout joueur"}
-          </h2>
           <p className="text-sm text-muted-foreground">
-            Tous les champs marqués d&apos;un * sont obligatoires. Le joueur sera
-            inscrit en statut confirmé.
+            Tous les champs marqués d&apos;un * sont obligatoires. Le joueur
+            sera inscrit en statut confirmé.
           </p>
         </div>
 
@@ -412,21 +442,20 @@ export default async function AdminTournoiAjoutPlayerPage({
           <AddPlayerForm
             tournamentId={tournament.id}
             tournamentTables={tournamentTables}
-            action={editMode ? updatePlayerRegistration : createPlayerRegistration}
+            action={
+              editMode ? updatePlayerRegistration : createPlayerRegistration
+            }
             initialData={initialData}
             submitLabel={editMode ? "Mettre à jour le joueur" : undefined}
+            cancelHref={editMode ? "/admin/tournoi/joueurs" : undefined}
           />
         ) : (
           <p className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            Aucun tournoi actif n&apos;a été trouvé. Créez d&apos;abord un tournoi avant
-            d&apos;ajouter un joueur.
+            Aucun tournoi actif n&apos;a été trouvé. Créez d&apos;abord un
+            tournoi avant d&apos;ajouter un joueur.
           </p>
         )}
       </section>
     </TournamentAdminPage>
   );
 }
-
-
-
-

@@ -6,6 +6,11 @@ import {
   getRecordedPaidCents,
   getRegistrationTotalDueCents,
 } from "./payment-utils";
+import {
+  buildPayerLabel,
+  getPaymentGroupKey,
+  getPaymentPayerInfo,
+} from "./payment-grouping";
 
 export type TournamentTable = {
   id: string;
@@ -18,6 +23,7 @@ export type TournamentTable = {
   onsitePayment: string;
   minPoints: number | null;
   maxPoints: number | null;
+  gender: "MIXED" | "M" | "F";
   maxPlayers: number | null;
   registrations: number;
 };
@@ -33,6 +39,7 @@ export type RegistrationByTable = {
 
 export type AdminPlayerRow = {
   id: string;
+  paymentGroupKey: string;
   dossard: number;
   name: string;
   club: string;
@@ -367,6 +374,7 @@ export async function getTournamentTables(tournamentId: string): Promise<Tournam
       code: true,
       minPoints: true,
       maxPoints: true,
+      gender: true,
       startAt: true,
       feeOnlineCents: true,
       feeOnsiteCents: true,
@@ -399,6 +407,7 @@ export async function getTournamentTables(tournamentId: string): Promise<Tournam
     onsitePayment: formatEuro(event.feeOnsiteCents),
     minPoints: event.minPoints,
     maxPoints: event.maxPoints,
+    gender: event.gender,
     maxPlayers: event.maxPlayers,
     registrations: event._count.registrationEvents,
   }));
@@ -470,6 +479,9 @@ export async function getAdminPlayers(tournamentId: string): Promise<AdminPlayer
     ],
     select: {
       id: true,
+      tournamentId: true,
+      contactEmail: true,
+      contactPhone: true,
       playerId: true,
       status: true,
       createdAt: true,
@@ -481,6 +493,13 @@ export async function getAdminPlayers(tournamentId: string): Promise<AdminPlayer
           club: true,
           licence: true,
           points: true,
+          ownerId: true,
+          owner: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
         },
       },
       registrationEvents: {
@@ -538,6 +557,7 @@ export async function getAdminPlayers(tournamentId: string): Promise<AdminPlayer
 
     return {
       id: registration.id,
+      paymentGroupKey: getPaymentGroupKey(registration),
       dossard: registration.playerId,
       name: `${registration.player.prenom} ${registration.player.nom}`.trim(),
       club: registration.player.club ?? "—",
@@ -577,35 +597,12 @@ export async function getAdminPlayers(tournamentId: string): Promise<AdminPlayer
   });
 }
 
-function normalizeGroupValue(value: string | null | undefined) {
-  if (!value) {
-    return "";
-  }
-
-  return value.trim().toLowerCase();
-}
-
-function buildPayerLabel(email: string | null | undefined, phone: string | null | undefined) {
-  if (email && phone) {
-    return `${email} / ${phone}`;
-  }
-
-  if (email) {
-    return email;
-  }
-
-  if (phone) {
-    return phone;
-  }
-
-  return "Contact manquant";
-}
-
 export async function getAdminPaymentGroups(tournamentId: string): Promise<AdminPaymentGroupRow[]> {
   const registrations = await prisma.tournamentRegistration.findMany({
     where: { tournamentId },
     select: {
       id: true,
+      tournamentId: true,
       contactEmail: true,
       contactPhone: true,
       paidAmountCents: true,
@@ -614,6 +611,13 @@ export async function getAdminPaymentGroups(tournamentId: string): Promise<Admin
         select: {
           nom: true,
           prenom: true,
+          ownerId: true,
+          owner: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
         },
       },
       registrationEvents: {
@@ -637,9 +641,8 @@ export async function getAdminPaymentGroups(tournamentId: string): Promise<Admin
   const groups = new Map<string, AdminPaymentGroupRow>();
 
   for (const registration of registrations) {
-    const normalizedEmail = normalizeGroupValue(registration.contactEmail);
-    const normalizedPhone = normalizeGroupValue(registration.contactPhone);
-    const groupKey = normalizedEmail || normalizedPhone || `registration:${registration.id}`;
+    const groupKey = getPaymentGroupKey(registration);
+    const payerInfo = getPaymentPayerInfo(registration);
 
     const totalAmountDueCents = registration.registrationEvents.reduce(
       (acc, eventEntry) => acc + eventEntry.event.feeOnlineCents,
@@ -658,13 +661,12 @@ export async function getAdminPaymentGroups(tournamentId: string): Promise<Admin
     );
 
     if (!groups.has(groupKey)) {
-      const payerName = `${registration.player.prenom} ${registration.player.nom}`.trim() || "Payeur inconnu";
       groups.set(groupKey, {
         groupKey,
-        payerName,
-        payerEmail: registration.contactEmail,
-        payerPhone: registration.contactPhone,
-        payerLabel: buildPayerLabel(registration.contactEmail, registration.contactPhone),
+        payerName: payerInfo.name,
+        payerEmail: payerInfo.email,
+        payerPhone: payerInfo.phone,
+        payerLabel: buildPayerLabel(payerInfo.email, payerInfo.phone),
         registrations: 0,
         players: [],
         totalAmountDueCents: 0,

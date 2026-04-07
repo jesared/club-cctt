@@ -78,7 +78,6 @@ type PageProps = {
 
 export default async function MesInscriptionsPage({ searchParams }: PageProps) {
   const session = await getServerSession(authOptions);
-  const userEmail = session?.user?.email?.trim().toLowerCase();
 
   if (!session?.user?.id) {
     redirect("/api/auth/signin?callbackUrl=/user/inscriptions");
@@ -88,16 +87,7 @@ export default async function MesInscriptionsPage({ searchParams }: PageProps) {
     where: {
       OR: [
         { userId: session.user.id },
-        ...(userEmail
-          ? [
-              {
-                contactEmail: {
-                  equals: userEmail,
-                  mode: "insensitive" as const,
-                },
-              },
-            ]
-          : []),
+        { player: { ownerId: session.user.id } },
       ],
     },
     orderBy: [
@@ -146,17 +136,21 @@ export default async function MesInscriptionsPage({ searchParams }: PageProps) {
   });
 
   const years = Array.from(
-    new Set(registrations.map((registration) => registration.tournament.startDate.getFullYear())),
+    new Set(
+      registrations.map((registration) =>
+        registration.tournament.startDate.getFullYear(),
+      ),
+    ),
   ).sort((a, b) => b - a);
 
-  const resolvedSearchParams = searchParams
-    ? await searchParams
-    : undefined;
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
   const requestedYear = resolvedSearchParams?.year;
   const selectedYear =
-    requestedYear && requestedYear !== "all" && !Number.isNaN(Number(requestedYear))
+    requestedYear &&
+    requestedYear !== "all" &&
+    !Number.isNaN(Number(requestedYear))
       ? Number(requestedYear)
-      : years[0] ?? null;
+      : (years[0] ?? null);
 
   const filteredRegistrations =
     requestedYear === "all" || !selectedYear
@@ -182,7 +176,9 @@ export default async function MesInscriptionsPage({ searchParams }: PageProps) {
       .reduce((paymentSum, payment) => paymentSum + payment.amountCents, 0);
 
     const effectivePaid =
-      registration.payments.length > 0 ? paymentsPaid : registration.paidAmountCents;
+      registration.payments.length > 0
+        ? paymentsPaid
+        : registration.paidAmountCents;
 
     return sum + effectivePaid;
   }, 0);
@@ -206,7 +202,11 @@ export default async function MesInscriptionsPage({ searchParams }: PageProps) {
             </Link>
           </Button>
           <Button asChild>
-            <Link href="https://tournoi.cctt.fr" target="_blank" rel="noreferrer">
+            <Link
+              href="https://tournoi.cctt.fr"
+              target="_blank"
+              rel="noreferrer"
+            >
               Payer en ligne
             </Link>
           </Button>
@@ -350,7 +350,6 @@ export default async function MesInscriptionsPage({ searchParams }: PageProps) {
                         <TableHead>Tableau</TableHead>
                         <TableHead>Horaire</TableHead>
                         <TableHead>Engagement</TableHead>
-                        <TableHead>Statut</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -367,9 +366,6 @@ export default async function MesInscriptionsPage({ searchParams }: PageProps) {
                           </TableCell>
                           <TableCell className="text-muted-foreground">
                             {formatAmount(entry.event.feeOnlineCents)}
-                          </TableCell>
-                          <TableCell className="text-muted-foreground">
-                            {getEventStatusLabel(entry.status)}
                           </TableCell>
                         </TableRow>
                       ))}
@@ -396,5 +392,3 @@ export default async function MesInscriptionsPage({ searchParams }: PageProps) {
     </main>
   );
 }
-
-

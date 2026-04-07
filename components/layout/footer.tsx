@@ -3,9 +3,15 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
+import type { PublicMenuVisibility } from "@/lib/menu-settings";
+import { isPublicMenuVisible } from "@/lib/menu-settings";
 import { isPublicRoute } from "@/lib/routes";
 
-export default function Footer() {
+type FooterProps = {
+  menuVisibility?: PublicMenuVisibility;
+};
+
+export default function Footer({ menuVisibility }: FooterProps) {
   const pathname = usePathname();
 
   if (!isPublicRoute(pathname)) {
@@ -30,9 +36,11 @@ export default function Footer() {
           <Link href="/club/contact" className="hover:text-foreground">
             Contact
           </Link>
-          <Link href="/tournoi" className="hover:text-foreground">
-            Tournoi
-          </Link>
+          {isPublicMenuVisible(menuVisibility, "tournoi") ? (
+            <Link href="/tournoi" className="hover:text-foreground">
+              Tournoi
+            </Link>
+          ) : null}
           <Link href="/club" className="hover:text-foreground">
             Club
           </Link>

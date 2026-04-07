@@ -1,6 +1,9 @@
 ﻿import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Reveal from "@/components/Reveal";
 
+const TOURNAMENT_2026_RESULTS_URL =
+  "https://drive.google.com/drive/u/0/folders/1LBgasYtx4UkDSvjuvBu789wdRG_R6ODE";
+
 export default function TournoiResultatsPage() {
   return (
     <main className="max-w-7xl mx-auto px-4 py-8 space-y-6">
@@ -12,10 +15,21 @@ export default function TournoiResultatsPage() {
       <Reveal>
         <Card className="card-hover">
           <CardHeader>
-            <CardTitle>Les résultats du tournoi seront publiés ici.</CardTitle>
+            <CardTitle>Résultats du tournoi 2026</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground"></p>
+          <CardContent className="space-y-4">
+            <p className="max-w-3xl text-sm text-muted-foreground">
+              Les tableaux, classements et documents de l&apos;édition 2026
+              sont disponibles dans le dossier officiel du tournoi.
+            </p>
+            <a
+              href={TOURNAMENT_2026_RESULTS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex justify-center rounded-md bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition hover:opacity-90 focus-ring"
+            >
+              Voir les résultats 2026
+            </a>
           </CardContent>
         </Card>
       </Reveal>

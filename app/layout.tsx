@@ -3,6 +3,7 @@
 import Providers from "@/components/Providers";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
+import { getPublicMenuVisibility } from "@/lib/menu-settings";
 
 import "./globals.css";
 
@@ -19,22 +20,24 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const menuVisibility = await getPublicMenuVisibility();
+
   return (
     <html lang="fr" suppressHydrationWarning>
       <body className="min-h-screen bg-background text-foreground antialiased ">
         <Providers>
           <div className="flex min-h-screen flex-col">
-            <Header />
+            <Header menuVisibility={menuVisibility} />
 
             {/* PAGE CONTENT */}
             <main className="flex-1">{children}</main>
 
-            <Footer />
+            <Footer menuVisibility={menuVisibility} />
           </div>
         </Providers>
       </body>
