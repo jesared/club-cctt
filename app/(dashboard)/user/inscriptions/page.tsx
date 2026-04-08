@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/table";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-window";
 
 const DATE_TIME_FORMATTER = new Intl.DateTimeFormat("fr-FR", {
   day: "2-digit",
@@ -52,24 +53,6 @@ function getRegistrationStatusLabel(
   }
 }
 
-function getEventStatusLabel(
-  status: "REGISTERED" | "WAITLISTED" | "CHECKED_IN" | "NO_SHOW" | "FORFEIT",
-) {
-  switch (status) {
-    case "WAITLISTED":
-      return "Liste d'attente";
-    case "CHECKED_IN":
-      return "Pointé";
-    case "NO_SHOW":
-      return "Absent";
-    case "FORFEIT":
-      return "Forfait";
-    case "REGISTERED":
-    default:
-      return "Inscrit";
-  }
-}
-
 type SearchParams = { year?: string };
 
 type PageProps = {
@@ -83,57 +66,72 @@ export default async function MesInscriptionsPage({ searchParams }: PageProps) {
     redirect("/api/auth/signin?callbackUrl=/user/inscriptions");
   }
 
-  const registrations = await prisma.tournamentRegistration.findMany({
-    where: {
-      OR: [
-        { userId: session.user.id },
-        { player: { ownerId: session.user.id } },
+  const [currentTournament, registrations] = await Promise.all([
+    prisma.tournament.findFirst({
+      where: { status: "PUBLISHED" },
+      orderBy: [{ startDate: "desc" }],
+      select: {
+        id: true,
+        status: true,
+        registrationOpenAt: true,
+        registrationCloseAt: true,
+        startDate: true,
+        endDate: true,
+      },
+    }),
+    prisma.tournamentRegistration.findMany({
+      where: {
+        OR: [
+          { userId: session.user.id },
+          { player: { ownerId: session.user.id } },
+        ],
+      },
+      orderBy: [
+        { tournament: { startDate: "desc" } },
+        { player: { nom: "asc" } },
+        { player: { prenom: "asc" } },
       ],
-    },
-    orderBy: [
-      { tournament: { startDate: "desc" } },
-      { player: { nom: "asc" } },
-      { player: { prenom: "asc" } },
-    ],
-    select: {
-      id: true,
-      status: true,
-      paidAmountCents: true,
-      player: {
-        select: {
-          nom: true,
-          prenom: true,
-          licence: true,
-          points: true,
-          club: true,
+      select: {
+        id: true,
+        status: true,
+        paidAmountCents: true,
+        player: {
+          select: {
+            nom: true,
+            prenom: true,
+            licence: true,
+            points: true,
+            club: true,
+          },
         },
-      },
-      tournament: {
-        select: { id: true, name: true, startDate: true, endDate: true },
-      },
-      registrationEvents: {
-        orderBy: [{ event: { startAt: "asc" } }],
-        select: {
-          id: true,
-          status: true,
-          event: {
-            select: {
-              code: true,
-              label: true,
-              startAt: true,
-              feeOnlineCents: true,
+        tournament: {
+          select: { id: true, name: true, startDate: true, endDate: true },
+        },
+        registrationEvents: {
+          orderBy: [{ event: { startAt: "asc" } }],
+          select: {
+            id: true,
+            status: true,
+            event: {
+              select: {
+                code: true,
+                label: true,
+                startAt: true,
+                feeOnlineCents: true,
+              },
             },
           },
         },
-      },
-      payments: {
-        select: {
-          amountCents: true,
-          status: true,
+        payments: {
+          select: {
+            amountCents: true,
+            status: true,
+          },
         },
       },
-    },
-  });
+    }),
+  ]);
+  const registrationStatus = getTournamentRegistrationStatus(currentTournament);
 
   const years = Array.from(
     new Set(
@@ -291,15 +289,24 @@ export default async function MesInscriptionsPage({ searchParams }: PageProps) {
           <CardHeader>
             <CardTitle>Aucun joueur inscrit</CardTitle>
             <CardDescription>
-              Vous pouvez ajouter votre premier joueur depuis le formulaire
-              d&apos;inscription.
+              {registrationStatus.canRegister
+                ? "Vous pouvez ajouter votre premier joueur depuis le formulaire d'inscription."
+                : registrationStatus.message}
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <Button asChild>
-              <Link href="/tournoi/inscription">Inscrire un joueur</Link>
-            </Button>
-          </CardContent>
+          {registrationStatus.canRegister ? (
+            <CardContent>
+              <Button asChild>
+                <Link href="/tournoi/inscription">Inscrire un joueur</Link>
+              </Button>
+            </CardContent>
+          ) : (
+            <CardContent>
+              <Button asChild variant="secondary">
+                <Link href="/tournoi">Voir la page tournoi</Link>
+              </Button>
+            </CardContent>
+          )}
         </Card>
       ) : (
         <section className="space-y-6">

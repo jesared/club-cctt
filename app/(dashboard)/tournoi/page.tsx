@@ -1,15 +1,15 @@
-﻿import type { Metadata } from "next";
-import KpiPageViewTracker from "@/components/KpiPageViewTracker";
+﻿import KpiPageViewTracker from "@/components/KpiPageViewTracker";
 import Reveal from "@/components/Reveal";
 import TrackedLink from "@/components/TrackedLink";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { authOptions } from "@/lib/auth";
 import { normalizeContactContent } from "@/lib/contact-content";
 import { prisma } from "@/lib/prisma";
-import { isAdminRole } from "@/lib/roles";
 import { tournamentRegistrationContent } from "@/lib/tournament-registration-content";
 import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-window";
+import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Tournoi national de Pâques – CCTT",
@@ -81,8 +81,7 @@ function formatTimeLabel(startAt: Date) {
 
 function formatDateRange(startDate?: Date | null, endDate?: Date | null) {
   if (!startDate || !endDate) return "Dates a confirmer";
-  const sameDay =
-    startDate.toDateString() === endDate.toDateString();
+  const sameDay = startDate.toDateString() === endDate.toDateString();
   const startLabel = new Intl.DateTimeFormat("fr-FR", {
     day: "2-digit",
     month: "long",
@@ -147,19 +146,13 @@ export default async function TournoiHomePage() {
     prisma.contactContent.findUnique({ where: { id: "default" } }),
   ]);
   const tournamentEvents = tournament?.events ?? [];
-  const contactContent = normalizeContactContent(contactContentRaw ?? undefined);
+  const contactContent = normalizeContactContent(
+    contactContentRaw ?? undefined,
+  );
   const registrationStatus = getTournamentRegistrationStatus(tournament);
-
-  const registrationCount = tournament
-    ? await prisma.tournamentRegistration.count({
-        where: {
-          tournamentId: tournament.id,
-          status: {
-            not: "CANCELLED",
-          },
-        },
-      })
-    : 0;
+  const isTournamentFinished = tournament?.endDate
+    ? new Date() > tournament.endDate
+    : false;
 
   const hasUserRegistration =
     tournament && session?.user?.id
@@ -231,59 +224,54 @@ export default async function TournoiHomePage() {
                     {tournamentRegistrationContent.cta.label}
                   </TrackedLink>
                 ) : (
-                  <span className="inline-flex justify-center rounded-md bg-muted px-7 py-3.5 text-base font-semibold text-muted-foreground">
+                  <span className="inline-flex justify-center rounded-md bg-muted px-5 py-2 text-sm font-semibold text-muted-foreground">
                     {registrationStatus.label}
                   </span>
                 )}
-                <a
+                <Link
                   href="/tournoi/reglement"
-                  className="inline-flex justify-center rounded-md border border-primary px-6 py-3 text-primary transition hover:bg-primary/10 focus-ring"
+                  className="inline-flex justify-center text-sm rounded-md border border-primary px-5 py-2 text-primary transition hover:bg-primary/10 focus-ring"
                 >
                   Consulter le règlement 2026
-                </a>
+                </Link>
                 {hasUserRegistration ? (
-                  <a
+                  <Link
                     href="/user/inscriptions"
-                    className="inline-flex justify-center rounded-md border border-border px-6 py-3 text-foreground transition hover:bg-accent/40 focus-ring"
+                    className="inline-flex text-sm justify-center rounded-md border border-border px-5 py-2 text-foreground transition hover:bg-accent/40 focus-ring"
                   >
                     Voir mes inscriptions
-                  </a>
+                  </Link>
                 ) : null}
               </div>
               {!registrationStatus.canRegister ? (
-                <p className="text-sm text-muted-foreground">
-                  {registrationStatus.message}
-                </p>
+                <div className="space-y-3">
+                  <p className="text-sm text-muted-foreground">
+                    {registrationStatus.message}
+                  </p>
+                  {isTournamentFinished ? (
+                    <div className="flex flex-wrap gap-3">
+                      <Link
+                        href="/tournoi/resultats"
+                        className="inline-flex justify-center rounded-md border border-primary px-5 py-2 text-sm font-medium text-primary transition hover:bg-primary/10 focus-ring"
+                      >
+                        Voir les résultats
+                      </Link>
+                      <Link
+                        href="/tournoi/palmares"
+                        className="inline-flex justify-center rounded-md border border-border px-5 py-2 text-sm font-medium text-foreground transition hover:bg-accent/40 focus-ring"
+                      >
+                        Voir le palmarès
+                      </Link>
+                      <Link
+                        href="/tournoi/affiches"
+                        className="inline-flex justify-center rounded-md border border-border px-5 py-2 text-sm font-medium text-foreground transition hover:bg-accent/40 focus-ring"
+                      >
+                        Voir les affiches
+                      </Link>
+                    </div>
+                  ) : null}
+                </div>
               ) : null}
-
-              <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                <span className="rounded-full bg-primary/10 px-2.5 py-1 text-primary">
-                  Déjà {registrationCount} inscrit(s)
-                </span>
-                {tournament?.status ? (
-                  <span>{tournament.status}</span>
-                ) : null}
-                {registrationStatus ? (
-                  <span
-                    className={
-                      registrationStatus.state === "OPEN"
-                        ? "rounded-full bg-emerald-500/10 px-2.5 py-1 text-emerald-600"
-                        : registrationStatus.state === "UPCOMING"
-                          ? "rounded-full bg-amber-500/10 px-2.5 py-1 text-amber-600"
-                          : registrationStatus.state === "CLOSED"
-                            ? "rounded-full bg-rose-500/10 px-2.5 py-1 text-rose-600"
-                            : "rounded-full bg-muted/60 px-2.5 py-1 text-muted-foreground"
-                    }
-                  >
-                    {registrationStatus.label}
-                  </span>
-                ) : null}
-                {tournament && session && isAdminRole(session.user.role) ? (
-                  <span className="rounded-full border border-dashed px-2.5 py-1 text-[11px]">
-                    ID: {tournament.id} • slug: {tournament.slug}
-                  </span>
-                ) : null}
-              </div>
             </div>
 
             <div className="group w-full overflow-hidden rounded-2xl border border-border bg-card shadow-sm lg:justify-self-end">
@@ -309,14 +297,6 @@ export default async function TournoiHomePage() {
                 ),
               },
               { label: "Lieu", value: tournament?.venue ?? "A confirmer" },
-              {
-                label: "Ouverture",
-                value: formatDateTime(tournament?.registrationOpenAt),
-              },
-              {
-                label: "Cloture",
-                value: formatDateTime(tournament?.registrationCloseAt),
-              },
             ].map((item, index) => (
               <Reveal key={item.label} delay={index * 100}>
                 <div className="rounded-xl border bg-background p-4 card-hover">
@@ -418,8 +398,9 @@ export default async function TournoiHomePage() {
                 </div>
               )}
               <p className="text-sm text-muted-foreground mt-4">
-                Les tarifs en ligne et sur place s&apos;appliquent par tableau. En
-                cas de forfait médical, le remboursement suit les conditions FFTT.
+                Les tarifs en ligne et sur place s&apos;appliquent par tableau.
+                En cas de forfait médical, le remboursement suit les conditions
+                FFTT.
               </p>
             </CardContent>
           </Card>
@@ -428,4 +409,3 @@ export default async function TournoiHomePage() {
     </main>
   );
 }
-
