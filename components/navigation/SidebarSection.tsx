@@ -24,31 +24,32 @@ export default function SidebarSection({
 }: SidebarSectionProps) {
   return (
     <section className="space-y-1">
-      {/* HEADER SECTION */}
       <button
         type="button"
         onClick={onToggle}
         aria-expanded={open}
         className={cn(
-          "flex w-full items-center rounded-md px-2 py-1.5 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground",
-          "hover:bg-muted/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-          collapsed && "justify-center px-1",
+          "flex w-full items-center rounded-lg px-2.5 py-2 text-left transition-colors hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          collapsed && "justify-center px-0",
         )}
       >
-        {!collapsed && <span className="truncate">{section.title}</span>}
+        {!collapsed ? (
+          <span className="truncate text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            {section.title}
+          </span>
+        ) : null}
 
         <ChevronDown
           className={cn(
-            "h-4 w-4 shrink-0 transition-transform duration-200",
+            "h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200",
             !collapsed && "ml-auto",
             open && "rotate-180",
           )}
         />
       </button>
 
-      {/* ITEMS */}
       {open && (
-        <div className="space-y-1">
+        <div className="space-y-0.5">
           {section.items.map((item) => (
             <SidebarItem
               key={item.href}

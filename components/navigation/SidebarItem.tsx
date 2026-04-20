@@ -53,43 +53,27 @@ export default function SidebarItem({
       onClick={onNavigate}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "group relative flex h-10 items-center gap-3 rounded-md px-3 text-sm transition-all duration-200",
+        "group flex h-10 items-center gap-2.5 rounded-lg px-2.5 text-sm transition-colors duration-200",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-
-        // 👉 hover
-        "hover:bg-accent/50",
-
-        // 👉 actif
         active
-          ? "bg-primary text-primary-foreground hover:bg-primary"
-          : "text-muted-foreground hover:text-muted-foreground",
-
-        // 👉 collapsed
-        collapsed && "justify-center px-2",
+          ? "bg-background text-foreground shadow-sm ring-1 ring-border"
+          : "text-muted-foreground hover:bg-background hover:text-foreground",
+        collapsed && "justify-center px-0",
       )}
     >
-      {/* 🔥 BARRE ACTIVE (style Vercel) */}
       <span
         className={cn(
-          "absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r bg-primary transition-all duration-200",
-          active ? "opacity-100" : "opacity-0 group-hover:opacity-50",
-        )}
-      />
-
-      {/* ICON */}
-      <Icon
-        className={cn(
-          "h-4 w-4 shrink-0 transition-colors",
+          "flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-colors",
           active
-            ? "text-primary-foreground "
-            : "text-muted-foreground group-hover:text-muted-foreground",
+            ? "bg-primary text-primary-foreground"
+            : "bg-muted text-muted-foreground",
         )}
-      />
+      >
+        <Icon className="h-3.5 w-3.5" />
+      </span>
 
-      {/* LABEL */}
       {!collapsed && <span className="truncate">{item.label}</span>}
 
-      {/* BADGE */}
       {!collapsed && item.badge && (
         <Badge
           variant="secondary"

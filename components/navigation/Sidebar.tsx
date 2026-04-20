@@ -1,17 +1,18 @@
 "use client";
 
-import { EyeOff, PanelLeftOpen, X } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { EyeOff, LogOut, PanelLeftOpen, User2, X } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
 import { useEffect, useMemo, useState } from "react";
 
-import AuthButton from "@/components/AuthButton";
 import ThemeToggle from "@/components/ThemeToggle";
 import {
   getVisibleSections,
   type MenuSection,
 } from "@/components/navigation/menu-items";
 import { Button } from "@/components/ui/button";
+import { isAdminRole } from "@/lib/roles";
 import { cn } from "@/lib/utils";
 
 import Image from "next/image";
@@ -55,32 +56,46 @@ export default function Sidebar({
 }: SidebarProps) {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const { resolvedTheme } = useTheme();
 
   const sections = useMemo(
     () =>
       getVisibleSections({
         role: session?.user?.role,
         session: session ?? null,
-      }).filter((section) => {
-        const isPublicSection = section.items.every(
-          (item) =>
-            item.href.startsWith("/club") || item.href.startsWith("/tournoi"),
-        );
-        return !isPublicSection;
+      })
+        .filter((section) =>
+          section.items.every(
+            (item) =>
+              !item.href.startsWith("/club") && !item.href.startsWith("/tournoi"),
+          ),
+        )
+        .sort((a, b) => {
+        const order: Record<string, number> = {
+          "Mon espace": 0,
+          Administration: 1,
+          "Admin tournoi": 2,
+        };
+
+        return (order[a.title] ?? 99) - (order[b.title] ?? 99);
       }),
     [session],
   );
 
   const [sidebarState, setSidebarState] = useState<SidebarState>("expanded");
+  const [mounted, setMounted] = useState(false);
 
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const isMobileOpen = mobile ? (open ?? true) : (open ?? false);
 
   const collapsed = sidebarState === "collapsed";
+  const isAdmin = isAdminRole(session?.user?.role);
+  const isDark = mounted ? resolvedTheme === "dark" : false;
+  const logoSrc = isDark ? "/logo_trans.png" : "/logo_trans_dark.png";
 
   const widthClasses = cn(
-    sidebarState === "expanded" && "w-[260px]",
-    sidebarState === "collapsed" && "w-[72px]",
+    sidebarState === "expanded" && "w-[280px]",
+    sidebarState === "collapsed" && "w-[76px]",
     sidebarState === "hidden" && "w-0 overflow-hidden",
   );
 
@@ -92,6 +107,10 @@ export default function Sidebar({
     const baseState = buildSectionState(sections, pathname);
     setOpenSections(baseState);
   }, [pathname, sections]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // persist sidebar
   useEffect(() => {
@@ -153,10 +172,10 @@ export default function Sidebar({
       >
         <aside
           className={cn(
-            "flex flex-col border-r bg-background",
+            "flex flex-col border-r bg-muted/20",
             mobile
               ? [
-                  "fixed inset-y-0 left-0 z-50 w-[260px] h-screen overflow-y-auto transition-transform",
+                  "fixed inset-y-0 left-0 z-50 w-[280px] h-screen overflow-y-auto transition-transform",
                   isMobileOpen ? "translate-x-0" : "-translate-x-full",
                 ]
               : [
@@ -179,35 +198,38 @@ export default function Sidebar({
             href="/"
             onClick={mobile ? onClose : undefined}
             className={cn(
-              "flex justify-center mx-16 m-4 transition-all duration-300",
+              "mx-4 mb-3 mt-2 flex justify-center transition-all duration-300",
               collapsed && "justify-center",
             )}
           >
-            {mobile ? (
-              <span className="text-2xl font-bold tracking-wide">CCTT</span>
-            ) : (
-              <Image
-                src="/logo.jpg"
-                alt="Logo"
-                width={160}
-                height={160}
-                className={cn(
-                  "object-contain rounded-lg",
-                  collapsed ? "h-8 w-8" : "h-auto w-auto",
-                )}
-              />
-            )}
+            <Image
+              src={logoSrc}
+              alt="Logo"
+              width={160}
+              height={80}
+              className={cn(
+                "object-contain",
+                mobile ? "h-12 w-auto" : collapsed ? "h-8 w-8" : "h-12 w-auto",
+              )}
+            />
           </Link>
 
           {/* Header */}
-          <div className="flex h-14 items-center justify-between border-b px-3">
+          <div className="mx-3 mb-1 rounded-2xl border bg-background px-3 py-3 shadow-sm">
+            <div className="flex items-start justify-between gap-3">
             {!collapsed && (
-              <>
-                <ThemeToggle />
-              </>
+              <div>
+                <p className="text-sm font-semibold text-foreground">
+                  Dashboard
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {isAdmin ? "Administration et outils internes" : "Espace membre prive"}
+                </p>
+              </div>
             )}
 
-            <div className="hidden md:flex items-center gap-1">
+            <div className="flex items-center gap-1">
+              {!collapsed ? <ThemeToggle /> : null}
               <Button
                 size="icon"
                 variant="ghost"
@@ -217,9 +239,10 @@ export default function Sidebar({
               </Button>
             </div>
           </div>
+          </div>
 
           {/* Menu */}
-          <div className="flex-1 space-y-5 overflow-y-auto overflow-x-hidden px-2 py-4 overscroll-contain">
+          <div className="flex-1 space-y-3 overflow-y-auto overflow-x-hidden px-3 py-2 overscroll-contain">
             {sections.map((section) => (
               <SidebarSection
                 key={section.title}
@@ -233,19 +256,71 @@ export default function Sidebar({
           </div>
 
           {/* Footer */}
-          <div className="space-y-1 border-t p-3">
-            <div className={cn("flex")}>
+          <div className="space-y-2 border-t p-3">
+            <div className="flex">
               <Link
                 href="/"
                 onClick={mobile ? onClose : undefined}
-                className="w-full cursor-pointer"
+                className="w-full"
               >
-                <Button variant="outline" className="w-full">
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "h-9 w-full justify-start rounded-lg px-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
+                    collapsed && "justify-center px-0",
+                  )}
+                >
                   Retour au site
                 </Button>
               </Link>
             </div>
-            <AuthButton collapsed={collapsed} />
+
+            {session ? (
+              <div
+                className={cn(
+                  "space-y-2",
+                  collapsed && "flex flex-col items-center",
+                )}
+              >
+                <Link
+                  href="/user"
+                  onClick={mobile ? onClose : undefined}
+                  className={cn(
+                    "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
+                    collapsed && "justify-center px-0",
+                  )}
+                >
+                  {session.user?.image ? (
+                    <Image
+                      src={session.user.image}
+                      alt="Avatar"
+                      width={28}
+                      height={28}
+                      className="h-7 w-7 rounded-full object-cover"
+                    />
+                  ) : (
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-muted">
+                      <User2 className="h-3.5 w-3.5" />
+                    </span>
+                  )}
+                  {!collapsed ? (
+                    <span className="truncate">{session.user?.name ?? "Mon espace"}</span>
+                  ) : null}
+                </Link>
+
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "h-9 w-full justify-start rounded-lg px-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
+                    collapsed && "justify-center px-0",
+                  )}
+                  onClick={() => void signOut()}
+                >
+                  <LogOut className="h-4 w-4" />
+                  {!collapsed ? "Deconnexion" : null}
+                </Button>
+              </div>
+            ) : null}
           </div>
         </aside>
       </div>
