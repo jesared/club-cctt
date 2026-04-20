@@ -1,19 +1,14 @@
 "use client";
 
 import {
-  CalendarClock,
   ChevronDown,
-  Home,
   LogIn,
-  Mail,
   Menu,
   Moon,
   ShieldMinus,
   Sun,
-  Ticket,
   User2,
   X,
-  type LucideIcon,
 } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
@@ -54,12 +49,6 @@ function isItemActive(pathname: string, href: string) {
 
 type HeaderProps = {
   menuVisibility?: PublicMenuVisibility;
-};
-
-type QuickLink = {
-  href: string;
-  label: string;
-  icon: LucideIcon;
 };
 
 export default function HeaderCentered({ menuVisibility }: HeaderProps) {
@@ -130,36 +119,6 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
         }),
     [menuVisibility, session],
   );
-
-  const quickLinks = useMemo<QuickLink[]>(() => {
-    const entries: QuickLink[] = [
-      {
-        href: "/",
-        label: "Accueil",
-        icon: Home,
-      },
-      {
-        href: "/club/horaires",
-        label: "Horaires",
-        icon: CalendarClock,
-      },
-      {
-        href: "/club/contact",
-        label: "Contact",
-        icon: Mail,
-      },
-    ];
-
-    if (isPublicMenuVisible(menuVisibility, "tournoi")) {
-        entries.push({
-          href: "/tournoi/inscription",
-          label: "Inscription",
-          icon: Ticket,
-        });
-    }
-
-    return entries;
-  }, [menuVisibility]);
 
   const isAdmin = isAdminRole(session?.user?.role);
   const isDark = mounted ? resolvedTheme === "dark" : false;
@@ -321,92 +280,7 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
           </SheetHeader>
 
           <div className="space-y-4">
-            <section>
-              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                Acces
-              </p>
-              <div className="mt-2 space-y-0.5">
-                {quickLinks.map((item) => {
-                  const active = isItemActive(pathname, item.href);
-
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setMenuOpen(false)}
-                      className={cn(
-                        "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-colors",
-                        active
-                          ? "bg-primary/10 text-foreground"
-                          : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                      )}
-                    >
-                      <span
-                        className={cn(
-                          "flex h-7 w-7 items-center justify-center rounded-full",
-                          active
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted text-muted-foreground",
-                        )}
-                      >
-                        <item.icon className="h-3.5 w-3.5" />
-                      </span>
-                      <span>{item.label}</span>
-                    </Link>
-                  );
-                })}
-                {isAdmin ? (
-                  <Link
-                    href="/admin/tournoi"
-                    onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                  >
-                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-muted">
-                      <ShieldMinus className="h-3.5 w-3.5" />
-                    </span>
-                    <span>Administration tournoi</span>
-                  </Link>
-                ) : null}
-
-                {session ? (
-                  <Link
-                    href="/user"
-                    onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                  >
-                    {session.user.image ? (
-                      <Image
-                        src={session.user.image}
-                        alt="Avatar"
-                        width={32}
-                        height={32}
-                        className="h-7 w-7 rounded-full object-cover"
-                      />
-                    ) : (
-                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-muted">
-                        <User2 className="h-3.5 w-3.5" />
-                      </span>
-                    )}
-                    <span>Mon espace</span>
-                  </Link>
-                ) : (
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-9 w-full justify-start rounded-lg px-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      void signIn();
-                    }}
-                  >
-                    <LogIn className="h-4 w-4" />
-                    Connexion
-                  </Button>
-                )}
-              </div>
-            </section>
-
-            <section className="space-y-2 border-t pt-3.5">
+            <section className="space-y-2">
               {publicSections.map((section) => {
                 const meta =
                   section.title === "Club" || section.title === "Tournoi"
@@ -491,6 +365,57 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
                   </section>
                 );
               })}
+            </section>
+
+            <section className="space-y-2 border-t pt-3.5">
+              {isAdmin ? (
+                <Link
+                  href="/admin/tournoi"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                >
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-muted">
+                    <ShieldMinus className="h-3.5 w-3.5" />
+                  </span>
+                  <span>Administration tournoi</span>
+                </Link>
+              ) : null}
+
+              {session ? (
+                <Link
+                  href="/user"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                >
+                  {session.user.image ? (
+                    <Image
+                      src={session.user.image}
+                      alt="Avatar"
+                      width={32}
+                      height={32}
+                      className="h-7 w-7 rounded-full object-cover"
+                    />
+                  ) : (
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-muted">
+                      <User2 className="h-3.5 w-3.5" />
+                    </span>
+                  )}
+                  <span>Mon espace</span>
+                </Link>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-9 w-full justify-start rounded-lg px-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    void signIn();
+                  }}
+                >
+                  <LogIn className="h-4 w-4" />
+                  Connexion
+                </Button>
+              )}
             </section>
           </div>
         </div>
