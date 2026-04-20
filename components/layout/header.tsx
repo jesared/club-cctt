@@ -1,1 +1,1 @@
-export { default } from "@/components/navigation/header";
+export { default } from "@/components/navigation/header-centered";
