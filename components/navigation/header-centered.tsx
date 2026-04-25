@@ -211,9 +211,9 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
                 <Image
                   src={logoSrc}
                   alt="Logo CCTT"
-                  width={220}
-                  height={110}
-                  className="h-16 w-auto max-w-full object-contain sm:h-20"
+                  width={240}
+                  height={120}
+                  className="h-[4.5rem] w-auto max-w-full object-contain sm:h-[5.25rem]"
                 />
               </span>
             </Link>
