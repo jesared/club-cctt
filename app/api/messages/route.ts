@@ -5,6 +5,9 @@ import { NextResponse } from "next/server";
 export async function GET() {
   const messages = await withPrismaRetry(() =>
     prisma.message.findMany({
+      where: {
+        status: "PUBLISHED",
+      },
       orderBy: [
         { important: "desc" }, // Important d'abord
         { createdAt: "desc" },

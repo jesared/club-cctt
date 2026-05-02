@@ -76,6 +76,7 @@ model Message {
   title     String
   content   String
   important Boolean       @default(false)
+  status    MessageStatus @default(DRAFT)
   authorId  String
   createdAt DateTime      @default(now())
   author    User          @relation(fields: [authorId], references: [id])
@@ -415,4 +416,9 @@ enum KpiEventType {
   CLICK
   START
   SUBMIT
+}
+
+enum MessageStatus {
+  DRAFT
+  PUBLISHED
 }
