@@ -78,7 +78,7 @@ type AdminPlayerRegistrationRecord = {
     owner: {
       name: string | null;
       email: string | null;
-    } | null;
+    };
   };
   registrationEvents: Array<{
     id: string;
