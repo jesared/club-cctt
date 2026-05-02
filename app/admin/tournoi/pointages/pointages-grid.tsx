@@ -54,6 +54,7 @@ type PointagesGridProps = {
   players: PointagesGridPlayer[];
   dayColumns: DayColumn[];
   tournamentTables: TournamentTable[];
+  initialSearchTerm?: string;
 };
 
 function isEligible(points: number | null, table: TournamentTable) {
@@ -109,6 +110,7 @@ export function PointagesGrid({
   players,
   dayColumns,
   tournamentTables,
+  initialSearchTerm = "",
 }: PointagesGridProps) {
   const [playersState, setPlayersState] =
     useState<PointagesGridPlayer[]>(players);
@@ -128,7 +130,7 @@ export function PointagesGrid({
   const [selectedTable, setSelectedTable] = useState<string>("all");
   const [selectedPointageFilter, setSelectedPointageFilter] =
     useState<string>("all");
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>(initialSearchTerm);
   const [editingPlayer, setEditingPlayer] =
     useState<PointagesGridPlayer | null>(null);
   const [deletingPlayer, setDeletingPlayer] =
