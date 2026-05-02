@@ -108,6 +108,37 @@ function toInputValue(value: string | null | undefined) {
   return local.toISOString().slice(0, 16);
 }
 
+function getDatePart(value: string) {
+  return value.slice(0, 10);
+}
+
+function getTimePart(value: string) {
+  return value.slice(11, 16);
+}
+
+function updateDateTimeValue(
+  currentValue: string,
+  part: "date" | "time",
+  nextValue: string,
+) {
+  const datePart = part === "date" ? nextValue : getDatePart(currentValue);
+  const timePart = part === "time" ? nextValue : getTimePart(currentValue);
+
+  if (!datePart && !timePart) {
+    return "";
+  }
+
+  if (!datePart) {
+    return "";
+  }
+
+  return `${datePart}T${timePart}`;
+}
+
+function hasCompleteDateTime(value: string) {
+  return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value);
+}
+
 async function readJson<T = unknown>(response: Response): Promise<T | null> {
   const text = await response.text();
   if (!text) return null;
@@ -158,12 +189,24 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
     }
   }, [openActionId]);
 
-  const editable = useMemo(() => {
-    if (!tournament.startDate) return false;
-    const start = new Date(tournament.startDate);
-    if (Number.isNaN(start.getTime())) return false;
-    return Date.now() < start.getTime();
-  }, [tournament.startDate]);
+  const timelineState = useMemo(() => {
+    const start = tournament.startDate ? new Date(tournament.startDate) : null;
+    const end = tournament.endDate ? new Date(tournament.endDate) : null;
+
+    const startAt = start && !Number.isNaN(start.getTime()) ? start.getTime() : null;
+    const endAt = end && !Number.isNaN(end.getTime()) ? end.getTime() : null;
+    const now = Date.now();
+    const hasStarted = startAt !== null && now >= startAt;
+    const hasEnded = endAt !== null && now >= endAt;
+
+    return {
+      hasStarted,
+      hasEnded,
+      canEditTournamentFields: !hasStarted,
+      canEditTournamentStatus: !hasStarted || hasEnded,
+      canEditEvents: !hasStarted,
+    };
+  }, [tournament.endDate, tournament.startDate]);
 
   useEffect(() => {
     async function load() {
@@ -212,8 +255,8 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
   }, [tournamentId]);
 
   async function saveTournament() {
-    if (!editable) {
-      alert("Le tournoi a deja demarre.");
+    if (!timelineState.canEditTournamentStatus) {
+      alert("Le tournoi est en cours. Le statut pourra etre change une fois termine.");
       return;
     }
     setSavingTournament(true);
@@ -235,8 +278,12 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
   }
 
   async function createEvent() {
-    if (!editable) {
+    if (!timelineState.canEditEvents) {
       alert("Le tournoi a deja demarre.");
+      return;
+    }
+    if (!hasCompleteDateTime(newEvent.startAt)) {
+      alert("Renseignez la date et l'heure du tableau.");
       return;
     }
     setSavingEvent("new");
@@ -264,8 +311,12 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
   }
 
   async function updateEvent(event: EventForm) {
-    if (!editable) {
+    if (!timelineState.canEditEvents) {
       alert("Le tournoi a deja demarre.");
+      return;
+    }
+    if (!hasCompleteDateTime(event.startAt)) {
+      alert("Renseignez la date et l'heure du tableau.");
       return;
     }
     setSavingEvent(event.id);
@@ -291,7 +342,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
 
   async function deleteEvent(id: string) {
     if (!confirm("Supprimer ce tableau ?")) return;
-    if (!editable) {
+    if (!timelineState.canEditEvents) {
       alert("Le tournoi a deja demarre.");
       return;
     }
@@ -327,9 +378,13 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
 
   return (
     <div className="space-y-6">
-      {!editable ? (
+      {timelineState.hasEnded ? (
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
+          Le tournoi est termine. Seul le statut reste modifiable ici pour pouvoir le passer sur CLOSED ou ARCHIVED.
+        </div>
+      ) : timelineState.hasStarted ? (
         <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-          Le tournoi a deja demarre. Les modifications sont bloquees.
+          Le tournoi a deja demarre. Les modifications sont bloquees pendant le tournoi.
         </div>
       ) : null}
 
@@ -356,7 +411,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                 }))
               }
               placeholder="Tournoi national du CCTT"
-              disabled={!editable}
+              disabled={!timelineState.canEditTournamentFields}
             />
           </div>
           <div className="admin-field">
@@ -372,7 +427,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
               }
               placeholder="tournoi-national-2026"
               spellCheck={false}
-              disabled={!editable}
+              disabled={!timelineState.canEditTournamentFields}
             />
           </div>
           <div className="admin-field">
@@ -386,7 +441,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                   status: event.target.value as TournamentForm["status"],
                 }))
               }
-              disabled={!editable}
+              disabled={!timelineState.canEditTournamentStatus}
             >
               <option value="DRAFT">DRAFT</option>
               <option value="PUBLISHED">PUBLISHED</option>
@@ -407,7 +462,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                 }))
               }
               placeholder="Présentation courte du tournoi, ambiance, public visé, informations utiles..."
-              disabled={!editable}
+              disabled={!timelineState.canEditTournamentFields}
             />
           </div>
           <div className="admin-field-wide">
@@ -422,7 +477,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                 }))
               }
               placeholder="Salle omnisports, Reims"
-              disabled={!editable}
+              disabled={!timelineState.canEditTournamentFields}
             />
           </div>
           <div className="admin-field-pair">
@@ -439,7 +494,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                       registrationOpenAt: event.target.value,
                     }))
                   }
-                  disabled={!editable}
+                  disabled={!timelineState.canEditTournamentFields}
                 />
               </div>
             </div>
@@ -456,7 +511,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                       registrationCloseAt: event.target.value,
                     }))
                   }
-                  disabled={!editable}
+                  disabled={!timelineState.canEditTournamentFields}
                 />
               </div>
             </div>
@@ -475,7 +530,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                       startDate: event.target.value,
                     }))
                   }
-                  disabled={!editable}
+                  disabled={!timelineState.canEditTournamentFields}
                 />
               </div>
             </div>
@@ -492,13 +547,17 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                       endDate: event.target.value,
                     }))
                   }
-                  disabled={!editable}
+                  disabled={!timelineState.canEditTournamentFields}
                 />
               </div>
             </div>
           </div>
           <div className="admin-actions">
-            <Button type="button" onClick={saveTournament} disabled={savingTournament || !editable}>
+            <Button
+              type="button"
+              onClick={saveTournament}
+              disabled={savingTournament || !timelineState.canEditTournamentStatus}
+            >
               {savingTournament ? "Enregistrement..." : "Enregistrer"}
             </Button>
           </div>
@@ -520,7 +579,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                   <th className="hidden lg:table-cell py-2 pr-2 font-semibold w-16">Min</th>
                   <th className="hidden lg:table-cell py-2 pr-2 font-semibold w-16">Max pts</th>
                   <th className="hidden lg:table-cell py-2 pr-2 font-semibold w-20">Max joueurs</th>
-                  <th className="py-2 pr-2 font-semibold w-40">Date/heure</th>
+                  <th className="py-2 pr-2 font-semibold w-40">Date / heure</th>
                   <th className="hidden xl:table-cell py-2 pr-2 font-semibold w-20">En ligne</th>
                   <th className="hidden xl:table-cell py-2 pr-2 font-semibold w-20">Sur place</th>
                   <th className="hidden md:table-cell py-2 pr-2 font-semibold w-20">Statut</th>
@@ -540,7 +599,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                         }))
                       }
                       aria-label="Code"
-                      disabled={!editable}
+                      disabled={!timelineState.canEditEvents}
                     />
                   </td>
                   <td className="py-2 pr-2">
@@ -554,7 +613,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                         }))
                       }
                       aria-label="Label"
-                      disabled={!editable}
+                      disabled={!timelineState.canEditEvents}
                     />
                   </td>
                   <td className="hidden md:table-cell py-2 pr-2">
@@ -568,7 +627,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                         }))
                       }
                       aria-label="Genre"
-                      disabled={!editable}
+                      disabled={!timelineState.canEditEvents}
                     >
                       <option value="MIXED">MIXED</option>
                       <option value="M">M</option>
@@ -586,7 +645,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                         }))
                       }
                       aria-label="Min points"
-                      disabled={!editable}
+                      disabled={!timelineState.canEditEvents}
                     />
                   </td>
                   <td className="hidden lg:table-cell py-2 pr-2">
@@ -600,7 +659,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                         }))
                       }
                       aria-label="Max points"
-                      disabled={!editable}
+                      disabled={!timelineState.canEditEvents}
                     />
                   </td>
                   <td className="hidden lg:table-cell py-2 pr-2">
@@ -614,23 +673,46 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                         }))
                       }
                       aria-label="Max joueurs"
-                      disabled={!editable}
+                      disabled={!timelineState.canEditEvents}
                     />
                   </td>
-                  <td className="py-2 pr-2 has-calendar-icon">
-                    <input
-                      type="datetime-local"
-                      className="h-8 w-full rounded border px-2 text-xs pr-8"
-                      value={newEvent.startAt}
-                      onChange={(event) =>
-                        setNewEvent((current) => ({
-                          ...current,
-                          startAt: event.target.value,
-                        }))
-                      }
-                      aria-label="Date / heure"
-                      disabled={!editable}
+                  <td className="py-2 pr-2">
+                    <div className="grid gap-1">
+                      <input
+                        type="date"
+                        className="h-8 w-full rounded border px-2 text-xs"
+                        value={getDatePart(newEvent.startAt)}
+                        onChange={(event) =>
+                          setNewEvent((current) => ({
+                            ...current,
+                            startAt: updateDateTimeValue(
+                              current.startAt,
+                              "date",
+                              event.target.value,
+                            ),
+                          }))
+                        }
+                      aria-label="Date"
+                      disabled={!timelineState.canEditEvents}
                     />
+                      <input
+                        type="time"
+                        className="h-8 w-full rounded border px-2 text-xs"
+                        value={getTimePart(newEvent.startAt)}
+                        onChange={(event) =>
+                          setNewEvent((current) => ({
+                            ...current,
+                            startAt: updateDateTimeValue(
+                              current.startAt,
+                              "time",
+                              event.target.value,
+                            ),
+                          }))
+                        }
+                      aria-label="Heure"
+                      disabled={!timelineState.canEditEvents}
+                    />
+                    </div>
                   </td>
                   <td className="hidden xl:table-cell py-2 pr-2">
                     <input
@@ -643,7 +725,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                         }))
                       }
                       aria-label="Frais en ligne"
-                      disabled={!editable}
+                      disabled={!timelineState.canEditEvents}
                     />
                   </td>
                   <td className="hidden xl:table-cell py-2 pr-2">
@@ -657,7 +739,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                         }))
                       }
                       aria-label="Frais sur place"
-                      disabled={!editable}
+                      disabled={!timelineState.canEditEvents}
                     />
                   </td>
                   <td className="hidden md:table-cell py-2 pr-2">
@@ -671,7 +753,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                         }))
                       }
                       aria-label="Statut"
-                      disabled={!editable}
+                      disabled={!timelineState.canEditEvents}
                     >
                       <option value="OPEN">OPEN</option>
                       <option value="FULL">FULL</option>
@@ -685,7 +767,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                       size="icon"
                       className="rounded-full"
                       onClick={createEvent}
-                      disabled={savingEvent === "new" || !editable}
+                      disabled={savingEvent === "new" || !timelineState.canEditEvents}
                       aria-label={savingEvent === "new" ? "Création en cours" : "Ajouter"}
                       title={savingEvent === "new" ? "Création..." : "Ajouter"}
                     >
@@ -710,7 +792,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                           )
                         }
                         aria-label="Code"
-                        disabled={!editable}
+                        disabled={!timelineState.canEditEvents}
                       />
                     </td>
                     <td className="py-2 pr-2">
@@ -727,7 +809,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                           )
                         }
                         aria-label="Label"
-                        disabled={!editable}
+                        disabled={!timelineState.canEditEvents}
                       />
                     </td>
                     <td className="hidden md:table-cell py-2 pr-2">
@@ -747,7 +829,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                           )
                         }
                         aria-label="Genre"
-                        disabled={!editable}
+                        disabled={!timelineState.canEditEvents}
                       >
                         <option value="MIXED">MIXED</option>
                         <option value="M">M</option>
@@ -768,7 +850,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                           )
                         }
                         aria-label="Min points"
-                        disabled={!editable}
+                        disabled={!timelineState.canEditEvents}
                       />
                     </td>
                     <td className="hidden lg:table-cell py-2 pr-2">
@@ -785,7 +867,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                           )
                         }
                         aria-label="Max points"
-                        disabled={!editable}
+                        disabled={!timelineState.canEditEvents}
                       />
                     </td>
                     <td className="hidden lg:table-cell py-2 pr-2">
@@ -802,26 +884,58 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                           )
                         }
                         aria-label="Max joueurs"
-                        disabled={!editable}
+                        disabled={!timelineState.canEditEvents}
                       />
                     </td>
-                    <td className="py-2 pr-2 has-calendar-icon">
-                      <input
-                        type="datetime-local"
-                        className="h-8 w-full rounded border px-2 text-xs pr-8"
-                        value={event.startAt}
-                        onChange={(e) =>
-                          setEvents((current) =>
-                            current.map((item) =>
-                              item.id === event.id
-                                ? { ...item, startAt: e.target.value }
-                                : item,
-                            ),
-                          )
-                        }
-                        aria-label="Date / heure"
-                        disabled={!editable}
-                      />
+                    <td className="py-2 pr-2">
+                      <div className="grid gap-1">
+                        <input
+                          type="date"
+                          className="h-8 w-full rounded border px-2 text-xs"
+                          value={getDatePart(event.startAt)}
+                          onChange={(e) =>
+                            setEvents((current) =>
+                              current.map((item) =>
+                                item.id === event.id
+                                  ? {
+                                      ...item,
+                                      startAt: updateDateTimeValue(
+                                        item.startAt,
+                                        "date",
+                                        e.target.value,
+                                      ),
+                                    }
+                                  : item,
+                              ),
+                            )
+                          }
+                          aria-label="Date"
+                          disabled={!timelineState.canEditEvents}
+                        />
+                        <input
+                          type="time"
+                          className="h-8 w-full rounded border px-2 text-xs"
+                          value={getTimePart(event.startAt)}
+                          onChange={(e) =>
+                            setEvents((current) =>
+                              current.map((item) =>
+                                item.id === event.id
+                                  ? {
+                                      ...item,
+                                      startAt: updateDateTimeValue(
+                                        item.startAt,
+                                        "time",
+                                        e.target.value,
+                                      ),
+                                    }
+                                  : item,
+                              ),
+                            )
+                          }
+                          aria-label="Heure"
+                          disabled={!timelineState.canEditEvents}
+                        />
+                      </div>
                     </td>
                     <td className="hidden xl:table-cell py-2 pr-2">
                       <input
@@ -837,7 +951,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                           )
                         }
                         aria-label="Frais en ligne"
-                        disabled={!editable}
+                        disabled={!timelineState.canEditEvents}
                       />
                     </td>
                     <td className="hidden xl:table-cell py-2 pr-2">
@@ -854,7 +968,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                           )
                         }
                         aria-label="Frais sur place"
-                        disabled={!editable}
+                        disabled={!timelineState.canEditEvents}
                       />
                     </td>
                     <td className="hidden md:table-cell py-2 pr-2">
@@ -874,7 +988,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                           )
                         }
                         aria-label="Statut"
-                        disabled={!editable}
+                        disabled={!timelineState.canEditEvents}
                       >
                         <option value="OPEN">OPEN</option>
                         <option value="FULL">FULL</option>
@@ -893,7 +1007,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                             )
                           }
                           aria-label="Actions"
-                          disabled={!editable}
+                          disabled={!timelineState.canEditEvents}
                         >
                           <MoreHorizontal className="h-4 w-4" />
                         </button>
@@ -906,7 +1020,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                                 updateEvent(event);
                                 setOpenActionId(null);
                               }}
-                              disabled={savingEvent === event.id || !editable}
+                              disabled={savingEvent === event.id || !timelineState.canEditEvents}
                             >
                               {savingEvent === event.id ? "..." : "Sauver"}
                             </button>
@@ -917,7 +1031,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
                                 deleteEvent(event.id);
                                 setOpenActionId(null);
                               }}
-                              disabled={savingEvent === event.id || !editable}
+                              disabled={savingEvent === event.id || !timelineState.canEditEvents}
                             >
                               Supprimer
                             </button>

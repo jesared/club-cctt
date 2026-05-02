@@ -101,6 +101,38 @@ function toInputValue(value: string | null | undefined) {
   local.setMinutes(local.getMinutes() - local.getTimezoneOffset());
   return local.toISOString().slice(0, 16);
 }
+
+function getDatePart(value: string) {
+  return value.slice(0, 10);
+}
+
+function getTimePart(value: string) {
+  return value.slice(11, 16);
+}
+
+function updateDateTimeValue(
+  currentValue: string,
+  part: "date" | "time",
+  nextValue: string,
+) {
+  const datePart = part === "date" ? nextValue : getDatePart(currentValue);
+  const timePart = part === "time" ? nextValue : getTimePart(currentValue);
+
+  if (!datePart && !timePart) {
+    return "";
+  }
+
+  if (!datePart) {
+    return "";
+  }
+
+  return `${datePart}T${timePart}`;
+}
+
+function hasCompleteDateTime(value: string) {
+  return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value);
+}
+
 async function readJson<T = unknown>(response: Response): Promise<T | null> {
   const text = await response.text();
   if (!text) return null;
@@ -284,6 +316,10 @@ export function TemplatesClient() {
   }
 
   async function createEventTemplate() {
+    if (!hasCompleteDateTime(newEvent.startAt)) {
+      alert("Renseignez la date et l'heure du tableau.");
+      return;
+    }
     setSavingEvent("new");
     try {
       const res = await fetch("/api/admin/tournoi/templates/event", {
@@ -312,6 +348,10 @@ export function TemplatesClient() {
   }
 
   async function updateEventTemplate(event: EventTemplateForm) {
+    if (!hasCompleteDateTime(event.startAt)) {
+      alert("Renseignez la date et l'heure du tableau.");
+      return;
+    }
     setSavingEvent(event.id);
     try {
       const res = await fetch(
@@ -558,7 +598,7 @@ export function TemplatesClient() {
                   <th className="hidden lg:table-cell py-2 pr-2 font-semibold w-16">Min</th>
                   <th className="hidden lg:table-cell py-2 pr-2 font-semibold w-16">Max pts</th>
                   <th className="hidden lg:table-cell py-2 pr-2 font-semibold w-20">Max joueurs</th>
-                  <th className="py-2 pr-2 font-semibold w-40">Date/heure</th>
+                  <th className="py-2 pr-2 font-semibold w-40">Date / heure</th>
                   <th className="hidden xl:table-cell py-2 pr-2 font-semibold w-20">En ligne</th>
                   <th className="hidden xl:table-cell py-2 pr-2 font-semibold w-20">Sur place</th>
                   <th className="hidden md:table-cell py-2 pr-2 font-semibold w-20">Statut</th>
@@ -649,19 +689,41 @@ export function TemplatesClient() {
                       aria-label="Max joueurs"
                     />
                   </td>
-                  <td className="py-2 pr-2 has-calendar-icon">
-                    <input
-                      type="datetime-local"
-                      className="h-8 w-full rounded border px-2 text-xs pr-8"
-                      value={newEvent.startAt}
-                      onChange={(event) =>
-                        setNewEvent((current) => ({
-                          ...current,
-                          startAt: event.target.value,
-                        }))
-                      }
-                      aria-label="Date / heure"
-                    />
+                  <td className="py-2 pr-2">
+                    <div className="grid gap-1">
+                      <input
+                        type="date"
+                        className="h-8 w-full rounded border px-2 text-xs"
+                        value={getDatePart(newEvent.startAt)}
+                        onChange={(event) =>
+                          setNewEvent((current) => ({
+                            ...current,
+                            startAt: updateDateTimeValue(
+                              current.startAt,
+                              "date",
+                              event.target.value,
+                            ),
+                          }))
+                        }
+                        aria-label="Date"
+                      />
+                      <input
+                        type="time"
+                        className="h-8 w-full rounded border px-2 text-xs"
+                        value={getTimePart(newEvent.startAt)}
+                        onChange={(event) =>
+                          setNewEvent((current) => ({
+                            ...current,
+                            startAt: updateDateTimeValue(
+                              current.startAt,
+                              "time",
+                              event.target.value,
+                            ),
+                          }))
+                        }
+                        aria-label="Heure"
+                      />
+                    </div>
                   </td>
                   <td className="hidden xl:table-cell py-2 pr-2">
                     <input
@@ -827,22 +889,53 @@ export function TemplatesClient() {
                         aria-label="Max joueurs"
                       />
                     </td>
-                    <td className="py-2 pr-2 has-calendar-icon">
-                      <input
-                        type="datetime-local"
-                        className="h-8 w-full rounded border px-2 text-xs pr-8"
-                        value={event.startAt}
-                        onChange={(e) =>
-                          setEventTemplates((current) =>
-                            current.map((item) =>
-                              item.id === event.id
-                                ? { ...item, startAt: e.target.value }
-                                : item,
-                            ),
-                          )
-                        }
-                        aria-label="Date / heure"
-                      />
+                    <td className="py-2 pr-2">
+                      <div className="grid gap-1">
+                        <input
+                          type="date"
+                          className="h-8 w-full rounded border px-2 text-xs"
+                          value={getDatePart(event.startAt)}
+                          onChange={(e) =>
+                            setEventTemplates((current) =>
+                              current.map((item) =>
+                                item.id === event.id
+                                  ? {
+                                      ...item,
+                                      startAt: updateDateTimeValue(
+                                        item.startAt,
+                                        "date",
+                                        e.target.value,
+                                      ),
+                                    }
+                                  : item,
+                              ),
+                            )
+                          }
+                          aria-label="Date"
+                        />
+                        <input
+                          type="time"
+                          className="h-8 w-full rounded border px-2 text-xs"
+                          value={getTimePart(event.startAt)}
+                          onChange={(e) =>
+                            setEventTemplates((current) =>
+                              current.map((item) =>
+                                item.id === event.id
+                                  ? {
+                                      ...item,
+                                      startAt: updateDateTimeValue(
+                                        item.startAt,
+                                        "time",
+                                        e.target.value,
+                                      ),
+                                    }
+                                  : item,
+                              ),
+                            )
+                          }
+                          aria-label="Heure"
+                        />
+                      </div>
                     </td>
                     <td className="hidden xl:table-cell py-2 pr-2">
                       <input
