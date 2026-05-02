@@ -17,7 +17,9 @@ export function TournamentAdminPage({
   showHeader = true,
 }: TournamentAdminPageProps) {
   return (
-    <div className={`max-w-6xl mx-auto px-4 ${showHeader ? "py-12 space-y-8" : "py-8"}`}>
+    <div
+      className={`mx-auto max-w-6xl px-4 ${showHeader ? "space-y-6 py-10" : "py-8"}`}
+    >
       {showHeader ? (
         <header className="space-y-3">
           <p className="text-sm font-medium text-foreground">

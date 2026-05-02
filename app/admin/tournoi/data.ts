@@ -126,8 +126,12 @@ export async function getCurrentTournament() {
     select: {
       id: true,
       name: true,
+      venue: true,
+      registrationOpenAt: true,
+      registrationCloseAt: true,
       startDate: true,
       endDate: true,
+      status: true,
     },
   });
 
@@ -140,8 +144,12 @@ export async function getCurrentTournament() {
     select: {
       id: true,
       name: true,
+      venue: true,
+      registrationOpenAt: true,
+      registrationCloseAt: true,
       startDate: true,
       endDate: true,
+      status: true,
     },
   });
 }
