@@ -34,7 +34,6 @@ export async function PUT(req: Request) {
   });
 
   revalidatePath("/");
-  revalidatePath("/home");
 
   return NextResponse.json({ data: saved });
 }

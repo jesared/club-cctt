@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import type { NavigationBadges } from "@/components/navigation/menu-items";
 import SiteBreadcrumb from "../SiteBreadcrumb";
 import Sidebar from "./Sidebar";
 import { isPublicRoute } from "@/lib/routes";
@@ -13,9 +14,14 @@ import { isPublicRoute } from "@/lib/routes";
 type AppShellProps = {
   children: ReactNode;
   title: string;
+  sidebarBadges?: NavigationBadges;
 };
 
-export default function AppShell({ children, title }: AppShellProps) {
+export default function AppShell({
+  children,
+  title,
+  sidebarBadges,
+}: AppShellProps) {
   const pathname = usePathname();
 
   if (isPublicRoute(pathname)) {
@@ -26,7 +32,7 @@ export default function AppShell({ children, title }: AppShellProps) {
     <div className="flex h-screen overflow-hidden bg-muted/20">
       {/* SIDEBAR DESKTOP */}
       <div className="hidden md:block">
-        <Sidebar />
+        <Sidebar badges={sidebarBadges} />
       </div>
 
       {/* CONTENT */}
@@ -43,7 +49,7 @@ export default function AppShell({ children, title }: AppShellProps) {
               </SheetTrigger>
 
               <SheetContent side="left" className="w-[260px] p-0">
-                <Sidebar mobile />
+                <Sidebar mobile badges={sidebarBadges} />
               </SheetContent>
             </Sheet>
           </div>

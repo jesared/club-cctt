@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
 import {
   getVisibleSections,
+  type NavigationBadges,
   type MenuSection,
 } from "@/components/navigation/menu-items";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,7 @@ type SidebarProps = {
   mobile?: boolean;
   open?: boolean;
   onClose?: () => void;
+  badges?: NavigationBadges;
 };
 
 function isItemActive(pathname: string, href: string) {
@@ -53,6 +55,7 @@ export default function Sidebar({
   mobile = false,
   open,
   onClose,
+  badges,
 }: SidebarProps) {
   const pathname = usePathname();
   const { data: session } = useSession();
@@ -63,6 +66,7 @@ export default function Sidebar({
       getVisibleSections({
         role: session?.user?.role,
         session: session ?? null,
+        badges,
       })
         .filter((section) =>
           section.items.every(
@@ -79,7 +83,7 @@ export default function Sidebar({
 
         return (order[a.title] ?? 99) - (order[b.title] ?? 99);
       }),
-    [session],
+    [badges, session],
   );
 
   const [sidebarState, setSidebarState] = useState<SidebarState>("expanded");

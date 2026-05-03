@@ -1,6 +1,8 @@
-﻿import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import Reveal from "@/components/Reveal";
 import Image from "next/image";
+import Link from "next/link";
 
 const DEFAULT_LOGO = "/partenaires/default-logo.svg";
 
@@ -112,20 +114,20 @@ export default async function PartenairesPage() {
             {formattedUpdatedAt ? (
               <Badge variant={meta.stale ? "secondary" : "outline"}>
                 {meta.stale
-                  ? `Dernière mise à jour le ${formattedUpdatedAt}`
-                  : `Mis à jour le ${formattedUpdatedAt}`}
+                  ? `Derniere mise a jour le ${formattedUpdatedAt}`
+                  : `Mis a jour le ${formattedUpdatedAt}`}
               </Badge>
             ) : meta.stale ? (
               <Badge variant="secondary">
-                Dernière mise à jour indisponible
+                Derniere mise a jour indisponible
               </Badge>
             ) : (
-              <Badge variant="outline">Mise à jour en cours</Badge>
+              <Badge variant="outline">Mise a jour en cours</Badge>
             )}
           </div>
           <p className="max-w-3xl ">
-            Le Châlons-en-Champagne Tennis de Table remercie l’ensemble de ses
-            partenaires pour leur soutien et leur engagement auprès du club.
+            Le Chalons-en-Champagne Tennis de Table remercie l&apos;ensemble de ses
+            partenaires pour leur soutien et leur engagement aupres du club.
           </p>
         </header>
       </Reveal>
@@ -150,10 +152,10 @@ export default async function PartenairesPage() {
 
       <section className="space-y-4">
         <Reveal>
-          <h2 className="text-2xl font-semibold ">Partenaires privés</h2>
+          <h2 className="text-2xl font-semibold ">Partenaires prives</h2>
         </Reveal>
         <p className="max-w-3xl  ">
-          Merci à nos partenaires privés pour leur engagement auprès du club.
+          Merci a nos partenaires prives pour leur engagement aupres du club.
         </p>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -169,12 +171,12 @@ export default async function PartenairesPage() {
         <section className="rounded-lg bg-muted/40 card-hover">
           <div className="px-6 py-8 md:px-12">
             <h2 className="mb-4 text-2xl font-semibold ">
-              Merci à nos partenaires
+              Merci a nos partenaires
             </h2>
             <p className="max-w-4xl leading-relaxed  ">
-              Grâce au soutien de nos partenaires institutionnels et privés, le
-              club peut proposer des conditions de pratique de qualité,
-              développer ses actions sportives et accompagner ses licenciés tout
+              Grace au soutien de nos partenaires institutionnels et prives, le
+              club peut proposer des conditions de pratique de qualite,
+              developper ses actions sportives et accompagner ses licencies tout
               au long de la saison.
             </p>
           </div>
@@ -186,10 +188,18 @@ export default async function PartenairesPage() {
           <div className="border-l-4 border-primary pl-6 ">
             <h2 className="mb-2 text-xl font-semibold ">Devenir partenaire</h2>
             <p className="max-w-3xl  ">
-              Vous souhaitez soutenir le Châlons-en-Champagne Tennis de Table et
-              devenir partenaire du club ? Contactez-nous pour échanger sur les
-              possibilités de partenariat.
+              Vous souhaitez soutenir le Chalons-en-Champagne Tennis de Table et
+              devenir partenaire du club ? Echangeons sur les possibilites de
+              partenariat et les formes de soutien les plus adaptees.
             </p>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <Button asChild>
+                <Link href="/club/contact">Proposer un partenariat</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/club">Decouvrir le club</Link>
+              </Button>
+            </div>
           </div>
         </section>
       </Reveal>

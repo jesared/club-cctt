@@ -1,9 +1,9 @@
 "use client";
 
-import { type PointerEvent, useEffect, useRef } from "react";
 import { CalendarDays, MapPin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { type PointerEvent, useEffect, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
 
@@ -147,11 +147,7 @@ export function HeroBanner({
               {tournamentVenue}
             </span>
           </div>
-          <Button
-            asChild
-            variant="secondary"
-            className="rounded-full bg-white text-foreground hover:bg-white/90"
-          >
+          <Button asChild variant="secondary" className="rounded-full ">
             <Link href="/tournoi">Voir la page tournoi</Link>
           </Button>
         </div>

@@ -48,6 +48,11 @@ export default async function TarifsPage() {
 
   const payload: TarifsResponse = await res.json();
   const { data, meta } = payload;
+  const primaryCtaHref =
+    data.inscription.ctaHref === "/contact"
+      ? "/club/contact"
+      : data.inscription.ctaHref;
+  const showContactSecondaryCta = primaryCtaHref !== "/club/contact";
   const formattedUpdatedAt = meta.updatedAt
     ? new Intl.DateTimeFormat("fr-FR", {
         dateStyle: "long",
@@ -234,13 +239,19 @@ export default async function TarifsPage() {
 
               <div className="flex flex-wrap items-center gap-3">
                 <Button asChild size="lg" className="min-w-[200px]">
-                  <Link href={data.inscription.ctaHref}>
+                  <Link href={primaryCtaHref}>
                     {data.inscription.ctaLabel}
                   </Link>
                 </Button>
-                <Button asChild size="lg" variant="outline">
-                  <Link href="/club/contact">Nous contacter</Link>
-                </Button>
+                {showContactSecondaryCta ? (
+                  <Button asChild size="lg" variant="outline">
+                    <Link href="/club/contact">Poser une question</Link>
+                  </Button>
+                ) : (
+                  <Button asChild size="lg" variant="outline">
+                    <Link href="/club/horaires">Voir les horaires</Link>
+                  </Button>
+                )}
               </div>
             </CardContent>
           </Card>

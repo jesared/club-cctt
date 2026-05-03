@@ -35,6 +35,8 @@ export type MenuItem = {
   badge?: string;
 };
 
+export type NavigationBadges = Partial<Record<string, string | undefined>>;
+
 export type MenuSection = {
   title: string;
   roles: Role[];
@@ -46,21 +48,34 @@ export function getVisibleSections({
   role,
   session,
   menuVisibility,
+  badges,
 }: {
   role: unknown;
   session: Session | null;
   menuVisibility?: PublicMenuVisibility;
+  badges?: NavigationBadges;
 }) {
   const normalizedRole = normalizeRole(role);
 
-  return navigation.filter((section) => {
-    if (!section.roles.includes(normalizedRole)) return false;
-    if (section.auth && !session) return false;
-    if (section.title === "Tournoi" && !isPublicMenuVisible(menuVisibility, "tournoi")) {
-      return false;
-    }
-    return true;
-  });
+  return navigation
+    .filter((section) => {
+      if (!section.roles.includes(normalizedRole)) return false;
+      if (section.auth && !session) return false;
+      if (
+        section.title === "Tournoi" &&
+        !isPublicMenuVisible(menuVisibility, "tournoi")
+      ) {
+        return false;
+      }
+      return true;
+    })
+    .map((section) => ({
+      ...section,
+      items: section.items.map((item) => ({
+        ...item,
+        badge: badges?.[item.href] ?? item.badge,
+      })),
+    }));
 }
 export function getVisibleSectionsHeader({
   role,
@@ -181,7 +196,6 @@ export const navigation: MenuSection[] = [
         href: "/admin/messages",
         label: "Messages",
         icon: MessageSquare,
-        badge: "3",
       },
       { href: "/admin/users", label: "Utilisateurs", icon: Users },
       { href: "/admin/home", label: "Home", icon: LayoutGrid },

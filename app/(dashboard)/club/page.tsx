@@ -66,7 +66,7 @@ export default function ClubPage() {
                   href="/club/contact"
                   className="inline-flex w-full sm:w-auto items-center justify-center rounded-md border px-4 py-2 text-sm hover:bg-muted"
                 >
-                  Nous contacter
+                  Parler avec le club
                 </Link>
               </div>
             </div>
@@ -104,25 +104,25 @@ export default function ClubPage() {
               title: "Horaires",
               description: "Tous les créneaux d’entraînement à jour.",
               href: "/club/horaires",
-              label: "Voir les horaires",
+              label: "Consulter le planning",
             },
             {
               title: "Tarifs",
               description: "Formules selon l’âge et le niveau.",
               href: "/club/tarifs",
-              label: "Voir les tarifs",
+              label: "Cotisations annuelles",
             },
             {
               title: "Comité",
               description: "L’équipe qui fait vivre le club.",
               href: "/club/comite-directeur",
-              label: "Découvrir le comité",
+              label: "Rencontrer l'equipe",
             },
             {
               title: "Partenaires",
               description: "Un réseau local engagé.",
               href: "/club/partenaires",
-              label: "Voir les partenaires",
+              label: "Decouvrir nos soutiens",
             },
           ].map((item, index) => (
             <Reveal key={item.title} delay={index * 120}>
@@ -215,13 +215,13 @@ export default function ClubPage() {
                   href="/club/contact"
                   className="inline-flex w-full sm:w-auto items-center justify-center rounded-md border px-4 py-2 text-sm hover:bg-muted"
                 >
-                  Page contact
+                  Poser une question
                 </Link>
                 <Link
                   href="/club/horaires"
                   className="inline-flex w-full sm:w-auto items-center justify-center rounded-md border px-4 py-2 text-sm hover:bg-muted"
                 >
-                  Créneaux disponibles
+                  Consulter le planning
                 </Link>
               </div>
             </CardContent>
@@ -240,7 +240,7 @@ export default function ClubPage() {
                   href="/club/tarifs"
                   className="inline-flex w-full sm:w-auto items-center justify-center rounded-md bg-background px-4 py-2 text-sm text-foreground hover:opacity-90"
                 >
-                  Voir les tarifs
+                  Cotisations annuelles
                 </Link>
                 <Link
                   href="/club/contact"

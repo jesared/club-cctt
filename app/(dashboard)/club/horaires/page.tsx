@@ -1,9 +1,9 @@
-﻿import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Reveal from "@/components/Reveal";
 import Link from "next/link";
 
-/* ---------- TYPES ---------- */
 type BadgeVariant = "jeunes" | "elite" | "loisir" | "libre";
 
 type Seance = {
@@ -29,10 +29,7 @@ type HorairesResponse = {
   };
 };
 
-/* ---------- PAGE ---------- */
-
 export default async function HorairesPage() {
-  // récupération des données depuis ton API (qui lit Google Drive)
   const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/horaires`, {
     cache: "no-store",
   });
@@ -48,7 +45,6 @@ export default async function HorairesPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-12 space-y-12 ">
-      {/* TITRE */}
       <Reveal>
         <header className="space-y-4 rounded-2xl border border-transparent bg-transparent ">
           <p className="hidden text-xs font-mono uppercase tracking-[0.2em] text-accent animate-fade-up-1">
@@ -56,80 +52,74 @@ export default async function HorairesPage() {
           </p>
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-4xl font-bold mb-2 animate-fade-up-2">
-              Horaires d’entraînement
+              Horaires d&apos;entrainement
             </h1>
-          {formattedUpdatedAt ? (
-            <Badge variant={meta.stale ? "secondary" : "outline"}>
-              {meta.stale
-                ? `Dernière mise à jour le ${formattedUpdatedAt}`
-                : `Mis à jour le ${formattedUpdatedAt}`}
-            </Badge>
-          ) : meta.stale ? (
-            <Badge variant="secondary">
-              Dernière mise à jour indisponible
-            </Badge>
-          ) : (
-            <Badge variant="outline">Mise à jour en cours</Badge>
-          )}
+            {formattedUpdatedAt ? (
+              <Badge variant={meta.stale ? "secondary" : "outline"}>
+                {meta.stale
+                  ? `Derniere mise a jour le ${formattedUpdatedAt}`
+                  : `Mis a jour le ${formattedUpdatedAt}`}
+              </Badge>
+            ) : meta.stale ? (
+              <Badge variant="secondary">
+                Derniere mise a jour indisponible
+              </Badge>
+            ) : (
+              <Badge variant="outline">Mise a jour en cours</Badge>
+            )}
           </div>
 
-          <p className=" max-w-3xl ">
-            Retrouvez ci-dessous l’ensemble des créneaux d’entraînement du
-            Châlons-en-Champagne Tennis de Table.
+          <p className="max-w-3xl ">
+            Retrouvez ci-dessous l&apos;ensemble des creneaux d&apos;entrainement du
+            Chalons-en-Champagne Tennis de Table.
           </p>
 
-          <div className="text-sm max-w-3xl space-y-2">
+          <div className="max-w-3xl space-y-2 text-sm">
             <p>
-              Ces horaires sont donnés à titre indicatif. Ils peuvent évoluer
-              pendant les vacances scolaires ou lors des jours fériés.
+              Ces horaires sont donnes a titre indicatif. Ils peuvent evoluer
+              pendant les vacances scolaires ou lors des jours feries.
             </p>
             <p>
-              Pour toute question,{" "}
-              <Link className="text-link hover:underline" href="/contact">
-                contactez-nous
-              </Link>
-              .
+              Les ajustements ponctuels sont communiques par le club selon le
+              calendrier de la saison.
             </p>
           </div>
         </header>
       </Reveal>
 
-      {/* HORAIRES */}
       <section className="space-y-8">
-        {/* LÉGENDE */}
         <Reveal>
           <Card className="bg-transparent border border-transparent card-hover">
             <CardHeader>
-              <CardTitle>Légende</CardTitle>
+              <CardTitle>Legende</CardTitle>
             </CardHeader>
 
             <CardContent className="text-sm ">
               <div className="flex flex-wrap gap-x-6 gap-y-2">
                 <div className="flex items-center gap-2">
                   <Badge variant="jeunes">Jeunes</Badge>
-                  <span>Entraînements encadrés pour les jeunes</span>
+                  <span>Entrainements encadres pour les jeunes</span>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Badge variant="elite">Élite</Badge>
-                  <span>Groupes à niveau confirmé</span>
+                  <Badge variant="elite">Elite</Badge>
+                  <span>Groupes a niveau confirme</span>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <Badge variant="loisir">Loisir</Badge>
-                  <span>Pratique loisir et sport santé</span>
+                  <span>Pratique loisir et sport sante</span>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <Badge variant="libre">Libre</Badge>
-                  <span>Jeu libre réservé aux licenciés</span>
+                  <span>Jeu libre reserve aux licencies</span>
                 </div>
               </div>
             </CardContent>
           </Card>
         </Reveal>
 
-        {/* JOURS DYNAMIQUES */}
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {data.jours.map((jour, index) => (
             <Reveal key={jour.jour} delay={index * 120}>
@@ -141,20 +131,18 @@ export default async function HorairesPage() {
                   <ul className="space-y-4">
                     {jour.seances.map((seance, i) => (
                       <li key={i} className="flex items-center gap-2 flex-wrap">
-                        {/* Badges */}
                         {seance.type.map((t) => (
                           <Badge key={t} variant={t}>
                             {t === "jeunes"
                               ? "Jeunes"
                               : t === "elite"
-                                ? "Élite"
+                                ? "Elite"
                                 : t === "loisir"
                                   ? "Loisir"
                                   : "Libre"}
                           </Badge>
                         ))}
 
-                        {/* Horaire + label */}
                         <span>
                           {seance.horaire}
                           {seance.label && ` (${seance.label})`}
@@ -169,25 +157,26 @@ export default async function HorairesPage() {
         </div>
       </section>
 
-      {/* ESSAI */}
       <Reveal>
         <Card className="border-l-4 border-l-primary card-hover">
           <CardHeader>
             <CardTitle>Essai gratuit</CardTitle>
           </CardHeader>
 
-          <CardContent>
-            <p className=" max-w-3xl mb-3">
-              Les nouveaux joueurs peuvent venir essayer gratuitement avant toute
-              inscription.
+          <CardContent className="space-y-4">
+            <p className="max-w-3xl">
+              Les nouveaux joueurs peuvent venir essayer gratuitement avant
+              toute inscription.
             </p>
 
-            <Link
-              href="/contact"
-              className="text-link font-medium hover:underline "
-            >
-              Demander un essai gratuit
-            </Link>
+            <div className="flex flex-wrap gap-3">
+              <Button asChild>
+                <Link href="/club/contact">Demander un essai gratuit</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/club/tarifs">Voir les cotisations</Link>
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </Reveal>
