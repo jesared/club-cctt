@@ -126,6 +126,9 @@ export default function EventBlockEditor() {
             }
             disabled={loading}
           />
+          <p className="text-xs text-muted-foreground">
+            Laissez vide pour utiliser la couverture par defaut du tournoi.
+          </p>
         </div>
 
         <div className="flex flex-wrap items-start justify-between gap-3 rounded-lg border bg-background/60 p-3">

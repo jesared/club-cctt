@@ -23,6 +23,8 @@ export type HomeContentData = {
   eventDateLabel: string;
 };
 
+export const DEFAULT_EVENT_IMAGE_URL = "/tournoi-default-cover.svg";
+
 export const defaultHomeContent: HomeContentData = {
   heroTitle: "Châlons-en-Champagne Tennis de Table",
   heroSubtitle:
@@ -52,8 +54,7 @@ export const defaultHomeContent: HomeContentData = {
   ctaButtonHref: "/club/contact",
   eventTitle: "Événement du club",
   eventEnabled: true,
-  eventImageUrl:
-    "https://res.cloudinary.com/diimhrbx7/image/upload/v1774953383/couv-facebook_ktnewg.jpg",
+  eventImageUrl: DEFAULT_EVENT_IMAGE_URL,
   eventDateLabel: "Avril 2026 - Châlons-en-Champagne",
 };
 
@@ -88,6 +89,11 @@ const LEGACY_HOME_TEXT_FIXES = new Map<string, string>([
   ["Avril 2026 - Chalons-en-Champagne", defaultHomeContent.eventDateLabel],
 ]);
 
+const LEGACY_EVENT_IMAGE_URLS = new Set<string>([
+  "/couv-facebook.jpg",
+  "https://res.cloudinary.com/diimhrbx7/image/upload/v1774953383/couv-facebook_ktnewg.jpg",
+]);
+
 function coerceString(value: unknown, fallback: string) {
   if (typeof value !== "string" || value.trim() === "") {
     return fallback;
@@ -95,6 +101,23 @@ function coerceString(value: unknown, fallback: string) {
 
   const normalizedValue = value.trim();
   return LEGACY_HOME_TEXT_FIXES.get(normalizedValue) ?? normalizedValue;
+}
+
+export function resolveEventImageUrl(value: string | null | undefined) {
+  if (typeof value !== "string") {
+    return DEFAULT_EVENT_IMAGE_URL;
+  }
+
+  const normalizedValue = value.trim();
+
+  if (
+    normalizedValue.length === 0 ||
+    LEGACY_EVENT_IMAGE_URLS.has(normalizedValue)
+  ) {
+    return DEFAULT_EVENT_IMAGE_URL;
+  }
+
+  return normalizedValue;
 }
 
 export function normalizeHomeContent(
@@ -150,10 +173,7 @@ export function normalizeHomeContent(
       typeof data.eventEnabled === "boolean"
         ? data.eventEnabled
         : defaultHomeContent.eventEnabled,
-    eventImageUrl: coerceString(
-      data.eventImageUrl,
-      defaultHomeContent.eventImageUrl,
-    ),
+    eventImageUrl: resolveEventImageUrl(data.eventImageUrl),
     eventDateLabel: coerceString(
       data.eventDateLabel,
       defaultHomeContent.eventDateLabel,

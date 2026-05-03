@@ -4,14 +4,14 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import type { HomeContentData } from "@/lib/home-content";
-import { defaultHomeContent } from "@/lib/home-content";
+import { defaultHomeContent, resolveEventImageUrl } from "@/lib/home-content";
 
 export default function AdminHomePage() {
   const [form, setForm] = useState<HomeContentData>(defaultHomeContent);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const heroImageUrl = form.heroImageUrl.trim();
-  const eventImageUrl = form.eventImageUrl.trim();
+  const eventImageUrl = resolveEventImageUrl(form.eventImageUrl);
 
   useEffect(() => {
     async function load() {
@@ -281,6 +281,9 @@ export default function AdminHomePage() {
                   value={form.eventImageUrl}
                   onChange={(e) => updateField("eventImageUrl", e.target.value)}
                 />
+                <p className="text-xs text-muted-foreground">
+                  Laissez vide pour utiliser la couverture par defaut du tournoi.
+                </p>
               </div>
 
               <div className="grid gap-2">
@@ -298,8 +301,12 @@ export default function AdminHomePage() {
               <div className="overflow-hidden rounded-xl border bg-muted/20">
                 {eventImageUrl ? (
                   <div
-                    className="h-48 w-full bg-cover bg-center"
-                    style={{ backgroundImage: `url(${eventImageUrl})` }}
+                    className="h-48 w-full bg-center"
+                    style={{
+                      backgroundImage: `url(${eventImageUrl})`,
+                      backgroundRepeat: "no-repeat",
+                      backgroundSize: "contain",
+                    }}
                     aria-label="Aperçu de l'image événement"
                     role="img"
                   />

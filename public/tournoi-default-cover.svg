@@ -1,0 +1,69 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="64" y1="40" x2="1110" y2="610" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F4EADD" />
+      <stop offset="0.5" stop-color="#E7D6E0" />
+      <stop offset="1" stop-color="#D8C2CF" />
+    </linearGradient>
+    <linearGradient id="panel" x1="250" y1="110" x2="915" y2="560" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7B2E6B" />
+      <stop offset="1" stop-color="#A24A88" />
+    </linearGradient>
+    <linearGradient id="glow" x1="580" y1="160" x2="580" y2="520" gradientUnits="userSpaceOnUse">
+      <stop stop-color="white" stop-opacity="0.92" />
+      <stop offset="1" stop-color="white" stop-opacity="0.12" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" rx="32" fill="url(#bg)"/>
+  <circle cx="1038" cy="94" r="124" fill="#FFFFFF" fill-opacity="0.26"/>
+  <circle cx="145" cy="526" r="172" fill="#FFFFFF" fill-opacity="0.2"/>
+  <circle cx="903" cy="546" r="150" fill="#FFFFFF" fill-opacity="0.16"/>
+
+  <g opacity="0.18" stroke="#7B2E6B" stroke-width="2">
+    <path d="M61 147H1138"/>
+    <path d="M61 315H1138"/>
+    <path d="M61 483H1138"/>
+    <path d="M188 54V576"/>
+    <path d="M598 54V576"/>
+    <path d="M1008 54V576"/>
+  </g>
+
+  <rect x="244" y="110" width="664" height="406" rx="34" fill="url(#panel)"/>
+  <rect x="244" y="110" width="664" height="406" rx="34" stroke="white" stroke-opacity="0.24" stroke-width="2"/>
+
+  <g opacity="0.55">
+    <path d="M304 438C358 343 441 258 548 199C655 140 758 120 851 136" stroke="url(#glow)" stroke-width="4" stroke-linecap="round"/>
+    <path d="M334 470C386 374 470 286 574 224C678 162 777 146 852 160" stroke="white" stroke-opacity="0.46" stroke-width="2" stroke-linecap="round"/>
+    <path d="M554 171L675 230L734 353L674 468L550 523L431 463L367 341L431 219L554 171Z" stroke="white" stroke-opacity="0.44" stroke-width="3"/>
+    <path d="M554 215L645 260L689 353L647 439L554 485L463 438L419 353L462 264L554 215Z" stroke="white" stroke-opacity="0.34" stroke-width="2"/>
+  </g>
+
+  <g>
+    <ellipse cx="566" cy="350" rx="89" ry="118" transform="rotate(-12 566 350)" fill="#F6EFE8"/>
+    <ellipse cx="566" cy="350" rx="89" ry="118" transform="rotate(-12 566 350)" stroke="#E3D1DA" stroke-width="3"/>
+    <path d="M602 429L658 500" stroke="#E1B300" stroke-width="16" stroke-linecap="round"/>
+    <circle cx="703" cy="254" r="24" fill="#FFD84D"/>
+    <circle cx="703" cy="254" r="9" fill="#FFF6C2"/>
+  </g>
+
+  <g fill="#F8EFF5">
+    <text x="314" y="192" font-size="66" font-weight="700" font-family="Arial, Helvetica, sans-serif">CCTT</text>
+    <text x="315" y="231" font-size="26" font-weight="600" font-family="Arial, Helvetica, sans-serif" letter-spacing="1.4">CHALONS-EN-CHAMPAGNE</text>
+    <text x="315" y="266" font-size="22" font-weight="500" font-family="Arial, Helvetica, sans-serif">Tennis de Table</text>
+  </g>
+
+  <g fill="white">
+    <text x="315" y="348" font-size="34" font-weight="700" font-family="Arial, Helvetica, sans-serif">Prochain tournoi</text>
+    <text x="315" y="392" font-size="78" font-weight="800" font-family="Arial, Helvetica, sans-serif">VISUEL</text>
+    <text x="315" y="462" font-size="78" font-weight="800" font-family="Arial, Helvetica, sans-serif">A VENIR</text>
+    <text x="315" y="502" font-size="24" font-weight="500" font-family="Arial, Helvetica, sans-serif" opacity="0.9">La couverture definitive sera ajoutee des sa publication.</text>
+  </g>
+
+  <g fill="#6B245B">
+    <text x="70" y="104" font-size="26" font-weight="600" font-family="Arial, Helvetica, sans-serif">Page tournoi</text>
+    <text x="70" y="138" font-size="18" font-weight="500" font-family="Arial, Helvetica, sans-serif">Couverture par defaut du club</text>
+    <text x="70" y="578" font-size="24" font-weight="700" font-family="Arial, Helvetica, sans-serif">cctt.fr</text>
+    <text x="964" y="578" font-size="20" font-weight="600" font-family="Arial, Helvetica, sans-serif">Tournoi national</text>
+  </g>
+</svg>

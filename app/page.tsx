@@ -7,7 +7,7 @@ import Reveal from "@/components/Reveal";
 import { HeroBanner } from "@/components/public/hero-banner";
 import { SectionEyebrow } from "@/components/public/marketing";
 import { Button } from "@/components/ui/button";
-import { normalizeHomeContent } from "@/lib/home-content";
+import { normalizeHomeContent, resolveEventImageUrl } from "@/lib/home-content";
 import { prisma } from "@/lib/prisma";
 import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-window";
 
@@ -83,6 +83,7 @@ export default async function Home() {
   ]);
 
   const content = normalizeHomeContent(homeContentRaw ?? undefined);
+  const eventImageUrl = resolveEventImageUrl(content.eventImageUrl);
   const registrationStatus = getTournamentRegistrationStatus(tournament);
   const tournamentDateLabel =
     formatDateRange(tournament?.startDate, tournament?.endDate) ||
@@ -432,11 +433,11 @@ export default async function Home() {
 
                   <div className="overflow-hidden rounded-[1.6rem] bg-muted/20">
                     <Image
-                      src={content.eventImageUrl}
+                      src={eventImageUrl}
                       alt="Visuel du tournoi CCTT"
                       width={900}
-                      height={1200}
-                      className="h-full min-h-[320px] w-full object-cover object-center"
+                      height={630}
+                      className="h-full min-h-[320px] w-full object-contain object-center"
                     />
                   </div>
                 </div>
