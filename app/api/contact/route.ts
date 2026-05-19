@@ -1,15 +1,21 @@
 import { checkPersistentRateLimit } from "@/lib/rate-limit";
+import {
+  isContactSubject,
+  normalizeContactSubject,
+} from "@/lib/contact-subjects";
 import { NextRequest, NextResponse } from "next/server";
 
 type ContactPayload = {
   name?: string;
   email?: string;
+  subject?: string;
   message?: string;
   website?: string;
 };
 
 const WINDOW_MS = 10 * 60 * 1000;
 const MAX_REQUESTS = 5;
+
 function checkRateLimit(clientIp: string) {
   return checkPersistentRateLimit({
     bucketId: `contact:${clientIp}`,
@@ -22,7 +28,9 @@ function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-async function sendWithResend(payload: Required<Omit<ContactPayload, "website">>) {
+async function sendWithResend(
+  payload: Required<Omit<ContactPayload, "website">>,
+) {
   const resendApiKey = process.env.RESEND_API_KEY;
   const to = process.env.CONTACT_TO_EMAIL;
 
@@ -30,7 +38,8 @@ async function sendWithResend(payload: Required<Omit<ContactPayload, "website">>
     return false;
   }
 
-  const from = process.env.CONTACT_FROM_EMAIL ?? "Contact CCTT <onboarding@resend.dev>";
+  const from =
+    process.env.CONTACT_FROM_EMAIL ?? "Contact CCTT <onboarding@resend.dev>";
 
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -41,16 +50,18 @@ async function sendWithResend(payload: Required<Omit<ContactPayload, "website">>
     body: JSON.stringify({
       from,
       to,
-      subject: `Nouveau message contact: ${payload.name}`,
+      subject: `[${payload.subject}] Nouveau message contact: ${payload.name}`,
       reply_to: payload.email,
-      text: `Nom: ${payload.name}\nEmail: ${payload.email}\n\nMessage:\n${payload.message}`,
+      text: `Sujet: ${payload.subject}\nNom: ${payload.name}\nEmail: ${payload.email}\n\nMessage:\n${payload.message}`,
     }),
   });
 
   return response.ok;
 }
 
-async function sendWithWebhook(payload: Required<Omit<ContactPayload, "website">>) {
+async function sendWithWebhook(
+  payload: Required<Omit<ContactPayload, "website">>,
+) {
   const webhookUrl = process.env.CONTACT_WEBHOOK_URL;
 
   if (!webhookUrl) {
@@ -84,7 +95,7 @@ export async function POST(request: NextRequest) {
         message:
           "Trop de tentatives depuis votre adresse IP. Merci de réessayer dans quelques minutes.",
       },
-      { status: 429 }
+      { status: 429 },
     );
   }
 
@@ -98,56 +109,66 @@ export async function POST(request: NextRequest) {
 
   const name = payload.name?.trim() ?? "";
   const email = payload.email?.trim() ?? "";
+  const subject = normalizeContactSubject(payload.subject);
   const message = payload.message?.trim() ?? "";
   const website = payload.website?.trim() ?? "";
 
   if (website.length > 0) {
     return NextResponse.json(
       { message: "Votre message a bien été envoyé." },
-      { status: 200 }
+      { status: 200 },
     );
   }
 
   if (name.length < 2 || name.length > 100) {
     return NextResponse.json(
       { message: "Le nom doit contenir entre 2 et 100 caractères." },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (!isValidEmail(email) || email.length > 150) {
     return NextResponse.json(
       { message: "Adresse email invalide." },
-      { status: 400 }
+      { status: 400 },
+    );
+  }
+
+  if (!isContactSubject(subject)) {
+    return NextResponse.json(
+      { message: "Sujet invalide." },
+      { status: 400 },
     );
   }
 
   if (message.length < 10 || message.length > 5000) {
     return NextResponse.json(
       { message: "Le message doit contenir entre 10 et 5000 caractères." },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
-  const normalizedPayload = { name, email, message };
+  const normalizedPayload = { name, email, subject, message };
 
   const sent =
     (await sendWithWebhook(normalizedPayload)) ||
     (await sendWithResend(normalizedPayload));
 
   if (!sent) {
-    console.error("Contact form is not configured: missing webhook or email provider");
+    console.error(
+      "Contact form is not configured: missing webhook or email provider",
+    );
     return NextResponse.json(
       {
         message:
           "Le service de contact est temporairement indisponible. Merci d'écrire directement à communication@cctt.fr.",
       },
-      { status: 503 }
+      { status: 503 },
     );
   }
 
   return NextResponse.json(
     { message: "Merci, votre message a bien été envoyé." },
-    { status: 200 }
+    { status: 200 },
   );
 }

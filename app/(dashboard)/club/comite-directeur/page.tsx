@@ -1,36 +1,9 @@
-﻿import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Reveal from "@/components/Reveal";
+import type { ComiteResponse } from "@/lib/comite-content";
 import { Users } from "lucide-react";
 import Image from "next/image";
-
-/* ---------- TYPES ---------- */
-type BureauMember = {
-  poste: string;
-  nom: string;
-  description: string;
-  photo: string;
-};
-
-type SimpleMember = {
-  nom: string;
-};
-
-type ComiteData = {
-  bureau: BureauMember[];
-  membres: SimpleMember[];
-  salaries: SimpleMember[];
-};
-
-type ComiteResponse = {
-  data: ComiteData;
-  meta: {
-    stale: boolean;
-    updatedAt: string | null;
-  };
-};
-
-/* ---------- PAGE ---------- */
 
 export default async function ComiteDirecteurPage() {
   const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/comite`, {
@@ -48,7 +21,6 @@ export default async function ComiteDirecteurPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-12 space-y-14">
-      {/* TITRE */}
       <Reveal>
         <header className="rounded-xl border bg-card/70 p-8 shadow-sm ">
           <p className="mb-3 inline-flex items-center rounded-full border border-primary/60 bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] animate-fade-up-1">
@@ -58,19 +30,19 @@ export default async function ComiteDirecteurPage() {
             <h1 className="text-4xl font-bold mb-4 animate-fade-up-2">
               Comité directeur
             </h1>
-          {formattedUpdatedAt ? (
-            <Badge variant={meta.stale ? "secondary" : "outline"}>
-              {meta.stale
-                ? `Dernière mise à jour le ${formattedUpdatedAt}`
-                : `Mis à jour le ${formattedUpdatedAt}`}
-            </Badge>
-          ) : meta.stale ? (
-            <Badge variant="secondary">
-              Dernière mise à jour indisponible
-            </Badge>
-          ) : (
-            <Badge variant="outline">Mise à jour en cours</Badge>
-          )}
+            {formattedUpdatedAt ? (
+              <Badge variant={meta.stale ? "secondary" : "outline"}>
+                {meta.stale
+                  ? `Dernière mise à jour le ${formattedUpdatedAt}`
+                  : `Mis à jour le ${formattedUpdatedAt}`}
+              </Badge>
+            ) : meta.stale ? (
+              <Badge variant="secondary">
+                Dernière mise à jour indisponible
+              </Badge>
+            ) : (
+              <Badge variant="outline">Mise à jour en cours</Badge>
+            )}
           </div>
           <p className=" max-w-3xl ">
             Le comité directeur du Châlons-en-Champagne Tennis de Table assure
@@ -79,7 +51,6 @@ export default async function ComiteDirecteurPage() {
         </header>
       </Reveal>
 
-      {/* BUREAU */}
       <section>
         <Reveal>
           <h2 className="text-3xl font-semibold mb-8">Bureau</h2>
@@ -104,7 +75,9 @@ export default async function ComiteDirecteurPage() {
 
                 <CardContent className="text-center">
                   <p className="font-medium">{personne.nom}</p>
-                  <p className="text-sm text-gray-500 ">{personne.description}</p>
+                  <p className="text-sm text-gray-500 ">
+                    {personne.description}
+                  </p>
                 </CardContent>
               </Card>
             </Reveal>
@@ -112,7 +85,6 @@ export default async function ComiteDirecteurPage() {
         </div>
       </section>
 
-      {/* MEMBRES */}
       <section>
         <Reveal>
           <h2 className="text-3xl font-semibold mb-8 ">Membres du comité</h2>
@@ -135,7 +107,6 @@ export default async function ComiteDirecteurPage() {
         </div>
       </section>
 
-      {/* SALARIÉS */}
       <section>
         <Reveal>
           <h2 className="text-3xl font-semibold mb-8 ">Salariés diplômés</h2>

@@ -14,7 +14,7 @@ export type ContactContentData = {
 };
 
 export const defaultContactContent: ContactContentData = {
-  title: "Parlons de votre projet ou de votre inscription",
+  title: "Contactez le club",
   subtitle: "Contact",
   intro:
     "Une question sur les horaires, les tarifs ou la pratique ? Écrivez-nous et nous vous répondons rapidement.",
@@ -29,8 +29,41 @@ export const defaultContactContent: ContactContentData = {
   ctaSecondaryHref: "/club/tarifs",
 };
 
+const LEGACY_CONTACT_TEXT_FIXES = new Map<string, string>([
+  [
+    "Parlons de votre projet ou de votre inscription",
+    defaultContactContent.title,
+  ],
+  [
+    "Une question sur les horaires, les tarifs ou la pratique ? Ecrivez-nous et nous vous repondons rapidement.",
+    defaultContactContent.intro,
+  ],
+  [
+    "RÃ©ponse habituelle sous 24h Ã  72h.",
+    defaultContactContent.responseDelay,
+  ],
+  [
+    "Réponse habituelle sous 24h à 72h.",
+    defaultContactContent.responseDelay,
+  ],
+  [
+    "ChÃ¢lons-en-Champagne Tennis de Table",
+    defaultContactContent.addressLine,
+  ],
+  ["ChÃ¢lons-en-Champagne", defaultContactContent.addressCity],
+  [
+    "Une question sur les horaires, les tarifs ou la pratique ? Ã‰crivez-nous et nous vous rÃ©pondons rapidement.",
+    defaultContactContent.intro,
+  ],
+]);
+
 function coerceString(value: unknown, fallback: string) {
-  return typeof value === "string" && value.trim() !== "" ? value.trim() : fallback;
+  if (typeof value !== "string" || value.trim() === "") {
+    return fallback;
+  }
+
+  const normalizedValue = value.trim();
+  return LEGACY_CONTACT_TEXT_FIXES.get(normalizedValue) ?? normalizedValue;
 }
 
 export function normalizeContactContent(

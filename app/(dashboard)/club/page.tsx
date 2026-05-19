@@ -1,14 +1,15 @@
-﻿import type { Metadata } from "next";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Reveal from "@/components/Reveal";
+import type { Metadata } from "next";
 import Link from "next/link";
 
+import Reveal from "@/components/Reveal";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 export const metadata: Metadata = {
-  title: "Le club CCTT – Horaires, tarifs et contact",
+  title: "Le club CCTT - Horaires, tarifs et contact",
   description:
     "Découvrez le club CCTT à Châlons-en-Champagne : horaires, tarifs, comité, partenaires et contact.",
   openGraph: {
-    title: "Le club CCTT – Horaires, tarifs et contact",
+    title: "Le club CCTT - Horaires, tarifs et contact",
     description:
       "Infos club CCTT : horaires, tarifs, comité directeur, partenaires et contact.",
     url: "/club",
@@ -24,109 +25,210 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary",
-    title: "Le club CCTT – Horaires, tarifs et contact",
+    title: "Le club CCTT - Horaires, tarifs et contact",
     description:
       "Infos club CCTT : horaires, tarifs, comité directeur, partenaires et contact.",
     images: ["/logo.jpg"],
   },
 };
 
+const quickStartCards = [
+  {
+    title: "Trouver un créneau",
+    description:
+      "Repérez rapidement les séances jeunes, loisir, entraînement soutenu ou jeu libre.",
+    href: "/club/horaires",
+    label: "Voir les horaires",
+  },
+  {
+    title: "Comprendre les tarifs",
+    description:
+      "Comparez les formules, ce qui est inclus et les modalités de paiement avant de vous lancer.",
+    href: "/club/tarifs",
+    label: "Voir les tarifs",
+  },
+  {
+    title: "Faire un essai",
+    description:
+      "Le plus simple est de nous contacter pour être orienté vers le bon créneau et le bon interlocuteur.",
+    href: "/club/contact",
+    label: "Contacter le club",
+  },
+];
+
+const clubPillars = [
+  {
+    label: "Accueil",
+    value: "Le club reste lisible pour débuter, reprendre ou venir essayer sans stress.",
+  },
+  {
+    label: "Progression",
+    value: "Jeunes, loisir et compétition trouvent chacun un cadre adapté.",
+  },
+  {
+    label: "Vie de club",
+    value: "Une pratique régulière, renforcée par une vie associative active.",
+  },
+];
+
+const values = [
+  "Accessibilité pour tous les âges et niveaux",
+  "Convivialité et esprit d'équipe",
+  "Encadrement structuré et pédagogique",
+  "Respect et fair-play au quotidien",
+];
+
+const clubSections = [
+  {
+    title: "Comité directeur",
+    description: "Rencontrer l'équipe qui fait vivre le club au quotidien.",
+    href: "/club/comite-directeur",
+    label: "Voir le comité",
+  },
+  {
+    title: "Partenaires",
+    description: "Découvrir les soutiens qui accompagnent le projet du club.",
+    href: "/club/partenaires",
+    label: "Voir les partenaires",
+  },
+];
+
 export default function ClubPage() {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8 sm:space-y-10">
+    <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:space-y-10 sm:px-6 sm:py-12">
       <Reveal>
-        <header className="rounded-3xl border bg-gradient-to-br from-background via-background to-muted/60 p-6 sm:p-8 shadow-sm">
+        <header className="rounded-3xl border bg-background p-6 shadow-sm sm:p-8">
           <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
-            <div className="space-y-4 sm:space-y-5">
-              <p className="inline-flex items-center rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-primary animate-fade-up-1">
+            <div className="space-y-5">
+              <p className="inline-flex items-center rounded-full border border-[#2F6BFF]/40 bg-[#2F6BFF]/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-[#2F6BFF] animate-fade-up-1">
                 Club CCTT
               </p>
-              <h1 className="text-3xl font-bold tracking-tight sm:text-5xl animate-fade-up-2">
-                Châlons-en-Champagne Tennis de Table
-              </h1>
-              <p className="text-muted-foreground max-w-2xl text-base sm:text-lg animate-fade-up-2">
-                Club de tennis de table à Châlons-en-Champagne : entraînements
-                pour tous niveaux, loisirs et compétition, encadrés par une
-                équipe passionnée.
-              </p>
-              <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 animate-fade-up-2">
+              <div className="space-y-4">
+                <h1 className="text-3xl font-bold tracking-tight sm:text-5xl animate-fade-up-2">
+                  Châlons-en-Champagne Tennis de Table
+                </h1>
+                <p className="max-w-2xl text-base text-muted-foreground sm:text-lg animate-fade-up-2">
+                  Retrouvez ici l&apos;essentiel pour rejoindre le club, comprendre
+                  son fonctionnement et trouver rapidement la bonne page selon
+                  votre besoin.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
                 <Link
                   href="/club/horaires"
-                  className="inline-flex w-full sm:w-auto items-center justify-center rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:opacity-90"
+                  className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:opacity-90"
                 >
                   Voir les horaires
                 </Link>
                 <Link
                   href="/club/tarifs"
-                  className="inline-flex w-full sm:w-auto items-center justify-center rounded-md border px-4 py-2 text-sm hover:bg-muted"
+                  className="inline-flex items-center justify-center rounded-md border px-4 py-2 text-sm hover:bg-muted"
                 >
-                  Consulter les tarifs
+                  Voir les tarifs
                 </Link>
                 <Link
                   href="/club/contact"
-                  className="inline-flex w-full sm:w-auto items-center justify-center rounded-md border px-4 py-2 text-sm hover:bg-muted"
+                  className="inline-flex items-center justify-center rounded-md border px-4 py-2 text-sm hover:bg-muted"
                 >
-                  Parler avec le club
+                  Contacter le club
                 </Link>
               </div>
             </div>
 
-            <div className="space-y-4">
-              <Card className="border-primary/30 bg-background/80 card-hover">
-                <CardHeader>
-                  <CardTitle>En bref</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3 text-sm text-muted-foreground">
-                  <p>Loisir et compétition, enfants et adultes.</p>
-                  <p>Encadrement sérieux, progression garantie.</p>
-                  <p>Club affilié à la FFTT.</p>
-                </CardContent>
-              </Card>
-              <div className="group overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-                <div
-                  className="h-full min-h-[200px] bg-cover bg-center transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-                  style={{
-                    backgroundImage:
-                      "url(https://res.cloudinary.com/diimhrbx7/image/upload/v1774953003/481667842_663772202843768_4729083360154549573_n_ff3jkc.jpg)",
-                  }}
-                  aria-hidden="true"
-                />
-              </div>
+            <div className="group overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+              <div
+                className="h-full min-h-[220px] bg-cover bg-center transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                style={{
+                  backgroundImage:
+                    "url(https://res.cloudinary.com/diimhrbx7/image/upload/v1774953003/481667842_663772202843768_4729083360154549573_n_ff3jkc.jpg)",
+                }}
+                aria-hidden="true"
+              />
             </div>
           </div>
         </header>
       </Reveal>
 
-      <Reveal>
-        <section className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {[
-            {
-              title: "Horaires",
-              description: "Tous les créneaux d’entraînement à jour.",
-              href: "/club/horaires",
-              label: "Consulter le planning",
-            },
-            {
-              title: "Tarifs",
-              description: "Formules selon l’âge et le niveau.",
-              href: "/club/tarifs",
-              label: "Cotisations annuelles",
-            },
-            {
-              title: "Comité",
-              description: "L’équipe qui fait vivre le club.",
-              href: "/club/comite-directeur",
-              label: "Rencontrer l'equipe",
-            },
-            {
-              title: "Partenaires",
-              description: "Un réseau local engagé.",
-              href: "/club/partenaires",
-              label: "Decouvrir nos soutiens",
-            },
-          ].map((item, index) => (
+      <section className="space-y-5">
+        <Reveal>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-semibold sm:text-3xl">
+              Accès rapides
+            </h2>
+            <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+              Le plus simple est de partir de votre besoin immédiat : trouver un
+              créneau, comprendre les tarifs ou prendre contact pour un essai.
+            </p>
+          </div>
+        </Reveal>
+
+        <div className="grid gap-4 lg:grid-cols-3">
+          {quickStartCards.map((item, index) => (
             <Reveal key={item.title} delay={index * 120}>
-              <Card className="bg-muted/30 card-hover">
+              <Card className="bg-muted/30 card-hover hover:border-[#2F6BFF]/80">
+                <CardHeader>
+                  <CardTitle>{item.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {item.description}
+                  </p>
+                  <Link href={item.href} className="text-sm font-medium text-[#2F6BFF]">
+                    {item.label}
+                  </Link>
+                </CardContent>
+              </Card>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+        <Reveal>
+          <Card className="bg-muted/40 card-hover hover:border-[#2F6BFF]/80">
+            <CardHeader>
+              <CardTitle>Le club en bref</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <p className="max-w-4xl leading-relaxed text-muted-foreground">
+                Le CCTT est un club de tennis de table à Châlons-en-Champagne,
+                affilié à la Fédération Française de Tennis de Table. Nous
+                proposons des séances pour débutants, loisirs et compétiteurs,
+                avec un accompagnement adapté à chaque profil.
+              </p>
+
+              <div className="grid gap-5 border-t border-border/45 pt-5 sm:grid-cols-3">
+                {clubPillars.map((item) => (
+                  <div key={item.label} className="space-y-2">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                      {item.label}
+                    </p>
+                    <p className="text-sm font-semibold leading-snug text-foreground">
+                      {item.value}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap gap-2 border-t border-border/45 pt-5">
+                {values.map((item) => (
+                  <span
+                    key={item}
+                    className="rounded-full border border-border/70 bg-background/80 px-3 py-2 text-sm text-muted-foreground"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </Reveal>
+
+        <div className="grid gap-4">
+          {clubSections.map((item, index) => (
+            <Reveal key={item.title} delay={index * 120}>
+              <Card className="card-hover hover:border-[#2F6BFF]/80">
                 <CardHeader>
                   <CardTitle>{item.title}</CardTitle>
                 </CardHeader>
@@ -134,66 +236,9 @@ export default function ClubPage() {
                   <p className="text-sm text-muted-foreground">
                     {item.description}
                   </p>
-                  <Link href={item.href} className="text-sm text-primary">
+                  <Link href={item.href} className="text-sm font-medium text-[#2F6BFF]">
                     {item.label}
                   </Link>
-                </CardContent>
-              </Card>
-            </Reveal>
-          ))}
-        </section>
-      </Reveal>
-
-      <Reveal>
-        <section>
-          <Card className="bg-muted/40 card-hover">
-            <CardHeader>
-              <CardTitle>Présentation</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground leading-relaxed max-w-4xl">
-                Le CCTT est un club de tennis de table à Châlons-en-Champagne,
-                affilié à la Fédération Française de Tennis de Table. Nous
-                proposons des séances pour débutants, loisirs et compétiteurs,
-                avec un accompagnement adapté à chaque profil.
-              </p>
-            </CardContent>
-          </Card>
-        </section>
-      </Reveal>
-
-      <section>
-        <Reveal>
-          <h2 className="text-2xl font-semibold mb-6">Nos valeurs</h2>
-        </Reveal>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          {[
-            {
-              title: "Accessibilité",
-              description: "Accueil de tous les âges et niveaux.",
-            },
-            {
-              title: "Convivialité",
-              description: "Ambiance chaleureuse et esprit d’équipe.",
-            },
-            {
-              title: "Encadrement",
-              description: "Séances structurées et pédagogiques.",
-            },
-            {
-              title: "Respect & fair-play",
-              description: "Valeurs sportives au quotidien.",
-            },
-          ].map((item, index) => (
-            <Reveal key={item.title} delay={index * 120}>
-              <Card className="card-hover">
-                <CardHeader>
-                  <CardTitle>{item.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    {item.description}
-                  </p>
                 </CardContent>
               </Card>
             </Reveal>
@@ -202,51 +247,35 @@ export default function ClubPage() {
       </section>
 
       <Reveal>
-        <section className="grid gap-4 sm:gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+        <section>
           <Card className="border-primary/20 card-hover">
             <CardHeader>
-              <CardTitle>Contact & accès</CardTitle>
+              <CardTitle>Besoin d&apos;être orienté ?</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm text-muted-foreground">
-              <p>Besoin d’un essai gratuit ou d’une info rapide ?</p>
-              <p>Écrivez-nous, on vous répond vite.</p>
-              <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3">
+            <CardContent className="space-y-4 text-sm text-muted-foreground">
+              <p>
+                Vous hésitez entre plusieurs créneaux ou plusieurs formules ? Le
+                plus simple reste de nous contacter pour un conseil rapide ou un
+                premier essai.
+              </p>
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <Link
                   href="/club/contact"
-                  className="inline-flex w-full sm:w-auto items-center justify-center rounded-md border px-4 py-2 text-sm hover:bg-muted"
+                  className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:opacity-90 sm:w-auto"
                 >
-                  Poser une question
+                  Contacter le club
                 </Link>
                 <Link
                   href="/club/horaires"
-                  className="inline-flex w-full sm:w-auto items-center justify-center rounded-md border px-4 py-2 text-sm hover:bg-muted"
+                  className="inline-flex w-full items-center justify-center rounded-md border px-4 py-2 text-sm hover:bg-muted sm:w-auto"
                 >
-                  Consulter le planning
+                  Voir les horaires
                 </Link>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-primary text-primary-foreground card-hover">
-            <CardHeader>
-              <CardTitle>Rejoindre le club</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-primary-foreground/90">
-                Lancez votre inscription ou venez faire un essai.
-              </p>
-              <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3">
                 <Link
                   href="/club/tarifs"
-                  className="inline-flex w-full sm:w-auto items-center justify-center rounded-md bg-background px-4 py-2 text-sm text-foreground hover:opacity-90"
+                  className="inline-flex w-full items-center justify-center rounded-md border px-4 py-2 text-sm hover:bg-muted sm:w-auto"
                 >
-                  Cotisations annuelles
-                </Link>
-                <Link
-                  href="/club/contact"
-                  className="inline-flex w-full sm:w-auto items-center justify-center rounded-md border border-primary-foreground/40 px-4 py-2 text-sm hover:bg-primary-foreground/10"
-                >
-                  Demander un essai
+                  Voir les tarifs
                 </Link>
               </div>
             </CardContent>

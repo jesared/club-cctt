@@ -1,30 +1,13 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Reveal from "@/components/Reveal";
-import Image from "next/image";
+import {
+  DEFAULT_PARTENAIRE_LOGO,
+  resolvePartenaireLogoSrc,
+  type Partenaire,
+  type PartenairesResponse,
+} from "@/lib/partenaires-content";
 import Link from "next/link";
-
-const DEFAULT_LOGO = "/partenaires/default-logo.svg";
-
-type Partenaire = {
-  nom: string;
-  description: string;
-  logo: string;
-  url?: string;
-};
-
-type PartenairesData = {
-  institutionnels: Partenaire[];
-  prives: Partenaire[];
-};
-
-type PartenairesResponse = {
-  data: PartenairesData;
-  meta: {
-    stale: boolean;
-    updatedAt: string | null;
-  };
-};
 
 async function getPartenaires() {
   const res = await fetch(
@@ -43,23 +26,16 @@ function CardPartenaire({ partenaire }: { partenaire: Partenaire }) {
   const content = (
     <div className="flex items-center gap-4">
       <div className="flex h-20 w-32 items-center justify-center">
-        <Image
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           className="max-h-16 max-w-28 object-contain"
-          src={
-            partenaire.logo && partenaire.logo.trim() !== ""
-              ? `/api/drive-image/${partenaire.logo}`
-              : DEFAULT_LOGO
-          }
+          src={resolvePartenaireLogoSrc(partenaire.logo) || DEFAULT_PARTENAIRE_LOGO}
           alt={`Logo ${partenaire.nom}`}
-          width={112}
-          height={64}
         />
       </div>
 
       <div>
-        <p className="text-lg font-semibold text-foreground ">
-          {partenaire.nom}
-        </p>
+        <p className="text-lg font-semibold text-foreground ">{partenaire.nom}</p>
         <p className="text-sm text-muted-foreground ">
           {partenaire.description}
         </p>
@@ -114,27 +90,29 @@ export default async function PartenairesPage() {
             {formattedUpdatedAt ? (
               <Badge variant={meta.stale ? "secondary" : "outline"}>
                 {meta.stale
-                  ? `Derniere mise a jour le ${formattedUpdatedAt}`
-                  : `Mis a jour le ${formattedUpdatedAt}`}
+                  ? `Dernière mise à jour le ${formattedUpdatedAt}`
+                  : `Mis à jour le ${formattedUpdatedAt}`}
               </Badge>
             ) : meta.stale ? (
               <Badge variant="secondary">
-                Derniere mise a jour indisponible
+                Dernière mise à jour indisponible
               </Badge>
             ) : (
-              <Badge variant="outline">Mise a jour en cours</Badge>
+              <Badge variant="outline">Mise à jour en cours</Badge>
             )}
           </div>
           <p className="max-w-3xl ">
-            Le Chalons-en-Champagne Tennis de Table remercie l&apos;ensemble de ses
-            partenaires pour leur soutien et leur engagement aupres du club.
+            Le Châlons-en-Champagne Tennis de Table remercie l&apos;ensemble de ses
+            partenaires pour leur soutien et leur engagement auprès du club.
           </p>
         </header>
       </Reveal>
 
       <section className="space-y-4">
         <Reveal>
-          <h2 className="text-2xl font-semibold ">Partenaires institutionnels</h2>
+          <h2 className="text-2xl font-semibold ">
+            Partenaires institutionnels
+          </h2>
         </Reveal>
         <p className="max-w-3xl ">
           Nos partenaires institutionnels accompagnent le club dans ses projets
@@ -152,10 +130,10 @@ export default async function PartenairesPage() {
 
       <section className="space-y-4">
         <Reveal>
-          <h2 className="text-2xl font-semibold ">Partenaires prives</h2>
+          <h2 className="text-2xl font-semibold ">Partenaires privés</h2>
         </Reveal>
         <p className="max-w-3xl  ">
-          Merci a nos partenaires prives pour leur engagement aupres du club.
+          Merci à nos partenaires privés pour leur engagement auprès du club.
         </p>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -171,12 +149,12 @@ export default async function PartenairesPage() {
         <section className="rounded-lg bg-muted/40 card-hover">
           <div className="px-6 py-8 md:px-12">
             <h2 className="mb-4 text-2xl font-semibold ">
-              Merci a nos partenaires
+              Merci à nos partenaires
             </h2>
             <p className="max-w-4xl leading-relaxed  ">
-              Grace au soutien de nos partenaires institutionnels et prives, le
-              club peut proposer des conditions de pratique de qualite,
-              developper ses actions sportives et accompagner ses licencies tout
+              Grâce au soutien de nos partenaires institutionnels et privés, le
+              club peut proposer des conditions de pratique de qualité,
+              développer ses actions sportives et accompagner ses licenciés tout
               au long de la saison.
             </p>
           </div>
@@ -188,16 +166,16 @@ export default async function PartenairesPage() {
           <div className="border-l-4 border-primary pl-6 ">
             <h2 className="mb-2 text-xl font-semibold ">Devenir partenaire</h2>
             <p className="max-w-3xl  ">
-              Vous souhaitez soutenir le Chalons-en-Champagne Tennis de Table et
-              devenir partenaire du club ? Echangeons sur les possibilites de
-              partenariat et les formes de soutien les plus adaptees.
+              Vous souhaitez soutenir le Châlons-en-Champagne Tennis de Table et
+              devenir partenaire du club ? Échangeons sur les possibilités de
+              partenariat et les formes de soutien les plus adaptées.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
               <Button asChild>
                 <Link href="/club/contact">Proposer un partenariat</Link>
               </Button>
               <Button asChild variant="outline">
-                <Link href="/club">Decouvrir le club</Link>
+                <Link href="/club">Découvrir le club</Link>
               </Button>
             </div>
           </div>

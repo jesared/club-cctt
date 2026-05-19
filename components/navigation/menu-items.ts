@@ -22,6 +22,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { Session } from "next-auth";
+
 import type { PublicMenuVisibility } from "@/lib/menu-settings";
 import { isPublicMenuVisible } from "@/lib/menu-settings";
 import { normalizeRole } from "@/lib/roles";
@@ -77,6 +78,7 @@ export function getVisibleSections({
       })),
     }));
 }
+
 export function getVisibleSectionsHeader({
   role,
   session,
@@ -91,12 +93,16 @@ export function getVisibleSectionsHeader({
   return navigationHeader.filter((section) => {
     if (!section.roles.includes(normalizedRole)) return false;
     if (section.auth && !session) return false;
-    if (section.title === "Tournoi" && !isPublicMenuVisible(menuVisibility, "tournoi")) {
+    if (
+      section.title === "Tournoi" &&
+      !isPublicMenuVisible(menuVisibility, "tournoi")
+    ) {
       return false;
     }
     return true;
   });
 }
+
 export const navigationHeader: MenuSection[] = [
   {
     title: "Tournoi",
@@ -109,6 +115,7 @@ export const navigationHeader: MenuSection[] = [
     items: [{ href: "/club", label: "Club", icon: Building2 }],
   },
 ];
+
 export const navigation: MenuSection[] = [
   {
     title: "Mon espace",
@@ -143,7 +150,6 @@ export const navigation: MenuSection[] = [
     roles: ["user", "admin"],
     items: [
       { href: "/tournoi", label: "Tournoi", icon: FileText },
-
       {
         href: "/tournoi/inscription",
         label: "S'inscrire",
@@ -199,8 +205,12 @@ export const navigation: MenuSection[] = [
       },
       { href: "/admin/users", label: "Utilisateurs", icon: Users },
       { href: "/admin/home", label: "Home", icon: LayoutGrid },
+      { href: "/admin/comite-directeur", label: "Comité", icon: Users },
+      { href: "/admin/horaires", label: "Horaires", icon: CalendarClock },
+      { href: "/admin/tarifs", label: "Tarifs", icon: BadgeEuro },
+      { href: "/admin/partenaires", label: "Partenaires", icon: Handshake },
       { href: "/admin/menu", label: "Menus", icon: Settings },
-      { href: "/admin/media", label: "Medias", icon: ImageIcon },
+      { href: "/admin/media", label: "Médias", icon: ImageIcon },
       { href: "/admin/contact", label: "Contact", icon: Mail },
       { href: "/admin/audit-ux", label: "Audit UX", icon: FileText },
     ],

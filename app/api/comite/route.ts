@@ -1,108 +1,129 @@
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+
+import { authOptions } from "@/lib/auth";
+import {
+  defaultComiteContent,
+  isValidComiteData,
+  normalizeComiteContent,
+  type ComiteResponse,
+} from "@/lib/comite-content";
 import { prisma } from "@/lib/prisma";
+import { isAdminRole } from "@/lib/roles";
 
-type ComiteData = {
-  bureau: Array<{
-    poste: string;
-    nom: string;
-    description: string;
-    photo: string;
-  }>;
-  membres: Array<{
-    nom: string;
-  }>;
-  salaries: Array<{
-    nom: string;
-  }>;
-};
-
-type ComiteResponse = {
-  data: ComiteData;
-  meta: {
-    stale: boolean;
-    updatedAt: string | null;
-  };
-};
-
-const fallbackComite: ComiteData = {
-  bureau: [],
-  membres: [],
-  salaries: [],
-};
-
-function isValidComiteData(value: unknown): value is ComiteData {
-  if (!value || typeof value !== "object") return false;
-
-  const data = value as Partial<ComiteData>;
-
-  return (
-    Array.isArray(data.bureau) &&
-    data.bureau.every(
-      (membre) =>
-        typeof membre?.poste === "string" &&
-        typeof membre?.nom === "string" &&
-        typeof membre?.description === "string" &&
-        typeof membre?.photo === "string",
-    ) &&
-    Array.isArray(data.membres) &&
-    data.membres.every((membre) => typeof membre?.nom === "string") &&
-    Array.isArray(data.salaries) &&
-    data.salaries.every((salarie) => typeof salarie?.nom === "string")
-  );
-}
+const ADMIN_CONTENT_ID = "admin";
+const DRIVE_CACHE_ID = "drive";
 
 export async function GET() {
+  const adminContent = await prisma.comiteCache.findUnique({
+    where: { id: ADMIN_CONTENT_ID },
+  });
+
+  if (adminContent && isValidComiteData(adminContent.data)) {
+    return NextResponse.json<ComiteResponse>({
+      data: normalizeComiteContent(adminContent.data),
+      meta: {
+        stale: false,
+        updatedAt: adminContent.updatedAt.toISOString(),
+        source: "admin",
+      },
+    });
+  }
+
   const fileId = process.env.COMITE_JSON_ID;
 
-  if (!fileId) {
-    return NextResponse.json<ComiteResponse>({
-      data: fallbackComite,
-      meta: { stale: true, updatedAt: null },
-    });
+  if (fileId) {
+    try {
+      const res = await fetch(
+        `https://drive.google.com/uc?export=download&id=${fileId}`,
+        { cache: "no-store" },
+      );
+
+      if (!res.ok) {
+        throw new Error("Drive inaccessible");
+      }
+
+      const remoteData: unknown = await res.json();
+
+      if (!isValidComiteData(remoteData)) {
+        throw new Error("Format JSON invalide");
+      }
+
+      const data = normalizeComiteContent(remoteData);
+      const cached = await prisma.comiteCache.upsert({
+        where: { id: DRIVE_CACHE_ID },
+        update: { data },
+        create: { id: DRIVE_CACHE_ID, data },
+      });
+
+      return NextResponse.json<ComiteResponse>({
+        data,
+        meta: {
+          stale: false,
+          updatedAt: cached.updatedAt.toISOString(),
+          source: "drive",
+        },
+      });
+    } catch {
+      // fallback on cached drive data below
+    }
   }
 
   try {
-    const url = `https://drive.google.com/uc?export=download&id=${fileId}`;
-
-    const res = await fetch(url, { cache: "no-store" });
-
-    if (!res.ok) throw new Error("Drive inaccessible");
-
-    const data: unknown = await res.json();
-
-    if (!isValidComiteData(data)) {
-      throw new Error("Format JSON invalide");
-    }
-
-    const cached = await prisma.comiteCache.upsert({
-      where: { id: "default" },
-      update: { data },
-      create: { id: "default", data },
+    const cached = await prisma.comiteCache.findUnique({
+      where: { id: DRIVE_CACHE_ID },
     });
 
-    return NextResponse.json<ComiteResponse>({
-      data,
-      meta: { stale: false, updatedAt: cached.updatedAt.toISOString() },
-    });
-  } catch {
-    try {
-      const cached = await prisma.comiteCache.findUnique({
-        where: { id: "default" },
+    if (cached && isValidComiteData(cached.data)) {
+      return NextResponse.json<ComiteResponse>({
+        data: normalizeComiteContent(cached.data),
+        meta: {
+          stale: true,
+          updatedAt: cached.updatedAt.toISOString(),
+          source: "drive",
+        },
       });
-
-      if (cached && isValidComiteData(cached.data)) {
-        return NextResponse.json<ComiteResponse>({
-          data: cached.data,
-          meta: { stale: true, updatedAt: cached.updatedAt.toISOString() },
-        });
-      }
-    } catch {
-      // ignore cache errors and return fallback
     }
-
-    return NextResponse.json<ComiteResponse>({
-      data: fallbackComite,
-      meta: { stale: true, updatedAt: null },
-    });
+  } catch {
+    // ignore cache errors and return fallback
   }
+
+  return NextResponse.json<ComiteResponse>({
+    data: defaultComiteContent,
+    meta: {
+      stale: true,
+      updatedAt: null,
+      source: "fallback",
+    },
+  });
+}
+
+export async function PUT(req: Request) {
+  const session = await getServerSession(authOptions);
+
+  if (!session || !isAdminRole(session.user.role)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const body = (await req.json()) as Partial<ComiteResponse["data"]>;
+  const data = normalizeComiteContent(body);
+
+  const saved = await prisma.comiteCache.upsert({
+    where: { id: ADMIN_CONTENT_ID },
+    update: { data },
+    create: { id: ADMIN_CONTENT_ID, data },
+  });
+
+  revalidatePath("/club/comite-directeur");
+  revalidatePath("/admin/comite-directeur");
+
+  return NextResponse.json<ComiteResponse>({
+    data,
+    meta: {
+      stale: false,
+      updatedAt: saved.updatedAt.toISOString(),
+      source: "admin",
+    },
+  });
 }

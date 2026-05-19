@@ -1,115 +1,133 @@
 export const runtime = "nodejs";
 
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+
+import { authOptions } from "@/lib/auth";
+import {
+  defaultPartenairesContent,
+  isValidPartenairesData,
+  normalizePartenairesContent,
+  type PartenairesResponse,
+} from "@/lib/partenaires-content";
 import { prisma } from "@/lib/prisma";
+import { isAdminRole } from "@/lib/roles";
 
-type Partenaire = {
-  nom: string;
-  description: string;
-  logo: string;
-  url?: string;
-};
-
-type PartenairesData = {
-  institutionnels: Partenaire[];
-  prives: Partenaire[];
-};
-
-type PartenairesResponse = {
-  data: PartenairesData;
-  meta: {
-    stale: boolean;
-    updatedAt: string | null;
-  };
-};
-
-const fallbackPartenaires: PartenairesData = {
-  institutionnels: [],
-  prives: [],
-};
-
-function isValidPartenaire(partenaire: unknown): partenaire is Partenaire {
-  if (!partenaire || typeof partenaire !== "object") return false;
-
-  const p = partenaire as Partial<Partenaire>;
-
-  return (
-    typeof p.nom === "string" &&
-    typeof p.description === "string" &&
-    typeof p.logo === "string" &&
-    (typeof p.url === "undefined" || typeof p.url === "string")
-  );
-}
-
-function isValidPartenairesData(value: unknown): value is PartenairesData {
-  if (!value || typeof value !== "object") return false;
-
-  const data = value as Partial<PartenairesData>;
-
-  return (
-    Array.isArray(data.institutionnels) &&
-    data.institutionnels.every(isValidPartenaire) &&
-    Array.isArray(data.prives) &&
-    data.prives.every(isValidPartenaire)
-  );
-}
+const ADMIN_CONTENT_ID = "admin";
+const DRIVE_CACHE_ID = "drive";
 
 export async function GET() {
+  const adminContent = await prisma.partenairesCache.findUnique({
+    where: { id: ADMIN_CONTENT_ID },
+  });
+
+  if (adminContent && isValidPartenairesData(adminContent.data)) {
+    return NextResponse.json<PartenairesResponse>({
+      data: normalizePartenairesContent(adminContent.data),
+      meta: {
+        stale: false,
+        updatedAt: adminContent.updatedAt.toISOString(),
+        source: "admin",
+      },
+    });
+  }
+
   const fileId = process.env.PARTENAIRES_JSON_ID;
 
-  if (!fileId) {
-    return NextResponse.json<PartenairesResponse>({
-      data: fallbackPartenaires,
-      meta: { stale: true, updatedAt: null },
-    });
+  if (fileId) {
+    try {
+      const res = await fetch(
+        `https://drive.google.com/uc?export=download&id=${fileId}`,
+        {
+          cache: "no-store",
+        },
+      );
+
+      if (!res.ok) {
+        throw new Error("Drive inaccessible");
+      }
+
+      const remoteData: unknown = await res.json();
+
+      if (!isValidPartenairesData(remoteData)) {
+        throw new Error("Format JSON invalide");
+      }
+
+      const data = normalizePartenairesContent(remoteData);
+      const cached = await prisma.partenairesCache.upsert({
+        where: { id: DRIVE_CACHE_ID },
+        update: { data },
+        create: { id: DRIVE_CACHE_ID, data },
+      });
+
+      return NextResponse.json<PartenairesResponse>({
+        data,
+        meta: {
+          stale: false,
+          updatedAt: cached.updatedAt.toISOString(),
+          source: "drive",
+        },
+      });
+    } catch {
+      // fallback on cached drive data below
+    }
   }
 
   try {
-    const url = `https://drive.google.com/uc?export=download&id=${fileId}`;
-
-    const res = await fetch(url, {
-      cache: "no-store",
+    const cached = await prisma.partenairesCache.findUnique({
+      where: { id: DRIVE_CACHE_ID },
     });
 
-    if (!res.ok) {
-      throw new Error("Drive inaccessible");
-    }
-
-    const data: unknown = await res.json();
-
-    if (!isValidPartenairesData(data)) {
-      throw new Error("Format JSON invalide");
-    }
-
-    const cached = await prisma.partenairesCache.upsert({
-      where: { id: "default" },
-      update: { data },
-      create: { id: "default", data },
-    });
-
-    return NextResponse.json<PartenairesResponse>({
-      data,
-      meta: { stale: false, updatedAt: cached.updatedAt.toISOString() },
-    });
-  } catch {
-    try {
-      const cached = await prisma.partenairesCache.findUnique({
-        where: { id: "default" },
+    if (cached && isValidPartenairesData(cached.data)) {
+      return NextResponse.json<PartenairesResponse>({
+        data: normalizePartenairesContent(cached.data),
+        meta: {
+          stale: true,
+          updatedAt: cached.updatedAt.toISOString(),
+          source: "drive",
+        },
       });
-
-      if (cached && isValidPartenairesData(cached.data)) {
-        return NextResponse.json<PartenairesResponse>({
-          data: cached.data,
-          meta: { stale: true, updatedAt: cached.updatedAt.toISOString() },
-        });
-      }
-    } catch {
-      // ignore cache errors and return fallback
     }
-
-    return NextResponse.json<PartenairesResponse>({
-      data: fallbackPartenaires,
-      meta: { stale: true, updatedAt: null },
-    });
+  } catch {
+    // ignore cache errors and return fallback
   }
+
+  return NextResponse.json<PartenairesResponse>({
+    data: defaultPartenairesContent,
+    meta: {
+      stale: true,
+      updatedAt: null,
+      source: "fallback",
+    },
+  });
+}
+
+export async function PUT(req: Request) {
+  const session = await getServerSession(authOptions);
+
+  if (!session || !isAdminRole(session.user.role)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const body = (await req.json()) as Partial<PartenairesResponse["data"]>;
+  const data = normalizePartenairesContent(body);
+
+  const saved = await prisma.partenairesCache.upsert({
+    where: { id: ADMIN_CONTENT_ID },
+    update: { data },
+    create: { id: ADMIN_CONTENT_ID, data },
+  });
+
+  revalidatePath("/club/partenaires");
+  revalidatePath("/admin/partenaires");
+
+  return NextResponse.json<PartenairesResponse>({
+    data,
+    meta: {
+      stale: false,
+      updatedAt: saved.updatedAt.toISOString(),
+      source: "admin",
+    },
+  });
 }
