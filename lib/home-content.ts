@@ -28,7 +28,7 @@ export const DEFAULT_EVENT_IMAGE_URL = "/tournoi-default-cover.svg";
 export const defaultHomeContent: HomeContentData = {
   heroTitle: "Châlons-en-Champagne Tennis de Table",
   heroSubtitle:
-    "Club de tennis de table à Châlons-en-Champagne - loisirs et compétition, jeunes et adultes.",
+    "Loisirs et compétition, jeunes et adultes.",
   heroCtaLabel: "Voir les horaires",
   heroCtaHref: "/club/horaires",
   heroImageUrl:
@@ -60,6 +60,10 @@ export const defaultHomeContent: HomeContentData = {
 
 const LEGACY_HOME_TEXT_FIXES = new Map<string, string>([
   ["Chalons-en-Champagne Tennis de Table", defaultHomeContent.heroTitle],
+  [
+    "Club de tennis de table à Châlons-en-Champagne - loisirs et compétition, jeunes et adultes.",
+    defaultHomeContent.heroSubtitle,
+  ],
   [
     "Club de tennis de table a Chalons-en-Champagne - loisirs et competition, jeunes et adultes.",
     defaultHomeContent.heroSubtitle,

@@ -1,4 +1,12 @@
-import { ArrowRight, CalendarDays, MapPin, Trophy } from "lucide-react";
+import {
+  ArrowRight,
+  CalendarDays,
+  Clock3,
+  Mail,
+  MapPin,
+  Search,
+  Trophy,
+} from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,18 +15,21 @@ import Reveal from "@/components/Reveal";
 import { HeroBanner } from "@/components/public/hero-banner";
 import { SectionEyebrow } from "@/components/public/marketing";
 import { Button } from "@/components/ui/button";
-import { normalizeHomeContent, resolveEventImageUrl } from "@/lib/home-content";
+import {
+  normalizeHomeContent,
+  resolveEventImageUrl,
+} from "@/lib/home-content";
 import { prisma } from "@/lib/prisma";
 import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-window";
 
 export const metadata: Metadata = {
-  title: "CCTT – Club de tennis de table à Châlons-en-Champagne",
+  title: "CCTT | Club de tennis de table à Châlons-en-Champagne",
   description:
-    "Le CCTT accueille joueurs débutants comme confirmés. Horaires, tarifs, contact et actualités du club de tennis de table à Châlons-en-Champagne.",
+    "Le CCTT accueille joueurs débutants et confirmés. Retrouvez les horaires, les tarifs, le tournoi et les informations utiles du club à Châlons-en-Champagne.",
   openGraph: {
-    title: "CCTT – Club de tennis de table",
+    title: "CCTT | Club de tennis de table",
     description:
-      "Découvrez le CCTT : horaires, tarifs et vie du club à Châlons-en-Champagne.",
+      "Découvrez le CCTT : horaires, tarifs, tournoi et vie du club à Châlons-en-Champagne.",
     url: "/",
     type: "website",
     images: [
@@ -32,16 +43,16 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary",
-    title: "CCTT – Club de tennis de table",
+    title: "CCTT | Club de tennis de table",
     description:
-      "Horaires, tarifs et vie du club de tennis de table à Châlons-en-Champagne.",
+      "Horaires, tarifs, tournoi et vie du club de tennis de table à Châlons-en-Champagne.",
     images: ["/logo.jpg"],
   },
 };
 
 function formatDateRange(startDate?: Date | null, endDate?: Date | null) {
   if (!startDate || !endDate) {
-    return "Dates a confirmer";
+    return "Dates à confirmer";
   }
 
   const formatter = new Intl.DateTimeFormat("fr-FR", {
@@ -89,47 +100,75 @@ export default async function Home() {
     formatDateRange(tournament?.startDate, tournament?.endDate) ||
     content.eventDateLabel;
   const tournamentName = tournament?.name ?? content.eventTitle;
-  const tournamentVenue = tournament?.venue ?? "Chalons-en-Champagne";
+  const tournamentVenue = tournament?.venue ?? "Châlons-en-Champagne";
   const tournamentEventsCount = tournament?.events.length ?? 0;
-  const heroHighlights = [
-    "Accueil simple pour debuter ou reprendre",
-    "Jeunes et adultes, loisir et competition",
-    "Une saison animee par le club et le tournoi",
+
+  const intentionCards = [
+    {
+      title: "Je veux découvrir le club",
+      description:
+        "Comprendre l'esprit du CCTT, le niveau d'accueil et la vie du club avant de vous engager.",
+      href: "/club",
+      label: "Découvrir le club",
+      Icon: Search,
+      tone: "border-border/60 bg-card/70",
+      hoverTone: "hover:border-[#2F6BFF] hover:shadow-[#2F6BFF]/15",
+      iconTone: "text-[#2F6BFF]",
+    },
+    {
+      title: "Je veux voir les horaires",
+      description:
+        "Trouver rapidement le bon créneau selon le profil : jeunes, loisir, entraînement soutenu ou jeu libre.",
+      href: "/club/horaires",
+      label: "Voir les horaires",
+      Icon: Clock3,
+      tone: "border-border/60 bg-card/70",
+      hoverTone: "hover:border-[#00D9FF] hover:shadow-[#00D9FF]/15",
+      iconTone: "text-[#00D9FF]",
+    },
+    {
+      title: "Je veux m'inscrire au tournoi",
+      description:
+        "Retrouver les dates, les tableaux et l'accès direct à l'inscription si elle est ouverte.",
+      href: registrationStatus.canRegister
+        ? "/tournoi/inscription"
+        : "/tournoi",
+      label: registrationStatus.canRegister
+        ? "S'inscrire au tournoi"
+        : "Voir le tournoi",
+      Icon: Trophy,
+      tone: "border-border/60 bg-card/70",
+      hoverTone: "hover:border-[#FF7A00] hover:shadow-[#FF7A00]/15",
+      iconTone: "text-[#FF7A00]",
+    },
+    {
+      title: "Je veux contacter le club",
+      description:
+        "Poser une question, demander un essai, vérifier un tarif ou être orienté vers le bon interlocuteur.",
+      href: "/club/contact",
+      label: "Contacter le club",
+      Icon: Mail,
+      tone: "border-border/60 bg-card/70",
+      hoverTone: "hover:border-[#FF2E88] hover:shadow-[#FF2E88]/15",
+      iconTone: "text-[#FF2E88]",
+    },
   ];
+
   const clubPillars = [
     {
-      label: "Encadrement",
-      value: "Une structure serieuse pour progresser a chaque niveau.",
+      label: "Accueil",
+      value: "Un cadre clair pour débuter, reprendre ou faire essayer le club.",
     },
     {
-      label: "Public",
-      value: "Jeunes et adultes accueillis dans le meme esprit d'exigence.",
+      label: "Progression",
+      value: "Des séances adaptées aux jeunes, au loisir et aux joueurs plus engagés.",
     },
     {
-      label: "Rythme",
-      value: "Vie de club active et tournoi installe dans la saison.",
+      label: "Saison",
+      value: "Une vie de club régulière, renforcée par un tournoi bien installé.",
     },
   ];
-  const clubLinks = [
-    {
-      title: content.highlight1Title,
-      description: content.highlight1Text,
-      href: "/club/horaires",
-      label: "Voir les creneaux",
-    },
-    {
-      title: content.highlight2Title,
-      description: content.highlight2Text,
-      href: "/club/tarifs",
-      label: "Consulter les tarifs",
-    },
-    {
-      title: content.highlight3Title,
-      description: content.highlight3Text,
-      href: "/club/contact",
-      label: "Nous contacter",
-    },
-  ];
+
   const tournamentFacts = [
     {
       icon: CalendarDays,
@@ -148,6 +187,20 @@ export default async function Home() {
     },
   ];
 
+  const primaryHeroAction = {
+    href: "/club/horaires",
+    label: "Voir les horaires",
+  };
+  const secondaryHeroAction = registrationStatus.canRegister
+    ? {
+        href: "/tournoi/inscription",
+        label: "S'inscrire au tournoi",
+      }
+    : {
+        href: "/club/contact",
+        label: "Contacter le club",
+      };
+
   return (
     <main className="relative overflow-hidden">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-14 px-4 py-8 sm:px-6 sm:py-10">
@@ -157,10 +210,10 @@ export default async function Home() {
               <div className="space-y-6">
                 <div className="space-y-4">
                   <SectionEyebrow>
-                    L&apos;exigence du tennis de table
+                    Le club de tennis de table à Châlons-en-Champagne
                   </SectionEyebrow>
                   <div className="space-y-4">
-                    <h1 className="max-w-3xl  text-4xl font-semibold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+                    <h1 className="max-w-3xl text-4xl font-semibold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl">
                       {content.heroTitle}
                     </h1>
                     <p className="max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
@@ -173,10 +226,10 @@ export default async function Home() {
                   <Button
                     asChild
                     size="lg"
-                    className="h-11 rounded-full px-6 shadow-lg shadow-primary/20"
+                    className="h-11 rounded-md bg-[#2F6BFF] px-6 text-white shadow-lg shadow-[#2F6BFF]/25 transition hover:-translate-y-0.5 hover:bg-[#255AE8] hover:shadow-[#2F6BFF]/35"
                   >
-                    <Link href={content.heroCtaHref}>
-                      {content.heroCtaLabel}
+                    <Link href={primaryHeroAction.href}>
+                      {primaryHeroAction.label}
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>
@@ -184,72 +237,72 @@ export default async function Home() {
                     asChild
                     size="lg"
                     variant="outline"
-                    className="h-11 rounded-full px-6"
+                    className="h-11 rounded-md border-[#FF2E88]/45 bg-[#FF2E88]/8 px-6 text-[#FF2E88] transition hover:-translate-y-0.5 hover:border-[#FF2E88] hover:bg-[#FF2E88]/14 hover:text-[#FF2E88]"
                   >
-                    <Link href="/tournoi">Decouvrir le tournoi</Link>
+                    <Link href={secondaryHeroAction.href}>
+                      {secondaryHeroAction.label}
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
                   </Button>
                 </div>
 
-                <div className="flex flex-wrap gap-3">
-                  {heroHighlights.map((item, index) => (
-                    <Reveal key={item} delay={index * 70}>
-                      <span className="inline-flex items-center text-sm leading-relaxed text-muted-foreground">
-                        {item}
-                      </span>
-                    </Reveal>
-                  ))}
-                </div>
               </div>
 
-              <HeroBanner
-                imageUrl={content.heroImageUrl}
-                registrationLabel={registrationStatus.label}
-                tournamentName={tournamentName}
-                tournamentDateLabel={tournamentDateLabel}
-                tournamentVenue={tournamentVenue}
-              />
+              <HeroBanner imageUrl={content.heroImageUrl} />
 
-              <div className="grid gap-4 border-t border-border/45 pt-5 sm:grid-cols-3">
-                <div className="space-y-2">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                    Ambiance
-                  </p>
-                  <p className="text-lg font-semibold text-foreground">
-                    Conviviale et ambitieuse
-                  </p>
-                  <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
-                    Un cadre accueillant, avec de vrais reperes pour entrer dans
-                    le club.
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                    Pratique
-                  </p>
-                  <p className="text-lg font-semibold text-foreground">
-                    Jeunes, adultes, loisir, competition
-                  </p>
-                  <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
-                    Une proposition lisible pour progresser sans perdre
-                    l&apos;esprit du club.
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                    Saison
-                  </p>
-                  <p className="text-lg font-semibold text-foreground">
-                    Club actif et tournoi installe
-                  </p>
-                  <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
-                    Le rythme de l&apos;annee reste clair, sans multiplier les
-                    points d&apos;entree.
-                  </p>
-                </div>
-              </div>
             </div>
           </section>
         </Reveal>
+
+        <section className="space-y-5">
+          <Reveal>
+            <div className="space-y-2">
+              <SectionEyebrow tone="neutral">
+                Choisir votre point d&apos;entrée
+              </SectionEyebrow>
+              <h2 className="font-serif text-3xl font-bold tracking-[-0.03em] text-foreground sm:text-4xl">
+                Commencez selon votre besoin
+              </h2>
+              <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+                Vous n&apos;avez pas besoin de tout parcourir. Choisissez ce que vous
+                cherchez, et nous vous guidons directement vers la bonne page.
+              </p>
+            </div>
+          </Reveal>
+
+          <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
+            {intentionCards.map((item, index) => {
+              const Icon = item.Icon;
+
+              return (
+                <Reveal key={item.title} delay={index * 90}>
+                  <Link
+                    href={item.href}
+                    className={`group block rounded-[1.65rem] border p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md ${item.tone} ${item.hoverTone}`}
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <span
+                        className={`rounded-full bg-background/80 p-2 ${item.iconTone}`}
+                      >
+                        <Icon className="h-5 w-5" />
+                      </span>
+                      <ArrowRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-primary" />
+                    </div>
+                    <p className="mt-5 text-xl font-semibold tracking-[-0.025em] text-foreground">
+                      {item.title}
+                    </p>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      {item.description}
+                    </p>
+                    <p className="mt-4 text-sm font-medium text-primary">
+                      {item.label}
+                    </p>
+                  </Link>
+                </Reveal>
+              );
+            })}
+          </div>
+        </section>
 
         <section className="space-y-5">
           <Reveal>
@@ -257,18 +310,17 @@ export default async function Home() {
               <div className="space-y-2">
                 <SectionEyebrow tone="neutral">Le club</SectionEyebrow>
                 <h2 className="font-serif text-3xl font-bold tracking-[-0.03em] text-foreground sm:text-4xl">
-                  Un club ambitieux, un tournoi de reference
+                  Un club à comprendre vite, avant d&apos;aller plus loin
                 </h2>
               </div>
               <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-                Le CCTT reunit pratique en club, progression des joueurs et
-                organisation d&apos;un tournoi national dans un cadre exigeant,
-                accueillant et structure.
+                Le CCTT réunit accueil, progression et compétition dans un cadre
+                lisible pour les nouveaux venus comme pour les joueurs réguliers.
               </p>
             </div>
           </Reveal>
 
-          <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
+          <div>
             <Reveal>
               <div className="rounded-[1.75rem] border border-border/45 bg-card/50 p-6 md:p-8">
                 <div className="space-y-5">
@@ -284,19 +336,6 @@ export default async function Home() {
                     </p>
                   </div>
 
-                  <div className="flex flex-wrap gap-2">
-                    {["Club formateur", "Competition", "Tournoi national"].map(
-                      (badge) => (
-                        <span
-                          key={badge}
-                          className="inline-flex rounded-full border border-primary/15 bg-background/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/80"
-                        >
-                          {badge}
-                        </span>
-                      ),
-                    )}
-                  </div>
-
                   <div className="grid gap-5 border-t border-border/45 pt-5 sm:grid-cols-3">
                     {clubPillars.map((item) => (
                       <div key={item.label} className="space-y-2">
@@ -310,40 +349,12 @@ export default async function Home() {
                     ))}
                   </div>
 
-                  <Button asChild variant="outline" className="rounded-full">
-                    <Link href="/club">Decouvrir le club</Link>
+                  <Button asChild variant="outline" className="rounded-md">
+                    <Link href="/club">Découvrir le club</Link>
                   </Button>
                 </div>
               </div>
             </Reveal>
-
-            <div className="overflow-hidden rounded-[1.6rem] border border-border/45 bg-background">
-              {clubLinks.map((item, index) => (
-                <Reveal key={item.title} delay={index * 100}>
-                  <Link
-                    href={item.href}
-                    className={`group flex h-full items-start justify-between gap-4 p-5 transition-colors hover:bg-muted/20 ${
-                      index < clubLinks.length - 1
-                        ? "border-b border-border/45"
-                        : ""
-                    }`}
-                  >
-                    <div className="space-y-2">
-                      <p className="text-lg font-semibold tracking-[-0.025em] text-foreground">
-                        {item.title}
-                      </p>
-                      <p className="text-sm leading-relaxed text-muted-foreground">
-                        {item.description}
-                      </p>
-                      <p className="text-sm font-medium text-primary">
-                        {item.label}
-                      </p>
-                    </div>
-                    <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-primary" />
-                  </Link>
-                </Reveal>
-              ))}
-            </div>
           </div>
         </section>
 
@@ -354,12 +365,12 @@ export default async function Home() {
                 <div className="space-y-2">
                   <SectionEyebrow>Tournoi national</SectionEyebrow>
                   <h2 className="font-serif text-3xl font-bold tracking-[-0.03em] text-foreground sm:text-4xl">
-                    Un tournoi national au coeur de la saison
+                    Je veux suivre ou rejoindre le tournoi
                   </h2>
                 </div>
                 <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-                  Retrouvez en un seul endroit les dates, le lieu, les
-                  inscriptions et les tableaux ouverts du tournoi.
+                  Dates, lieu, statut des inscriptions et accès direct aux pages
+                  utiles sont regroupés ici sans détour.
                 </p>
               </div>
             </Reveal>
@@ -407,22 +418,24 @@ export default async function Home() {
                     </div>
 
                     <div className="max-w-2xl border-l border-primary/25 pl-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
-                      Toutes les informations essentielles restent visibles en
-                      un regard: dates, lieu, statut des inscriptions et acces
-                      direct aux pages utiles.
+                      L&apos;objectif est simple : voir tout de suite si l&apos;inscription
+                      est ouverte, combien de tableaux sont proposés et où aller
+                      ensuite.
                     </div>
 
                     <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                      <Button asChild size="lg" className="rounded-full px-6">
-                        <Link href="/tournoi/inscription">
-                          S&apos;inscrire au tournoi
+                      <Button asChild size="lg" className="rounded-md px-6">
+                        <Link href={registrationStatus.canRegister ? "/tournoi/inscription" : "/tournoi"}>
+                          {registrationStatus.canRegister
+                            ? "S'inscrire au tournoi"
+                            : "Voir le tournoi"}
                         </Link>
                       </Button>
                       <Button
                         asChild
                         size="lg"
                         variant="outline"
-                        className="rounded-full px-6"
+                        className="rounded-md px-6"
                       >
                         <Link href="/tournoi/liste-inscrits">
                           Voir les inscrits
@@ -447,35 +460,34 @@ export default async function Home() {
         ) : null}
 
         <Reveal>
-          <section className="rounded-[1.9rem] border border-white/10 bg-foreground p-6 text-background md:p-8 lg:p-10">
+          <section className="rounded-[1.9rem] border border-border/45 bg-card/60 p-6 text-foreground md:p-8 lg:p-10">
             <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
               <div className="max-w-3xl space-y-4">
-                <SectionEyebrow className="border-white/15">
-                  L&apos;esprit du club
+                <SectionEyebrow tone="neutral">
+                  Premier contact
                 </SectionEyebrow>
                 <h2 className="font-serif text-3xl font-bold tracking-[-0.03em] sm:text-4xl">
                   {content.ctaTitle}
                 </h2>
-                <p className="text-sm leading-relaxed text-background/78 sm:text-base">
+                <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
                   {content.ctaText}
                 </p>
-                <p className="text-sm leading-relaxed text-background/60 sm:text-base">
-                  Club formateur, dynamique et tourne vers la competition, le
-                  CCTT associe qualite d&apos;accueil, progression des joueurs
-                  et tournoi reconnu.
+                <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
+                  Essai, information pratique, question sur les tarifs ou sur le
+                  tournoi : on vous oriente ensuite vers la bonne suite.
                 </p>
               </div>
 
               <div className="flex flex-col items-start gap-4 lg:max-w-sm lg:items-end lg:text-right">
-                <Button asChild size="lg" className="rounded-full px-6  ">
-                  <Link href={content.ctaButtonHref}>
-                    {content.ctaButtonLabel}
+                <Button asChild size="lg" className="rounded-md px-6">
+                  <Link href="/club/contact">
+                    Contacter le club
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
-                <p className="text-sm leading-relaxed text-background/60">
-                  Premier contact, demande d&apos;information ou inscription: on
-                  vous oriente ensuite vers la bonne suite.
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  Si vous ne savez pas encore quelle page visiter, commencez ici
+                  et nous vous orienterons.
                 </p>
               </div>
             </div>

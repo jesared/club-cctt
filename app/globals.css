@@ -506,6 +506,16 @@
   outline: none;
 }
 
+.form-field[aria-invalid="true"] {
+  border-color: var(--destructive);
+}
+
+.form-field[aria-invalid="true"]:focus-visible {
+  box-shadow: 0 0 0 2px var(--destructive),
+    0 0 0 6px color-mix(in oklch, var(--destructive) 18%, transparent);
+  border-color: var(--destructive);
+}
+
 .form-submitted .form-field:invalid {
   border-color: var(--destructive);
 }
@@ -513,6 +523,14 @@
 .form-submitted .form-field:invalid:focus-visible {
   box-shadow: 0 0 0 2px var(--destructive),
     0 0 0 6px color-mix(in oklch, var(--destructive) 18%, transparent);
+}
+
+.form-hint {
+  @apply text-sm leading-relaxed text-muted-foreground;
+}
+
+.form-error {
+  @apply mt-2 text-sm text-destructive;
 }
 
 @layer utilities {

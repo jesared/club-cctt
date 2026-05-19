@@ -1,7 +1,7 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import type { PublicMenuVisibility } from "@/lib/menu-settings";
 import { isPublicMenuVisible } from "@/lib/menu-settings";
@@ -22,14 +22,14 @@ export default function Footer({ menuVisibility }: FooterProps) {
     <footer className="border-t bg-background">
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-4 text-xs text-muted-foreground sm:flex-row">
         <span>
-          (c) {new Date().getFullYear()} CCTT ·{" "}
+          © {new Date().getFullYear()} CCTT ·{" "}
           <a
             href="https://jesared.fr"
             target="_blank"
             rel="noreferrer"
             className="hover:text-foreground"
           >
-            Créateur Jérôme HENRY
+            Creation Jerome Henry
           </a>
         </span>
         <div className="flex items-center gap-4">

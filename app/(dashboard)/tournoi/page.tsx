@@ -27,13 +27,13 @@ import { tournamentRegistrationContent } from "@/lib/tournament-registration-con
 import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-window";
 
 export const metadata: Metadata = {
-  title: "Tournoi national de Pâques – CCTT",
+  title: "Tournoi national de Paques | CCTT",
   description:
-    "Toutes les infos du tournoi : dates, tableaux, inscriptions, résultats et contact organisation.",
+    "Toutes les informations du tournoi : dates, tableaux, inscriptions, resultats et contact de l'organisation.",
   openGraph: {
-    title: "Tournoi national de Pâques – CCTT",
+    title: "Tournoi national de Paques | CCTT",
     description:
-      "Infos tournoi CCTT : dates, tableaux, inscriptions et résultats.",
+      "Informations tournoi CCTT : dates, tableaux, inscriptions et resultats.",
     url: "/tournoi",
     type: "website",
     images: [
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tournoi national de Pâques – CCTT",
+    title: "Tournoi national de Paques | CCTT",
     description: "Dates, tableaux et inscriptions au tournoi CCTT.",
     images: [DEFAULT_EVENT_IMAGE_URL],
   },
@@ -244,11 +244,11 @@ export default async function TournoiHomePage() {
             <div className="relative space-y-8">
               <div className="space-y-6">
                 <div className="flex flex-wrap items-center gap-3">
-                  <SectionEyebrow>
+                  <SectionEyebrow className="border-[#FF7A00]/35 bg-[#FF7A00]/10 text-[#FF7A00]">
                     <Trophy className="mr-2 h-3.5 w-3.5" />
                     Tournoi en ligne
                   </SectionEyebrow>
-                  <span className="inline-flex rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
+                  <span className="inline-flex rounded-full border border-[#FF7A00]/30 bg-[#FF7A00]/10 px-3 py-1 text-sm font-medium text-[#FF7A00]">
                     {registrationStatus.label}
                   </span>
                 </div>
@@ -259,14 +259,14 @@ export default async function TournoiHomePage() {
                   </h1>
                   <div className="flex flex-wrap gap-4 text-sm text-muted-foreground sm:text-base">
                     <span className="inline-flex items-center gap-2">
-                      <CalendarClock className="h-4 w-4 text-primary" />
+                      <CalendarClock className="h-4 w-4 text-[#FF7A00]" />
                       {formatDateRange(
                         tournament?.startDate,
                         tournament?.endDate,
                       )}
                     </span>
                     <span className="inline-flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-primary" />
+                      <MapPin className="h-4 w-4 text-[#FF7A00]" />
                       {tournament?.venue ?? "Lieu a confirmer"}
                     </span>
                   </div>
@@ -282,25 +282,25 @@ export default async function TournoiHomePage() {
                       kpiPage="tournoi"
                       kpiLabel="cta-inscription"
                       href={tournamentRegistrationContent.cta.href}
-                      className="inline-flex h-11 items-center justify-center rounded-full bg-primary px-6 text-base font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition hover:opacity-90 focus-ring"
+                      className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-6 text-base font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition hover:opacity-90 focus-ring"
                     >
                       {tournamentRegistrationContent.cta.label}
                     </TrackedLink>
                   ) : (
-                    <span className="inline-flex h-11 items-center justify-center rounded-full bg-muted px-5 text-sm font-semibold text-muted-foreground">
+                    <span className="inline-flex h-11 items-center justify-center rounded-md bg-muted px-5 text-sm font-semibold text-muted-foreground">
                       {registrationStatus.label}
                     </span>
                   )}
                   <Link
                     href="/tournoi/reglement"
-                    className="inline-flex h-11 items-center justify-center rounded-full border border-primary px-6 text-sm font-medium text-primary transition hover:bg-primary/10 focus-ring"
+                    className="inline-flex h-11 items-center justify-center rounded-md border border-[#FF7A00] px-6 text-sm font-medium text-[#FF7A00] transition hover:bg-[#FF7A00]/10 focus-ring"
                   >
                     Consulter le reglement
                   </Link>
                   {hasUserRegistration ? (
                     <Link
                       href="/user/inscriptions"
-                      className="inline-flex h-11 items-center justify-center rounded-full border border-border px-6 text-sm font-medium text-foreground transition hover:bg-accent/40 focus-ring"
+                      className="inline-flex h-11 items-center justify-center rounded-md border border-border px-6 text-sm font-medium text-foreground transition hover:bg-accent/40 focus-ring"
                     >
                       Voir mes inscriptions
                     </Link>
@@ -311,19 +311,19 @@ export default async function TournoiHomePage() {
                   <div className="flex flex-wrap gap-3">
                     <Link
                       href="/tournoi/resultats"
-                      className="inline-flex items-center justify-center rounded-full border border-primary px-5 py-2 text-sm font-medium text-primary transition hover:bg-primary/10 focus-ring"
+                      className="inline-flex items-center justify-center rounded-md border border-[#FF7A00] px-5 py-2 text-sm font-medium text-[#FF7A00] transition hover:bg-[#FF7A00]/10 focus-ring"
                     >
                       Voir les resultats
                     </Link>
                     <Link
                       href="/tournoi/palmares"
-                      className="inline-flex items-center justify-center rounded-full border border-border px-5 py-2 text-sm font-medium text-foreground transition hover:bg-accent/40 focus-ring"
+                      className="inline-flex items-center justify-center rounded-md border border-border px-5 py-2 text-sm font-medium text-foreground transition hover:bg-accent/40 focus-ring"
                     >
                       Voir le palmares
                     </Link>
                     <Link
                       href="/tournoi/affiches"
-                      className="inline-flex items-center justify-center rounded-full border border-border px-5 py-2 text-sm font-medium text-foreground transition hover:bg-accent/40 focus-ring"
+                      className="inline-flex items-center justify-center rounded-md border border-border px-5 py-2 text-sm font-medium text-foreground transition hover:bg-accent/40 focus-ring"
                     >
                       Voir les affiches
                     </Link>
@@ -498,36 +498,116 @@ export default async function TournoiHomePage() {
                     Aucun tableau ouvert n&apos;est disponible pour le moment.
                   </p>
                 ) : (
-                  <div className="overflow-x-auto rounded-2xl border border-border/70">
-                    <table className="min-w-full text-sm">
-                      <thead className="bg-muted/50">
-                        <tr className="text-left text-muted-foreground">
-                          <th className="px-4 py-3">Code</th>
-                          <th className="px-4 py-3">Date</th>
-                          <th className="px-4 py-3">Heure</th>
-                          <th className="px-4 py-3">Categorie</th>
-                          <th className="px-4 py-3">En ligne</th>
-                          <th className="px-4 py-3">Sur place</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {tableaux.map((tableau) => (
-                          <tr
-                            key={tableau.id}
-                            className="border-t border-border/70"
-                          >
-                            <td className="px-4 py-3 font-semibold text-foreground">
-                              {tableau.code}
-                            </td>
-                            <td className="px-4 py-3">{tableau.date}</td>
-                            <td className="px-4 py-3">{tableau.heure}</td>
-                            <td className="px-4 py-3">{tableau.categorie}</td>
-                            <td className="px-4 py-3">{tableau.online}</td>
-                            <td className="px-4 py-3">{tableau.surPlace}</td>
+                  <div className="space-y-4">
+                    <div className="rounded-2xl border border-border/70 bg-muted/20 p-4 md:hidden">
+                      <p className="text-sm font-medium text-foreground">
+                        Lecture mobile
+                      </p>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        Chaque tableau est presente comme une fiche avec
+                        categorie, horaire et tarifs pour eviter le scroll
+                        horizontal sur telephone.
+                      </p>
+                    </div>
+
+                    <div className="grid gap-3 md:hidden">
+                      {tableaux.map((tableau) => (
+                        <article
+                          key={tableau.id}
+                          className="rounded-[1.35rem] border border-border/70 bg-background/90 p-4 shadow-sm shadow-black/5"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                                Tableau
+                              </p>
+                              <p className="mt-1 text-lg font-semibold text-foreground">
+                                {tableau.code}
+                              </p>
+                            </div>
+                            <span className="inline-flex rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+                              {tableau.heure}
+                            </span>
+                          </div>
+
+                          <div className="mt-4 rounded-2xl border border-border/70 bg-muted/20 p-3">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                              Categorie
+                            </p>
+                            <p className="mt-1 text-sm font-medium text-foreground">
+                              {tableau.categorie}
+                            </p>
+                          </div>
+
+                          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                            <div className="rounded-2xl border border-border/70 bg-background p-3">
+                              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                                Date
+                              </p>
+                              <p className="mt-1 text-sm font-medium text-foreground">
+                                {tableau.date}
+                              </p>
+                            </div>
+                            <div className="rounded-2xl border border-border/70 bg-background p-3">
+                              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                                Horaire
+                              </p>
+                              <p className="mt-1 text-sm font-medium text-foreground">
+                                {tableau.heure}
+                              </p>
+                            </div>
+                            <div className="rounded-2xl border border-border/70 bg-background p-3">
+                              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                                Tarif en ligne
+                              </p>
+                              <p className="mt-1 text-sm font-medium text-foreground">
+                                {tableau.online}
+                              </p>
+                            </div>
+                            <div className="rounded-2xl border border-border/70 bg-background p-3">
+                              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                                Tarif sur place
+                              </p>
+                              <p className="mt-1 text-sm font-medium text-foreground">
+                                {tableau.surPlace}
+                              </p>
+                            </div>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+
+                    <div className="hidden overflow-x-auto rounded-2xl border border-border/70 md:block">
+                      <table className="min-w-full text-sm">
+                        <thead className="bg-muted/50">
+                          <tr className="text-left text-muted-foreground">
+                            <th className="px-4 py-3">Code</th>
+                            <th className="px-4 py-3">Date</th>
+                            <th className="px-4 py-3">Heure</th>
+                            <th className="px-4 py-3">Categorie</th>
+                            <th className="px-4 py-3">En ligne</th>
+                            <th className="px-4 py-3">Sur place</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {tableaux.map((tableau) => (
+                            <tr
+                              key={tableau.id}
+                              className="border-t border-border/70"
+                            >
+                              <td className="px-4 py-3 font-semibold text-foreground">
+                                {tableau.code}
+                              </td>
+                              <td className="px-4 py-3">{tableau.date}</td>
+                              <td className="px-4 py-3">{tableau.heure}</td>
+                              <td className="px-4 py-3">{tableau.categorie}</td>
+                              <td className="px-4 py-3">{tableau.online}</td>
+                              <td className="px-4 py-3">{tableau.surPlace}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 )}
                 <p className="mt-4 text-sm text-muted-foreground">

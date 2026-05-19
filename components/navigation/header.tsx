@@ -16,7 +16,7 @@ import { isAdminRole } from "@/lib/roles";
 import { isPublicRoute } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
-// ðŸ”¥ LOGIQUE ACTIVE (IDENTIQUE SIDEBAR)
+// Logique active identique à la sidebar
 function isItemActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
 
@@ -24,7 +24,7 @@ function isItemActive(pathname: string, href: string) {
     return pathname === href;
   }
 
-  // ðŸ‘‰ admin global
+  // Admin global
   if (href === "/admin") {
     return (
       pathname === "/admin" ||
@@ -32,12 +32,12 @@ function isItemActive(pathname: string, href: string) {
     );
   }
 
-  // ðŸ‘‰ admin tournoi (prioritaire)
+  // Admin tournoi prioritaire
   if (href === "/admin/tournoi") {
     return pathname.startsWith("/admin/tournoi");
   }
 
-  // ðŸ‘‰ default
+  // Cas par défaut
   return pathname === href || pathname.startsWith(href + "/");
 }
 
@@ -110,6 +110,19 @@ export default function Header({ menuVisibility }: HeaderProps) {
     () => [{ href: "/", label: "Accueil", icon: Home }, ...publicSections],
     [publicSections],
   );
+  const desktopQuickLinks = useMemo(() => {
+    const links = [
+      { href: "/club/horaires", label: "Horaires" },
+      { href: "/club/tarifs", label: "Tarifs" },
+      { href: "/club/contact", label: "Contact" },
+    ];
+
+    if (isPublicMenuVisible(menuVisibility, "tournoi")) {
+      links.push({ href: "/tournoi/inscription", label: "Inscription tournoi" });
+    }
+
+    return links;
+  }, [menuVisibility]);
 
   useEffect(() => {
     function handleOutside(event: MouseEvent | TouchEvent) {
@@ -148,6 +161,9 @@ export default function Header({ menuVisibility }: HeaderProps) {
 
   useEffect(() => {
     if (!isPublicRoute(pathname)) return;
+    router.prefetch("/club/horaires");
+    router.prefetch("/club/tarifs");
+    router.prefetch("/club/contact");
     if (isPublicMenuVisible(menuVisibility, "tournoi")) {
       router.prefetch("/tournoi");
       router.prefetch("/tournoi/inscription");
@@ -326,6 +342,41 @@ export default function Header({ menuVisibility }: HeaderProps) {
 
         {/* ACTIONS */}
         <div className="ml-auto flex items-center gap-2">
+          <div className="hidden xl:flex items-center gap-2 mr-1">
+            {desktopQuickLinks.slice(0, 3).map((item) => {
+              const active = isItemActive(pathname, item.href);
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "inline-flex items-center justify-center rounded-full border px-3 py-2 text-sm transition-colors",
+                    active
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border/70 text-muted-foreground hover:border-primary/30 hover:bg-muted hover:text-foreground",
+                  )}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+
+            {desktopQuickLinks[3] ? (
+              <Link
+                href={desktopQuickLinks[3].href}
+                className={cn(
+                  "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium transition-colors",
+                  isItemActive(pathname, desktopQuickLinks[3].href)
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-primary/95 text-primary-foreground hover:bg-primary",
+                )}
+              >
+                {desktopQuickLinks[3].label}
+              </Link>
+            ) : null}
+          </div>
+
           <button
             type="button"
             className="md:hidden inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm text-foreground hover:bg-muted"

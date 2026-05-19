@@ -222,7 +222,9 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
               {session ? (
                 <Link
                   href="/user"
-                  className="inline-flex min-w-[5.25rem] items-center justify-center gap-2 rounded-full border border-transparent px-3 py-2 text-sm text-muted-foreground transition-colors hover:border-border hover:bg-muted/60 hover:text-foreground"
+                  aria-label="Mon espace"
+                  title="Mon espace"
+                  className="inline-flex items-center justify-center rounded-full border border-transparent px-2 py-2 text-sm text-muted-foreground transition-colors hover:border-border hover:bg-muted/60 hover:text-foreground"
                 >
                   {session.user.image ? (
                     <Image
@@ -235,9 +237,6 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
                   ) : (
                     <User2 className="h-4 w-4" />
                   )}
-                  <span className="text-[0.7rem] font-semibold uppercase tracking-[0.16em]">
-                    Mon espace
-                  </span>
                 </Link>
               ) : (
                 <Button
