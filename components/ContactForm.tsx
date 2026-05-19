@@ -1,13 +1,13 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { Check, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
-  contactSubjectOptions,
+  type ContactSubject,
   normalizeContactSubject,
+  contactSubjectOptions,
 } from "@/lib/contact-subjects";
 
 type FeedbackState =
@@ -88,8 +88,13 @@ function validateForm(data: ContactFormData) {
   return errors;
 }
 
-export default function ContactForm() {
-  const searchParams = useSearchParams();
+type ContactFormProps = {
+  initialSubject?: ContactSubject | "";
+};
+
+export default function ContactForm({
+  initialSubject = "",
+}: ContactFormProps) {
   const [formData, setFormData] = useState(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<FeedbackState>(null);
@@ -103,11 +108,7 @@ export default function ContactForm() {
   );
 
   useEffect(() => {
-    const nextSubject = normalizeContactSubject(searchParams.get("sujet"));
-
-    if (!nextSubject) {
-      return;
-    }
+    const nextSubject = normalizeContactSubject(initialSubject);
 
     setFormData((current) =>
       current.subject === nextSubject
@@ -119,7 +120,7 @@ export default function ContactForm() {
       ...current,
       subject: undefined,
     }));
-  }, [searchParams]);
+  }, [initialSubject]);
 
   const setFieldValue = (field: ContactField, value: string) => {
     setFormData((current) => ({
@@ -191,7 +192,7 @@ export default function ContactForm() {
       });
       setFormData({
         ...initialFormData,
-        subject: normalizeContactSubject(searchParams.get("sujet")),
+        subject: normalizeContactSubject(initialSubject),
       });
       setFieldErrors({});
       setTouchedFields({});

@@ -9,14 +9,23 @@ import {
   defaultContactContent,
   normalizeContactContent,
 } from "@/lib/contact-content";
-import { contactMotives } from "@/lib/contact-subjects";
+import {
+  contactMotives,
+  normalizeContactSubject,
+} from "@/lib/contact-subjects";
 import { prisma } from "@/lib/prisma";
 
-export default async function ContactPage() {
+export default async function ContactPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ sujet?: string }>;
+}) {
   const existing = await prisma.contactContent.findUnique({
     where: { id: "default" },
   });
   const content = normalizeContactContent(existing ?? defaultContactContent);
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
+  const initialSubject = normalizeContactSubject(resolvedSearchParams?.sujet);
 
   return (
     <div className="mx-auto max-w-6xl space-y-10 px-4 py-8 sm:py-12">
@@ -157,7 +166,7 @@ export default async function ContactPage() {
               </CardHeader>
 
               <CardContent>
-                <ContactForm />
+                <ContactForm initialSubject={initialSubject} />
               </CardContent>
             </Card>
           </section>
