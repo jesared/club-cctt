@@ -1,16 +1,89 @@
+import Image from "next/image";
+import { Users } from "lucide-react";
+
+import Reveal from "@/components/Reveal";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Reveal from "@/components/Reveal";
-import type { ComiteResponse } from "@/lib/comite-content";
-import { Users } from "lucide-react";
-import Image from "next/image";
+import type { SimpleMember } from "@/lib/comite-content";
+import { getComiteResponse } from "@/lib/comite-service";
+
+const DEFAULT_AVATAR_SRC = "/avatar-neutral.svg";
+
+function resolvePhoto(photo: string) {
+  return photo || DEFAULT_AVATAR_SRC;
+}
+
+function PersonCard({
+  title,
+  name,
+  photo,
+  description,
+}: {
+  title: string;
+  name: string;
+  photo: string;
+  description?: string;
+}) {
+  return (
+    <Card className="card-hover">
+      <CardHeader className="flex flex-col items-center gap-4 text-center">
+        <div className="relative h-28 w-28 overflow-hidden rounded-xl border bg-muted/30">
+          <Image
+            src={resolvePhoto(photo)}
+            alt={name ? `Portrait de ${name}` : "Avatar par defaut"}
+            fill
+            className="object-cover"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <CardTitle>{title}</CardTitle>
+          <p className="font-medium">{name}</p>
+        </div>
+      </CardHeader>
+
+      {description ? (
+        <CardContent className="pt-0 text-center text-sm text-gray-500">
+          {description}
+        </CardContent>
+      ) : null}
+    </Card>
+  );
+}
+
+function SimplePersonCard({
+  roleLabel,
+  member,
+}: {
+  roleLabel: string;
+  member: SimpleMember;
+}) {
+  return (
+    <Card className="card-hover">
+      <CardHeader className="flex flex-col items-center gap-4 text-center">
+        <div className="relative h-24 w-24 overflow-hidden rounded-full border bg-muted/30">
+          <Image
+            src={resolvePhoto(member.photo)}
+            alt={member.nom ? `Portrait de ${member.nom}` : "Avatar par defaut"}
+            fill
+            className="object-cover"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <div className="flex items-center justify-center gap-2 text-sm text-primary">
+            <Users className="h-4 w-4" />
+            <span>{roleLabel}</span>
+          </div>
+          <CardTitle className="text-xl">{member.nom}</CardTitle>
+        </div>
+      </CardHeader>
+    </Card>
+  );
+}
 
 export default async function ComiteDirecteurPage() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/comite`, {
-    cache: "no-store",
-  });
-
-  const payload: ComiteResponse = await res.json();
+  const payload = await getComiteResponse();
   const { data, meta } = payload;
   const formattedUpdatedAt = meta.updatedAt
     ? new Intl.DateTimeFormat("fr-FR", {
@@ -20,66 +93,51 @@ export default async function ComiteDirecteurPage() {
     : null;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-12 space-y-14">
+    <div className="mx-auto max-w-6xl space-y-14 px-4 py-12">
       <Reveal>
-        <header className="rounded-xl border bg-card/70 p-8 shadow-sm ">
+        <header className="rounded-xl border bg-card/70 p-8 shadow-sm">
           <p className="mb-3 inline-flex items-center rounded-full border border-primary/60 bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] animate-fade-up-1">
             Gouvernance CCTT
           </p>
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-4xl font-bold mb-4 animate-fade-up-2">
-              Comité directeur
+            <h1 className="mb-4 text-4xl font-bold animate-fade-up-2">
+              Comite directeur
             </h1>
             {formattedUpdatedAt ? (
               <Badge variant={meta.stale ? "secondary" : "outline"}>
                 {meta.stale
-                  ? `Dernière mise à jour le ${formattedUpdatedAt}`
-                  : `Mis à jour le ${formattedUpdatedAt}`}
+                  ? `Derniere mise a jour le ${formattedUpdatedAt}`
+                  : `Mis a jour le ${formattedUpdatedAt}`}
               </Badge>
             ) : meta.stale ? (
               <Badge variant="secondary">
-                Dernière mise à jour indisponible
+                Derniere mise a jour indisponible
               </Badge>
             ) : (
-              <Badge variant="outline">Mise à jour en cours</Badge>
+              <Badge variant="outline">Mise a jour en cours</Badge>
             )}
           </div>
-          <p className=" max-w-3xl ">
-            Le comité directeur du Châlons-en-Champagne Tennis de Table assure
-            la gestion, l’organisation et le développement du club.
+          <p className="max-w-3xl">
+            Le comite directeur du Chalons-en-Champagne Tennis de Table assure
+            la gestion, l&apos;organisation et le developpement du club.
           </p>
         </header>
       </Reveal>
 
       <section>
         <Reveal>
-          <h2 className="text-3xl font-semibold mb-8">Bureau</h2>
+          <h2 className="mb-8 text-3xl font-semibold">Bureau</h2>
         </Reveal>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {data.bureau.map((personne, index) => (
-            <Reveal key={personne.nom} delay={index * 120}>
-              <Card className="border-l-4 border-l-primary card-hover">
-                <CardHeader className="flex flex-col items-center text-center gap-4">
-                  <div className="relative w-28 h-28 overflow-hidden rounded-lg ">
-                    <Image
-                      src={personne.photo}
-                      alt={`${personne.nom} – ${personne.poste}`}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-
-                  <CardTitle>{personne.poste}</CardTitle>
-                </CardHeader>
-
-                <CardContent className="text-center">
-                  <p className="font-medium">{personne.nom}</p>
-                  <p className="text-sm text-gray-500 ">
-                    {personne.description}
-                  </p>
-                </CardContent>
-              </Card>
+            <Reveal key={`${personne.poste}-${personne.nom}`} delay={index * 120}>
+              <PersonCard
+                title={personne.poste}
+                name={personne.nom}
+                photo={personne.photo}
+                description={personne.description}
+              />
             </Reveal>
           ))}
         </div>
@@ -87,21 +145,13 @@ export default async function ComiteDirecteurPage() {
 
       <section>
         <Reveal>
-          <h2 className="text-3xl font-semibold mb-8 ">Membres du comité</h2>
+          <h2 className="mb-8 text-3xl font-semibold">Membres du comite</h2>
         </Reveal>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {data.membres.map((membre, index) => (
-            <Reveal key={membre.nom} delay={index * 120}>
-              <Card className="card-hover">
-                <CardHeader className="flex flex-row items-center gap-3">
-                  <Users className="w-5 h-5 text-primary " />
-                  <CardTitle>Membre</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="font-medium">{membre.nom}</p>
-                </CardContent>
-              </Card>
+            <Reveal key={`${membre.nom}-${index}`} delay={index * 120}>
+              <SimplePersonCard roleLabel="Membre" member={membre} />
             </Reveal>
           ))}
         </div>
@@ -109,21 +159,13 @@ export default async function ComiteDirecteurPage() {
 
       <section>
         <Reveal>
-          <h2 className="text-3xl font-semibold mb-8 ">Salariés diplômés</h2>
+          <h2 className="mb-8 text-3xl font-semibold">Salaries diplomes</h2>
         </Reveal>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {data.salaries.map((salarie, index) => (
-            <Reveal key={salarie.nom} delay={index * 120}>
-              <Card className="card-hover">
-                <CardHeader className="flex flex-row items-center gap-3">
-                  <Users className="w-5 h-5 text-primary" />
-                  <CardTitle>Salarié diplômé</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="font-medium">{salarie.nom}</p>
-                </CardContent>
-              </Card>
+            <Reveal key={`${salarie.nom}-${index}`} delay={index * 120}>
+              <SimplePersonCard roleLabel="Salarie diplome" member={salarie} />
             </Reveal>
           ))}
         </div>

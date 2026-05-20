@@ -29,6 +29,7 @@ const emptyBureauMember: BureauMember = {
 
 const emptySimpleMember: SimpleMember = {
   nom: "",
+  photo: "",
 };
 
 function getMetaLabel(meta: ComiteResponse["meta"] | null) {
@@ -51,29 +52,54 @@ function getMetaLabel(meta: ComiteResponse["meta"] | null) {
 
 function getMetaHelp(meta: ComiteResponse["meta"] | null) {
   if (!meta) {
-    return "Récupération des données actuelles du comité.";
+    return "Recuperation des donnees actuelles du comite.";
   }
 
   if (meta.source === "admin") {
-    return "Les modifications enregistrées ici sont déjà prioritaires sur la page publique.";
+    return "Les modifications enregistrees ici sont deja prioritaires sur la page publique.";
   }
 
   if (meta.source === "drive") {
-    return "Au premier enregistrement ici, le site utilisera cette version admin à la place de Drive.";
+    return "Au premier enregistrement ici, le site utilisera cette version admin a la place de Drive.";
   }
 
-  return "Aucune source distante valide n'a été trouvée. Vous pouvez reconstruire le contenu ici.";
+  return "Aucune source distante valide n'a ete trouvee. Vous pouvez reconstruire le contenu ici.";
 }
 
 function formatUpdatedAt(value: string | null) {
   if (!value) {
-    return "Jamais mis à jour";
+    return "Jamais mis a jour";
   }
 
   return new Intl.DateTimeFormat("fr-FR", {
     dateStyle: "long",
     timeStyle: "short",
   }).format(new Date(value));
+}
+
+function ImagePreview({
+  photo,
+  alt,
+}: {
+  photo: string;
+  alt: string;
+}) {
+  if (!photo) {
+    return (
+      <div className="flex h-40 items-center justify-center px-4 text-center text-sm text-muted-foreground">
+        Ajoutez une photo pour l&apos;apercu.
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="h-40 w-full bg-cover bg-center"
+      style={{ backgroundImage: `url(${photo})` }}
+      aria-label={alt}
+      role="img"
+    />
+  );
 }
 
 export default function AdminComiteDirecteurPage() {
@@ -116,7 +142,7 @@ export default function AdminComiteDirecteurPage() {
       const json = (await res.json()) as ComiteResponse;
       setForm(json.data);
       setMeta(json.meta);
-      alert("Comité directeur mis à jour.");
+      alert("Comite directeur mis a jour.");
     } catch {
       alert("Erreur lors de l'enregistrement du comite directeur.");
     } finally {
@@ -137,15 +163,16 @@ export default function AdminComiteDirecteurPage() {
     }));
   }
 
-  function updateSimpleMember(
+  function updateSimpleMember<K extends keyof SimpleMember>(
     key: "membres" | "salaries",
     index: number,
-    value: string,
+    field: K,
+    value: SimpleMember[K],
   ) {
     setForm((current) => ({
       ...current,
       [key]: current[key].map((member, currentIndex) =>
-        currentIndex === index ? { ...member, nom: value } : member,
+        currentIndex === index ? { ...member, [field]: value } : member,
       ),
     }));
   }
@@ -219,10 +246,10 @@ export default function AdminComiteDirecteurPage() {
       <header className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="space-y-2">
-            <h1 className="text-2xl font-bold">Comité directeur</h1>
+            <h1 className="text-2xl font-bold">Comite directeur</h1>
             <p className="max-w-3xl text-sm text-muted-foreground">
-              Modifiez ici les personnes affichées sur la page publique
-              `/club/comite-directeur`, sans passer par Drive.
+              Modifiez ici les personnes affichees sur la page publique
+              /club/comite-directeur, sans passer par Drive.
             </p>
           </div>
 
@@ -238,10 +265,10 @@ export default function AdminComiteDirecteurPage() {
           </CardHeader>
           <CardContent className="flex flex-wrap gap-6 text-sm text-muted-foreground">
             <p>
-              Dernière mise à jour connue :{" "}
+              Derniere mise a jour connue :{" "}
               {formatUpdatedAt(meta?.updatedAt ?? null)}
             </p>
-            <p>{loading ? "Chargement..." : "Contenu prêt à être édité."}</p>
+            <p>{loading ? "Chargement..." : "Contenu pret a etre edite."}</p>
           </CardContent>
         </Card>
       </header>
@@ -252,7 +279,7 @@ export default function AdminComiteDirecteurPage() {
             <div className="space-y-1.5">
               <CardTitle>Bureau</CardTitle>
               <CardDescription>
-                Président, trésorier, secrétaire et autres postes avec photo.
+                President, tresorier, secretaire et autres postes avec photo.
               </CardDescription>
             </div>
             <Button type="button" variant="outline" onClick={addBureauMember}>
@@ -329,18 +356,10 @@ export default function AdminComiteDirecteurPage() {
 
                 <div className="flex flex-col gap-3">
                   <div className="overflow-hidden rounded-xl border bg-muted/20">
-                    {member.photo ? (
-                      <div
-                        className="h-40 w-full bg-cover bg-center"
-                        style={{ backgroundImage: `url(${member.photo})` }}
-                        aria-label={`Prévisualisation de ${member.nom || member.poste || "la photo"}`}
-                        role="img"
-                      />
-                    ) : (
-                      <div className="flex h-40 items-center justify-center px-4 text-center text-sm text-muted-foreground">
-                        Ajoutez une photo pour l&apos;aperçu.
-                      </div>
-                    )}
+                    <ImagePreview
+                      photo={member.photo}
+                      alt={`Previsualisation de ${member.nom || member.poste || "la photo"}`}
+                    />
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
@@ -381,9 +400,9 @@ export default function AdminComiteDirecteurPage() {
         <Card>
           <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
             <div className="space-y-1.5">
-              <CardTitle>Membres du comité</CardTitle>
+              <CardTitle>Membres du comite</CardTitle>
               <CardDescription>
-                Liste simple des autres membres affichés sur la page.
+                Ajoutez un nom et une photo pour les autres membres affiches sur la page.
               </CardDescription>
             </div>
             <Button
@@ -398,46 +417,89 @@ export default function AdminComiteDirecteurPage() {
           <CardContent className="space-y-3">
             {form.membres.length === 0 ? (
               <div className="rounded-xl border border-dashed px-4 py-6 text-sm text-muted-foreground">
-                Aucun membre du comité pour le moment.
+                Aucun membre du comite pour le moment.
               </div>
             ) : null}
 
             {form.membres.map((member, index) => (
               <div
                 key={`membre-${index}`}
-                className="flex flex-col gap-3 rounded-2xl border p-4 md:flex-row md:items-center"
+                className="grid gap-4 rounded-2xl border p-4 md:grid-cols-[minmax(0,1fr)_180px]"
               >
-                <input
-                  className="w-full rounded border px-3 py-2"
-                  placeholder="Nom du membre"
-                  value={member.nom}
-                  onChange={(event) =>
-                    updateSimpleMember("membres", index, event.target.value)
-                  }
-                />
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => moveSimpleMember("membres", index, -1)}
-                    disabled={index === 0}
-                  >
-                    <ArrowUp className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => moveSimpleMember("membres", index, 1)}
-                    disabled={index === form.membres.length - 1}
-                  >
-                    <ArrowDown className="h-4 w-4" />
-                  </Button>
+                <div className="grid gap-4">
+                  <div className="grid gap-2">
+                    <label className="text-sm font-medium">Nom</label>
+                    <input
+                      className="w-full rounded border px-3 py-2"
+                      placeholder="Nom du membre"
+                      value={member.nom}
+                      onChange={(event) =>
+                        updateSimpleMember(
+                          "membres",
+                          index,
+                          "nom",
+                          event.target.value,
+                        )
+                      }
+                    />
+                  </div>
+
+                  <div className="grid gap-2">
+                    <label className="text-sm font-medium">
+                      Photo (URL ou chemin `/public`)
+                    </label>
+                    <input
+                      className="w-full rounded border px-3 py-2"
+                      placeholder="/comite/photo.jpg"
+                      value={member.photo}
+                      onChange={(event) =>
+                        updateSimpleMember(
+                          "membres",
+                          index,
+                          "photo",
+                          event.target.value,
+                        )
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-3">
+                  <div className="overflow-hidden rounded-xl border bg-muted/20">
+                    <ImagePreview
+                      photo={member.photo}
+                      alt={`Previsualisation de ${member.nom || "la photo"}`}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => moveSimpleMember("membres", index, -1)}
+                      disabled={index === 0}
+                    >
+                      <ArrowUp className="h-4 w-4" />
+                      Monter
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => moveSimpleMember("membres", index, 1)}
+                      disabled={index === form.membres.length - 1}
+                    >
+                      <ArrowDown className="h-4 w-4" />
+                      Descendre
+                    </Button>
+                  </div>
+
                   <Button
                     type="button"
                     variant="destructive"
                     onClick={() => removeSimpleMember("membres", index)}
                   >
                     <Trash2 className="h-4 w-4" />
+                    Supprimer
                   </Button>
                 </div>
               </div>
@@ -448,9 +510,9 @@ export default function AdminComiteDirecteurPage() {
         <Card>
           <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
             <div className="space-y-1.5">
-              <CardTitle>Salariés diplômés</CardTitle>
+              <CardTitle>Salaries diplomes</CardTitle>
               <CardDescription>
-                Liste simple des salariés affichés sur la page publique.
+                Ajoutez un nom et une photo pour les salaries affiches sur la page publique.
               </CardDescription>
             </div>
             <Button
@@ -465,46 +527,89 @@ export default function AdminComiteDirecteurPage() {
           <CardContent className="space-y-3">
             {form.salaries.length === 0 ? (
               <div className="rounded-xl border border-dashed px-4 py-6 text-sm text-muted-foreground">
-                Aucun salarié pour le moment.
+                Aucun salarie pour le moment.
               </div>
             ) : null}
 
             {form.salaries.map((member, index) => (
               <div
                 key={`salarie-${index}`}
-                className="flex flex-col gap-3 rounded-2xl border p-4 md:flex-row md:items-center"
+                className="grid gap-4 rounded-2xl border p-4 md:grid-cols-[minmax(0,1fr)_180px]"
               >
-                <input
-                  className="w-full rounded border px-3 py-2"
-                  placeholder="Nom du salarié"
-                  value={member.nom}
-                  onChange={(event) =>
-                    updateSimpleMember("salaries", index, event.target.value)
-                  }
-                />
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => moveSimpleMember("salaries", index, -1)}
-                    disabled={index === 0}
-                  >
-                    <ArrowUp className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => moveSimpleMember("salaries", index, 1)}
-                    disabled={index === form.salaries.length - 1}
-                  >
-                    <ArrowDown className="h-4 w-4" />
-                  </Button>
+                <div className="grid gap-4">
+                  <div className="grid gap-2">
+                    <label className="text-sm font-medium">Nom</label>
+                    <input
+                      className="w-full rounded border px-3 py-2"
+                      placeholder="Nom du salarie"
+                      value={member.nom}
+                      onChange={(event) =>
+                        updateSimpleMember(
+                          "salaries",
+                          index,
+                          "nom",
+                          event.target.value,
+                        )
+                      }
+                    />
+                  </div>
+
+                  <div className="grid gap-2">
+                    <label className="text-sm font-medium">
+                      Photo (URL ou chemin `/public`)
+                    </label>
+                    <input
+                      className="w-full rounded border px-3 py-2"
+                      placeholder="/comite/photo.jpg"
+                      value={member.photo}
+                      onChange={(event) =>
+                        updateSimpleMember(
+                          "salaries",
+                          index,
+                          "photo",
+                          event.target.value,
+                        )
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-3">
+                  <div className="overflow-hidden rounded-xl border bg-muted/20">
+                    <ImagePreview
+                      photo={member.photo}
+                      alt={`Previsualisation de ${member.nom || "la photo"}`}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => moveSimpleMember("salaries", index, -1)}
+                      disabled={index === 0}
+                    >
+                      <ArrowUp className="h-4 w-4" />
+                      Monter
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => moveSimpleMember("salaries", index, 1)}
+                      disabled={index === form.salaries.length - 1}
+                    >
+                      <ArrowDown className="h-4 w-4" />
+                      Descendre
+                    </Button>
+                  </div>
+
                   <Button
                     type="button"
                     variant="destructive"
                     onClick={() => removeSimpleMember("salaries", index)}
                   >
                     <Trash2 className="h-4 w-4" />
+                    Supprimer
                   </Button>
                 </div>
               </div>
@@ -514,12 +619,12 @@ export default function AdminComiteDirecteurPage() {
 
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm text-muted-foreground">
-            Les lignes vides seront automatiquement ignorées à l&apos;enregistrement.
+            Les lignes vides seront automatiquement ignorees a l&apos;enregistrement.
           </p>
 
           <Button type="submit" disabled={loading || saving}>
             <Save className="h-4 w-4" />
-            {saving ? "Enregistrement..." : "Enregistrer le comité"}
+            {saving ? "Enregistrement..." : "Enregistrer le comite"}
           </Button>
         </div>
       </form>
