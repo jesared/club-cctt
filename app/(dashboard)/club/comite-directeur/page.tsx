@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { SimpleMember } from "@/lib/comite-content";
 import { getComiteResponse } from "@/lib/comite-service";
 
-const DEFAULT_AVATAR_SRC = "/avatar-neutral.svg";
+const DEFAULT_AVATAR_SRC = "/comite/avatar-default.svg";
 
 function resolvePhoto(photo: string) {
   return photo || DEFAULT_AVATAR_SRC;
@@ -27,7 +27,7 @@ function PersonCard({
   return (
     <Card className="card-hover">
       <CardHeader className="flex flex-col items-center gap-4 text-center">
-        <div className="relative h-28 w-28 overflow-hidden rounded-xl border bg-muted/30">
+        <div className="relative h-28 w-28 overflow-hidden rounded-xl bg-muted/30">
           <Image
             src={resolvePhoto(photo)}
             alt={name ? `Portrait de ${name}` : "Avatar par defaut"}
@@ -61,7 +61,7 @@ function SimplePersonCard({
   return (
     <Card className="card-hover">
       <CardHeader className="flex flex-col items-center gap-4 text-center">
-        <div className="relative h-24 w-24 overflow-hidden rounded-full border bg-muted/30">
+        <div className="relative h-24 w-24 overflow-hidden rounded-xl bg-muted/30">
           <Image
             src={resolvePhoto(member.photo)}
             alt={member.nom ? `Portrait de ${member.nom}` : "Avatar par defaut"}
