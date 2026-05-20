@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Check, Copy, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -66,8 +67,9 @@ export default function MediaUploadClient() {
   const [history, setHistory] = useState<MediaHistoryItem[]>([]);
   const [historyLoading, setHistoryLoading] = useState(true);
   const [historyError, setHistoryError] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const copiedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const cloudinaryReady = cloudName && uploadPreset;
 
@@ -104,6 +106,14 @@ export default function MediaUploadClient() {
     loadHistory();
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (copiedTimeoutRef.current) {
+        clearTimeout(copiedTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const meta = useMemo(() => {
     if (!result) return null;
     const dims =
@@ -122,7 +132,7 @@ export default function MediaUploadClient() {
     setStatus("uploading");
     setError(null);
     setResult(null);
-    setCopied(false);
+    setCopiedUrl(null);
 
     try {
       const body = new FormData();
@@ -176,25 +186,34 @@ export default function MediaUploadClient() {
     }
   }
 
-  async function copyUrl() {
-    if (!result?.secure_url) return;
+  function markUrlAsCopied(url: string) {
+    setCopiedUrl(url);
+    if (copiedTimeoutRef.current) {
+      clearTimeout(copiedTimeoutRef.current);
+    }
+    copiedTimeoutRef.current = setTimeout(() => {
+      setCopiedUrl((current) => (current === url ? null : current));
+    }, 2200);
+  }
+
+  async function copyToClipboard(url: string) {
     try {
-      await navigator.clipboard.writeText(result.secure_url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      await navigator.clipboard.writeText(url);
+      markUrlAsCopied(url);
+      return true;
     } catch {
-      setCopied(false);
+      setCopiedUrl(null);
+      return false;
     }
   }
 
+  async function copyUrl() {
+    if (!result?.secure_url) return;
+    await copyToClipboard(result.secure_url);
+  }
+
   async function copyFromHistory(url: string) {
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      setCopied(false);
-    }
+    await copyToClipboard(url);
   }
 
   async function removeFromHistory(id: string) {
@@ -229,6 +248,9 @@ export default function MediaUploadClient() {
       return haystack.includes(query);
     });
   }, [history, search]);
+
+  const latestUrl = result?.secure_url ?? null;
+  const latestCopied = latestUrl ? copiedUrl === latestUrl : false;
 
   return (
     <div className="space-y-8">
@@ -328,19 +350,57 @@ export default function MediaUploadClient() {
                     <div>Dimensions: {meta?.dims}</div>
                     <div>Taille: {meta?.size}</div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium text-muted-foreground">
-                      URL publique
-                    </label>
+                  <div
+                    className={cn(
+                      "space-y-3 rounded-xl border px-3 py-3 transition-all duration-200",
+                      latestCopied
+                        ? "border-emerald-500/40 bg-emerald-500/10 shadow-sm"
+                        : "border-border bg-background/70",
+                    )}
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <label className="text-xs font-medium text-muted-foreground">
+                        URL publique
+                      </label>
+                      <span
+                        className={cn(
+                          "rounded-full px-2 py-1 text-[11px] font-medium transition-colors",
+                          latestCopied
+                            ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                            : "bg-muted text-muted-foreground",
+                        )}
+                      >
+                        {latestCopied ? "Copiee" : "Prete a copier"}
+                      </span>
+                    </div>
                     <input
                       readOnly
                       value={result.secure_url}
-                      className="block w-full truncate rounded-md border border-border bg-background px-3 py-2 text-sm"
+                      className={cn(
+                        "block w-full truncate rounded-md border px-3 py-2 text-sm transition-colors",
+                        latestCopied
+                          ? "border-emerald-500/40 bg-emerald-500/5 text-foreground"
+                          : "border-border bg-background",
+                      )}
                     />
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <Button size="sm" variant="secondary" onClick={copyUrl}>
-                      {copied ? "URL copiee" : "Copier l&apos;URL"}
+                    <Button
+                      size="sm"
+                      variant={latestCopied ? "default" : "secondary"}
+                      onClick={copyUrl}
+                      className={cn(
+                        "min-w-[148px] transition-all",
+                        latestCopied &&
+                          "bg-emerald-600 text-white hover:bg-emerald-600/90",
+                      )}
+                    >
+                      {latestCopied ? (
+                        <Check className="h-4 w-4" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                      {latestCopied ? "URL copiee" : "Copier l'URL"}
                     </Button>
                     <Button
                       size="sm"
@@ -349,6 +409,7 @@ export default function MediaUploadClient() {
                       className="min-w-[120px]"
                     >
                       <a href={result.secure_url} target="_blank" rel="noreferrer">
+                        <ExternalLink className="h-4 w-4" />
                         Ouvrir
                       </a>
                     </Button>
@@ -394,15 +455,22 @@ export default function MediaUploadClient() {
             </div>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredHistory.map((item) => (
-                <div
+              {filteredHistory.map((item) => {
+                const itemUrl = getItemUrl(item);
+                const itemCopied = copiedUrl === itemUrl;
+
+                return (
+                  <div
                   key={item.id}
-                  className="overflow-hidden rounded-xl border border-border bg-card"
+                  className={cn(
+                    "overflow-hidden rounded-xl border bg-card transition-colors",
+                    itemCopied ? "border-emerald-500/40" : "border-border",
+                  )}
                 >
                   <div className="aspect-[4/3] bg-muted/40">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={getItemUrl(item)}
+                      src={itemUrl}
                       alt={item.public_id ?? item.publicId ?? "Media"}
                       className="h-full w-full object-cover"
                       loading="lazy"
@@ -420,20 +488,38 @@ export default function MediaUploadClient() {
                           : "—"}
                       </span>
                     </div>
+                    <div
+                      className={cn(
+                        "truncate rounded-lg border px-2.5 py-2 font-mono text-[11px] transition-colors",
+                        itemCopied
+                          ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                          : "border-border/70 bg-muted/30 text-muted-foreground",
+                      )}
+                      title={itemUrl}
+                    >
+                      {itemUrl}
+                    </div>
                     <div className="flex flex-wrap gap-2">
                       <Button
                         size="sm"
-                        variant="secondary"
-                        onClick={() => copyFromHistory(getItemUrl(item))}
+                        variant={itemCopied ? "default" : "secondary"}
+                        onClick={() => copyFromHistory(itemUrl)}
+                        className={cn(
+                          "transition-all",
+                          itemCopied &&
+                            "bg-emerald-600 text-white hover:bg-emerald-600/90",
+                        )}
                       >
-                        Copier URL
+                        {itemCopied ? (
+                          <Check className="h-4 w-4" />
+                        ) : (
+                          <Copy className="h-4 w-4" />
+                        )}
+                        {itemCopied ? "Copiee" : "Copier URL"}
                       </Button>
                       <Button size="sm" variant="outline" asChild>
-                        <a
-                          href={getItemUrl(item)}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
+                        <a href={itemUrl} target="_blank" rel="noreferrer">
+                          <ExternalLink className="h-4 w-4" />
                           Ouvrir
                         </a>
                       </Button>
@@ -455,8 +541,9 @@ export default function MediaUploadClient() {
                       </div>
                     ) : null}
                   </div>
-                </div>
-              ))}
+                  </div>
+                );
+            })}
             </div>
           )}
         </CardContent>
