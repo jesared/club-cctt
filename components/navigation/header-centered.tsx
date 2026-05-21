@@ -63,6 +63,7 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
   const { resolvedTheme, setTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [openSection, setOpenSection] = useState<string | null>("Club");
 
   const sectionMeta = useMemo(
@@ -123,13 +124,42 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
   );
 
   const isAdmin = isAdminRole(session?.user?.role);
+  const tournoiVisible = isPublicMenuVisible(menuVisibility, "tournoi");
   const isDark = mounted ? resolvedTheme === "dark" : false;
   const logoSrc = isDark
     ? "/cctt_logo_trans_blanc.png"
     : "/logo_trans_light.png";
 
+  const desktopSections = useMemo(
+    () =>
+      publicSections.filter(
+        (section) => section.title === "Club" || section.title === "Tournoi",
+      ),
+    [publicSections],
+  );
+
+  const desktopLabels = {
+    Club: "Le club",
+    Tournoi: "Tournoi de Pâques",
+  } satisfies Record<"Club" | "Tournoi", string>;
+
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const syncScrolled = () => {
+      setScrolled(window.scrollY > 16);
+    };
+
+    syncScrolled();
+    window.addEventListener("scroll", syncScrolled, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", syncScrolled);
+    };
   }, []);
 
   useEffect(() => {
@@ -165,18 +195,31 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
     return null;
   }
 
+  const openNavigationSection = (sectionTitle: "Club" | "Tournoi") => {
+    setOpenSection(sectionTitle);
+    setMenuOpen(true);
+  };
+
   return (
     <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-      <header className="sticky top-0 z-50 bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+      <header
+        className={cn(
+          "sticky top-0 z-50 border-b border-transparent bg-background/85 backdrop-blur transition-all duration-200 supports-[backdrop-filter]:bg-background/70",
+          scrolled && "border-border/60 bg-background/92 shadow-sm",
+        )}>
         <div className="mx-auto max-w-7xl px-4 md:px-6">
-          <div className="relative flex min-h-[6.5rem] items-center justify-between py-3">
-            <div className="flex items-center gap-2">
+          <div
+            className={cn(
+              "relative flex items-center justify-between transition-all duration-200",
+              scrolled ? "min-h-[5rem] pt-2 pb-1.5" : "min-h-[5.65rem] pt-3 pb-2.5",
+            )}>
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <button
                 type="button"
                 aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
                 className={cn(
-                  "inline-flex h-10 w-10 items-center justify-center rounded-full border border-transparent text-muted-foreground transition-colors hover:border-border hover:bg-muted/60 hover:text-foreground",
-                  menuOpen && "border-border bg-muted text-foreground",
+                  "inline-flex h-10 w-10 items-center justify-center rounded-full border border-transparent bg-muted/20 text-slate-600 transition-colors hover:bg-muted/55 hover:text-slate-900 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white",
+                  menuOpen && "bg-muted/75 text-foreground dark:bg-white/12",
                 )}
                 aria-expanded={menuOpen}
                 aria-controls="header-centered-menu"
@@ -196,10 +239,10 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
                 }
                 title={isDark ? "Mode clair" : "Mode sombre"}
                 className={cn(
-                  "inline-flex h-10 w-10 items-center justify-center rounded-full border border-transparent transition-colors",
+                  "inline-flex h-10 w-10 items-center justify-center rounded-full border border-transparent bg-muted/20 transition-colors dark:bg-white/5",
                   isDark
-                    ? "bg-white/10 text-amber-300 hover:bg-white/15"
-                    : "bg-black/5 text-slate-700 hover:bg-black/10",
+                    ? "text-amber-300/90 hover:bg-white/10 hover:text-amber-200"
+                    : "text-slate-600 hover:bg-muted/55 hover:text-slate-900",
                 )}
                 onClick={() => setTheme(isDark ? "light" : "dark")}
               >
@@ -209,6 +252,64 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
                   <Moon className="h-4 w-4" />
                 )}
               </button>
+            </div>
+
+            <div className="pointer-events-none absolute inset-x-0 top-1/2 hidden -translate-y-1/2 md:flex md:justify-center">
+              <div className="pointer-events-auto flex items-center gap-2.5 text-sm">
+                {desktopSections
+                  .filter((section) => section.title === "Club")
+                  .map((section) => {
+                    const active = pathname.startsWith("/club");
+
+                    return (
+                      <button
+                        key={section.title}
+                        type="button"
+                        aria-haspopup="dialog"
+                        aria-expanded={menuOpen && openSection === section.title}
+                        className={cn(
+                          "rounded-full px-3.5 py-1.5 font-medium tracking-[0.01em] transition-colors",
+                          active
+                            ? "bg-slate-100/85 text-slate-900 dark:bg-slate-400/10 dark:text-white"
+                            : "text-muted-foreground hover:bg-muted/45 hover:text-foreground",
+                        )}
+                        onClick={() => openNavigationSection("Club")}>
+                        {desktopLabels.Club}
+                      </button>
+                    );
+                  })}
+
+                <div
+                  aria-hidden="true"
+                  className={cn(
+                    "shrink-0 transition-all duration-200",
+                    scrolled ? "w-40 lg:w-48" : "w-48 lg:w-56",
+                  )}
+                />
+
+                {desktopSections
+                  .filter((section) => section.title === "Tournoi")
+                  .map((section) => {
+                    const active = pathname.startsWith("/tournoi");
+
+                    return (
+                      <button
+                        key={section.title}
+                        type="button"
+                        aria-haspopup="dialog"
+                        aria-expanded={menuOpen && openSection === section.title}
+                        className={cn(
+                          "rounded-full px-3 py-1.5 text-[0.925rem] font-medium tracking-normal whitespace-nowrap transition-colors",
+                          active
+                            ? "bg-stone-100/90 text-stone-900 dark:bg-stone-400/10 dark:text-white"
+                            : "text-muted-foreground hover:bg-muted/45 hover:text-foreground",
+                        )}
+                        onClick={() => openNavigationSection("Tournoi")}>
+                        {desktopLabels.Tournoi}
+                      </button>
+                    );
+                  })}
+              </div>
             </div>
 
             <Link
@@ -221,18 +322,32 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
                   alt="Logo CCTT"
                   width={240}
                   height={120}
-                  className="h-[4.5rem] w-auto max-w-full object-contain sm:h-[5.25rem]"
+                  className={cn(
+                    "w-auto max-w-full object-contain transition-all duration-200",
+                    scrolled
+                      ? "h-[3.55rem] sm:h-[3.95rem]"
+                      : "h-[4.15rem] sm:h-[4.65rem]",
+                  )}
                 />
               </span>
             </Link>
 
-            <div className="flex flex-col items-end justify-center gap-2">
+            <div className="flex items-center justify-end gap-1 sm:gap-1.5">
+              {tournoiVisible ? (
+                <Link
+                  href="/tournoi/inscription"
+                  className="hidden rounded-full border border-stone-300/85 bg-gradient-to-r from-stone-50 via-amber-100/65 to-stone-50 px-4 py-2 text-sm font-semibold tracking-[0.02em] text-stone-900 shadow-[0_1px_0_rgba(255,255,255,0.78)_inset,0_8px_18px_rgba(41,37,36,0.08)] transition-all hover:-translate-y-px hover:border-stone-400/90 hover:from-stone-100 hover:via-amber-100 hover:to-stone-100 hover:shadow-[0_1px_0_rgba(255,255,255,0.82)_inset,0_12px_22px_rgba(41,37,36,0.11)] dark:border-white/12 dark:bg-white/6 dark:bg-none dark:text-stone-100 dark:shadow-[0_1px_0_rgba(255,255,255,0.04)_inset] dark:hover:border-white/18 dark:hover:bg-white/10 dark:hover:shadow-[0_1px_0_rgba(255,255,255,0.06)_inset] md:inline-flex"
+                >
+                  S'inscrire
+                </Link>
+              ) : null}
+
               {session ? (
                 <Link
                   href="/user"
                   aria-label="Mon espace"
                   title="Mon espace"
-                  className="inline-flex items-center justify-center rounded-full border border-transparent px-2 py-2 text-sm text-muted-foreground transition-colors hover:border-border hover:bg-muted/60 hover:text-foreground"
+                  className="inline-flex items-center justify-center rounded-full border border-transparent px-2 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted/45 hover:text-foreground"
                 >
                   {session.user.image ? (
                     <Image
@@ -250,11 +365,11 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="h-10 rounded-full border border-transparent px-3 text-muted-foreground hover:border-border hover:bg-muted/60 hover:text-foreground"
+                  className="h-10 rounded-full border border-transparent px-2.5 text-sm text-slate-600 transition-colors hover:bg-muted/35 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/6 dark:hover:text-white"
                   onClick={() => void signIn()}
                 >
                   <LogIn className="h-4 w-4" />
-                  Connexion
+                  <span className="hidden sm:inline">Connexion</span>
                 </Button>
               )}
             </div>
