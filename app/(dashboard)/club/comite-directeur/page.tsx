@@ -30,7 +30,7 @@ function PersonCard({
         <div className="relative h-28 w-28 overflow-hidden rounded-xl bg-muted/30">
           <Image
             src={resolvePhoto(photo)}
-            alt={name ? `Portrait de ${name}` : "Avatar par defaut"}
+            alt={name ? `Portrait de ${name}` : "Avatar par défaut"}
             fill
             className="object-cover"
           />
@@ -64,7 +64,7 @@ function SimplePersonCard({
         <div className="relative h-24 w-24 overflow-hidden rounded-xl bg-muted/30">
           <Image
             src={resolvePhoto(member.photo)}
-            alt={member.nom ? `Portrait de ${member.nom}` : "Avatar par defaut"}
+            alt={member.nom ? `Portrait de ${member.nom}` : "Avatar par défaut"}
             fill
             className="object-cover"
           />
@@ -101,25 +101,25 @@ export default async function ComiteDirecteurPage() {
           </p>
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="mb-4 text-4xl font-bold animate-fade-up-2">
-              Comite directeur
+              Comité directeur
             </h1>
             {formattedUpdatedAt ? (
               <Badge variant={meta.stale ? "secondary" : "outline"}>
                 {meta.stale
-                  ? `Derniere mise a jour le ${formattedUpdatedAt}`
-                  : `Mis a jour le ${formattedUpdatedAt}`}
+                  ? `Dernière mise à jour le ${formattedUpdatedAt}`
+                  : `Mis à jour le ${formattedUpdatedAt}`}
               </Badge>
             ) : meta.stale ? (
               <Badge variant="secondary">
-                Derniere mise a jour indisponible
+                Dernière mise à jour indisponible
               </Badge>
             ) : (
-              <Badge variant="outline">Mise a jour en cours</Badge>
+              <Badge variant="outline">Mise à jour en cours</Badge>
             )}
           </div>
           <p className="max-w-3xl">
-            Le comite directeur du Chalons-en-Champagne Tennis de Table assure
-            la gestion, l&apos;organisation et le developpement du club.
+            Le comité directeur du Châlons-en-Champagne Tennis de Table assure
+            la gestion, l&apos;organisation et le développement du club.
           </p>
         </header>
       </Reveal>
@@ -145,7 +145,7 @@ export default async function ComiteDirecteurPage() {
 
       <section>
         <Reveal>
-          <h2 className="mb-8 text-3xl font-semibold">Membres du comite</h2>
+          <h2 className="mb-8 text-3xl font-semibold">Membres du comité</h2>
         </Reveal>
 
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -159,13 +159,13 @@ export default async function ComiteDirecteurPage() {
 
       <section>
         <Reveal>
-          <h2 className="mb-8 text-3xl font-semibold">Salaries diplomes</h2>
+          <h2 className="mb-8 text-3xl font-semibold">Salariés diplômés</h2>
         </Reveal>
 
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {data.salaries.map((salarie, index) => (
             <Reveal key={`${salarie.nom}-${index}`} delay={index * 120}>
-              <SimplePersonCard roleLabel="Salarie diplome" member={salarie} />
+              <SimplePersonCard roleLabel="Salarié diplômé" member={salarie} />
             </Reveal>
           ))}
         </div>

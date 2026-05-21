@@ -73,7 +73,7 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
             "/club/horaires": "Creneaux, salles et periodes d'ouverture.",
             "/club/tarifs": "Tarifs et formules d'adhesion.",
             "/club/partenaires": "Soutiens et partenaires du club.",
-            "/club/comite-directeur": "Equipe dirigeante du club.",
+            "/club/comite-directeur": "Équipe dirigeante du club.",
             "/club/contact": "Contact et localisation.",
           } as Record<string, string>,
         },

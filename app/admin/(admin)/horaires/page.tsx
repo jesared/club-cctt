@@ -23,6 +23,7 @@ import {
 
 const badgeLabels: Record<BadgeVariant, string> = {
   jeunes: "Jeunes",
+  adultes: "Adultes",
   elite: "Elite",
   loisir: "Loisir",
   libre: "Libre",

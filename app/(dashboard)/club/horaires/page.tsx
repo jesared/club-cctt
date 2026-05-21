@@ -1,41 +1,46 @@
+import Link from "next/link";
+
 import Reveal from "@/components/Reveal";
 import ClubContextNav from "@/components/public/club-context-nav";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { BadgeVariant, HorairesResponse } from "@/lib/horaires-content";
-import Link from "next/link";
 
 const profileCards = [
   {
-    title: "Je cherche un creneau jeune",
+    title: "Je cherche un créneau jeune",
     detail:
-      "Reperez d'abord les badges Jeunes pour identifier les seances encadrees adaptees aux plus jeunes.",
+      "Repérez d'abord les badges Jeunes pour identifier les séances encadrées adaptées aux plus jeunes.",
     badge: "Jeunes",
   },
   {
     title: "Je veux jouer en loisir",
     detail:
-      "Cherchez les creneaux Loisir pour une pratique detendue, reguliere ou orientee sport sante.",
+      "Cherchez les créneaux Loisir pour une pratique détendue, régulière ou orientée sport santé.",
     badge: "Loisir",
   },
   {
-    title: "Je veux m'entrainer davantage",
+    title: "Je veux m'entraîner davantage",
     detail:
-      "Combinez les creneaux Elite et Libre si vous cherchez plus de volume ou un niveau confirme.",
+      "Combinez les créneaux Elite et Libre si vous cherchez plus de volume ou un niveau confirmé.",
     badge: "Elite + Libre",
   },
 ];
 
 const practicalNotes = [
-  "Les horaires peuvent evoluer pendant les vacances scolaires et les jours feries.",
-  "Le jeu libre est reserve aux licencies du club.",
+  "Les horaires peuvent évoluer pendant les vacances scolaires et les jours fériés.",
+  "Le jeu libre est réservé aux licenciés du club.",
   "Un premier essai est possible avant toute inscription.",
 ];
 
 function getBadgeLabel(type: BadgeVariant) {
   if (type === "jeunes") {
     return "Jeunes";
+  }
+
+  if (type === "adultes") {
+    return "Adultes";
   }
 
   if (type === "elite") {
@@ -71,29 +76,27 @@ export default async function HorairesPage() {
             Horaires du club
           </p>
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-4xl font-bold">Horaires d&apos;entrainement</h1>
+            <h1 className="text-4xl font-bold">Horaires d&apos;entraînement</h1>
             {formattedUpdatedAt ? (
               <Badge variant={meta.stale ? "secondary" : "outline"}>
                 {meta.stale
-                  ? `Derniere mise a jour le ${formattedUpdatedAt}`
-                  : `Mis a jour le ${formattedUpdatedAt}`}
+                  ? `Dernière mise à jour le ${formattedUpdatedAt}`
+                  : `Mis à jour le ${formattedUpdatedAt}`}
               </Badge>
             ) : meta.stale ? (
               <Badge variant="secondary">
-                Derniere mise a jour indisponible
+                Dernière mise à jour indisponible
               </Badge>
             ) : (
-              <Badge variant="outline">Mise a jour en cours</Badge>
+              <Badge variant="outline">Mise à jour en cours</Badge>
             )}
           </div>
 
           <div className="max-w-4xl space-y-3">
-            <p className="text-lg text-foreground">
-              Quel creneau pour quel public ?
-            </p>
+            <p className="text-lg text-foreground">Quel créneau pour quel public ?</p>
             <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-              Cette page est pensee pour vous aider a trouver rapidement un
-              rythme adapte : jeunes, loisir, entrainement soutenu ou jeu
+              Cette page est pensée pour vous aider à trouver rapidement un
+              rythme adapté : jeunes, loisir, entraînement soutenu ou jeu
               libre. Commencez par le profil qui vous ressemble, puis regardez
               les jours correspondants.
             </p>
@@ -136,22 +139,27 @@ export default async function HorairesPage() {
               <div className="flex flex-wrap gap-x-6 gap-y-3">
                 <div className="flex items-center gap-2">
                   <Badge variant="jeunes">Jeunes</Badge>
-                  <span>Entrainements encadres pour les jeunes</span>
+                  <span>Entraînements encadrés pour les jeunes</span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Badge variant="adultes">Adultes</Badge>
+                  <span>Créneaux pensés pour les joueurs et joueuses adultes</span>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <Badge variant="elite">Elite</Badge>
-                  <span>Groupes a niveau confirme</span>
+                  <span>Groupes à niveau confirmé</span>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <Badge variant="loisir">Loisir</Badge>
-                  <span>Pratique loisir et sport sante</span>
+                  <span>Pratique loisir et sport santé</span>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <Badge variant="libre">Libre</Badge>
-                  <span>Jeu libre reserve aux licencies</span>
+                  <span>Jeu libre réservé aux licenciés</span>
                 </div>
               </div>
             </CardContent>
@@ -168,11 +176,6 @@ export default async function HorairesPage() {
               <Card className="card-hover">
                 <CardHeader className="space-y-2">
                   <CardTitle>{jour.jour}</CardTitle>
-                  <p className="text-sm text-muted-foreground">
-                    {jour.seances.length} creneau
-                    {jour.seances.length > 1 ? "x" : ""} disponible
-                    {jour.seances.length > 1 ? "s" : ""}
-                  </p>
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-4">
@@ -192,7 +195,7 @@ export default async function HorairesPage() {
                           {seance.horaire}
                         </p>
                         <p className="mt-1 text-sm text-muted-foreground">
-                          {seance.label || "Creneau sans precision complementaire."}
+                          {seance.label || "Créneau sans précision complémentaire."}
                         </p>
                       </li>
                     ))}
@@ -228,8 +231,8 @@ export default async function HorairesPage() {
 
             <CardContent className="space-y-4">
               <p className="text-sm leading-relaxed text-muted-foreground">
-                Vous hesez encore entre plusieurs creneaux ? Le plus simple est
-                de nous contacter pour un premier essai et un conseil adapte a
+                Vous hésitez encore entre plusieurs créneaux ? Le plus simple est
+                de nous contacter pour un premier essai et un conseil adapté à
                 votre profil.
               </p>
 

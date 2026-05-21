@@ -1,4 +1,4 @@
-export type BadgeVariant = "jeunes" | "elite" | "loisir" | "libre";
+export type BadgeVariant = "jeunes" | "adultes" | "elite" | "loisir" | "libre";
 
 export type Seance = {
   type: BadgeVariant[];
@@ -28,6 +28,7 @@ export type HorairesResponse = {
 
 export const badgeVariants: BadgeVariant[] = [
   "jeunes",
+  "adultes",
   "elite",
   "loisir",
   "libre",
