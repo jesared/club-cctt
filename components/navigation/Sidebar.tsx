@@ -1,12 +1,11 @@
 "use client";
 
-import { EyeOff, LogOut, PanelLeftOpen, User2, X } from "lucide-react";
+import { EyeOff, LogOut, Moon, PanelLeftOpen, Sun, User2, X } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useMemo, useState } from "react";
 
-import ThemeToggle from "@/components/ThemeToggle";
 import {
   getVisibleSections,
   type NavigationBadges,
@@ -43,10 +42,16 @@ function isItemActive(pathname: string, href: string) {
 }
 
 function buildSectionState(sections: MenuSection[], pathname: string) {
+  const preferredSectionTitle =
+    pathname.startsWith("/admin") &&
+    sections.some((section) => section.title === "Administration")
+      ? "Administration"
+      : sections.find((section) =>
+          section.items.some((item) => isItemActive(pathname, item.href)),
+        )?.title;
+
   return sections.reduce<Record<string, boolean>>((acc, section) => {
-    acc[section.title] = section.items.some((item) =>
-      isItemActive(pathname, item.href),
-    );
+    acc[section.title] = section.title === preferredSectionTitle;
     return acc;
   }, {});
 }
@@ -59,7 +64,7 @@ export default function Sidebar({
 }: SidebarProps) {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const { resolvedTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
 
   const sections = useMemo(
     () =>
@@ -95,7 +100,9 @@ export default function Sidebar({
   const collapsed = sidebarState === "collapsed";
   const isAdmin = isAdminRole(session?.user?.role);
   const isDark = mounted ? resolvedTheme === "dark" : false;
-  const logoSrc = isDark ? "/logo_trans.png" : "/logo_trans_dark.png";
+  const logoSrc = isDark
+    ? "/cctt_logo_trans_blanc.png"
+    : "/logo_trans_light.png";
 
   const widthClasses = cn(
     sidebarState === "expanded" && "w-[280px]",
@@ -128,10 +135,14 @@ export default function Sidebar({
   }, [openSections]);
 
   const toggleSection = (title: string) => {
-    setOpenSections((prev) => ({
-      ...prev,
-      [title]: !prev[title],
-    }));
+    setOpenSections((prev) => {
+      const nextIsOpen = !prev[title];
+
+      return sections.reduce<Record<string, boolean>>((acc, section) => {
+        acc[section.title] = section.title === title ? nextIsOpen : false;
+        return acc;
+      }, {});
+    });
   };
 
   // bloque scroll body en mobile
@@ -146,6 +157,10 @@ export default function Sidebar({
 
   const reopenSidebar = () => {
     setSidebarState("expanded");
+  };
+
+  const toggleTheme = () => {
+    setTheme(isDark ? "light" : "dark");
   };
 
   return (
@@ -202,18 +217,18 @@ export default function Sidebar({
             href="/"
             onClick={mobile ? onClose : undefined}
             className={cn(
-              "mx-4 mb-3 mt-2 flex justify-center transition-all duration-300",
+              "mx-4 mb-4 mt-3 flex justify-center transition-all duration-300",
               collapsed && "justify-center",
             )}
           >
             <Image
               src={logoSrc}
               alt="Logo"
-              width={160}
-              height={80}
+              width={220}
+              height={110}
               className={cn(
                 "object-contain",
-                mobile ? "h-12 w-auto" : collapsed ? "h-8 w-8" : "h-12 w-auto",
+                mobile ? "h-16 w-auto" : collapsed ? "h-9 w-9" : "h-16 w-auto",
               )}
             />
           </Link>
@@ -233,7 +248,23 @@ export default function Sidebar({
             )}
 
             <div className="flex items-center gap-1">
-              {!collapsed ? <ThemeToggle /> : null}
+              {!collapsed ? (
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  aria-label={isDark ? "Passer au mode clair" : "Passer au mode sombre"}
+                  title={isDark ? "Mode clair" : "Mode sombre"}
+                  onClick={toggleTheme}
+                  className="h-9 w-9 rounded-full"
+                >
+                  {isDark ? (
+                    <Sun className="h-4.5 w-4.5" />
+                  ) : (
+                    <Moon className="h-4 w-4" />
+                  )}
+                </Button>
+              ) : null}
               <Button
                 size="icon"
                 variant="ghost"

@@ -11,15 +11,20 @@ import {
   X,
 } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
+import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
 import { useEffect, useMemo, useState } from "react";
 
 import { getVisibleSections } from "@/components/navigation/menu-items";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import type { PublicMenuVisibility } from "@/lib/menu-settings";
 import { isPublicMenuVisible } from "@/lib/menu-settings";
 import { isAdminRole } from "@/lib/roles";
@@ -58,10 +63,7 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
   const { resolvedTheme, setTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [sectionOpen, setSectionOpen] = useState<Record<string, boolean>>({
-    Club: true,
-    Tournoi: false,
-  });
+  const [openSection, setOpenSection] = useState<string | null>("Club");
 
   const sectionMeta = useMemo(
     () =>
@@ -122,7 +124,9 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
 
   const isAdmin = isAdminRole(session?.user?.role);
   const isDark = mounted ? resolvedTheme === "dark" : false;
-  const logoSrc = isDark ? "/logo_trans.png" : "/logo_trans_dark.png";
+  const logoSrc = isDark
+    ? "/cctt_logo_trans_blanc.png"
+    : "/logo_trans_light.png";
 
   useEffect(() => {
     setMounted(true);
@@ -133,12 +137,14 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
   }, [pathname]);
 
   useEffect(() => {
-    setSectionOpen((prev) => ({
-      Club: pathname.startsWith("/club") ? true : (prev.Club ?? true),
-      Tournoi: pathname.startsWith("/tournoi")
-        ? true
-        : (prev.Tournoi ?? false),
-    }));
+    if (pathname.startsWith("/club")) {
+      setOpenSection("Club");
+      return;
+    }
+
+    if (pathname.startsWith("/tournoi")) {
+      setOpenSection("Tournoi");
+    }
   }, [pathname]);
 
   useEffect(() => {
@@ -185,7 +191,9 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
 
               <button
                 type="button"
-                aria-label={isDark ? "Passer au mode clair" : "Passer au mode sombre"}
+                aria-label={
+                  isDark ? "Passer au mode clair" : "Passer au mode sombre"
+                }
                 title={isDark ? "Mode clair" : "Mode sombre"}
                 className={cn(
                   "inline-flex h-10 w-10 items-center justify-center rounded-full border border-transparent transition-colors",
@@ -261,20 +269,11 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
       >
         <div className="px-4 pb-5 pt-14 sm:px-4">
           <SheetHeader className="mb-4 border-b pb-3">
-            <div className="flex items-center gap-2.5">
-              <Image
-                src={logoSrc}
-                alt="Logo CCTT"
-                width={84}
-                height={42}
-                className="h-9 w-auto object-contain"
-              />
-              <div>
-                <SheetTitle className="text-base leading-none">Navigation</SheetTitle>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Menu principal du site.
-                </p>
-              </div>
+            <div className="space-y-1 text-left">
+              <SheetTitle className="text-lg leading-none">Navigation</SheetTitle>
+              <p className="text-sm text-muted-foreground">
+                Retrouvez rapidement les pages utiles du club et du tournoi.
+              </p>
             </div>
           </SheetHeader>
 
@@ -285,18 +284,49 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
                   section.title === "Club" || section.title === "Tournoi"
                     ? sectionMeta[section.title]
                     : null;
-                const expanded = sectionOpen[section.title] ?? false;
+                const expanded = openSection === section.title;
+                const palette =
+                  section.title === "Club"
+                    ? {
+                        section: expanded
+                          ? "border-slate-300 bg-slate-100/80 dark:border-slate-400/25 dark:bg-slate-500/8"
+                          : "border-slate-200 bg-slate-50/80 dark:border-slate-400/15 dark:bg-slate-500/4",
+                        icon: "bg-slate-200 text-slate-600 dark:bg-slate-400/12 dark:text-slate-300",
+                        activeIcon: "bg-slate-600 text-white dark:bg-slate-300 dark:text-slate-950",
+                        activeRow:
+                          "bg-slate-200/80 text-foreground before:bg-slate-500 dark:bg-slate-400/10 dark:before:bg-slate-300",
+                        hoverRow:
+                          "text-slate-700 hover:bg-slate-100 hover:text-slate-950 dark:text-muted-foreground dark:hover:bg-slate-400/6 dark:hover:text-foreground",
+                        cta: "text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-400/8",
+                      }
+                    : {
+                        section: expanded
+                          ? "border-stone-300 bg-stone-100/80 dark:border-stone-400/25 dark:bg-stone-500/8"
+                          : "border-stone-200 bg-stone-50/80 dark:border-stone-400/15 dark:bg-stone-500/4",
+                        icon: "bg-stone-200 text-stone-600 dark:bg-stone-400/12 dark:text-stone-300",
+                        activeIcon: "bg-amber-400 text-stone-950 dark:bg-amber-200 dark:text-stone-950",
+                        activeRow:
+                          "bg-stone-200/80 text-foreground before:bg-amber-500 dark:bg-stone-400/10 dark:before:bg-amber-200",
+                        hoverRow:
+                          "text-stone-700 hover:bg-stone-100 hover:text-stone-950 dark:text-muted-foreground dark:hover:bg-stone-400/6 dark:hover:text-foreground",
+                        cta: "text-stone-700 hover:bg-stone-100 dark:text-stone-200 dark:hover:bg-stone-400/8",
+                      };
 
                 return (
-                  <section key={section.title} className="space-y-1">
+                  <section
+                    key={section.title}
+                    className={cn(
+                      "rounded-2xl border px-2 py-2 transition-colors",
+                      palette.section,
+                    )}
+                  >
                     <button
                       type="button"
-                      className="flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-muted"
+                      className="flex w-full items-center justify-between rounded-xl px-3 py-3 text-left transition-colors hover:bg-background/50"
                       onClick={() =>
-                        setSectionOpen((prev) => ({
-                          ...prev,
-                          [section.title]: !expanded,
-                        }))
+                        setOpenSection((prev) =>
+                          prev === section.title ? null : section.title,
+                        )
                       }
                       aria-expanded={expanded}
                     >
@@ -319,9 +349,13 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
                     </button>
 
                     {expanded ? (
-                      <div className="space-y-0.5 pl-1">
+                      <div className="space-y-1 px-1 pb-1">
                         {section.items.map((submenuItem) => {
-                          const active = isItemActive(pathname, submenuItem.href);
+                          const active = isItemActive(
+                            pathname,
+                            submenuItem.href,
+                          );
+                          const helper = meta?.items?.[submenuItem.href];
 
                           return (
                             <Link
@@ -329,23 +363,33 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
                               href={submenuItem.href}
                               onClick={() => setMenuOpen(false)}
                               className={cn(
-                                "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-colors",
+                                "relative flex items-start gap-3 rounded-xl px-3 py-3 text-sm transition-colors before:absolute before:bottom-2 before:left-0 before:top-2 before:w-1 before:rounded-full before:opacity-0",
                                 active
-                                  ? "bg-primary/10 text-foreground"
-                                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                                  ? "before:opacity-100 shadow-sm"
+                                  : "text-muted-foreground",
+                                active ? palette.activeRow : palette.hoverRow,
                               )}
                             >
                               <span
                                 className={cn(
-                                  "flex h-7 w-7 items-center justify-center rounded-full",
+                                  "mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
                                   active
-                                    ? "bg-primary text-primary-foreground"
-                                    : "bg-muted text-muted-foreground",
+                                    ? palette.activeIcon
+                                    : palette.icon,
                                 )}
                               >
                                 <submenuItem.icon className="h-3.5 w-3.5" />
                               </span>
-                              <span>{submenuItem.label}</span>
+                              <span className="min-w-0">
+                                <span className="block font-medium text-foreground">
+                                  {submenuItem.label}
+                                </span>
+                                {helper ? (
+                                  <span className="mt-0.5 block text-xs leading-4 text-muted-foreground">
+                                    {helper}
+                                  </span>
+                                ) : null}
+                              </span>
                             </Link>
                           );
                         })}
@@ -354,7 +398,10 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
                           <Link
                             href={meta.cta.href}
                             onClick={() => setMenuOpen(false)}
-                            className="inline-flex items-center rounded-full px-2.5 pt-1 text-xs font-medium text-primary hover:underline"
+                            className={cn(
+                              "inline-flex w-full items-center justify-center rounded-xl px-3 py-2 text-sm font-medium transition-colors",
+                              palette.cta,
+                            )}
                           >
                             {meta.cta.label}
                           </Link>
@@ -376,7 +423,7 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
                   <span className="flex h-7 w-7 items-center justify-center rounded-full bg-muted">
                     <ShieldMinus className="h-3.5 w-3.5" />
                   </span>
-                  <span>Administration tournoi</span>
+                  <span>Administration</span>
                 </Link>
               ) : null}
 
