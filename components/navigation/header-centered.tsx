@@ -314,7 +314,7 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
 
             <Link
               href="/"
-              className="absolute left-1/2 top-1/2 z-10 flex w-[min(46vw,11rem)] max-w-[calc(100%-8.5rem)] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-background/92 px-3 py-1 text-center shadow-sm ring-1 ring-border/50 sm:w-[min(42vw,13rem)] sm:max-w-[calc(100%-10rem)] md:w-auto md:max-w-[calc(100%-11rem)] md:bg-transparent md:px-2 md:py-1 md:shadow-none md:ring-0"
+              className="absolute left-1/2 top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-background/95 px-3 py-1 text-center shadow-sm ring-1 ring-border/50 md:hidden"
             >
               <span className="inline-flex items-center justify-center drop-shadow-[0_10px_24px_rgba(15,23,42,0.18)]">
                 <Image
@@ -322,11 +322,31 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
                   alt="Logo CCTT"
                   width={240}
                   height={120}
+                  priority
+                  sizes="176px"
+                  className={cn(
+                    "h-auto w-auto max-w-[10.5rem] object-contain transition-all duration-200",
+                    scrolled
+                      ? "max-h-[2.55rem]"
+                      : "max-h-[2.9rem]",
+                  )}
+                />
+              </span>
+            </Link>
+
+            <Link
+              href="/"
+              className="absolute left-1/2 top-1/2 hidden max-w-[calc(100%-11rem)] -translate-x-1/2 -translate-y-1/2 items-center justify-center text-center md:flex"
+            >
+              <span className="inline-flex items-center justify-center px-2 py-1 drop-shadow-[0_10px_24px_rgba(15,23,42,0.18)]">
+                <Image
+                  src={logoSrc}
+                  alt="Logo CCTT"
+                  width={240}
+                  height={120}
                   className={cn(
                     "w-auto max-w-full object-contain transition-all duration-200",
-                    scrolled
-                      ? "h-[2.55rem] sm:h-[3.35rem] md:h-[3.95rem]"
-                      : "h-[2.9rem] sm:h-[3.7rem] md:h-[4.65rem]",
+                    scrolled ? "h-[3.95rem]" : "h-[4.65rem]",
                   )}
                 />
               </span>
