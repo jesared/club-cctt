@@ -336,7 +336,7 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
               {tournoiVisible ? (
                 <Link
                   href="/tournoi/inscription"
-                  className="hidden rounded-full border border-stone-300/85 bg-gradient-to-r from-stone-50 via-amber-100/65 to-stone-50 px-4 py-2 text-sm font-semibold tracking-[0.02em] text-stone-900 shadow-[0_1px_0_rgba(255,255,255,0.78)_inset,0_8px_18px_rgba(41,37,36,0.08)] transition-all hover:-translate-y-px hover:border-stone-400/90 hover:from-stone-100 hover:via-amber-100 hover:to-stone-100 hover:shadow-[0_1px_0_rgba(255,255,255,0.82)_inset,0_12px_22px_rgba(41,37,36,0.11)] dark:border-white/12 dark:bg-white/6 dark:bg-none dark:text-stone-100 dark:shadow-[0_1px_0_rgba(255,255,255,0.04)_inset] dark:hover:border-white/18 dark:hover:bg-white/10 dark:hover:shadow-[0_1px_0_rgba(255,255,255,0.06)_inset] md:inline-flex"
+                  className="hidden rounded-full border border-stone-300/85 bg-stone-50 px-4 py-2 text-sm font-semibold tracking-[0.02em] text-stone-900 shadow-[0_1px_0_rgba(255,255,255,0.78)_inset,0_8px_18px_rgba(41,37,36,0.08)] transition-all hover:-translate-y-px hover:border-stone-400/90 hover:bg-stone-100 hover:shadow-[0_1px_0_rgba(255,255,255,0.82)_inset,0_12px_22px_rgba(41,37,36,0.11)] dark:border-white/12 dark:bg-white/6 dark:bg-none dark:text-stone-100 dark:shadow-[0_1px_0_rgba(255,255,255,0.04)_inset] dark:hover:border-white/18 dark:hover:bg-white/10 dark:hover:shadow-[0_1px_0_rgba(255,255,255,0.06)_inset] md:inline-flex"
                 >
                   S'inscrire
                 </Link>

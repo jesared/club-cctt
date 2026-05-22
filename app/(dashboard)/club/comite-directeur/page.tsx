@@ -27,7 +27,7 @@ function PersonCard({
   return (
     <Card className="group overflow-visible border-0 bg-transparent shadow-none">
       <CardHeader className="flex flex-col items-center gap-5 pb-4 text-center">
-        <div className="relative h-32 w-32 overflow-hidden rounded-full border border-white/25 bg-muted/15 shadow-[0_18px_40px_-26px_rgba(15,23,42,0.6)] ring-4 ring-background/85">
+        <div className="relative h-32 w-32 overflow-hidden rounded-full border border-border/30 bg-muted/10 shadow-[0_18px_40px_-26px_rgba(15,23,42,0.6)] ring-4 ring-background/85">
           <Image
             src={resolvePhoto(photo)}
             alt={name ? `Portrait de ${name}` : "Avatar par défaut"}
@@ -64,7 +64,7 @@ function SimplePersonCard({
   return (
     <Card className="group overflow-visible border-0 bg-transparent shadow-none">
       <CardHeader className="flex flex-col items-center gap-4 text-center">
-        <div className="relative h-24 w-24 overflow-hidden rounded-full border border-white/25 bg-muted/15 ring-4 ring-background/85">
+        <div className="relative h-24 w-24 overflow-hidden rounded-full border border-border/30 bg-muted/10 ring-4 ring-background/85">
           <Image
             src={resolvePhoto(member.photo)}
             alt={member.nom ? `Portrait de ${member.nom}` : "Avatar par défaut"}
