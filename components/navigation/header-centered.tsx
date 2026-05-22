@@ -127,8 +127,8 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
   const tournoiVisible = isPublicMenuVisible(menuVisibility, "tournoi");
   const isDark = mounted ? resolvedTheme === "dark" : false;
   const logoSrc = isDark
-    ? "/cctt_logo_trans_blanc.png"
-    : "/logo_trans_light.png";
+    ? "/cctt_logo_trans_blanc.png?v=2"
+    : "/logo_trans_light.png?v=2";
 
   const desktopSections = useMemo(
     () =>
@@ -322,6 +322,7 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
                   alt="Logo CCTT"
                   width={240}
                   height={120}
+                  unoptimized
                   priority
                   sizes="176px"
                   className={cn(
@@ -344,6 +345,7 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
                   alt="Logo CCTT"
                   width={240}
                   height={120}
+                  unoptimized
                   className={cn(
                     "w-auto max-w-full object-contain transition-all duration-200",
                     scrolled ? "h-[3.95rem]" : "h-[4.65rem]",
