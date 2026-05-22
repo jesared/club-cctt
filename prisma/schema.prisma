@@ -355,6 +355,8 @@ model MediaAsset {
 enum Role {
   USER
   CLUB
+  BUREAU
+  ENTRAINEUR
   ADMIN
 }
 

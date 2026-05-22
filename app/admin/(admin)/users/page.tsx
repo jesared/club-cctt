@@ -10,13 +10,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { MANAGED_ROLES, type ManagedRole } from "@/lib/user-roles";
 
 import type { Role } from "@prisma/client";
 import UsersTable from "./users-table";
-
-const MANAGED_ROLES = ["USER", "CLUB", "ADMIN"] as const;
-
-type ManagedRole = (typeof MANAGED_ROLES)[number];
 
 type UsersPageSearchParams = Record<string, string | string[] | undefined>;
 
@@ -33,25 +30,25 @@ function getFeedbackBanner(searchParams: UsersPageSearchParams) {
   if (notice === "role-updated") {
     return {
       tone: "success" as const,
-      title: "Role mis a jour",
-      description: "Les droits de l'utilisateur ont bien ete enregistres.",
+      title: "Rôle mis à jour",
+      description: "Les droits de l'utilisateur ont bien été enregistrés.",
     };
   }
 
   if (notice === "user-deleted") {
     return {
       tone: "success" as const,
-      title: "Compte supprime",
-      description: "Le compte utilisateur a bien ete retire de la liste.",
+      title: "Compte supprimé",
+      description: "Le compte utilisateur a bien été retiré de la liste.",
     };
   }
 
   if (error === "invalid-role") {
     return {
       tone: "error" as const,
-      title: "Role invalide",
+      title: "Rôle invalide",
       description:
-        "Le role demande n'est pas autorise depuis cette interface.",
+        "Le rôle demandé n'est pas autorisé depuis cette interface.",
     };
   }
 
@@ -67,9 +64,9 @@ function getFeedbackBanner(searchParams: UsersPageSearchParams) {
   if (error === "protected-admin") {
     return {
       tone: "error" as const,
-      title: "Compte protege",
+      title: "Compte protégé",
       description:
-        "Les comptes administrateurs ne peuvent pas etre modifies ou supprimes depuis cette page.",
+        "Les comptes administrateurs ne peuvent pas être modifiés ou supprimés depuis cette page.",
     };
   }
 
@@ -180,7 +177,7 @@ export default async function AdminUsersPage({
     {
       label: "Admins",
       value: users.filter((user) => user.role === "ADMIN").length,
-      helper: "comptes proteges",
+      helper: "comptes protégés",
     },
     {
       label: "Clubs",
@@ -188,9 +185,19 @@ export default async function AdminUsersPage({
       helper: "comptes structure",
     },
     {
-      label: "Licencies",
+      label: "Bureau",
+      value: users.filter((user) => user.role === "BUREAU").length,
+      helper: "membres du bureau",
+    },
+    {
+      label: "Entraîneurs",
+      value: users.filter((user) => user.role === "ENTRAINEUR").length,
+      helper: "encadrement sportif",
+    },
+    {
+      label: "Licenciés",
       value: users.reduce((total, user) => total + user.players.length, 0),
-      helper: "joueurs rattaches",
+      helper: "joueurs rattachés",
     },
   ];
 
@@ -205,7 +212,7 @@ export default async function AdminUsersPage({
             <CardTitle className="text-3xl">Gestion utilisateurs</CardTitle>
           </div>
           <CardDescription className="max-w-3xl text-sm leading-6">
-            Visualise les comptes actifs, verifie leur role et gere rapidement
+            Visualise les comptes actifs, vérifie leur rôle et gère rapidement
             les rattachements club ou membre depuis un espace plus lisible.
           </CardDescription>
         </CardHeader>
@@ -245,7 +252,7 @@ export default async function AdminUsersPage({
         </Card>
       ) : null}
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
         {stats.map((stat) => (
           <Card
             key={stat.label}

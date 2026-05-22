@@ -28,8 +28,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-type ManagedRole = "USER" | "CLUB" | "ADMIN";
+import { ROLE_META, type ManagedRole } from "@/lib/user-roles";
 
 type UserRow = {
   id: string;
@@ -51,15 +50,6 @@ type RoleFilter = "ALL" | ManagedRole;
 type ResolvedUser = UserRow & {
   managedRole: ManagedRole;
   isProtected: boolean;
-};
-
-const ROLE_META: Record<
-  ManagedRole,
-  { label: string; variant: "default" | "secondary" | "outline" }
-> = {
-  USER: { label: "Membre", variant: "outline" },
-  CLUB: { label: "Club", variant: "secondary" },
-  ADMIN: { label: "Administrateur", variant: "default" },
 };
 
 export default function UsersTable({
@@ -102,6 +92,8 @@ export default function UsersTable({
     visible: filteredUsers.length,
     admins: filteredUsers.filter((user) => user.managedRole === "ADMIN").length,
     clubs: filteredUsers.filter((user) => user.managedRole === "CLUB").length,
+    bureau: filteredUsers.filter((user) => user.managedRole === "BUREAU").length,
+    entraineurs: filteredUsers.filter((user) => user.managedRole === "ENTRAINEUR").length,
     members: filteredUsers.filter((user) => user.managedRole === "USER").length,
     players: filteredUsers.reduce(
       (total, user) => total + user.players.length,
@@ -116,14 +108,14 @@ export default function UsersTable({
           <div className="space-y-1">
             <CardTitle className="text-xl">Utilisateurs</CardTitle>
             <CardDescription>
-              Une vue compacte pour verifier les roles, les emails et les
-              comptes rattaches a des joueurs.
+              Une vue compacte pour vérifier les rôles, les emails et les
+              comptes rattachés à des joueurs.
             </CardDescription>
           </div>
 
           <div className="inline-flex w-fit items-center gap-2 rounded-full border border-border/70 bg-background/80 px-3 py-1.5 text-xs font-medium text-muted-foreground shadow-xs">
             <Users className="h-3.5 w-3.5" />
-            {users.length} comptes geres
+            {users.length} comptes gérés
           </div>
         </div>
       </CardHeader>
@@ -141,7 +133,7 @@ export default function UsersTable({
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
                 className="admin-input h-10 pl-9"
-                placeholder="Nom, email ou role"
+                placeholder="Nom, email ou rôle"
                 aria-label="Rechercher un utilisateur"
               />
             </div>
@@ -149,15 +141,15 @@ export default function UsersTable({
 
           <label className="grid gap-2">
             <span className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              Filtre role
+              Filtre rôle
             </span>
             <select
               value={roleFilter}
               onChange={(event) => setRoleFilter(event.target.value as RoleFilter)}
               className="admin-select h-10"
-              aria-label="Filtrer par role"
+              aria-label="Filtrer par rôle"
             >
-              <option value="ALL">Tous les roles</option>
+              <option value="ALL">Tous les rôles</option>
               {managedRoles.map((role) => (
                 <option key={role} value={role}>
                   {ROLE_META[role].label}
@@ -171,8 +163,10 @@ export default function UsersTable({
           <FilterStat label="Visibles" value={filteredStats.visible} />
           <FilterStat label="Admins" value={filteredStats.admins} />
           <FilterStat label="Clubs" value={filteredStats.clubs} />
+          <FilterStat label="Bureau" value={filteredStats.bureau} />
+          <FilterStat label="Entraîneurs" value={filteredStats.entraineurs} />
           <FilterStat label="Membres" value={filteredStats.members} />
-          <FilterStat label="Licencies" value={filteredStats.players} />
+          <FilterStat label="Licenciés" value={filteredStats.players} />
         </div>
 
         {filteredUsers.length === 0 ? (
@@ -197,8 +191,8 @@ export default function UsersTable({
                   <TableRow className="hover:bg-muted/30">
                     <TableHead className="h-9 w-[22%]">Nom</TableHead>
                     <TableHead className="h-9 w-[30%]">Email</TableHead>
-                    <TableHead className="h-9 w-[14%]">Role</TableHead>
-                    <TableHead className="h-9 w-[10%]">Licencies</TableHead>
+                    <TableHead className="h-9 w-[14%]">Rôle</TableHead>
+                    <TableHead className="h-9 w-[10%]">Licenciés</TableHead>
                     <TableHead className="h-9 w-[24%]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -283,7 +277,7 @@ function DesktopUserRow({
           {user.isProtected ? (
             <div className="inline-flex items-center gap-1 text-xs text-muted-foreground">
               <ShieldCheck className="h-3.5 w-3.5" />
-              Protege
+              Protégé
             </div>
           ) : null}
         </div>
@@ -322,7 +316,7 @@ function MobileUserCard({
       </div>
 
       <div className="mt-3 flex items-center justify-between rounded-xl bg-muted/35 px-3 py-2 text-sm">
-        <span className="text-muted-foreground">Licencies rattaches</span>
+        <span className="text-muted-foreground">Licenciés rattachés</span>
         <span className="font-semibold text-foreground">{user.players.length}</span>
       </div>
 
@@ -330,10 +324,10 @@ function MobileUserCard({
         <div className="rounded-xl border border-border/70 bg-background p-3">
           <div className="mb-2 space-y-1">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              Role du compte
+              Rôle du compte
             </p>
             <p className="text-xs text-muted-foreground">
-              Action principale pour ajuster les acces.
+              Action principale pour ajuster les accès.
             </p>
           </div>
           <RoleActionForm
@@ -357,7 +351,7 @@ function MobileUserCard({
           {user.isProtected ? (
             <div className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
               <ShieldCheck className="h-3.5 w-3.5" />
-              Ce compte administrateur est verrouille.
+              Ce compte administrateur est verrouillé.
             </div>
           ) : null}
         </div>
@@ -396,7 +390,7 @@ function RoleActionForm({
         }
         defaultValue={user.managedRole}
         disabled={user.isProtected}
-        aria-label={`Choisir le role pour ${
+        aria-label={`Choisir le rôle pour ${
           user.name || user.email || "cet utilisateur"
         }`}
       >
@@ -430,7 +424,7 @@ function DeleteActionForm({
         onConfirm={(event) => {
           if (
             !confirm(
-              "Supprimer cet utilisateur ? Cette action est definitive.",
+              "Supprimer cet utilisateur ? Cette action est définitive.",
             )
           ) {
             event.preventDefault();
@@ -446,10 +440,10 @@ function EmptyState() {
     <div className="rounded-2xl border border-dashed border-border/80 bg-muted/15 px-6 py-10 text-center">
       <div className="space-y-1">
         <p className="font-medium text-foreground">
-          Aucun utilisateur ne correspond a ces filtres.
+          Aucun utilisateur ne correspond à ces filtres.
         </p>
         <p className="text-sm text-muted-foreground">
-          Essaie un autre role ou une recherche plus large.
+          Essaie un autre rôle ou une recherche plus large.
         </p>
       </div>
     </div>
@@ -484,8 +478,8 @@ function RoleSubmitButton({
       type="submit"
       size={compact ? "icon" : "sm"}
       disabled={disabled || pending}
-      aria-label={pending ? "Enregistrement du role" : "Mettre a jour le role"}
-      title={compact ? undefined : pending ? "Enregistrement..." : "Mettre a jour le role"}
+      aria-label={pending ? "Enregistrement du rôle" : "Mettre à jour le rôle"}
+      title={compact ? undefined : pending ? "Enregistrement..." : "Mettre à jour le rôle"}
       className={
         compact ? "size-8" : "gap-1.5 sm:min-w-[9.5rem]"
       }
@@ -495,7 +489,7 @@ function RoleSubmitButton({
       ) : (
         <>
           <UserCog className="h-3.5 w-3.5" />
-          {pending ? "Enregistrement..." : "Mettre a jour"}
+          {pending ? "Enregistrement..." : "Mettre à jour"}
         </>
       )}
     </Button>
