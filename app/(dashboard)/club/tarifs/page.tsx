@@ -246,11 +246,6 @@ export default async function TarifsPage() {
                 "Oui, contactez-nous pour mettre en place un règlement échelonné.",
             },
             {
-              title: "Tarif réduit pour étudiants ?",
-              content:
-                "Des tarifs spécifiques peuvent s'appliquer selon le profil. Renseignez-vous auprès du club.",
-            },
-            {
               title: "Licence incluse ?",
               content:
                 "Oui, la cotisation inclut la licence FFTT selon la formule choisie.",
