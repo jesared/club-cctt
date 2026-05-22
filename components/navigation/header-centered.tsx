@@ -531,7 +531,7 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
             <section className="space-y-2 border-t pt-3.5">
               {isAdmin ? (
                 <Link
-                  href="/admin/tournoi"
+                  href="/admin"
                   onClick={() => setMenuOpen(false)}
                   className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 >

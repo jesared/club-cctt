@@ -34,12 +34,14 @@ export type MenuItem = {
   label: string;
   icon: LucideIcon;
   badge?: string;
+  description?: string;
 };
 
 export type NavigationBadges = Partial<Record<string, string | undefined>>;
 
 export type MenuSection = {
   title: string;
+  description?: string;
   roles: Role[];
   auth?: boolean;
   items: MenuItem[];
@@ -119,29 +121,39 @@ export const navigationHeader: MenuSection[] = [
 export const navigation: MenuSection[] = [
   {
     title: "Mon espace",
+    description: "Raccourcis personnels, documents et suivi des actions membres.",
     roles: ["user", "admin"],
     auth: true,
     items: [
-      { href: "/user", label: "Mon profil", icon: User },
+      {
+        href: "/user",
+        label: "Mon profil",
+        icon: User,
+        description: "Infos du compte et vue d'ensemble personnelle.",
+      },
       {
         href: "/user/inscriptions",
         label: "Mes inscriptions",
         icon: ClipboardPen,
+        description: "Retrouver les formulaires et participations en cours.",
       },
       {
         href: "/user/paiements",
         label: "Mes paiements",
         icon: Receipt,
+        description: "Suivre les règlements et statuts de paiement.",
       },
       {
         href: "/user/documents",
         label: "Mes documents",
         icon: FileText,
+        description: "Télécharger les fichiers utiles et justificatifs.",
       },
       {
         href: "/user/parametres",
         label: "Paramètres",
         icon: Settings,
+        description: "Mettre à jour les préférences et accès personnels.",
       },
     ],
   },
@@ -195,6 +207,7 @@ export const navigation: MenuSection[] = [
   },
   {
     title: "Administration",
+    description: "Mettre à jour les contenus club et piloter les outils transverses.",
     roles: ["admin"],
     auth: true,
     items: [
@@ -202,21 +215,73 @@ export const navigation: MenuSection[] = [
         href: "/admin/messages",
         label: "Messages",
         icon: MessageSquare,
+        description: "Consulter les échanges et prioriser les demandes reçues.",
       },
-      { href: "/admin/users", label: "Utilisateurs", icon: Users },
-      { href: "/admin/home", label: "Home", icon: LayoutGrid },
-      { href: "/admin/comite-directeur", label: "Comité", icon: Users },
-      { href: "/admin/horaires", label: "Horaires", icon: CalendarClock },
-      { href: "/admin/tarifs", label: "Tarifs", icon: BadgeEuro },
-      { href: "/admin/partenaires", label: "Partenaires", icon: Handshake },
-      { href: "/admin/menu", label: "Menus", icon: Settings },
-      { href: "/admin/media", label: "Médias", icon: ImageIcon },
-      { href: "/admin/contact", label: "Contact", icon: Mail },
-      { href: "/admin/audit-ux", label: "Audit UX", icon: FileText },
+      {
+        href: "/admin/users",
+        label: "Utilisateurs",
+        icon: Users,
+        description: "Gérer les comptes, rôles et accès de l'équipe.",
+      },
+      {
+        href: "/admin/home",
+        label: "Home",
+        icon: LayoutGrid,
+        description: "Éditer la page d'accueil et ses mises en avant.",
+      },
+      {
+        href: "/admin/comite-directeur",
+        label: "Comité",
+        icon: Users,
+        description: "Mettre à jour l'équipe dirigeante et ses portraits.",
+      },
+      {
+        href: "/admin/horaires",
+        label: "Horaires",
+        icon: CalendarClock,
+        description: "Ajuster les créneaux et informations pratiques du club.",
+      },
+      {
+        href: "/admin/tarifs",
+        label: "Tarifs",
+        icon: BadgeEuro,
+        description: "Modifier les formules, montants et détails d'adhésion.",
+      },
+      {
+        href: "/admin/partenaires",
+        label: "Partenaires",
+        icon: Handshake,
+        description: "Gérer les logos, liens et messages de soutien.",
+      },
+      {
+        href: "/admin/menu",
+        label: "Menus",
+        icon: Settings,
+        description: "Piloter la navigation publique et les accès visibles.",
+      },
+      {
+        href: "/admin/media",
+        label: "Médias",
+        icon: ImageIcon,
+        description: "Centraliser les visuels et ressources du site.",
+      },
+      {
+        href: "/admin/contact",
+        label: "Contact",
+        icon: Mail,
+        description: "Mettre à jour les coordonnées et messages de contact.",
+      },
+      {
+        href: "/admin/audit-ux",
+        label: "Audit UX",
+        icon: FileText,
+        description: "Suivre les améliorations et retours sur l'expérience.",
+      },
     ],
   },
   {
     title: "Admin tournoi",
+    description: "Opérations du tournoi, de l'inscription jusqu'aux exports salle.",
     roles: ["admin"],
     auth: true,
     items: [
@@ -224,46 +289,55 @@ export const navigation: MenuSection[] = [
         href: "/admin/tournoi",
         label: "Admin tournoi",
         icon: LayoutDashboard,
+        description: "Vue d'ensemble et accès central du back-office tournoi.",
       },
       {
         href: "/admin/tournoi/inscriptions",
         label: "Inscriptions",
         icon: ClipboardPen,
+        description: "Valider les demandes et suivre les dossiers joueurs.",
       },
       {
         href: "/admin/tournoi/paiement",
         label: "Paiements",
         icon: Banknote,
+        description: "Vérifier les règlements et traiter les cas en attente.",
       },
       {
         href: "/admin/tournoi/pointages",
         label: "Pointages",
         icon: CalendarCheck,
+        description: "Piloter l'accueil, la présence et les flux de salle.",
       },
       {
         href: "/admin/tournoi/joueurs",
         label: "Joueurs",
         icon: Users,
+        description: "Explorer la base joueurs et leurs informations FFTT.",
       },
       {
         href: "/admin/tournoi/ajout-player",
         label: "Ajouter un joueur",
         icon: UserPlus,
+        description: "Créer rapidement une inscription manuelle.",
       },
       {
         href: "/admin/tournoi/exports",
         label: "Exports",
         icon: Download,
+        description: "Produire les fichiers utiles pour l'organisation terrain.",
       },
       {
         href: "/admin/tournoi/templates",
         label: "Templates",
         icon: LayoutGrid,
+        description: "Réutiliser des configurations et structures de tournoi.",
       },
       {
         href: "/admin/tournoi/documentation",
         label: "Documentation",
         icon: FileText,
+        description: "Retrouver les modes opératoires et supports équipe.",
       },
     ],
   },

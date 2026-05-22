@@ -48,7 +48,7 @@ export default function AppShell({
                 </Button>
               </SheetTrigger>
 
-              <SheetContent side="left" className="w-[260px] p-0">
+              <SheetContent side="left" className="w-[320px] max-w-[88vw] p-0">
                 <Sidebar mobile badges={sidebarBadges} />
               </SheetContent>
             </Sheet>

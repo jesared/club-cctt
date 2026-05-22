@@ -398,7 +398,7 @@ export default function Header({ menuVisibility }: HeaderProps) {
 
           {isAdmin && (
             <Link
-              href="/admin/tournoi"
+              href="/admin"
               aria-label="Administration"
               title="Administration"
               className="inline-flex h-9 w-9 items-center justify-center rounded-full border bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"

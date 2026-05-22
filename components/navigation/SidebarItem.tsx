@@ -13,9 +13,12 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
+import { getSidebarPalette } from "./sidebar-palette";
+
 type SidebarItemProps = {
   item: MenuItem;
   collapsed: boolean;
+  sectionTitle: string;
   onNavigate?: () => void;
 };
 
@@ -25,12 +28,10 @@ function isItemActive(pathname: string, href: string) {
   const pathSegments = pathname.split("/").filter(Boolean);
   const hrefSegments = href.split("/").filter(Boolean);
 
-  // 👉 doit matcher tous les segments
   const isMatch = hrefSegments.every(
     (segment, index) => pathSegments[index] === segment,
   );
 
-  // ❌ si c'est un parent (moins précis), on refuse
   if (isMatch && pathSegments.length !== hrefSegments.length) {
     return false;
   }
@@ -41,11 +42,13 @@ function isItemActive(pathname: string, href: string) {
 export default function SidebarItem({
   item,
   collapsed,
+  sectionTitle,
   onNavigate,
 }: SidebarItemProps) {
   const pathname = usePathname();
   const Icon = item.icon;
   const active = isItemActive(pathname, item.href);
+  const palette = getSidebarPalette(sectionTitle);
 
   const link = (
     <Link
@@ -53,35 +56,49 @@ export default function SidebarItem({
       onClick={onNavigate}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "group flex h-10 items-center gap-2.5 rounded-lg px-2.5 text-sm transition-colors duration-200",
+        "relative flex items-start gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors duration-200 before:absolute before:bottom-2 before:left-0 before:top-2 before:w-1 before:rounded-full before:opacity-0",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         active
-          ? "bg-background text-foreground shadow-sm ring-1 ring-border"
-          : "text-muted-foreground hover:bg-background hover:text-foreground",
-        collapsed && "justify-center px-0",
+          ? "before:opacity-100"
+          : "text-muted-foreground shadow-none before:opacity-0",
+        active ? palette.activeRow : palette.hoverRow,
+        collapsed && "justify-center px-1.5 py-2.5 before:hidden",
       )}
     >
       <span
         className={cn(
-          "flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-colors",
-          active
-            ? "bg-primary text-primary-foreground"
-            : "bg-muted text-muted-foreground",
+          "mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors",
+          active ? palette.activeIcon : palette.icon,
+          collapsed && "mt-0 h-9 w-9",
         )}
       >
         <Icon className="h-3.5 w-3.5" />
       </span>
 
-      {!collapsed && <span className="truncate">{item.label}</span>}
+      {!collapsed ? (
+        <span className="min-w-0 flex-1">
+          <span className="block truncate font-medium text-foreground">
+            {item.label}
+          </span>
+          {active && item.description ? (
+            <span className="mt-0.5 block text-xs leading-4 text-muted-foreground">
+              {item.description}
+            </span>
+          ) : null}
+        </span>
+      ) : null}
 
-      {!collapsed && item.badge && (
+      {!collapsed && item.badge ? (
         <Badge
-          variant="secondary"
-          className="ml-auto rounded-md px-1.5 py-0 text-[10px]"
+          variant="outline"
+          className={cn(
+            "ml-auto mt-0.5 rounded-full px-2 py-0 text-[10px] font-semibold shadow-none",
+            palette.badge,
+          )}
         >
           {item.badge}
         </Badge>
-      )}
+      ) : null}
     </Link>
   );
 
