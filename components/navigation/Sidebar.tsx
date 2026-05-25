@@ -109,9 +109,6 @@ export default function Sidebar({
   const isAdmin = isAdminRole(session?.user?.role);
   const isAdminView = pathname.startsWith("/admin");
   const isDark = mounted ? resolvedTheme === "dark" : false;
-  const logoSrc = isDark
-    ? "/cctt_logo_trans_blanc.png"
-    : "/logo_trans_light.png";
 
   const widthClasses = cn(
     sidebarState === "expanded" && "w-[320px]",
@@ -228,16 +225,28 @@ export default function Sidebar({
               )}
             >
               <span className="inline-flex items-center justify-center px-4 py-3">
-                <Image
-                  src={logoSrc}
-                  alt="Logo CCTT"
-                  width={220}
-                  height={110}
-                  className={cn(
-                    "object-contain transition-all duration-300",
-                    collapsed && !mobile ? "h-10 w-10" : "h-16 w-auto",
-                  )}
-                />
+                <>
+                  <Image
+                    src="/logo_trans_light_v3.png"
+                    alt="Logo CCTT"
+                    width={220}
+                    height={110}
+                    className={cn(
+                      "object-contain transition-all duration-300 dark:hidden",
+                      collapsed && !mobile ? "h-10 w-10" : "h-16 w-auto",
+                    )}
+                  />
+                  <Image
+                    src="/cctt_logo_trans_blanc.png"
+                    alt="Logo CCTT"
+                    width={220}
+                    height={110}
+                    className={cn(
+                      "hidden object-contain transition-all duration-300 dark:block",
+                      collapsed && !mobile ? "h-10 w-10" : "h-16 w-auto",
+                    )}
+                  />
+                </>
               </span>
             </Link>
 
