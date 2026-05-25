@@ -3,6 +3,7 @@
 import {
   ChevronDown,
   LogIn,
+  LogOut,
   Menu,
   Moon,
   ShieldMinus,
@@ -10,12 +11,12 @@ import {
   User2,
   X,
 } from "lucide-react";
-import { signIn, useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { getVisibleSections } from "@/components/navigation/menu-items";
 import { Button } from "@/components/ui/button";
@@ -62,9 +63,11 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
   const { data: session } = useSession();
   const { resolvedTheme, setTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [openSection, setOpenSection] = useState<string | null>("Club");
+  const accountMenuRef = useRef<HTMLDivElement | null>(null);
 
   const sectionMeta = useMemo(
     () =>
@@ -164,6 +167,7 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
 
   useEffect(() => {
     setMenuOpen(false);
+    setAccountMenuOpen(false);
   }, [pathname]);
 
   useEffect(() => {
@@ -190,6 +194,30 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
       router.prefetch("/admin/tournoi/pointages");
     }
   }, [isAdmin, menuVisibility, pathname, router]);
+
+  useEffect(() => {
+    if (!accountMenuOpen) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!accountMenuRef.current) return;
+      if (accountMenuRef.current.contains(event.target as Node)) return;
+      setAccountMenuOpen(false);
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setAccountMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("pointerdown", handlePointerDown);
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [accountMenuOpen]);
 
   if (!isPublicRoute(pathname)) {
     return null;
@@ -360,29 +388,65 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
                   href="/tournoi/inscription"
                   className="hidden rounded-full border border-stone-300/85 bg-stone-50 px-4 py-2 text-sm font-semibold tracking-[0.02em] text-stone-900 shadow-[0_1px_0_rgba(255,255,255,0.78)_inset,0_8px_18px_rgba(41,37,36,0.08)] transition-all hover:-translate-y-px hover:border-stone-400/90 hover:bg-stone-100 hover:shadow-[0_1px_0_rgba(255,255,255,0.82)_inset,0_12px_22px_rgba(41,37,36,0.11)] dark:border-white/12 dark:bg-white/6 dark:bg-none dark:text-stone-100 dark:shadow-[0_1px_0_rgba(255,255,255,0.04)_inset] dark:hover:border-white/18 dark:hover:bg-white/10 dark:hover:shadow-[0_1px_0_rgba(255,255,255,0.06)_inset] md:inline-flex"
                 >
-                  S'inscrire
+                  S&apos;inscrire
                 </Link>
               ) : null}
 
               {session ? (
-                <Link
-                  href="/user"
-                  aria-label="Mon espace"
-                  title="Mon espace"
-                  className="inline-flex items-center justify-center rounded-full border border-transparent px-2 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted/45 hover:text-foreground"
-                >
-                  {session.user.image ? (
-                    <Image
-                      src={session.user.image}
-                      alt="Avatar"
-                      width={24}
-                      height={24}
-                      className="h-6 w-6 rounded-full object-cover"
-                    />
-                  ) : (
-                    <User2 className="h-4 w-4" />
-                  )}
-                </Link>
+                <div ref={accountMenuRef} className="relative">
+                  <button
+                    type="button"
+                    aria-label="Ouvrir le menu du compte"
+                    aria-haspopup="menu"
+                    aria-expanded={accountMenuOpen}
+                    className={cn(
+                      "inline-flex h-11 w-11 items-center justify-center rounded-full border border-transparent text-sm text-muted-foreground transition-colors hover:bg-muted/45 hover:text-foreground",
+                      accountMenuOpen && "bg-muted/55 text-foreground",
+                    )}
+                    onClick={() => setAccountMenuOpen((prev) => !prev)}
+                  >
+                    {session.user.image ? (
+                      <Image
+                        src={session.user.image}
+                        alt="Avatar"
+                        width={32}
+                        height={32}
+                        className="h-8 w-8 rounded-full object-cover ring-1 ring-border/60"
+                      />
+                    ) : (
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-muted ring-1 ring-border/60">
+                        <User2 className="h-4 w-4" />
+                      </span>
+                    )}
+                  </button>
+
+                  {accountMenuOpen ? (
+                    <div
+                      role="menu"
+                      aria-label="Menu du compte"
+                      className="absolute right-0 top-[calc(100%+0.65rem)] z-50 min-w-[12rem] overflow-hidden rounded-2xl border border-border/70 bg-background/95 p-1.5 shadow-xl backdrop-blur"
+                    >
+                      <Link
+                        href="/user"
+                        role="menuitem"
+                        className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-muted"
+                        onClick={() => setAccountMenuOpen(false)}
+                      >
+                        <User2 className="h-4 w-4" />
+                        <span>Mon espace</span>
+                      </Link>
+                      <button
+                        type="button"
+                        role="menuitem"
+                        className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm text-foreground transition-colors hover:bg-muted"
+                        onClick={() => void signOut()}
+                      >
+                        <LogOut className="h-4 w-4" />
+                        <span>Déconnexion</span>
+                      </button>
+                    </div>
+                  ) : null}
+                </div>
               ) : (
                 <Button
                   size="sm"
