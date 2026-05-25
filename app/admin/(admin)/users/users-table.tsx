@@ -189,11 +189,11 @@ export default function UsersTable({
               <Table className="table-fixed">
                 <TableHeader className="bg-muted/30">
                   <TableRow className="hover:bg-muted/30">
-                    <TableHead className="h-9 w-[22%]">Nom</TableHead>
-                    <TableHead className="h-9 w-[30%]">Email</TableHead>
+                    <TableHead className="h-9 w-[21%]">Nom</TableHead>
+                    <TableHead className="h-9 w-[31%]">Email</TableHead>
                     <TableHead className="h-9 w-[14%]">Rôle</TableHead>
                     <TableHead className="h-9 w-[10%]">Licenciés</TableHead>
-                    <TableHead className="h-9 w-[24%]">Actions</TableHead>
+                    <TableHead className="h-9 w-[24%] px-3">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
 
@@ -258,9 +258,9 @@ function DesktopUserRow({
         </span>
       </TableCell>
 
-      <TableCell className="py-3">
+      <TableCell className="py-3 pl-2 pr-2">
         <div className="space-y-1.5">
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1">
             <RoleActionForm
               user={user}
               managedRoles={managedRoles}
@@ -371,6 +371,9 @@ function RoleActionForm({
   updateUserRole: (formData: FormData) => Promise<void>;
   compact?: boolean;
 }) {
+  const [selectedRole, setSelectedRole] = useState<ManagedRole>(user.managedRole);
+  const hasPendingChange = selectedRole !== user.managedRole;
+
   return (
     <form
       action={updateUserRole}
@@ -385,10 +388,19 @@ function RoleActionForm({
         name="role"
         className={
           compact
-            ? "admin-select h-8 min-w-[7rem] max-w-[7rem] py-1.5 pr-7 pl-2 text-[11px]"
-            : "admin-select h-9 min-w-[10rem] py-2 text-xs"
+            ? `admin-select h-8 min-w-[6.35rem] max-w-[6.35rem] py-1 pr-6 pl-2 text-[10.5px] ${
+                hasPendingChange
+                  ? "border-amber-400/80 ring-1 ring-amber-400/50"
+                  : ""
+              }`
+            : `admin-select h-9 min-w-[10rem] py-2 text-xs ${
+                hasPendingChange
+                  ? "border-amber-400/80 ring-1 ring-amber-400/50"
+                  : ""
+              }`
         }
-        defaultValue={user.managedRole}
+        value={selectedRole}
+        onChange={(event) => setSelectedRole(event.target.value as ManagedRole)}
         disabled={user.isProtected}
         aria-label={`Choisir le rôle pour ${
           user.name || user.email || "cet utilisateur"
@@ -401,7 +413,11 @@ function RoleActionForm({
         ))}
       </select>
 
-      <RoleSubmitButton disabled={user.isProtected} compact={compact} />
+      <RoleSubmitButton
+        disabled={user.isProtected}
+        compact={compact}
+        hasPendingChange={hasPendingChange}
+      />
     </form>
   );
 }
@@ -468,28 +484,61 @@ function FilterStat({
 function RoleSubmitButton({
   disabled,
   compact = false,
+  hasPendingChange = false,
 }: {
   disabled: boolean;
   compact?: boolean;
+  hasPendingChange?: boolean;
 }) {
   const { pending } = useFormStatus();
   const button = (
     <Button
       type="submit"
-      size={compact ? "icon" : "sm"}
-      disabled={disabled || pending}
-      aria-label={pending ? "Enregistrement du rôle" : "Mettre à jour le rôle"}
-      title={compact ? undefined : pending ? "Enregistrement..." : "Mettre à jour le rôle"}
+      size={compact ? (hasPendingChange ? "sm" : "icon") : "sm"}
+      disabled={disabled || pending || !hasPendingChange}
+      aria-label={
+        pending
+          ? "Enregistrement du rôle"
+          : hasPendingChange
+            ? "Valider le changement de rôle"
+            : "Modifiez le rôle pour pouvoir valider"
+      }
+      title={
+        pending
+          ? "Enregistrement..."
+          : hasPendingChange
+            ? "Valider le changement de rôle"
+            : "Modifiez le rôle pour pouvoir valider"
+      }
       className={
-        compact ? "size-8" : "gap-1.5 sm:min-w-[9.5rem]"
+        compact
+          ? hasPendingChange
+            ? "h-8 min-w-[4.9rem] bg-amber-500 px-2.5 text-[10.5px] font-semibold text-amber-950 hover:bg-amber-400"
+            : "size-7"
+          : `gap-1.5 sm:min-w-[9.5rem] ${
+              hasPendingChange
+                ? "bg-amber-500 text-amber-950 hover:bg-amber-400"
+                : ""
+            }`
       }
     >
       {compact ? (
-        <Check className="h-4 w-4" />
+        hasPendingChange ? (
+          <>
+            <Check className="h-3.5 w-3.5" />
+            Valider
+          </>
+        ) : (
+          <Check className="h-4 w-4" />
+        )
       ) : (
         <>
           <UserCog className="h-3.5 w-3.5" />
-          {pending ? "Enregistrement..." : "Mettre à jour"}
+          {pending
+            ? "Enregistrement..."
+            : hasPendingChange
+              ? "Valider"
+              : "Mettre à jour"}
         </>
       )}
     </Button>
