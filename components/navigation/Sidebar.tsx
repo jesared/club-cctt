@@ -40,24 +40,36 @@ type SidebarProps = {
   badges?: NavigationBadges;
 };
 
+function isAdminTournamentPath(pathname: string) {
+  return pathname === "/admin/tournoi" || pathname.startsWith("/admin/tournoi/");
+}
+
 function isItemActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
 
   if (href === "/admin") {
-    return pathname === "/admin" || pathname.startsWith("/admin/");
+    return (
+      pathname === "/admin" ||
+      (pathname.startsWith("/admin/") && !isAdminTournamentPath(pathname))
+    );
   }
 
   return pathname === href || pathname.startsWith(href + "/");
 }
 
 function buildSectionState(sections: MenuSection[], pathname: string) {
+  const activeSectionTitle = sections.find((section) =>
+    section.items.some((item) => isItemActive(pathname, item.href)),
+  )?.title;
+  const hasAdminSection = sections.some(
+    (section) => section.title === "Administration",
+  );
+
   const preferredSectionTitle =
-    pathname.startsWith("/admin") &&
-    sections.some((section) => section.title === "Administration")
+    activeSectionTitle ??
+    (pathname.startsWith("/admin") && hasAdminSection
       ? "Administration"
-      : sections.find((section) =>
-          section.items.some((item) => isItemActive(pathname, item.href)),
-        )?.title;
+      : undefined);
 
   return sections.reduce<Record<string, boolean>>((acc, section) => {
     acc[section.title] = section.title === preferredSectionTitle;
@@ -108,6 +120,7 @@ export default function Sidebar({
   const collapsed = !mobile && sidebarState === "collapsed";
   const isAdmin = isAdminRole(session?.user?.role);
   const isAdminView = pathname.startsWith("/admin");
+  const isAdminTournamentView = isAdminTournamentPath(pathname);
   const isDark = mounted ? resolvedTheme === "dark" : false;
 
   const widthClasses = cn(
@@ -160,7 +173,7 @@ export default function Sidebar({
 
   const heroTitle = isAdminView ? "Administration" : "Mon espace";
   const heroDescription = isAdmin
-    ? "Acces rapides au club et au tournoi."
+    ? "Accès rapides au club et au tournoi."
     : "Retrouvez vos actions et documents.";
 
   return (
@@ -253,9 +266,11 @@ export default function Sidebar({
             <div
               className={cn(
                 "mb-4 rounded-[1.5rem] border border-border/70 bg-background px-4 py-4 shadow-sm",
-                isAdminView
-                  ? "border-l-4 border-l-foreground"
-                  : "border-l-4 border-l-emerald-600",
+                isAdminTournamentView
+                  ? "border-l-4 border-l-[#FF7A00]"
+                  : isAdminView
+                    ? "border-l-4 border-l-foreground"
+                    : "border-l-4 border-l-emerald-600",
                 collapsed && !mobile && "px-2.5 py-3",
               )}
             >
@@ -336,12 +351,16 @@ export default function Sidebar({
               <Link
                 href="/"
                 onClick={mobile ? onClose : undefined}
-                  className={cn(
-                    "flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
-                    collapsed && !mobile && "justify-center px-0",
-                  )}
-                >
-                {!collapsed ? <span>Retour au site</span> : <PanelLeftOpen className="h-4 w-4" />}
+                className={cn(
+                  "flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
+                  collapsed && !mobile && "justify-center px-0",
+                )}
+              >
+                {!collapsed ? (
+                  <span>Retour au site</span>
+                ) : (
+                  <PanelLeftOpen className="h-4 w-4" />
+                )}
               </Link>
 
               {session ? (

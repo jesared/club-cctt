@@ -109,6 +109,27 @@ function formatGender(gender: PlayerGender) {
   return "";
 }
 
+function ReadOnlyInfoItem({
+  label,
+  value,
+  className = "",
+}: {
+  label: string;
+  value: string;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`flex items-baseline gap-1.5 whitespace-nowrap ${className}`.trim()}
+    >
+      <span className="shrink-0 text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+        {label} :
+      </span>
+      <span className="text-sm font-semibold text-foreground">{value || "-"}</span>
+    </div>
+  );
+}
+
 export function AddPlayerForm({
   tournamentId,
   tournamentTables,
@@ -117,6 +138,7 @@ export function AddPlayerForm({
   submitLabel,
   cancelHref,
 }: Props) {
+  const editMode = Boolean(initialData);
   const [formData, setFormData] = useState<PlayerFormState>(() => ({
     nom: initialData?.nom ?? "",
     prenom: initialData?.prenom ?? "",
@@ -313,66 +335,106 @@ export function AddPlayerForm({
         <div className="space-y-1">
           <p className="text-sm font-semibold text-foreground">1. Données FFTT</p>
           <p className="text-xs text-muted-foreground">
-            Saisissez le numéro de licence pour récupérer automatiquement
-            l&apos;identité, le genre, le club et le classement.
+            {editMode
+              ? "Ces informations proviennent de la FFTT et sont affichées à titre informatif uniquement."
+              : "Saisissez le numéro de licence pour récupérer automatiquement l&apos;identité, le genre, le club et le classement."}
           </p>
         </div>
 
-        <div className="space-y-1 text-sm">
-          <label htmlFor="licence" className="font-medium">
-            Licence *
-          </label>
-          <div className="flex gap-2">
-            <input
-              id="licence"
-              name="licence"
-              required
-              value={formData.licence}
-              onChange={(event) => {
-                const nextLicence = event.target.value;
-                setFormData((current) => ({
-                  ...current,
-                  licence: nextLicence,
-                  nom: "",
-                  prenom: "",
-                  points: "",
-                  gender: "",
-                  club: "",
-                  eventIds: [],
-                }));
-                setFfttLookup({ status: "idle", message: "" });
-              }}
-              className="min-w-0 flex-1 rounded-md border border-border bg-background px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              placeholder="1234567"
-            />
-            <button
-              type="button"
-              disabled={
-                !formData.licence.trim() || ffttLookup.status === "loading"
-              }
-              onClick={lookupFfttLicense}
-              className="inline-flex cursor-pointer items-center rounded-md border border-border bg-muted px-3 py-2 text-xs font-semibold text-foreground transition hover:bg-muted/80 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {ffttLookup.status === "loading" ? "Recherche..." : "FFTT"}
-            </button>
+        {editMode ? (
+          <>
+            <input type="hidden" name="licence" value={formData.licence} />
+            <input type="hidden" name="nom" value={formData.nom} />
+            <input type="hidden" name="prenom" value={formData.prenom} />
+            <input type="hidden" name="points" value={formData.points} />
+            <input type="hidden" name="club" value={formData.club} />
+            {formData.gender ? (
+              <input type="hidden" name="gender" value={formData.gender} />
+            ) : null}
+            <div className="overflow-hidden rounded-xl border border-border bg-background/55">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-3 px-4 py-3">
+                <ReadOnlyInfoItem label="Licence" value={formData.licence} />
+                <span
+                  aria-hidden="true"
+                  className="hidden h-4 w-px bg-border/80 md:block"
+                />
+                <ReadOnlyInfoItem label="Nom" value={formData.nom} />
+                <span
+                  aria-hidden="true"
+                  className="hidden h-4 w-px bg-border/80 md:block"
+                />
+                <ReadOnlyInfoItem label="Prénom" value={formData.prenom} />
+                <span
+                  aria-hidden="true"
+                  className="hidden h-4 w-px bg-border/80 md:block"
+                />
+                <ReadOnlyInfoItem
+                  label="Classement"
+                  value={formData.points}
+                />
+              </div>
+              <div className="border-t border-border/80 px-4 py-3">
+                <ReadOnlyInfoItem label="Club" value={formData.club} />
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="space-y-1 text-sm">
+            <label htmlFor="licence" className="font-medium">
+              Licence *
+            </label>
+            <div className="flex gap-2">
+              <input
+                id="licence"
+                name="licence"
+                required
+                value={formData.licence}
+                onChange={(event) => {
+                  const nextLicence = event.target.value;
+                  setFormData((current) => ({
+                    ...current,
+                    licence: nextLicence,
+                    nom: "",
+                    prenom: "",
+                    points: "",
+                    gender: "",
+                    club: "",
+                    eventIds: [],
+                  }));
+                  setFfttLookup({ status: "idle", message: "" });
+                }}
+                className="min-w-0 flex-1 rounded-md border border-border bg-background px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                placeholder="1234567"
+              />
+              <button
+                type="button"
+                disabled={
+                  !formData.licence.trim() || ffttLookup.status === "loading"
+                }
+                onClick={lookupFfttLicense}
+                className="inline-flex cursor-pointer items-center rounded-md border border-border bg-muted px-3 py-2 text-xs font-semibold text-foreground transition hover:bg-muted/80 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {ffttLookup.status === "loading" ? "Recherche..." : "FFTT"}
+              </button>
+            </div>
+            {ffttLookup.status !== "idle" ? (
+              <p
+                className={`text-xs ${
+                  ffttLookup.status === "error"
+                    ? "text-primary"
+                    : "text-muted-foreground"
+                }`}
+              >
+                {ffttLookup.message}
+              </p>
+            ) : null}
           </div>
-          {ffttLookup.status !== "idle" ? (
-            <p
-              className={`text-xs ${
-                ffttLookup.status === "error"
-                  ? "text-primary"
-                  : "text-muted-foreground"
-              }`}
-            >
-              {ffttLookup.message}
-            </p>
-          ) : null}
-        </div>
+        )}
 
-        {hasFfttPlayer ? (
+        {!editMode && hasFfttPlayer ? (
           <div className="grid gap-3 rounded-lg border border-border bg-background/80 p-3 sm:grid-cols-2">
             <label className="space-y-1 text-sm">
-              <span className="font-medium">Nom FFTT</span>
+              <span className="font-medium">Nom</span>
               <input
                 name="nom"
                 readOnly
@@ -382,7 +444,7 @@ export function AddPlayerForm({
               />
             </label>
             <label className="space-y-1 text-sm">
-              <span className="font-medium">Prénom FFTT</span>
+              <span className="font-medium">Prénom</span>
               <input
                 name="prenom"
                 readOnly
@@ -392,7 +454,7 @@ export function AddPlayerForm({
               />
             </label>
             <label className="space-y-1 text-sm">
-              <span className="font-medium">Classement FFTT</span>
+              <span className="font-medium">Classement</span>
               <input
                 name="points"
                 readOnly
@@ -405,7 +467,7 @@ export function AddPlayerForm({
               <>
                 <input type="hidden" name="gender" value={formData.gender} />
                 <label className="space-y-1 text-sm">
-                  <span className="font-medium">Genre FFTT</span>
+                  <span className="font-medium">Genre</span>
                   <input
                     readOnly
                     value={formatGender(formData.gender)}
@@ -441,7 +503,7 @@ export function AddPlayerForm({
               </label>
             )}
             <label className="space-y-1 text-sm">
-              <span className="font-medium">Club FFTT</span>
+              <span className="font-medium">Club</span>
               <input
                 name="club"
                 readOnly
@@ -451,18 +513,18 @@ export function AddPlayerForm({
               />
             </label>
           </div>
-        ) : (
+        ) : !editMode ? (
           <div className="rounded-lg border border-dashed border-border bg-background/60 px-4 py-5 text-sm text-muted-foreground">
             Les informations joueur et la suite du formulaire s&apos;afficheront
             après une recherche FFTT réussie.
           </div>
-        )}
+        ) : null}
       </section>
 
       {hasFfttPlayer ? (
         <>
-          <section className="space-y-4 rounded-xl border border-border bg-card p-4">
-            <div className="space-y-1">
+          <section className="space-y-5 rounded-xl border border-border bg-card p-5">
+            <div className="space-y-2">
               <p className="text-sm font-semibold text-foreground">
                 2. Données complémentaires
               </p>
@@ -472,8 +534,8 @@ export function AddPlayerForm({
               </p>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              <label className="space-y-1 text-sm">
+            <div className="grid gap-4 sm:gap-5 sm:grid-cols-2">
+              <label className="space-y-2 text-sm">
                 <span className="font-medium">Email *</span>
                 <input
                   name="contactEmail"
@@ -490,7 +552,7 @@ export function AddPlayerForm({
                   placeholder="joueur@email.fr"
                 />
               </label>
-              <label className="space-y-1 text-sm">
+              <label className="space-y-2 text-sm">
                 <span className="font-medium">Téléphone *</span>
                 <input
                   name="contactPhone"

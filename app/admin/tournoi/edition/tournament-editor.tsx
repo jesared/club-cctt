@@ -2,10 +2,20 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { MoreHorizontal, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { AlertTriangle, MoreHorizontal, Plus, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 type TournamentForm = {
   id: string;
@@ -166,6 +176,7 @@ function toEventForm(event: TournamentEditorEventPayload): EventForm {
 }
 
 export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
+  const router = useRouter();
   const [tournament, setTournament] = useState<TournamentForm>(emptyTournament);
   const [events, setEvents] = useState<EventForm[]>([]);
   const [newEvent, setNewEvent] = useState<EventForm>(emptyEvent);
@@ -173,6 +184,8 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [savingTournament, setSavingTournament] = useState(false);
   const [savingEvent, setSavingEvent] = useState<string | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deletingTournament, setDeletingTournament] = useState(false);
   const [openActionId, setOpenActionId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -360,6 +373,26 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
       setEvents((current) => current.filter((item) => item.id !== id));
     } finally {
       setSavingEvent(null);
+    }
+  }
+
+  async function deleteTournament() {
+    setDeletingTournament(true);
+    try {
+      const res = await fetch(`/api/admin/tournoi/${tournamentId}`, {
+        method: "DELETE",
+      });
+      const json = await readJson<TournamentEditorResponse>(res);
+      if (!res.ok) {
+        alert(json?.error ?? "Suppression impossible.");
+        return;
+      }
+
+      setDeleteDialogOpen(false);
+      router.push("/admin/tournoi");
+      router.refresh();
+    } finally {
+      setDeletingTournament(false);
     }
   }
 
@@ -555,6 +588,15 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
           <div className="admin-actions">
             <Button
               type="button"
+              variant="destructive"
+              onClick={() => setDeleteDialogOpen(true)}
+              disabled={deletingTournament}
+            >
+              <Trash2 className="size-4" />
+              Supprimer
+            </Button>
+            <Button
+              type="button"
               onClick={saveTournament}
               disabled={savingTournament || !timelineState.canEditTournamentStatus}
             >
@@ -563,6 +605,55 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
           </div>
         </CardContent>
       </Card>
+
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent className="max-w-md p-0" aria-busy={deletingTournament}>
+          <DialogHeader className="border-b border-destructive/10 bg-destructive/5 px-6 py-5">
+            <div className="flex items-start gap-3">
+              <span className="mt-0.5 inline-flex size-9 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                <AlertTriangle className="size-5" />
+              </span>
+              <div>
+                <DialogTitle className="text-lg">
+                  Supprimer ce tournoi ?
+                </DialogTitle>
+                <DialogDescription className="mt-1 leading-6">
+                  Cette action supprimera le tournoi, ses tableaux, les
+                  inscriptions, pointages et paiements associes.
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+          <div className="space-y-3 px-6 py-5 text-sm">
+            <p className="font-medium text-foreground">
+              {tournament.name || "Tournoi sans nom"}
+            </p>
+            <p className="text-muted-foreground">
+              La suppression est definitive. Verifiez que vous n&apos;avez plus
+              besoin de conserver les donnees de ce tournoi.
+            </p>
+          </div>
+          <DialogFooter className="border-t border-border/60 px-6 py-5">
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="outline"
+                disabled={deletingTournament}
+              >
+                Annuler
+              </Button>
+            </DialogClose>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={deleteTournament}
+              disabled={deletingTournament}
+            >
+              {deletingTournament ? "Suppression..." : "Confirmer la suppression"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Card>
         <CardHeader className="pb-2">

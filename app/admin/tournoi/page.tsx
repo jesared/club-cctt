@@ -8,7 +8,6 @@ import {
 } from "./data";
 import { TournamentDashboard } from "./tournament-dashboard";
 import { TournamentsList } from "./tournaments-list";
-import { ActionsChecklist, type AutoChecklistItem } from "./actions-checklist";
 import { ProgressSummary } from "./progress-summary";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
@@ -23,7 +22,6 @@ import {
   Trophy,
   Users,
 } from "lucide-react";
-import EventBlockEditor from "./event-block-editor";
 
 const rythmeEditorial = [
   {
@@ -31,26 +29,26 @@ const rythmeEditorial = [
     frequence: "3 publications / semaine",
     contenus: [
       "Ouverture des inscriptions",
-      "Presentation des tableaux",
-      "Portraits de benevoles et partenaires",
+      "Présentation des tableaux",
+      "Portraits de bénévoles et partenaires",
     ],
   },
   {
     phase: "Pendant le tournoi",
     frequence: "Stories quotidiennes + 1 recap/jour",
     contenus: [
-      "Resultats cles de la journee",
+      "Résultats clés de la journée",
       "Photos ambiance salle",
       "Moments forts et coulisses",
     ],
   },
   {
-    phase: "Apres le tournoi",
+    phase: "Après le tournoi",
     frequence: "2 publications la semaine suivante",
     contenus: [
       "Podiums et remerciements",
       "Best-of photos/videos",
-      "Annonce de la prochaine edition",
+      "Annonce de la prochaine édition",
     ],
   },
 ];
@@ -60,104 +58,21 @@ const preuvesSociales = [
     titre: "Participation en hausse",
     valeur: "24 tableaux ouverts",
     detail:
-      "Un volume qui confirme l'attractivite du tournoi au niveau regional et national.",
+      "Un volume qui confirme l'attractivité du tournoi au niveau régional et national.",
   },
   {
     titre: "Engagement du public",
     valeur: "300+ visiteurs sur le week-end",
     detail:
-      "Parents, supporters et clubs partenaires presents pour soutenir les joueurs.",
+      "Parents, supporters et clubs partenaires présents pour soutenir les joueurs.",
   },
   {
     titre: "Confiance des clubs",
-    valeur: "Retours positifs recurrents",
+    valeur: "Retours positifs récurrents",
     detail:
-      "Des temoignages mis en avant apres chaque edition pour rassurer les futurs participants.",
+      "Des témoignages mis en avant après chaque édition pour rassurer les futurs participants.",
   },
 ];
-
-function buildAutoChecklistItems({
-  tournament,
-  progress,
-  tournamentTablesCount,
-  totalPlayers,
-}: {
-  tournament: NonNullable<Awaited<ReturnType<typeof getCurrentTournament>>>;
-  progress: Awaited<ReturnType<typeof getTournamentProgress>>;
-  tournamentTablesCount: number;
-  totalPlayers: number;
-}): AutoChecklistItem[] {
-  const editHref = `/admin/tournoi/edition/${tournament.id}`;
-  const missingCoreInfo = [
-    tournament.venue,
-    tournament.registrationOpenAt,
-    tournament.registrationCloseAt,
-    tournament.startDate,
-    tournament.endDate,
-  ].filter((value) => !value).length;
-
-  const registrationDescription =
-    progress.registrationStatus === "OPEN"
-      ? "Les inscriptions sont actuellement ouvertes."
-      : progress.registrationStatus === "UPCOMING"
-        ? "Les inscriptions sont programmees mais pas encore ouvertes."
-        : "Les inscriptions sont fermees actuellement.";
-
-  return [
-    {
-      id: "publication",
-      title: "Tournoi actif sur le site",
-      description:
-        tournament.status === "PUBLISHED"
-          ? "Ce tournoi est bien celui diffuse sur le front public."
-          : "Le tournoi courant n'est pas publie. Pense a l'activer si besoin.",
-      href: editHref,
-      status: tournament.status === "PUBLISHED" ? "done" : "warning",
-    },
-    {
-      id: "core-info",
-      title: "Infos principales completees",
-      description:
-        missingCoreInfo === 0
-          ? "Lieu, ouverture, fermeture et dates du tournoi sont renseignes."
-          : `${missingCoreInfo} information(s) principale(s) manque(nt) encore dans la fiche tournoi.`,
-      href: editHref,
-      status: missingCoreInfo === 0 ? "done" : "warning",
-    },
-    {
-      id: "registration-window",
-      title: "Fenetre d'inscription",
-      description: registrationDescription,
-      href: editHref,
-      status:
-        progress.registrationStatus === "OPEN"
-          ? "done"
-          : progress.registrationStatus === "UPCOMING"
-            ? "info"
-            : "warning",
-    },
-    {
-      id: "tables",
-      title: "Tableaux configures",
-      description:
-        tournamentTablesCount > 0
-          ? `${tournamentTablesCount} tableau(x) configures, ${progress.tablesFull} complet(s), ${totalPlayers} joueur(s) inscrit(s).`
-          : "Aucun tableau n'est encore configure pour ce tournoi.",
-      href: editHref,
-      status: tournamentTablesCount > 0 ? "done" : "warning",
-    },
-    {
-      id: "payments",
-      title: "Paiements a regulariser",
-      description:
-        progress.paymentsPending === 0
-          ? "Aucun dossier en attente de paiement."
-          : `${progress.paymentsPending} dossier(s) ont encore un solde a regler.`,
-      href: "/admin/tournoi/paiement",
-      status: progress.paymentsPending === 0 ? "done" : "warning",
-    },
-  ];
-}
 
 export default async function AdminTournoiPage() {
   await requireAdminSession();
@@ -193,17 +108,11 @@ export default async function AdminTournoiPage() {
       getTournamentProgress(tournament.id),
     ]);
 
-  const autoChecklistItems = buildAutoChecklistItems({
-    tournament,
-    progress,
-    tournamentTablesCount: tournamentTables.length,
-    totalPlayers: dashboardStats.totalPlayers,
-  });
   const quickActions = [
     {
       href: "/admin/tournoi/inscriptions",
       label: "Inscriptions",
-      helper: "Demandes a traiter",
+      helper: "Demandes à traiter",
       value: dashboardStats.totalPlayers,
       Icon: Users,
     },
@@ -224,7 +133,7 @@ export default async function AdminTournoiPage() {
     {
       href: "/admin/tournoi/pointages",
       label: "Pointages",
-      helper: "Jours a couvrir",
+      helper: "Jours à couvrir",
       value: new Set(tournamentTables.map((table) => table.dayKey)).size,
       Icon: MapPinned,
     },
@@ -258,7 +167,7 @@ export default async function AdminTournoiPage() {
           <div>
             <h2 className="text-lg font-semibold text-foreground">Actions rapides</h2>
             <p className="text-sm text-muted-foreground">
-              Acces direct aux zones critiques avec leurs compteurs utiles.
+              Accès direct aux zones critiques avec leurs compteurs utiles.
             </p>
           </div>
         </div>
@@ -284,11 +193,6 @@ export default async function AdminTournoiPage() {
           ))}
         </div>
       </section>
-
-      <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.95fr)]">
-        <EventBlockEditor />
-        <ActionsChecklist autoItems={autoChecklistItems} />
-      </div>
 
       <ProgressSummary progress={progress} />
 
@@ -328,11 +232,11 @@ export default async function AdminTournoiPage() {
                   </span>
                 </th>
                 <th className="py-2 pr-3 font-medium">Tableau</th>
-                <th className="py-2 pr-3 font-medium">Categorie</th>
+                <th className="py-2 pr-3 font-medium">Catégorie</th>
                 <th className="py-2 pr-3 font-medium">
                   <span className="inline-flex items-center gap-2">
                     <DollarSign className="h-4 w-4" />
-                    Anticipe
+                    Anticipé
                   </span>
                 </th>
                 <th className="py-2 pr-3 font-medium">
@@ -375,17 +279,17 @@ export default async function AdminTournoiPage() {
           Contenu promotionnel (optionnel)
         </summary>
         <p className="mt-1 pr-6 text-xs text-muted-foreground">
-          Ressources de communication secondaires a consulter seulement si besoin.
+          Ressources de communication secondaires à consulter seulement si besoin.
         </p>
         <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2">
           <Card>
             <CardHeader>
-              <CardTitle>Rythme editorial du tournoi</CardTitle>
+              <CardTitle>Rythme éditorial du tournoi</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-muted-foreground">
               <p>
-                Pour garder le tournoi visible et regulier, nous publions des
-                contenus avant, pendant et apres l&apos;evenement selon un planning clair.
+                Pour garder le tournoi visible et régulier, nous publions des
+                contenus avant, pendant et après l&apos;événement selon un planning clair.
               </p>
 
               <div className="space-y-4">
@@ -410,7 +314,7 @@ export default async function AdminTournoiPage() {
             </CardHeader>
             <CardContent className="space-y-4 text-muted-foreground">
               <p>
-                Les preuves sociales permettent de montrer la credibilite du
+                Les preuves sociales permettent de montrer la crédibilité du
                 tournoi et d&apos;encourager de nouvelles inscriptions.
               </p>
 

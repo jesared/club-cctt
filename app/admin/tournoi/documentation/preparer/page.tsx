@@ -7,8 +7,8 @@ const steps = [
   {
     title: "1) Créer un tournoi",
     items: [
-      "Aller dans `Admin tournoi` > `Templates` si vous partez d'un modèle.",
-      "Créer le tournoi avec un nom clair (ex: Open CCTT 2026).",
+      "Aller dans `Admin tournoi` > `Nouveau tournoi` pour dupliquer une edition existante.",
+      "Creer le tournoi avec un nom clair (ex: Open CCTT 2027).",
       "Laisser le statut en `DRAFT` tant que tout n'est pas prêt.",
     ],
   },

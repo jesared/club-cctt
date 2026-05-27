@@ -272,6 +272,29 @@ export async function getAdminTournaments() {
   });
 }
 
+export async function getTournamentDuplicationSources() {
+  return prisma.tournament.findMany({
+    orderBy: [{ startDate: "desc" }],
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      description: true,
+      venue: true,
+      registrationOpenAt: true,
+      registrationCloseAt: true,
+      startDate: true,
+      endDate: true,
+      status: true,
+      _count: {
+        select: {
+          events: true,
+        },
+      },
+    },
+  });
+}
+
 export async function getTournamentDashboardStats(
   tournamentId: string,
 ): Promise<TournamentDashboardStats> {

@@ -7,9 +7,9 @@ type ProgressSummaryProps = {
 };
 
 const STATUS_LABEL: Record<TournamentProgress["registrationStatus"], string> = {
-  CLOSED: "Inscriptions fermees",
+  CLOSED: "Inscriptions fermées",
   OPEN: "Inscriptions ouvertes",
-  UPCOMING: "Inscriptions a venir",
+  UPCOMING: "Inscriptions à venir",
 };
 
 export function ProgressSummary({ progress }: ProgressSummaryProps) {
@@ -18,7 +18,7 @@ export function ProgressSummary({ progress }: ProgressSummaryProps) {
       <div>
         <h2 className="text-lg font-semibold text-foreground">Avancement</h2>
         <p className="text-sm text-muted-foreground">
-          Synthese automatique pour suivre l&apos;etat du tournoi.
+          Synthèse automatique pour suivre l&apos;état du tournoi.
         </p>
       </div>
 
@@ -73,7 +73,7 @@ export function ProgressSummary({ progress }: ProgressSummaryProps) {
           href="/admin/tournoi/paiement"
           className="text-primary hover:underline"
         >
-          Verifier paiements
+          Vérifier paiements
         </Link>
       </div>
     </section>

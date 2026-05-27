@@ -178,3 +178,36 @@ export async function PUT(
 
   return NextResponse.json({ tournament: updated });
 }
+
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const session = await getServerSession(authOptions);
+
+  if (!session || !isAdminRole(session.user.role)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { id } = await params;
+
+  const tournament = await prisma.tournament.findUnique({
+    where: { id },
+    select: { id: true },
+  });
+
+  if (!tournament) {
+    return NextResponse.json({ error: "Tournoi introuvable." }, { status: 404 });
+  }
+
+  await prisma.tournament.delete({
+    where: { id },
+    include: {
+      events: {
+        orderBy: [{ startAt: "asc" }, { code: "asc" }],
+      },
+    },
+  });
+
+  return NextResponse.json({ ok: true });
+}

@@ -46,20 +46,20 @@ const palettes: Record<string, SidebarPalette> = {
   },
   "Admin tournoi": {
     section:
-      "border-amber-500/20 bg-amber-500/[0.04] dark:border-amber-300/15 dark:bg-amber-500/[0.05]",
+      "border-[#FF7A00]/20 bg-[#FF7A00]/[0.04] dark:border-[#FF7A00]/20 dark:bg-[#FF7A00]/[0.06]",
     sectionExpanded:
-      "border-amber-500/30 bg-amber-500/[0.08] dark:border-amber-300/20 dark:bg-amber-500/[0.08]",
-    icon: "bg-amber-500/10 text-amber-700 dark:bg-amber-300/12 dark:text-amber-200",
+      "border-[#FF7A00]/30 bg-[#FF7A00]/[0.08] dark:border-[#FF7A00]/30 dark:bg-[#FF7A00]/[0.1]",
+    icon: "bg-[#FF7A00]/10 text-[#FF7A00] dark:bg-[#FF7A00]/12 dark:text-[#FFB06B]",
     activeIcon:
-      "bg-amber-400 text-stone-950 dark:bg-amber-200 dark:text-stone-950",
+      "bg-[#FF7A00] text-stone-950 dark:bg-[#FFB06B] dark:text-stone-950",
     activeRow:
-      "bg-amber-500/10 text-foreground before:bg-amber-500 shadow-sm dark:bg-amber-400/10 dark:before:bg-amber-200",
+      "bg-[#FF7A00]/10 text-foreground before:bg-[#FF7A00] shadow-sm dark:bg-[#FF7A00]/12 dark:before:bg-[#FFB06B]",
     hoverRow:
-      "text-foreground/80 hover:bg-amber-500/8 hover:text-foreground dark:text-muted-foreground dark:hover:bg-amber-400/6 dark:hover:text-foreground",
+      "text-foreground/80 hover:bg-[#FF7A00]/8 hover:text-foreground dark:text-muted-foreground dark:hover:bg-[#FF7A00]/8 dark:hover:text-foreground",
     badge:
-      "border-amber-500/20 bg-amber-500/10 text-amber-800 dark:border-amber-300/20 dark:bg-amber-300/10 dark:text-amber-100",
+      "border-[#FF7A00]/20 bg-[#FF7A00]/10 text-[#FF7A00] dark:border-[#FF7A00]/20 dark:bg-[#FF7A00]/10 dark:text-[#FFD2A8]",
     chrome:
-      "from-stone-100 via-white to-amber-50/70 dark:from-stone-500/10 dark:via-slate-950 dark:to-amber-500/5",
+      "from-stone-100 via-white to-[#FF7A00]/[0.08] dark:from-stone-500/10 dark:via-slate-950 dark:to-[#FF7A00]/[0.08]",
   },
 };
 

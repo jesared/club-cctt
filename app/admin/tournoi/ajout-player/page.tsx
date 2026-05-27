@@ -190,12 +190,6 @@ async function updatePlayerRegistration(formData: FormData) {
 
   const tournamentId = String(formData.get("tournamentId") ?? "");
   const registrationId = String(formData.get("registrationId") ?? "").trim();
-  const licence = String(formData.get("licence") ?? "").trim();
-  const nom = String(formData.get("nom") ?? "").trim();
-  const prenom = String(formData.get("prenom") ?? "").trim();
-  const pointsValue = String(formData.get("points") ?? "").trim();
-  const gender = String(formData.get("gender") ?? "").trim().toUpperCase();
-  const club = String(formData.get("club") ?? "").trim();
   const contactEmail = String(formData.get("contactEmail") ?? "").trim();
   const contactPhone = String(formData.get("contactPhone") ?? "").trim();
   const notes = String(formData.get("notes") ?? "").trim();
@@ -207,26 +201,12 @@ async function updatePlayerRegistration(formData: FormData) {
   if (
     !tournamentId ||
     !registrationId ||
-    !licence ||
-    !nom ||
-    !prenom ||
-    !pointsValue ||
-    !["M", "F"].includes(gender) ||
-    !club ||
     !contactEmail ||
     !contactPhone ||
     selectedEvents.length === 0
   ) {
     redirect(
       `/admin/tournoi/ajout-player?edit=${registrationId}&error=Veuillez+remplir+les+champs+obligatoires`,
-    );
-  }
-
-  const points = Number.parseInt(pointsValue, 10);
-
-  if (Number.isNaN(points) || points < 0) {
-    redirect(
-      `/admin/tournoi/ajout-player?edit=${registrationId}&error=Classement+invalide`,
     );
   }
 
@@ -242,7 +222,14 @@ async function updatePlayerRegistration(formData: FormData) {
     where: { id: registrationId },
     include: {
       player: {
-        select: { id: true, licence: true },
+        select: {
+          id: true,
+          licence: true,
+          nom: true,
+          prenom: true,
+          points: true,
+          club: true,
+        },
       },
     },
   });
@@ -253,17 +240,21 @@ async function updatePlayerRegistration(formData: FormData) {
     );
   }
 
-  if (licence !== registration.player.licence) {
-    const existingPlayer = await prisma.player.findUnique({
-      where: { licence },
-      select: { id: true },
-    });
+  const licence = registration.player.licence.trim();
+  const nom = registration.player.nom.trim();
+  const prenom = registration.player.prenom.trim();
+  const club = registration.player.club?.trim() ?? "";
+  const points = registration.player.points;
+  const gender = (
+    registration.gender === "M" || registration.gender === "F"
+      ? registration.gender
+      : ""
+  ) as "M" | "F" | "";
 
-    if (existingPlayer && existingPlayer.id !== registration.player.id) {
-      redirect(
-        `/admin/tournoi/ajout-player?edit=${registrationId}&error=Cette+licence+est+d%C3%A9j%C3%A0+utilis%C3%A9e`,
-      );
-    }
+  if (!licence || !nom || !prenom || points === null || !club || !gender) {
+    redirect(
+      `/admin/tournoi/ajout-player?edit=${registrationId}&error=Les+donn%C3%A9es+FFTT+du+joueur+sont+incompl%C3%A8tes`,
+    );
   }
 
   const selectedTournamentEvents = await prisma.tournamentEvent.findMany({

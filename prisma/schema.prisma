@@ -305,37 +305,6 @@ model RateLimitBucket {
   createdAt DateTime @default(now())
 }
 
-model TournamentTemplate {
-  id                  String           @id
-  slug                String
-  name                String
-  description         String?
-  venue               String?
-  registrationOpenAt  DateTime?
-  registrationCloseAt DateTime?
-  startDate           DateTime
-  endDate             DateTime
-  status              TournamentStatus @default(DRAFT)
-  createdAt           DateTime         @default(now())
-  updatedAt           DateTime         @updatedAt
-}
-
-model TournamentEventTemplate {
-  id             String                @id @default(cuid())
-  code           String
-  label          String
-  gender         EventGender           @default(MIXED)
-  minPoints      Int?
-  maxPoints      Int?
-  maxPlayers     Int                   @default(32)
-  startAt        DateTime
-  feeOnlineCents Int
-  feeOnsiteCents Int
-  status         TournamentEventStatus @default(OPEN)
-  createdAt      DateTime              @default(now())
-  updatedAt      DateTime              @updatedAt
-}
-
 model MediaAsset {
   id               String   @id @default(cuid())
   url              String

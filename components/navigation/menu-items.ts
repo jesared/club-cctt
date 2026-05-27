@@ -5,6 +5,7 @@ import {
   CalendarCheck,
   CalendarClock,
   ClipboardPen,
+  CopyPlus,
   Download,
   FileText,
   Handshake,
@@ -328,10 +329,10 @@ export const navigation: MenuSection[] = [
         description: "Produire les fichiers utiles pour l'organisation terrain.",
       },
       {
-        href: "/admin/tournoi/templates",
-        label: "Templates",
-        icon: LayoutGrid,
-        description: "Réutiliser des configurations et structures de tournoi.",
+        href: "/admin/tournoi/nouveau",
+        label: "Nouveau tournoi",
+        icon: CopyPlus,
+        description: "Dupliquer une édition existante pour préparer la suivante.",
       },
       {
         href: "/admin/tournoi/documentation",

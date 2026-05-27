@@ -877,7 +877,9 @@ export function PointagesGrid({
         <div
           className={cn(
             "grid gap-3",
-            quickMode ? "md:grid-cols-1" : "md:grid-cols-2 xl:grid-cols-4",
+            quickMode
+              ? "md:grid-cols-[minmax(0,1fr)_minmax(14rem,18rem)]"
+              : "md:grid-cols-2 xl:grid-cols-4",
           )}
         >
           <label className="space-y-1">
@@ -897,26 +899,26 @@ export function PointagesGrid({
             </div>
           </label>
 
+          <label className="space-y-1">
+            <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Filtrer par club
+            </span>
+            <select
+              className="admin-select"
+              value={selectedClub}
+              onChange={(event) => setSelectedClub(event.target.value)}
+            >
+              <option value="all">Tous les clubs</option>
+              {clubOptions.map((club) => (
+                <option key={club} value={club}>
+                  {club}
+                </option>
+              ))}
+            </select>
+          </label>
+
           {!quickMode ? (
             <>
-              <label className="space-y-1">
-                <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  Filtrer par club
-                </span>
-                <select
-                  className="admin-select"
-                  value={selectedClub}
-                  onChange={(event) => setSelectedClub(event.target.value)}
-                >
-                  <option value="all">Tous les clubs</option>
-                  {clubOptions.map((club) => (
-                    <option key={club} value={club}>
-                      {club}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
               <label className="space-y-1">
                 <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                   Filtrer par tableau
@@ -962,7 +964,7 @@ export function PointagesGrid({
               </label>
             </>
           ) : (
-            <div className="rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-muted-foreground">
+            <div className="rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-muted-foreground md:col-span-2">
               Le mode rapide masque les colonnes secondaires pour pointer plus
               vite à l&apos;accueil.
             </div>

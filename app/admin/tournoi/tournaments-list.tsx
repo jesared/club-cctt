@@ -4,6 +4,8 @@ import { useState } from "react";
 
 import Link from "next/link";
 
+import { CopyPlus } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 
 type TournamentItem = {
@@ -41,7 +43,7 @@ function statusLabel(status: TournamentItem["status"]) {
     case "CLOSED":
       return "Clos";
     case "ARCHIVED":
-      return "Archive";
+      return "Archivé";
     default:
       return status;
   }
@@ -108,6 +110,13 @@ export function TournamentsList({
             Activez un tournoi pour qu&apos;il devienne le tournoi en cours.
           </p>
         </div>
+        <Link
+          href="/admin/tournoi/nouveau"
+          className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium hover:bg-background"
+        >
+          <CopyPlus className="h-4 w-4" />
+          Nouveau tournoi
+        </Link>
       </div>
 
       {tournaments.length === 0 ? (
@@ -173,10 +182,10 @@ export function TournamentsList({
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
                     <p className="text-sm font-semibold text-foreground">
-                      Autres editions
+                      Autres éditions
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {otherTournaments.length} tournoi(x) replie(s) par defaut.
+                      {otherTournaments.length} tournoi(x) replié(s) par défaut.
                     </p>
                   </div>
                   <span className="text-xs font-medium text-muted-foreground">
@@ -194,7 +203,7 @@ export function TournamentsList({
                         <th className="py-2 pr-3 font-medium">Slug</th>
                         <th className="py-2 pr-3 font-medium">Dates</th>
                         <th className="py-2 pr-3 font-medium">Statut</th>
-                        <th className="py-2 pr-3 font-medium">Edition</th>
+                        <th className="py-2 pr-3 font-medium">Édition</th>
                         <th className="py-2 font-medium">Action</th>
                       </tr>
                     </thead>

@@ -1,9 +1,9 @@
 import {
   BadgeEuro,
   ClipboardPen,
+  CopyPlus,
   Download,
   FileText,
-  LayoutGrid,
   Users,
 } from "lucide-react";
 
@@ -22,13 +22,13 @@ const sections = [
     ],
   },
   {
-    title: "Templates",
-    icon: LayoutGrid,
-    href: "/admin/tournoi/documentation/templates",
+    title: "Nouvelle edition",
+    icon: CopyPlus,
+    href: "/admin/tournoi/documentation/nouveau",
     items: [
-      "Mettre à jour le template tournoi et les templates tableaux.",
-      "Utiliser les templates pour créer un nouveau tournoi plus vite.",
-      "Vérifier les horaires et prix avant publication.",
+      "Dupliquer une edition existante pour repartir d'une base reelle.",
+      "Recaler les dates et verifier les tableaux avant publication.",
+      "Garder les inscriptions et paiements separes de la nouvelle edition.",
     ],
   },
   {
