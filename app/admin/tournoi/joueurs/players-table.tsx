@@ -11,9 +11,7 @@ type PlayersTableProps = {
 };
 
 export function PlayersTable({ players }: PlayersTableProps) {
-  const [rows, setRows] = useState(players);
   const [openActionId, setOpenActionId] = useState<string | null>(null);
-  const [loadingId, setLoadingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [menuPosition, setMenuPosition] = useState<{
     top: number;
@@ -41,25 +39,25 @@ export function PlayersTable({ players }: PlayersTableProps) {
   const filteredRows = useMemo(() => {
     const normalized = searchTerm.trim().toLocaleLowerCase("fr");
     if (!normalized) {
-      return rows;
+      return players;
     }
-    return rows.filter((row) => {
+    return players.filter((row) => {
       return (
         row.name.toLocaleLowerCase("fr").includes(normalized) ||
         row.club.toLocaleLowerCase("fr").includes(normalized) ||
         row.licence.toLocaleLowerCase("fr").includes(normalized)
       );
     });
-  }, [rows, searchTerm]);
+  }, [players, searchTerm]);
 
   const stats = useMemo(() => {
-    const total = rows.length;
-    const paid = rows.filter((row) => row.payment === "Payé").length;
-    const waiting = rows.filter((row) => row.payment !== "Payé").length;
-    const waitlist = rows.filter(
+    const total = players.length;
+    const paid = players.filter((row) => row.payment === "Payé").length;
+    const waiting = players.filter((row) => row.payment !== "Payé").length;
+    const waitlist = players.filter(
       (row) => row.status.toLowerCase() === "liste d'attente",
     ).length;
-    const checked = rows.filter(
+    const checked = players.filter(
       (row) => row.status.toLowerCase() === "pointé",
     ).length;
 
@@ -70,28 +68,7 @@ export function PlayersTable({ players }: PlayersTableProps) {
       waitlist,
       checked,
     };
-  }, [rows]);
-
-  async function handleDelete(registrationId: string) {
-    if (!confirm("Supprimer ce joueur et ses inscriptions ?")) return;
-    setLoadingId(registrationId);
-    try {
-      const res = await fetch("/api/admin/tournoi/pointages", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ registrationId }),
-      });
-      const json = await res.json().catch(() => null);
-      if (!res.ok) {
-        alert(json?.error ?? "Suppression impossible.");
-        return;
-      }
-      setRows((current) => current.filter((row) => row.id !== registrationId));
-    } finally {
-      setLoadingId(null);
-      setOpenActionId(null);
-    }
-  }
+  }, [players]);
 
   return (
     <section className="rounded-xl border bg-card p-6 shadow-sm space-y-4">
@@ -210,14 +187,6 @@ export function PlayersTable({ players }: PlayersTableProps) {
           >
             Editer
           </Link>
-          <button
-            type="button"
-            className="w-full rounded px-2 py-2 text-left hover:bg-muted"
-            onClick={() => handleDelete(openActionId)}
-            disabled={loadingId === openActionId}
-          >
-            {loadingId === openActionId ? "..." : "Supprimer"}
-          </button>
         </div>
       ) : null}
     </section>

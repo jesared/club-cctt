@@ -351,6 +351,43 @@ async function updatePlayerRegistration(formData: FormData) {
   );
 }
 
+async function deletePlayerRegistration(formData: FormData) {
+  "use server";
+
+  await requireAdminSession();
+
+  const tournamentId = String(formData.get("tournamentId") ?? "").trim();
+  const registrationId = String(formData.get("registrationId") ?? "").trim();
+
+  if (!tournamentId || !registrationId) {
+    redirect(
+      `/admin/tournoi/ajout-player?edit=${registrationId}&error=Inscription+introuvable`,
+    );
+  }
+
+  const registration = await prisma.tournamentRegistration.findUnique({
+    where: { id: registrationId },
+    select: { tournamentId: true },
+  });
+
+  if (!registration || registration.tournamentId !== tournamentId) {
+    redirect(
+      `/admin/tournoi/ajout-player?edit=${registrationId}&error=Inscription+introuvable`,
+    );
+  }
+
+  await prisma.tournamentRegistration.delete({
+    where: { id: registrationId },
+  });
+
+  revalidatePath("/admin/tournoi/inscriptions");
+  revalidatePath("/admin/tournoi/joueurs");
+  revalidatePath("/admin/tournoi/paiement");
+  revalidatePath("/admin/tournoi/pointages");
+  revalidatePath("/tournoi/liste-inscrits");
+  redirect("/admin/tournoi/joueurs");
+}
+
 export default async function AdminTournoiAjoutPlayerPage({
   searchParams,
 }: PageProps) {
@@ -435,6 +472,7 @@ export default async function AdminTournoiAjoutPlayerPage({
             action={
               editMode ? updatePlayerRegistration : createPlayerRegistration
             }
+            deleteAction={editMode ? deletePlayerRegistration : undefined}
             initialData={initialData}
             submitLabel={editMode ? "Mettre à jour le joueur" : undefined}
             cancelHref={editMode ? "/admin/tournoi/joueurs" : undefined}

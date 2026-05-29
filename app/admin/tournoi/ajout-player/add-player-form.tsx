@@ -1,5 +1,15 @@
 ﻿"use client";
 
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { AlertTriangle, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
@@ -52,6 +62,7 @@ type Props = {
   tournamentId: string;
   tournamentTables: TournamentTable[];
   action: (formData: FormData) => void;
+  deleteAction?: (formData: FormData) => void;
   initialData?: {
     registrationId: string;
     nom: string;
@@ -134,11 +145,13 @@ export function AddPlayerForm({
   tournamentId,
   tournamentTables,
   action,
+  deleteAction,
   initialData,
   submitLabel,
   cancelHref,
 }: Props) {
   const editMode = Boolean(initialData);
+  const formId = `admin-tournoi-player-form-${initialData?.registrationId ?? tournamentId}`;
   const [formData, setFormData] = useState<PlayerFormState>(() => ({
     nom: initialData?.nom ?? "",
     prenom: initialData?.prenom ?? "",
@@ -151,10 +164,15 @@ export function AddPlayerForm({
     notes: initialData?.notes ?? "",
     eventIds: initialData?.eventIds ?? ([] as string[]),
   }));
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [ffttLookup, setFfttLookup] = useState<FfttLookupState>({
     status: initialData ? "success" : "idle",
     message: initialData ? "Données joueur chargées depuis l'inscription." : "",
   });
+  const playerDisplayName =
+    `${formData.prenom} ${formData.nom}`.trim() ||
+    formData.licence ||
+    "ce joueur";
 
   useEffect(() => {
     if (!initialData) return;
@@ -325,7 +343,7 @@ export function AddPlayerForm({
     hasFfttPlayer && formData.gender !== "" && formData.eventIds.length > 0;
 
   return (
-    <form action={action} className="space-y-6">
+    <form id={formId} action={action} className="space-y-6">
       <input type="hidden" name="tournamentId" value={tournamentId} />
       {initialData ? (
         <input type="hidden" name="registrationId" value={initialData.registrationId} />
@@ -665,21 +683,95 @@ export function AddPlayerForm({
             />
           </label>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <button
-              type="submit"
-              disabled={!canSubmit}
-              className="inline-flex cursor-pointer items-center rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {submitLabel ?? "Ajouter le joueur"}
-            </button>
-            {cancelHref ? (
-              <Link
-                href={cancelHref}
-                className="inline-flex cursor-pointer items-center rounded-md border border-border bg-background px-6 py-3 text-sm font-medium text-foreground transition hover:bg-muted/60"
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="submit"
+                disabled={!canSubmit}
+                className="inline-flex cursor-pointer items-center rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Annuler
-              </Link>
+                {submitLabel ?? "Ajouter le joueur"}
+              </button>
+              {cancelHref ? (
+                <Link
+                  href={cancelHref}
+                  className="inline-flex cursor-pointer items-center rounded-md border border-border bg-background px-6 py-3 text-sm font-medium text-foreground transition hover:bg-muted/60"
+                >
+                  Annuler
+                </Link>
+              ) : null}
+            </div>
+
+            {deleteAction && initialData ? (
+              <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <button
+                  type="button"
+                  onClick={() => setDeleteDialogOpen(true)}
+                  className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-destructive/20 bg-destructive/10 px-6 py-3 text-sm font-medium text-destructive transition hover:bg-destructive/15"
+                >
+                  <Trash2 className="size-4" aria-hidden="true" />
+                  Supprimer le joueur
+                </button>
+
+                <DialogContent className="max-w-md p-0">
+                  <DialogHeader className="border-b border-destructive/10 bg-destructive/5 px-6 py-5">
+                    <div className="flex items-start gap-3">
+                      <span className="mt-0.5 inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                        <AlertTriangle className="size-5" aria-hidden="true" />
+                      </span>
+                      <div>
+                        <DialogTitle className="text-lg">
+                          Supprimer ce joueur ?
+                        </DialogTitle>
+                        <DialogDescription className="mt-1 leading-6">
+                          Cette action supprimera le joueur du tournoi, ses
+                          tableaux, pointages et paiements associés.
+                        </DialogDescription>
+                      </div>
+                    </div>
+                  </DialogHeader>
+
+                  <div className="space-y-3 px-6 py-5 text-sm">
+                    <div className="rounded-md border border-border bg-muted/30 px-4 py-3">
+                      <p className="text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+                        Joueur concerné
+                      </p>
+                      <p className="mt-1 text-base font-semibold text-foreground">
+                        {playerDisplayName}
+                      </p>
+                      {formData.licence ? (
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Licence {formData.licence}
+                        </p>
+                      ) : null}
+                    </div>
+                    <p className="text-muted-foreground">
+                      La suppression est définitive. Vérifiez que vous n&apos;avez
+                      plus besoin de conserver ce dossier tournoi.
+                    </p>
+                  </div>
+
+                  <DialogFooter className="border-t border-border/60 px-6 py-5">
+                    <DialogClose asChild>
+                      <button
+                        type="button"
+                        className="inline-flex cursor-pointer items-center justify-center rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition hover:bg-muted/60"
+                      >
+                        Annuler
+                      </button>
+                    </DialogClose>
+                    <button
+                      type="submit"
+                      form={formId}
+                      formAction={deleteAction}
+                      formNoValidate
+                      className="inline-flex cursor-pointer items-center justify-center rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground transition hover:bg-destructive/90"
+                    >
+                      Confirmer la suppression
+                    </button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             ) : null}
           </div>
         </>
