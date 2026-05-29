@@ -1,7 +1,7 @@
 "use client";
 
 import { Menu } from "lucide-react";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ import { isPublicRoute } from "@/lib/routes";
 
 type AppShellProps = {
   children: ReactNode;
-  title: string;
+  title?: string;
   sidebarBadges?: NavigationBadges;
 };
 
@@ -23,6 +23,11 @@ export default function AppShell({
   sidebarBadges,
 }: AppShellProps) {
   const pathname = usePathname();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
 
   if (isPublicRoute(pathname)) {
     return <>{children}</>;
@@ -37,36 +42,46 @@ export default function AppShell({
 
       {/* CONTENT */}
       <div className="flex min-w-0 flex-1 flex-col">
-        {/* HEADER */}
-        <header className="flex h-14 items-center border-b bg-background/90 px-4 backdrop-blur md:px-6">
-          {/* MOBILE MENU */}
-          <div className="md:hidden">
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button size="icon" variant="ghost">
-                  <Menu className="h-5 w-5" />
-                </Button>
-              </SheetTrigger>
+        {/* MOBILE MENU */}
+        <div className="md:hidden">
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button
+                size="icon"
+                variant="secondary"
+                aria-label="Ouvrir le menu"
+                className="fixed left-4 top-4 z-50 border border-border bg-background/95 shadow-lg backdrop-blur dark:text-white"
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
 
-              <SheetContent side="left" className="w-[320px] max-w-[88vw] p-0">
-                <Sidebar mobile badges={sidebarBadges} />
-              </SheetContent>
-            </Sheet>
-          </div>
+            <SheetContent side="left" className="w-[320px] max-w-[88vw] p-0">
+              <Sidebar
+                mobile
+                open={mobileMenuOpen}
+                onClose={() => setMobileMenuOpen(false)}
+                badges={sidebarBadges}
+              />
+            </SheetContent>
+          </Sheet>
+        </div>
 
-          <div className="ml-2">
-            <div className="text-sm font-semibold">{title}</div>
-            <div className="text-xs text-muted-foreground md:hidden">
-              Tableau de bord
+        {/* HEADER DESKTOP */}
+        <header className="hidden h-14 items-center border-b bg-background/90 px-6 backdrop-blur md:flex">
+          {title ? (
+            <div className="min-w-0">
+              <div className="truncate text-sm font-semibold">{title}</div>
             </div>
-          </div>
+          ) : null}
+
           <div className="ml-auto">
             <SiteBreadcrumb />
           </div>
         </header>
 
         {/* MAIN */}
-        <main className="flex-1 overflow-y-auto px-4 py-6 md:px-8">
+        <main className="flex-1 overflow-y-auto px-4 pb-8 pt-16 md:px-8 md:py-6">
           <div className="mx-auto w-full max-w-7xl">{children}</div>
         </main>
       </div>
