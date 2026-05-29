@@ -1,10 +1,16 @@
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import { isAdminRole } from "@/lib/roles";
-import { getServerSession } from "next-auth";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+export async function getCurrentSession(request?: Request) {
+  return auth.api.getSession({
+    headers: request?.headers ?? (await headers()),
+  });
+}
+
 export async function requireAdminSession() {
-  const session = await getServerSession(authOptions);
+  const session = await getCurrentSession();
 
   if (!session) {
     redirect("/auth/signin?callbackUrl=/admin");

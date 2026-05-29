@@ -8,9 +8,8 @@ import {
   MessageSquare,
 } from "lucide-react";
 import Link from "next/link";
-import { getServerSession } from "next-auth";
 
-import { authOptions } from "@/lib/auth";
+import { getCurrentSession } from "@/lib/session";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -30,7 +29,7 @@ export default async function UserProfilePage({
 }) {
   const resolved = await searchParams;
   const showForbidden = resolved?.forbidden === "admin";
-  const session = await getServerSession(authOptions);
+  const session = await getCurrentSession();
   const registrationWhere = session?.user?.id
     ? {
         OR: [

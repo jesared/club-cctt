@@ -1,9 +1,8 @@
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
 
 import AppShell from "@/components/navigation/app-shell";
-import { authOptions } from "@/lib/auth";
+import { getCurrentSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { isAdminRole } from "@/lib/roles";
 
@@ -12,7 +11,7 @@ export default async function AdminLayout({
 }: {
   children: ReactNode;
 }) {
-  const session = await getServerSession(authOptions);
+  const session = await getCurrentSession();
 
   if (!session) {
     redirect("/auth/signin?callbackUrl=/admin");

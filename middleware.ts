@@ -6,9 +6,10 @@ const authPaths = ["/user", "/tournoi/inscription", "/api/user"];
 function hasSessionCookie(request: NextRequest) {
   const cookies = request.cookies;
   return (
-    cookies.has("__Secure-next-auth.session-token") ||
-    cookies.has("__Host-next-auth.session-token") ||
-    cookies.has("next-auth.session-token")
+    cookies.has("__Secure-better-auth.session_token") ||
+    cookies.has("__Host-better-auth.session_token") ||
+    cookies.has("better-auth.session_token") ||
+    cookies.has("better-auth-session_token")
   );
 }
 

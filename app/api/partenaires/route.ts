@@ -2,9 +2,8 @@ export const runtime = "nodejs";
 
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 
-import { authOptions } from "@/lib/auth";
+import { getCurrentSession } from "@/lib/session";
 import {
   defaultPartenairesContent,
   isValidPartenairesData,
@@ -104,7 +103,7 @@ export async function GET() {
 }
 
 export async function PUT(req: Request) {
-  const session = await getServerSession(authOptions);
+  const session = await getCurrentSession();
 
   if (!session || !isAdminRole(session.user.role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

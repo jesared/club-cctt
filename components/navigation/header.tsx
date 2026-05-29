@@ -1,7 +1,6 @@
 ﻿"use client";
 
 import { ChevronDown, Home, Menu, ShieldMinus } from "lucide-react";
-import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -10,6 +9,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { getVisibleSections } from "@/components/navigation/menu-items";
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth-client";
 import type { PublicMenuVisibility } from "@/lib/menu-settings";
 import { isPublicMenuVisible } from "@/lib/menu-settings";
 import { isAdminRole } from "@/lib/roles";
@@ -48,7 +48,7 @@ type HeaderProps = {
 export default function Header({ menuVisibility }: HeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session } = authClient.useSession();
   const [openSection, setOpenSection] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSection, setMobileSection] = useState<string | null>(null);
@@ -407,8 +407,10 @@ export default function Header({ menuVisibility }: HeaderProps) {
             </Link>
           )}
           {!session ? (
-            <Button size="sm" onClick={() => void signIn()}>
+            <Button size="sm" asChild>
+              <Link href="/auth/signin?callbackUrl=/user">
               Connexion
+              </Link>
             </Button>
           ) : (
             <Link href="/user" className="rounded-md px-3 py-2 text-sm">

@@ -11,7 +11,6 @@ import {
   User2,
   X,
 } from "lucide-react";
-import { signIn, signOut, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
@@ -20,6 +19,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { getVisibleSections } from "@/components/navigation/menu-items";
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth-client";
 import {
   Sheet,
   SheetContent,
@@ -60,7 +60,7 @@ type HeaderProps = {
 export default function HeaderCentered({ menuVisibility }: HeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session } = authClient.useSession();
   const { resolvedTheme, setTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
@@ -215,6 +215,11 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [accountMenuOpen]);
+
+  async function signOutToHome() {
+    await authClient.signOut();
+    window.location.href = "/";
+  }
 
   if (!isPublicRoute(pathname)) {
     return null;
@@ -466,7 +471,7 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
                         type="button"
                         role="menuitem"
                         className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm text-foreground transition-colors hover:bg-muted"
-                        onClick={() => void signOut()}
+                        onClick={() => void signOutToHome()}
                       >
                         <LogOut className="h-4 w-4" />
                         <span>Déconnexion</span>
@@ -479,10 +484,12 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
                   size="sm"
                   variant="ghost"
                   className="h-10 rounded-full border border-transparent px-2.5 text-sm text-slate-600 transition-colors hover:bg-muted/35 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/6 dark:hover:text-white"
-                  onClick={() => void signIn()}
+                  asChild
                 >
-                  <LogIn className="h-4 w-4" />
-                  <span className="hidden sm:inline">Connexion</span>
+                  <Link href="/auth/signin?callbackUrl=/user">
+                    <LogIn className="h-4 w-4" />
+                    <span className="hidden sm:inline">Connexion</span>
+                  </Link>
                 </Button>
               )}
             </div>
@@ -681,13 +688,15 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
                   size="sm"
                   variant="ghost"
                   className="h-9 w-full justify-start rounded-lg px-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
-                  onClick={() => {
-                    setMenuOpen(false);
-                    void signIn();
-                  }}
+                  asChild
                 >
-                  <LogIn className="h-4 w-4" />
-                  Connexion
+                  <Link
+                    href="/auth/signin?callbackUrl=/user"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <LogIn className="h-4 w-4" />
+                    Connexion
+                  </Link>
                 </Button>
               )}
             </section>

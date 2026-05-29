@@ -1,10 +1,10 @@
-import { prisma } from "@/lib/prisma";
-import type { Role } from "@prisma/client";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import type { NextAuthOptions } from "next-auth";
-import EmailProvider from "next-auth/providers/email";
-import GoogleProvider from "next-auth/providers/google";
+import { prismaAdapter } from "@better-auth/prisma-adapter";
+import { betterAuth } from "better-auth";
+import { nextCookies } from "better-auth/next-js";
+import { magicLink } from "better-auth/plugins/magic-link";
 import { createTransport } from "nodemailer";
+
+import { prisma } from "@/lib/prisma";
 
 const googleClientId =
   process.env.GOOGLE_CLIENT_ID ??
@@ -16,8 +16,13 @@ const googleClientSecret =
   process.env.AUTH_GOOGLE_SECRET ??
   process.env.GOOGLE_SECRET;
 
-const authSecret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
+const authSecret =
+  process.env.BETTER_AUTH_SECRET ??
+  process.env.AUTH_SECRET ??
+  process.env.NEXTAUTH_SECRET;
+
 const appName = process.env.NEXT_PUBLIC_APP_NAME ?? "CCTT";
+const baseURL = process.env.BETTER_AUTH_URL ?? process.env.NEXT_PUBLIC_SITE_URL;
 const emailServer =
   process.env.EMAIL_SERVER ??
   process.env.GOOGLE_EMAIL_SERVER ??
@@ -35,122 +40,96 @@ if (!googleClientId || !googleClientSecret) {
 
 if (!authSecret) {
   console.error(
-    "[auth] Missing AUTH_SECRET (or NEXTAUTH_SECRET). OAuth callbacks may fail.",
+    "[auth] Missing BETTER_AUTH_SECRET (or AUTH_SECRET/NEXTAUTH_SECRET). Auth callbacks may fail.",
   );
 }
 
 if (!emailServer || !emailFrom) {
   console.warn(
-    "[auth] Missing EMAIL_SERVER/EMAIL_FROM for magic link emails. Email provider disabled.",
+    "[auth] Missing EMAIL_SERVER/EMAIL_FROM for magic link emails. Magic link sign-in will fail until configured.",
   );
 }
 
-export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+async function sendMagicLinkEmail({
+  email,
+  url,
+}: {
+  email: string;
+  url: string;
+}) {
+  if (!emailServer || !emailFrom) {
+    throw new Error("Magic link email provider is not configured.");
+  }
 
-  secret: authSecret,
+  const { host } = new URL(url);
+  const transport = createTransport(emailServer);
 
-  providers: [
-    GoogleProvider({
-      clientId: googleClientId!,
-      clientSecret: googleClientSecret!,
+  const result = await transport.sendMail({
+    to: email,
+    from: emailFrom,
+    subject: `Votre lien de connexion ${appName}`,
+    text: `Bonjour,\n\nVoici votre lien de connexion pour ${appName} :\n${url}\n\nSi vous n'etes pas a l'origine de cette demande, ignorez cet email.\n`,
+    html: `
+      <div style="font-family:Arial,Helvetica,sans-serif;line-height:1.6;color:#111;">
+        <h2 style="margin:0 0 12px;">Connexion a ${appName}</h2>
+        <p>Bonjour,</p>
+        <p>Voici votre lien de connexion securise :</p>
+        <p style="margin:20px 0;">
+          <a href="${url}" style="background:#111;color:#fff;padding:10px 16px;border-radius:6px;text-decoration:none;display:inline-block;">
+            Se connecter
+          </a>
+        </p>
+        <p style="font-size:12px;color:#555;">
+          Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :<br/>
+          <span>${url}</span>
+        </p>
+        <p style="font-size:12px;color:#777;">
+          Demande effectuee pour <strong>${host}</strong>. Si vous n'etes pas a l'origine de cette demande, ignorez cet email.
+        </p>
+      </div>
+    `,
+  });
+
+  const failed = result.rejected.concat(result.pending).filter(Boolean);
+  if (failed.length > 0) {
+    throw new Error(`Email(s) failed: ${failed.join(", ")}`);
+  }
+}
+
+export const auth = betterAuth({
+  appName,
+  ...(baseURL ? { baseURL } : {}),
+  ...(authSecret ? { secret: authSecret } : {}),
+  database: prismaAdapter(prisma, {
+    provider: "postgresql",
+  }),
+  user: {
+    additionalFields: {
+      role: {
+        type: ["USER", "CLUB", "BUREAU", "ENTRAINEUR", "ADMIN"],
+        required: false,
+        defaultValue: "USER",
+        input: false,
+      },
+    },
+  },
+  socialProviders:
+    googleClientId && googleClientSecret
+      ? {
+          google: {
+            clientId: googleClientId,
+            clientSecret: googleClientSecret,
+          },
+        }
+      : {},
+  plugins: [
+    magicLink({
+      sendMagicLink: async ({ email, url }) => {
+        await sendMagicLinkEmail({ email, url });
+      },
     }),
-    ...(emailServer && emailFrom
-      ? [
-          EmailProvider({
-            server: emailServer,
-            from: emailFrom,
-            sendVerificationRequest: async ({
-              identifier,
-              url,
-              provider,
-            }) => {
-              const { host } = new URL(url);
-              const transport = createTransport(provider.server);
-
-              const result = await transport.sendMail({
-                to: identifier,
-                from: provider.from,
-                subject: `Votre lien de connexion ${appName}`,
-                text: `Bonjour,\n\nVoici votre lien de connexion pour ${appName} :\n${url}\n\nSi vous n’êtes pas à l’origine de cette demande, ignorez cet email.\n`,
-                html: `
-                  <div style="font-family:Arial,Helvetica,sans-serif;line-height:1.6;color:#111;">
-                    <h2 style="margin:0 0 12px;">Connexion à ${appName}</h2>
-                    <p>Bonjour,</p>
-                    <p>Voici votre lien de connexion sécurisé :</p>
-                    <p style="margin:20px 0;">
-                      <a href="${url}" style="background:#111;color:#fff;padding:10px 16px;border-radius:6px;text-decoration:none;display:inline-block;">
-                        Se connecter
-                      </a>
-                    </p>
-                    <p style="font-size:12px;color:#555;">
-                      Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :<br/>
-                      <span>${url}</span>
-                    </p>
-                    <p style="font-size:12px;color:#777;">
-                      Demande effectuée pour <strong>${host}</strong>. Si vous n’êtes pas à l’origine de cette demande, ignorez cet email.
-                    </p>
-                  </div>
-                `,
-              });
-
-              const failed = result.rejected.concat(result.pending).filter(Boolean);
-              if (failed.length > 0) {
-                throw new Error(`Email(s) failed: ${failed.join(", ")}`);
-              }
-            },
-          }),
-        ]
-      : []),
+    nextCookies(),
   ],
+});
 
-  session: {
-    strategy: "database",
-  },
-
-  callbacks: {
-    /**
-     * Injecte id + role dans la session
-     */
-    async session({ session, user }) {
-      if (session.user && user) {
-        session.user.id = user.id;
-        session.user.role = user.role;
-      }
-      return session;
-    },
-
-    /**
-     * Lors du login
-     */
-    async signIn({ user }) {
-      const existing = user.id
-        ? await prisma.user.findUnique({
-            where: { id: user.id },
-            select: { id: true, role: true },
-          })
-        : user.email
-          ? await prisma.user.findUnique({
-              where: { email: user.email },
-              select: { id: true, role: true },
-            })
-          : null;
-
-      if (!existing) return true;
-
-      if (!existing.role) {
-        await prisma.user.update({
-          where: { id: existing.id },
-          data: { role: "USER" as Role },
-        });
-      }
-
-      return true;
-    },
-  },
-  pages: {
-    verifyRequest: "/auth/verify-request",
-    signIn: "/auth/signin",
-  },
-};
-
+export type AuthSession = typeof auth.$Infer.Session;

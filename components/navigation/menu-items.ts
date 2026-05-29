@@ -22,13 +22,13 @@ import {
   Users,
   type LucideIcon,
 } from "lucide-react";
-import type { Session } from "next-auth";
 
 import type { PublicMenuVisibility } from "@/lib/menu-settings";
 import { isPublicMenuVisible } from "@/lib/menu-settings";
 import { normalizeRole } from "@/lib/roles";
 
 export type Role = "user" | "admin";
+export type NavigationSession = { user?: { role?: unknown } } | null;
 
 export type MenuItem = {
   href: string;
@@ -55,7 +55,7 @@ export function getVisibleSections({
   badges,
 }: {
   role: unknown;
-  session: Session | null;
+  session: NavigationSession;
   menuVisibility?: PublicMenuVisibility;
   badges?: NavigationBadges;
 }) {
@@ -88,7 +88,7 @@ export function getVisibleSectionsHeader({
   menuVisibility,
 }: {
   role: unknown;
-  session: Session | null;
+  session: NavigationSession;
   menuVisibility?: PublicMenuVisibility;
 }) {
   const normalizedRole = normalizeRole(role);

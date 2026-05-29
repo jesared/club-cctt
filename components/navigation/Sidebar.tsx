@@ -10,7 +10,6 @@ import {
   User2,
   X,
 } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -23,6 +22,7 @@ import {
   type NavigationBadges,
 } from "@/components/navigation/menu-items";
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth-client";
 import { isAdminRole } from "@/lib/roles";
 import { cn } from "@/lib/utils";
 
@@ -84,7 +84,7 @@ export default function Sidebar({
   badges,
 }: SidebarProps) {
   const pathname = usePathname();
-  const { data: session } = useSession();
+  const { data: session } = authClient.useSession();
   const { resolvedTheme, setTheme } = useTheme();
 
   const sections = useMemo(
@@ -175,6 +175,11 @@ export default function Sidebar({
   const heroDescription = isAdmin
     ? "Accès rapides au club et au tournoi."
     : "Retrouvez vos actions et documents.";
+
+  async function signOutToHome() {
+    await authClient.signOut();
+    window.location.href = "/";
+  }
 
   return (
     <>
@@ -409,7 +414,7 @@ export default function Sidebar({
                       "h-auto w-full justify-start rounded-xl px-3 py-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
                       collapsed && !mobile && "justify-center px-0",
                     )}
-                    onClick={() => void signOut()}
+                    onClick={() => void signOutToHome()}
                   >
                     <LogOut className="h-4 w-4" />
                     {!collapsed ? "Déconnexion" : null}

@@ -1,10 +1,9 @@
-﻿import {
+import {
   CalendarClock,
   CircleDollarSign,
   ListChecks,
   UserRound,
 } from "lucide-react";
-import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -24,7 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { authOptions } from "@/lib/auth";
+import { getCurrentSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-window";
 
@@ -60,10 +59,10 @@ type PageProps = {
 };
 
 export default async function MesInscriptionsPage({ searchParams }: PageProps) {
-  const session = await getServerSession(authOptions);
+  const session = await getCurrentSession();
 
   if (!session?.user?.id) {
-    redirect("/api/auth/signin?callbackUrl=/user/inscriptions");
+    redirect("/auth/signin?callbackUrl=/user/inscriptions");
   }
 
   const [currentTournament, registrations] = await Promise.all([

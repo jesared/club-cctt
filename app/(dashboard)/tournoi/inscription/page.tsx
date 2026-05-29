@@ -8,10 +8,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { authOptions } from "@/lib/auth";
+import { getCurrentSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-window";
-import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
 function formatEventLabel(event: {
@@ -72,9 +71,9 @@ function formatEventDateLabel(startAt: Date) {
 }
 
 export default async function InscriptionsPage() {
-  const session = await getServerSession(authOptions);
+  const session = await getCurrentSession();
   if (!session?.user) {
-    redirect("/api/auth/signin?callbackUrl=/tournoi/inscription");
+    redirect("/auth/signin?callbackUrl=/tournoi/inscription");
   }
   const userEmail = session?.user?.email?.trim().toLowerCase();
 

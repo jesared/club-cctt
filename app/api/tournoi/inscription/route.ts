@@ -1,4 +1,4 @@
-﻿import { authOptions } from "@/lib/auth";
+import { getCurrentSession } from "@/lib/session";
 import {
   checkRateLimit,
   createTournamentRegistration,
@@ -13,7 +13,6 @@ import {
 import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-window";
 import { prisma } from "@/lib/prisma";
 import { RegistrationEventStatus } from "@prisma/client";
-import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -83,7 +82,7 @@ export async function POST(request: NextRequest) {
 
   const tournamentId = tournament.id;
   const ownerId = await ensureWebRegistrationOwnerId();
-  const session = await getServerSession(authOptions);
+  const session = await getCurrentSession();
   const sessionUserId = session?.user?.id ?? null;
 
   const selectedEvents = await getSelectedEvents(

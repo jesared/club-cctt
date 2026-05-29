@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { useSession } from "next-auth/react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,11 +11,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { authClient } from "@/lib/auth-client";
 
 type SaveState = "idle" | "saving" | "success" | "error";
 
 export default function ParametresClient() {
-  const { data: session, status, update } = useSession();
+  const { data: session, refetch } = authClient.useSession();
   const [name, setName] = useState("");
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [notifyTournament, setNotifyTournament] = useState(true);
@@ -51,7 +51,7 @@ export default function ParametresClient() {
       return;
     }
 
-    await update({ name: name.trim() });
+    await refetch();
     setSaveState("success");
     setTimeout(() => setSaveState("idle"), 2000);
   }
@@ -86,7 +86,7 @@ export default function ParametresClient() {
               type="button"
               variant="secondary"
               onClick={saveProfile}
-              disabled={status !== "authenticated" || saveState === "saving"}
+              disabled={!session || saveState === "saving"}
             >
               {saveState === "saving" ? "Enregistrement..." : "Enregistrer"}
             </Button>

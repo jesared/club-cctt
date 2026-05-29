@@ -1,13 +1,12 @@
 import Link from "next/link";
-import { getServerSession } from "next-auth";
 
-import { authOptions } from "@/lib/auth";
+import { getCurrentSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import PaiementsClient from "./paiements-client";
 
 export default async function UserPaiementsPage() {
-  const session = await getServerSession(authOptions);
+  const session = await getCurrentSession();
 
   if (!session?.user?.id) {
     return null;

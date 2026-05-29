@@ -6,7 +6,6 @@ import {
   Trophy,
 } from "lucide-react";
 import type { Metadata } from "next";
-import { getServerSession } from "next-auth";
 import Link from "next/link";
 
 import KpiPageViewTracker from "@/components/KpiPageViewTracker";
@@ -15,7 +14,7 @@ import Reveal from "@/components/Reveal";
 import TrackedLink from "@/components/TrackedLink";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ImagePopup } from "@/components/ui/image-popup";
-import { authOptions } from "@/lib/auth";
+import { getCurrentSession } from "@/lib/session";
 import { normalizeContactContent } from "@/lib/contact-content";
 import {
   DEFAULT_EVENT_IMAGE_URL,
@@ -132,7 +131,7 @@ function formatDateTime(value?: Date | null) {
 }
 
 export default async function TournoiHomePage() {
-  const session = await getServerSession(authOptions);
+  const session = await getCurrentSession();
   const userEmail = session?.user?.email?.trim().toLowerCase();
   const [tournament, contactContentRaw, homeContentRaw] = await Promise.all([
     prisma.tournament.findFirst({

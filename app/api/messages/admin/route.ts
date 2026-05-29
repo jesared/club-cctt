@@ -1,12 +1,11 @@
-﻿import { authOptions } from "@/lib/auth";
+import { getCurrentSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { withPrismaRetry } from "@/lib/prisma-retry";
 import { isAdminRole } from "@/lib/roles";
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
+  const session = await getCurrentSession();
   // Sécurité admin
   if (!session || !isAdminRole(session.user.role)) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 403 });

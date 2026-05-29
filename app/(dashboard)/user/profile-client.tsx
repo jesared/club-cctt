@@ -2,10 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { useSession } from "next-auth/react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { authClient } from "@/lib/auth-client";
 
 type FeedbackState =
   | {
@@ -15,7 +15,7 @@ type FeedbackState =
   | null;
 
 export default function ProfileClient() {
-  const { data: session, status, update } = useSession();
+  const { data: session, refetch } = authClient.useSession();
   const [name, setName] = useState("");
   const [saveState, setSaveState] = useState<"idle" | "saving">("idle");
   const [feedback, setFeedback] = useState<FeedbackState>(null);
@@ -28,7 +28,7 @@ export default function ProfileClient() {
   const isDirty = trimmedName !== savedName;
   const hasValidationError = feedback?.tone === "error" && trimmedName.length === 0;
   const canSave =
-    status === "authenticated" &&
+    !!session &&
     saveState !== "saving" &&
     trimmedName.length > 0 &&
     isDirty;
@@ -72,7 +72,7 @@ export default function ProfileClient() {
       return;
     }
 
-    await update({ name: trimmedName });
+    await refetch();
     setSaveState("idle");
     setFeedback({
       tone: "success",
@@ -98,7 +98,7 @@ export default function ProfileClient() {
                 {savedName || "Nom d'affichage non renseigne"}
               </p>
               <p className="text-sm text-muted-foreground">
-                {status === "authenticated"
+                {session
                   ? session.user.email
                   : "Connectez-vous pour modifier votre profil."}
               </p>
@@ -129,7 +129,7 @@ export default function ProfileClient() {
                 }
               }}
               placeholder="Votre nom"
-              disabled={saveState === "saving" || status !== "authenticated"}
+              disabled={saveState === "saving" || !session}
               aria-invalid={hasValidationError}
               className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm text-foreground"
             />

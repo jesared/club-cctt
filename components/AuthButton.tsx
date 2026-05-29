@@ -1,8 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
-import { signIn, signOut, useSession } from "next-auth/react";
 import { useState } from "react";
 import Image from "next/image";
 
@@ -11,14 +11,19 @@ type AuthButtonProps = {
 };
 
 export default function AuthButton({ collapsed = false }: AuthButtonProps) {
-  const { data: session, status } = useSession();
+  const { data: session, isPending } = authClient.useSession();
   const [email, setEmail] = useState<string>("");
   const [emailStatus, setEmailStatus] = useState<
     "idle" | "sending" | "sent" | "error"
   >("idle");
 
+  async function signOutToHome() {
+    await authClient.signOut();
+    window.location.href = "/";
+  }
+
   // Chargement
-  if (status === "loading") {
+  if (isPending) {
     return (
       <div
         className={cn(
@@ -36,7 +41,12 @@ export default function AuthButton({ collapsed = false }: AuthButtonProps) {
     return (
       <div className="mt-6">
         <Button
-          onClick={() => signIn("google")}
+          onClick={() =>
+            void authClient.signIn.social({
+              provider: "google",
+              callbackURL: "/user",
+            })
+          }
           className={cn("w-full", collapsed && "px-2 text-xs")}
         >
           {collapsed ? "Login" : "Se connecter"}
@@ -63,11 +73,11 @@ export default function AuthButton({ collapsed = false }: AuthButtonProps) {
                     return;
                   }
                   setEmailStatus("sending");
-                  const result = await signIn("email", {
+                  const result = await authClient.signIn.magicLink({
                     email: email.trim(),
-                    redirect: false,
+                    callbackURL: "/user",
                   });
-                  if (result?.ok) {
+                  if (!result.error) {
                     setEmailStatus("sent");
                   } else {
                     setEmailStatus("error");
@@ -125,7 +135,7 @@ export default function AuthButton({ collapsed = false }: AuthButtonProps) {
       <div className={cn("mt-3 flex flex-col gap-2", collapsed && "hidden")}>
         <Button
           variant={"secondary"}
-          onClick={() => signOut()}
+          onClick={() => void signOutToHome()}
           className="cursor-pointer rounded-md border border-sidebar-border px-3 py-2 text-xs transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
         >
           Déconnexion
