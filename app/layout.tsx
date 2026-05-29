@@ -4,6 +4,8 @@ import Providers from "@/components/Providers";
 import Footer from "@/components/layout/footer";
 import Header from "@/components/layout/header";
 import { getPublicMenuVisibility } from "@/lib/menu-settings";
+import { prisma } from "@/lib/prisma";
+import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-window";
 
 import "./globals.css";
 
@@ -25,14 +27,29 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const menuVisibility = await getPublicMenuVisibility();
+  const [menuVisibility, tournament] = await Promise.all([
+    getPublicMenuVisibility(),
+    prisma.tournament.findFirst({
+      where: { status: "PUBLISHED" },
+      orderBy: [{ startDate: "desc" }],
+      select: {
+        status: true,
+        registrationOpenAt: true,
+        registrationCloseAt: true,
+      },
+    }),
+  ]);
+  const registrationStatus = getTournamentRegistrationStatus(tournament);
 
   return (
     <html lang="fr" suppressHydrationWarning>
       <body className="min-h-screen bg-background text-foreground antialiased">
         <Providers>
           <div className="flex min-h-screen flex-col">
-            <Header menuVisibility={menuVisibility} />
+            <Header
+              menuVisibility={menuVisibility}
+              showTournamentRegistration={registrationStatus.canRegister}
+            />
             <main className="flex-1">{children}</main>
             <Footer menuVisibility={menuVisibility} />
           </div>

@@ -55,9 +55,13 @@ function isItemActive(pathname: string, href: string) {
 
 type HeaderProps = {
   menuVisibility?: PublicMenuVisibility;
+  showTournamentRegistration?: boolean;
 };
 
-export default function HeaderCentered({ menuVisibility }: HeaderProps) {
+export default function HeaderCentered({
+  menuVisibility,
+  showTournamentRegistration = false,
+}: HeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = authClient.useSession();
@@ -122,8 +126,18 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
         .sort((a, b) => {
           const order: Record<string, number> = { Club: 0, Tournoi: 1 };
           return (order[a.title] ?? 99) - (order[b.title] ?? 99);
-        }),
-    [menuVisibility, session],
+        })
+        .map((section) =>
+          section.title === "Tournoi" && !showTournamentRegistration
+            ? {
+                ...section,
+                items: section.items.filter(
+                  (item) => item.href !== "/tournoi/inscription",
+                ),
+              }
+            : section,
+        ),
+    [menuVisibility, session, showTournamentRegistration],
   );
 
   const isAdmin = isAdminRole(session?.user?.role);
@@ -182,15 +196,17 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
     if (!isPublicRoute(pathname)) return;
     if (isPublicMenuVisible(menuVisibility, "tournoi")) {
       router.prefetch("/tournoi");
-      router.prefetch("/tournoi/inscription");
       router.prefetch("/tournoi/liste-inscrits");
+      if (showTournamentRegistration) {
+        router.prefetch("/tournoi/inscription");
+      }
     }
     if (isAdmin) {
       router.prefetch("/admin/tournoi");
       router.prefetch("/admin/tournoi/paiement");
       router.prefetch("/admin/tournoi/pointages");
     }
-  }, [isAdmin, menuVisibility, pathname, router]);
+  }, [isAdmin, menuVisibility, pathname, router, showTournamentRegistration]);
 
   useEffect(() => {
     if (!accountMenuOpen) return;
@@ -415,7 +431,7 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
             </Link>
 
             <div className="flex items-center justify-end gap-1 sm:gap-1.5">
-              {tournoiVisible ? (
+              {tournoiVisible && showTournamentRegistration ? (
                 <Link
                   href="/tournoi/inscription"
                   className="hidden rounded-full border border-stone-300/85 bg-stone-50 px-4 py-2 text-sm font-semibold tracking-[0.02em] text-stone-900 shadow-[0_1px_0_rgba(255,255,255,0.78)_inset,0_8px_18px_rgba(41,37,36,0.08)] transition-all hover:-translate-y-px hover:border-stone-400/90 hover:bg-stone-100 hover:shadow-[0_1px_0_rgba(255,255,255,0.82)_inset,0_12px_22px_rgba(41,37,36,0.11)] dark:border-white/12 dark:bg-white/6 dark:bg-none dark:text-stone-100 dark:shadow-[0_1px_0_rgba(255,255,255,0.04)_inset] dark:hover:border-white/18 dark:hover:bg-white/10 dark:hover:shadow-[0_1px_0_rgba(255,255,255,0.06)_inset] md:inline-flex"
@@ -432,7 +448,7 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
                     aria-haspopup="menu"
                     aria-expanded={accountMenuOpen}
                     className={cn(
-                      "inline-flex h-11 w-11 items-center justify-center rounded-full border border-transparent text-sm text-muted-foreground transition-colors hover:bg-muted/45 hover:text-foreground",
+                      "inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-transparent text-sm text-muted-foreground transition-colors hover:bg-muted/45 hover:text-foreground",
                       accountMenuOpen && "bg-muted/55 text-foreground",
                     )}
                     onClick={() => setAccountMenuOpen((prev) => !prev)}
@@ -458,6 +474,17 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
                       aria-label="Menu du compte"
                       className="absolute right-0 top-[calc(100%+0.65rem)] z-50 min-w-[12rem] overflow-hidden rounded-2xl border border-border/70 bg-background/95 p-1.5 shadow-xl backdrop-blur"
                     >
+                      {isAdmin ? (
+                        <Link
+                          href="/admin"
+                          role="menuitem"
+                          className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-muted"
+                          onClick={() => setAccountMenuOpen(false)}
+                        >
+                          <ShieldMinus className="h-4 w-4" />
+                          <span>Administration</span>
+                        </Link>
+                      ) : null}
                       <Link
                         href="/user"
                         role="menuitem"
@@ -629,7 +656,8 @@ export default function HeaderCentered({ menuVisibility }: HeaderProps) {
                           );
                         })}
 
-                        {meta?.cta ? (
+                        {meta?.cta &&
+                        (section.title !== "Tournoi" || showTournamentRegistration) ? (
                           <Link
                             href={meta.cta.href}
                             onClick={() => setMenuOpen(false)}
