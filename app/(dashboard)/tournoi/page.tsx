@@ -11,7 +11,6 @@ import Link from "next/link";
 import KpiPageViewTracker from "@/components/KpiPageViewTracker";
 import { MetricTile, SectionEyebrow } from "@/components/public/marketing";
 import Reveal from "@/components/Reveal";
-import TrackedLink from "@/components/TrackedLink";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ImagePopup } from "@/components/ui/image-popup";
 import { getCurrentSession } from "@/lib/session";
@@ -24,15 +23,16 @@ import {
 import { prisma } from "@/lib/prisma";
 import { tournamentRegistrationContent } from "@/lib/tournament-registration-content";
 import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-window";
+import TournamentActionBar from "./tournament-action-bar";
 
 export const metadata: Metadata = {
-  title: "Tournoi national de Paques | CCTT",
+  title: "Tournoi national de Pâques | CCTT",
   description:
-    "Toutes les informations du tournoi : dates, tableaux, inscriptions, resultats et contact de l'organisation.",
+    "Toutes les informations du tournoi : dates, tableaux, inscriptions, résultats et contact de l'organisation.",
   openGraph: {
-    title: "Tournoi national de Paques | CCTT",
+    title: "Tournoi national de Pâques | CCTT",
     description:
-      "Informations tournoi CCTT : dates, tableaux, inscriptions et resultats.",
+      "Informations tournoi CCTT : dates, tableaux, inscriptions et résultats.",
     url: "/tournoi",
     type: "website",
     images: [
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tournoi national de Paques | CCTT",
+    title: "Tournoi national de Pâques | CCTT",
     description: "Dates, tableaux et inscriptions au tournoi CCTT.",
     images: [DEFAULT_EVENT_IMAGE_URL],
   },
@@ -62,18 +62,18 @@ function formatCategory(
   }
 
   if (minPoints === null && maxPoints === null) {
-    return "Toutes categories";
+    return "Toutes catégories";
   }
 
   if (minPoints === null) {
-    return `Jusqu'a ${maxPoints} pts`;
+    return `Jusqu'à ${maxPoints} pts`;
   }
 
   if (maxPoints === null) {
     return `${minPoints}+ pts`;
   }
 
-  return `${minPoints} a ${maxPoints} pts`;
+  return `${minPoints} à ${maxPoints} pts`;
 }
 
 function formatDateLabel(startAt: Date) {
@@ -93,7 +93,7 @@ function formatTimeLabel(startAt: Date) {
 
 function formatDateRange(startDate?: Date | null, endDate?: Date | null) {
   if (!startDate || !endDate) {
-    return "Dates a confirmer";
+    return "Dates à confirmer";
   }
 
   const sameDay = startDate.toDateString() === endDate.toDateString();
@@ -118,7 +118,7 @@ function formatDateRange(startDate?: Date | null, endDate?: Date | null) {
 
 function formatDateTime(value?: Date | null) {
   if (!value) {
-    return "A confirmer";
+    return "À confirmer";
   }
 
   return new Intl.DateTimeFormat("fr-FR", {
@@ -218,8 +218,8 @@ export default async function TournoiHomePage() {
       title: "Je choisis mes tableaux",
       detail:
         tableaux.length > 0
-          ? `${tableaux.length} tableaux sont actuellement ouverts a l'inscription.`
-          : "Le programme complet sera ajoute ici des qu'il sera disponible.",
+          ? `${tableaux.length} tableaux sont actuellement ouverts à l'inscription.`
+          : "Le programme complet sera ajouté ici dès qu'il sera disponible.",
       icon: Trophy,
     },
     {
@@ -228,18 +228,17 @@ export default async function TournoiHomePage() {
       icon: ClipboardCheck,
     },
     {
-      title: "Je prepare ma venue",
+      title: "Je prépare ma venue",
       detail: `${contactContent.addressName}, ${contactContent.addressCity}.`,
       icon: MapPin,
     },
   ];
 
   return (
-    <main className="relative overflow-hidden">
+    <main className="relative">
       <KpiPageViewTracker page="tournoi" label="tournoi-page" />
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-4 py-8 sm:px-6 sm:py-10">
-        <Reveal>
-          <section className="relative overflow-hidden rounded-[2rem] border border-border/70 bg-background/92 p-6 shadow-xl shadow-black/5 backdrop-blur-sm md:p-8 lg:p-10">
+        <section className="relative rounded-[2rem] border border-border/70 bg-background/92 p-6 shadow-xl shadow-black/5 backdrop-blur-sm md:p-8 lg:p-10">
             <div className="relative space-y-8">
               <div className="space-y-6">
                 <div className="flex flex-wrap items-center gap-3">
@@ -266,7 +265,7 @@ export default async function TournoiHomePage() {
                     </span>
                     <span className="inline-flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-[#FF7A00]" />
-                      {tournament?.venue ?? "Lieu a confirmer"}
+                      {tournament?.venue ?? "Lieu à confirmer"}
                     </span>
                   </div>
                   <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
@@ -275,36 +274,13 @@ export default async function TournoiHomePage() {
                   </p>
                 </div>
 
-                <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                  {registrationStatus.canRegister ? (
-                    <TrackedLink
-                      kpiPage="tournoi"
-                      kpiLabel="cta-inscription"
-                      href={tournamentRegistrationContent.cta.href}
-                      className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-6 text-base font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition hover:opacity-90 focus-ring"
-                    >
-                      {tournamentRegistrationContent.cta.label}
-                    </TrackedLink>
-                  ) : (
-                    <span className="inline-flex h-11 items-center justify-center rounded-md bg-muted px-5 text-sm font-semibold text-muted-foreground">
-                      {registrationStatus.label}
-                    </span>
-                  )}
-                  <Link
-                    href="/tournoi/reglement"
-                    className="inline-flex h-11 items-center justify-center rounded-md border border-[#FF7A00] px-6 text-sm font-medium text-[#FF7A00] transition hover:bg-[#FF7A00]/10 focus-ring"
-                  >
-                    Consulter le reglement
-                  </Link>
-                  {hasUserRegistration ? (
-                    <Link
-                      href="/user/inscriptions"
-                      className="inline-flex h-11 items-center justify-center rounded-md border border-border px-6 text-sm font-medium text-foreground transition hover:bg-accent/40 focus-ring"
-                    >
-                      Voir mes inscriptions
-                    </Link>
-                  ) : null}
-                </div>
+                <TournamentActionBar
+                  canRegister={registrationStatus.canRegister}
+                  registrationLabel={registrationStatus.label}
+                  registrationHref={tournamentRegistrationContent.cta.href}
+                  registrationCtaLabel={tournamentRegistrationContent.cta.label}
+                  hasUserRegistration={hasUserRegistration}
+                />
 
                 {!registrationStatus.canRegister && isTournamentFinished ? (
                   <div className="flex flex-wrap gap-3">
@@ -312,13 +288,13 @@ export default async function TournoiHomePage() {
                       href="/tournoi/resultats"
                       className="inline-flex items-center justify-center rounded-md border border-[#FF7A00] px-5 py-2 text-sm font-medium text-[#FF7A00] transition hover:bg-[#FF7A00]/10 focus-ring"
                     >
-                      Voir les resultats
+                      Voir les résultats
                     </Link>
                     <Link
                       href="/tournoi/palmares"
                       className="inline-flex items-center justify-center rounded-md border border-border px-5 py-2 text-sm font-medium text-foreground transition hover:bg-accent/40 focus-ring"
                     >
-                      Voir le palmares
+                      Voir le palmarès
                     </Link>
                     <Link
                       href="/tournoi/affiches"
@@ -330,16 +306,8 @@ export default async function TournoiHomePage() {
                 ) : null}
               </div>
 
-              <div className="space-y-4">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                      Affiche officielle
-                    </p>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      Le visuel complet du tournoi, sans recadrage.
-                    </p>
-                  </div>
+              <div className="mx-auto w-full max-w-4xl space-y-4">
+                <div className="flex justify-end">
                   <span className="inline-flex rounded-full border border-border/70 bg-background/80 px-3 py-1 text-xs font-medium text-muted-foreground">
                     Cliquer pour agrandir
                   </span>
@@ -352,14 +320,13 @@ export default async function TournoiHomePage() {
                     width={1200}
                     height={630}
                     shareLabel="Affiche officielle du tournoi CCTT"
-                    previewClassName="h-auto w-full rounded-[1.35rem] border border-border/60 bg-card object-contain shadow-md shadow-black/10"
+                    previewClassName="mx-auto max-h-[260px] w-full rounded-[1.35rem] border border-border/60 bg-card object-contain shadow-md shadow-black/10 sm:max-h-[340px] lg:max-h-[420px]"
                     popupImageClassName="max-h-[90vh] w-auto rounded-xl object-contain"
                   />
                 </div>
               </div>
             </div>
-          </section>
-        </Reveal>
+        </section>
 
         <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <Reveal>
@@ -373,7 +340,7 @@ export default async function TournoiHomePage() {
             <MetricTile
               label="Tableaux ouverts"
               value={String(tableaux.length)}
-              detail="Programme actuellement disponible a l'inscription."
+              detail="Programme actuellement disponible à l'inscription."
             />
           </Reveal>
           <Reveal delay={200}>
@@ -407,7 +374,7 @@ export default async function TournoiHomePage() {
                     Lieu
                   </p>
                   <p className="mt-2 font-medium text-foreground">
-                    {tournament?.venue ?? "A confirmer"}
+                    {tournament?.venue ?? "À confirmer"}
                   </p>
                 </div>
                 <div className="rounded-2xl border border-border/70 bg-background/80 p-4">
@@ -430,7 +397,7 @@ export default async function TournoiHomePage() {
                 </div>
                 <div className="rounded-2xl border border-border/70 bg-background/80 p-4">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                    Delai
+                    Délai
                   </p>
                   <p className="mt-2 font-medium text-foreground">
                     {contactContent.responseDelay}
@@ -445,7 +412,7 @@ export default async function TournoiHomePage() {
               <CardHeader className="space-y-3">
                 <SectionEyebrow tone="neutral">Parcours joueur</SectionEyebrow>
                 <CardTitle className="font-serif text-3xl font-bold tracking-[-0.03em]">
-                  De l&apos;inscription a la salle
+                  De l&apos;inscription à la salle
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -487,7 +454,7 @@ export default async function TournoiHomePage() {
                   </div>
                   <div className="inline-flex items-center gap-2 rounded-full bg-muted px-4 py-2 text-sm text-muted-foreground">
                     <TimerReset className="h-4 w-4" />
-                    Informations a jour
+                    Informations à jour
                   </div>
                 </div>
               </CardHeader>
@@ -503,9 +470,9 @@ export default async function TournoiHomePage() {
                         Lecture mobile
                       </p>
                       <p className="mt-1 text-sm text-muted-foreground">
-                        Chaque tableau est presente comme une fiche avec
-                        categorie, horaire et tarifs pour eviter le scroll
-                        horizontal sur telephone.
+                        Chaque tableau est présenté comme une fiche avec
+                        catégorie, horaire et tarifs pour éviter le scroll
+                        horizontal sur téléphone.
                       </p>
                     </div>
 
@@ -611,7 +578,7 @@ export default async function TournoiHomePage() {
                 )}
                 <p className="mt-4 text-sm text-muted-foreground">
                   Les tarifs en ligne et sur place s&apos;appliquent par
-                  tableau. En cas de forfait medical, le remboursement suit les
+                  tableau. En cas de forfait médical, le remboursement suit les
                   conditions FFTT.
                 </p>
               </CardContent>

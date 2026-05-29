@@ -32,9 +32,9 @@ export function WinnersCarousel({ items }: WinnersCarouselProps) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-            Highlights recentes
+            Highlights récentes
           </p>
-          <h2 className="text-xl font-semibold">Vainqueurs a la une</h2>
+          <h2 className="text-xl font-semibold">Vainqueurs à la une</h2>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -42,7 +42,7 @@ export function WinnersCarousel({ items }: WinnersCarouselProps) {
             onClick={() => scrollBySlide(-1)}
             className="inline-flex items-center justify-center rounded-md border px-3 py-1.5 text-sm hover:bg-muted"
           >
-            Precedent
+            Précédent
           </button>
           <button
             type="button"
