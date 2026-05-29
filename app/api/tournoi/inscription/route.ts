@@ -3,6 +3,9 @@ import {
   checkRateLimit,
   createTournamentRegistration,
   ensureWebRegistrationOwnerId,
+  findExistingTournamentRegistrationByLicense,
+  formatExistingRegistrationOwner,
+  formatExistingRegistrationPlayer,
   getInvalidTables,
   getLatestPublishedTournamentForRegistration,
   getSelectedEvents,
@@ -36,7 +39,7 @@ export async function POST(request: NextRequest) {
   try {
     body = (await request.json()) as RegistrationPayload;
   } catch {
-    return NextResponse.json({ message: "Requete invalide." }, { status: 400 });
+    return NextResponse.json({ message: "Requête invalide." }, { status: 400 });
   }
 
   const website =
@@ -45,7 +48,7 @@ export async function POST(request: NextRequest) {
   if (website.length > 0) {
     return NextResponse.json(
       {
-        message: "Votre demande d'inscription a bien ete prise en compte.",
+        message: "Votre demande d'inscription a bien été prise en compte.",
       },
       { status: 200 },
     );
@@ -84,6 +87,23 @@ export async function POST(request: NextRequest) {
   const ownerId = await ensureWebRegistrationOwnerId();
   const session = await getCurrentSession();
   const sessionUserId = session?.user?.id ?? null;
+  const existingRegistration = await findExistingTournamentRegistrationByLicense(
+    tournamentId,
+    payload.licenseNumber,
+  );
+
+  if (existingRegistration) {
+    return NextResponse.json(
+      {
+        message: `Cette licence est déjà inscrite pour ${formatExistingRegistrationPlayer(
+          existingRegistration,
+        )}, rattachée à ${formatExistingRegistrationOwner(
+          existingRegistration,
+        )}.`,
+      },
+      { status: 409 },
+    );
+  }
 
   const selectedEvents = await getSelectedEvents(
     tournamentId,
@@ -158,7 +178,23 @@ export async function POST(request: NextRequest) {
       ownerId,
     });
   } catch {
-    const existing = await prisma.tournamentRegistration.findFirst({
+    const existing = await findExistingTournamentRegistrationByLicense(
+      tournamentId,
+      payload.licenseNumber,
+    );
+
+    if (existing) {
+      return NextResponse.json(
+        {
+          message: `Cette licence est déjà inscrite pour ${formatExistingRegistrationPlayer(
+            existing,
+          )}, rattachée à ${formatExistingRegistrationOwner(existing)}.`,
+        },
+        { status: 409 },
+      );
+    }
+
+    const legacyExisting = await prisma.tournamentRegistration.findFirst({
       where: {
         tournamentId,
         licenseNumber: payload.licenseNumber,
@@ -166,19 +202,18 @@ export async function POST(request: NextRequest) {
       select: { id: true },
     });
 
-    if (existing) {
+    if (legacyExisting) {
       return NextResponse.json(
         {
-          message:
-            "Inscription enregistree. Vous recevrez un email de confirmation apres validation.",
+          message: "Cette licence est déjà inscrite sur ce tournoi.",
         },
-        { status: 200 },
+        { status: 409 },
       );
     }
 
     return NextResponse.json(
       {
-        message: "Ce joueur est deja inscrit sur ce tournoi.",
+        message: "Ce joueur est déjà inscrit sur ce tournoi.",
       },
       { status: 409 },
     );
@@ -198,7 +233,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         message:
-          "Inscription recue. Le service de notification est en maintenance: contactez inscriptions-tournoi@cctt.fr si vous ne recevez pas de confirmation sous 48h.",
+          "Inscription reçue. Le service de notification est en maintenance : contactez inscriptions-tournoi@cctt.fr si vous ne recevez pas de confirmation sous 48 h.",
       },
       { status: 200 },
     );
@@ -208,8 +243,8 @@ export async function POST(request: NextRequest) {
     {
       message:
         waitlistedTables.length > 0
-          ? `Inscription envoyee. Vous etes sur liste d'attente pour: ${waitlistedTables.join(", ")}.`
-          : "Inscription envoyee avec succes. Vous recevrez un email de confirmation apres validation.",
+          ? `Inscription envoyée. Vous êtes sur liste d'attente pour : ${waitlistedTables.join(", ")}.`
+          : "Inscription envoyée avec succès. Vous recevrez un e-mail de confirmation après validation.",
     },
     { status: 200 },
   );

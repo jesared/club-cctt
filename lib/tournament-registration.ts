@@ -1,7 +1,11 @@
 ﻿import { prisma } from "@/lib/prisma";
 import { withPrismaRetry } from "@/lib/prisma-retry";
 import { checkPersistentRateLimit } from "@/lib/rate-limit";
-import { RegistrationEventStatus, RegistrationSource, type Role } from "@prisma/client";
+import {
+  RegistrationEventStatus,
+  RegistrationSource,
+  type Role,
+} from "@prisma/client";
 import type { NormalizedRegistrationPayload } from "./tournament-registration-validation";
 
 export {
@@ -15,6 +19,10 @@ export type {
 
 const WINDOW_MS = 10 * 60 * 1000;
 const MAX_REQUESTS = 5;
+
+export type ExistingTournamentRegistration = Awaited<
+  ReturnType<typeof findExistingTournamentRegistrationByLicense>
+>;
 
 export async function checkRateLimit(clientIp: string) {
   return checkPersistentRateLimit({
@@ -84,10 +92,10 @@ async function sendWithResend(payload: NormalizedRegistrationPayload) {
         `Nom: ${payload.lastName}`,
         `Prenom: ${payload.firstName}`,
         `Email: ${payload.email}`,
-        `Telephone: ${payload.phone}`,
+        `Téléphone: ${payload.phone}`,
         `No licence: ${payload.licenseNumber}`,
-        `Points: ${payload.points || "Non renseigne"}`,
-        `Genre: ${payload.gender || "Non renseigne"}`,
+        `Points: ${payload.points || "Non renseigné"}`,
+        `Genre: ${payload.gender || "Non renseigné"}`,
         `Club: ${payload.club}`,
         `Tableaux: ${payload.tables.join(", ")}`,
         `Liste d'attente: ${payload.waitlistTables.join(", ") || "Aucune"}`,
@@ -130,6 +138,72 @@ export async function getLatestPublishedTournamentForRegistration() {
         registrationCloseAt: true,
       },
     }),
+  );
+}
+
+export async function findExistingTournamentRegistrationByLicense(
+  tournamentId: string,
+  licenseNumber: string,
+) {
+  const normalizedLicense = licenseNumber.trim();
+
+  if (!normalizedLicense) {
+    return null;
+  }
+
+  return withPrismaRetry(() =>
+    prisma.tournamentRegistration.findFirst({
+      where: {
+        tournamentId,
+        OR: [
+          { licenseNumber: normalizedLicense },
+          {
+            player: {
+              licence: normalizedLicense,
+            },
+          },
+        ],
+      },
+      select: {
+        id: true,
+        status: true,
+        contactEmail: true,
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+        player: {
+          select: {
+            nom: true,
+            prenom: true,
+            licence: true,
+            club: true,
+          },
+        },
+      },
+    }),
+  );
+}
+
+export function formatExistingRegistrationOwner(
+  existingRegistration: NonNullable<ExistingTournamentRegistration>,
+) {
+  return (
+    existingRegistration.user?.name?.trim() ||
+    existingRegistration.user?.email?.trim() ||
+    existingRegistration.contactEmail?.trim() ||
+    "un utilisateur"
+  );
+}
+
+export function formatExistingRegistrationPlayer(
+  existingRegistration: NonNullable<ExistingTournamentRegistration>,
+) {
+  return (
+    `${existingRegistration.player.prenom} ${existingRegistration.player.nom}`.trim() ||
+    `licence ${existingRegistration.player.licence}`
   );
 }
 
