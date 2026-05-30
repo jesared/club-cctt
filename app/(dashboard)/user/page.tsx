@@ -15,6 +15,7 @@ import Link from "next/link";
 
 import { getCurrentSession } from "@/lib/session";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -27,6 +28,7 @@ import {
   canAccessBureauSpace,
   canAccessClubSpace,
   canAccessEntraineurSpace,
+  getRoleLabel,
 } from "@/lib/roles";
 import ProfileClient from "./profile-client";
 import UserMessagesSection from "./user-messages-section";
@@ -49,6 +51,7 @@ export default async function UserProfilePage({
   const forbiddenReason = resolved?.forbidden;
   const forbiddenMessage = getForbiddenMessage(forbiddenReason);
   const session = await getCurrentSession();
+  const roleLabel = getRoleLabel(session?.user?.role);
   const canAccessClub = canAccessClubSpace(session?.user?.role);
   const canAccessBureau = canAccessBureauSpace(session?.user?.role);
   const canAccessEntraineur = canAccessEntraineurSpace(session?.user?.role);
@@ -259,6 +262,26 @@ export default async function UserProfilePage({
             Retrouvez vos inscriptions, paiements, documents et informations du
             club en un seul endroit.
           </p>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <Badge className="border-amber-300/70 bg-amber-300 text-amber-950 hover:bg-amber-300/90">
+              Role: {roleLabel}
+            </Badge>
+            {canAccessClub ? (
+              <Badge className="border-emerald-400/40 bg-emerald-500/15 text-emerald-200 hover:bg-emerald-500/20">
+                Acces club
+              </Badge>
+            ) : null}
+            {canAccessBureau ? (
+              <Badge className="border-sky-400/40 bg-sky-500/15 text-sky-200 hover:bg-sky-500/20">
+                Acces bureau
+              </Badge>
+            ) : null}
+            {canAccessEntraineur ? (
+              <Badge className="border-violet-400/40 bg-violet-500/15 text-violet-200 hover:bg-violet-500/20">
+                Acces entraineur
+              </Badge>
+            ) : null}
+          </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Button asChild variant="secondary">
@@ -284,6 +307,25 @@ export default async function UserProfilePage({
             </div>
           </div>
         </div>
+      ) : null}
+
+      {!canAccessClub ? (
+        <section className="rounded-2xl border border-dashed border-primary/30 bg-primary/5 px-4 py-4">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-foreground">
+                Vous faites partie du club ?
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Vous pouvez demander le role Club pour acceder a l&apos;espace
+                prive, aux annonces internes et aux documents reserves.
+              </p>
+            </div>
+            <Button asChild variant="outline">
+              <Link href="/club/contact">Demander l&apos;acces club</Link>
+            </Button>
+          </div>
+        </section>
       ) : null}
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -472,7 +514,7 @@ function getForbiddenMessage(reason?: string) {
       return {
         title: "Acces reserve a l'espace club.",
         description:
-          "Votre compte n'a pas encore les droits necessaires pour cette zone.",
+          "Votre compte n'a pas encore les droits necessaires pour cette zone. Si vous faites partie du club, vous pouvez demander le role Club pour obtenir l'acces.",
       };
     case "bureau":
       return {

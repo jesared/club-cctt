@@ -1,6 +1,14 @@
 export type NormalizedRole = "admin" | "user";
 export type ManagedRole = "USER" | "CLUB" | "BUREAU" | "ENTRAINEUR" | "ADMIN";
 
+const ROLE_LABELS: Record<ManagedRole, string> = {
+  USER: "Membre",
+  CLUB: "Club",
+  BUREAU: "Bureau",
+  ENTRAINEUR: "Entraineur",
+  ADMIN: "Administrateur",
+};
+
 const MANAGED_ROLE_SET = new Set<ManagedRole>([
   "USER",
   "CLUB",
@@ -18,6 +26,10 @@ export function getManagedRole(role: unknown): ManagedRole {
   return MANAGED_ROLE_SET.has(normalized as ManagedRole)
     ? (normalized as ManagedRole)
     : "USER";
+}
+
+export function getRoleLabel(role: unknown): string {
+  return ROLE_LABELS[getManagedRole(role)];
 }
 
 export function normalizeRole(role: unknown): NormalizedRole {
