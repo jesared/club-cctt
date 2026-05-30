@@ -57,6 +57,27 @@ async function readJsonSafe(response: Response) {
   }
 }
 
+function fallbackCopyText(text: string) {
+  if (typeof document === "undefined") return false;
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  textarea.style.pointerEvents = "none";
+  document.body.appendChild(textarea);
+  textarea.focus();
+  textarea.select();
+
+  try {
+    return document.execCommand("copy");
+  } catch {
+    return false;
+  } finally {
+    document.body.removeChild(textarea);
+  }
+}
+
 export default function MediaUploadClient() {
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -198,13 +219,27 @@ export default function MediaUploadClient() {
 
   async function copyToClipboard(url: string) {
     try {
-      await navigator.clipboard.writeText(url);
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else if (!fallbackCopyText(url)) {
+        throw new Error("copy-failed");
+      }
       markUrlAsCopied(url);
       return true;
     } catch {
+      const copied = fallbackCopyText(url);
+      if (copied) {
+        markUrlAsCopied(url);
+        return true;
+      }
       setCopiedUrl(null);
       return false;
     }
+  }
+
+  function openUrl(url: string) {
+    if (typeof window === "undefined" || !url) return;
+    window.open(url, "_blank", "noopener,noreferrer");
   }
 
   async function copyUrl() {
@@ -352,9 +387,9 @@ export default function MediaUploadClient() {
                   </div>
                   <div
                     className={cn(
-                      "space-y-3 rounded-xl border px-3 py-3 transition-all duration-200",
+                      "block w-full space-y-3 rounded-xl border px-3 py-3 text-left transition-all duration-200",
                       latestCopied
-                        ? "border-emerald-500/40 bg-emerald-500/10 shadow-sm"
+                        ? "border-emerald-500/50 bg-emerald-500/10 shadow-sm ring-2 ring-emerald-500/20"
                         : "border-border bg-background/70",
                     )}
                   >
@@ -370,7 +405,7 @@ export default function MediaUploadClient() {
                             : "bg-muted text-muted-foreground",
                         )}
                       >
-                        {latestCopied ? "Copiee" : "Prete a copier"}
+                        {latestCopied ? "Copiee" : "Cliquer pour copier"}
                       </span>
                     </div>
                     <input
@@ -383,14 +418,28 @@ export default function MediaUploadClient() {
                           : "border-border bg-background",
                       )}
                     />
+                    <div className="flex items-center gap-2 text-[11px] font-medium text-muted-foreground">
+                      {latestCopied ? (
+                        <>
+                          <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-300" />
+                          URL copitee dans le presse-papiers
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="h-3.5 w-3.5" />
+                          Utilisez le bouton pour copier l'URL
+                        </>
+                      )}
+                    </div>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <Button
+                      type="button"
                       size="sm"
                       variant={latestCopied ? "default" : "secondary"}
                       onClick={copyUrl}
                       className={cn(
-                        "min-w-[148px] transition-all",
+                        "min-w-[170px] font-semibold transition-all",
                         latestCopied &&
                           "bg-emerald-600 text-white hover:bg-emerald-600/90",
                       )}
@@ -403,15 +452,14 @@ export default function MediaUploadClient() {
                       {latestCopied ? "URL copiee" : "Copier l'URL"}
                     </Button>
                     <Button
+                      type="button"
                       size="sm"
                       variant="outline"
-                      asChild
                       className="min-w-[120px]"
+                      onClick={() => openUrl(result.secure_url)}
                     >
-                      <a href={result.secure_url} target="_blank" rel="noreferrer">
-                        <ExternalLink className="h-4 w-4" />
-                        Ouvrir
-                      </a>
+                      <ExternalLink className="h-4 w-4" />
+                      Ouvrir
                     </Button>
                   </div>
                 </div>
@@ -488,24 +536,39 @@ export default function MediaUploadClient() {
                           : "—"}
                       </span>
                     </div>
-                    <div
+                    <button
+                      type="button"
+                      onClick={() => copyFromHistory(itemUrl)}
                       className={cn(
-                        "truncate rounded-lg border px-2.5 py-2 font-mono text-[11px] transition-colors",
+                        "block w-full truncate rounded-lg border px-2.5 py-2 text-left font-mono text-[11px] transition-colors",
                         itemCopied
                           ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
-                          : "border-border/70 bg-muted/30 text-muted-foreground",
+                          : "border-border/70 bg-muted/30 text-muted-foreground hover:border-primary/40 hover:bg-primary/5",
                       )}
                       title={itemUrl}
                     >
                       {itemUrl}
+                    </button>
+                    <div className="flex items-center justify-between gap-2 text-[11px]">
+                      <span
+                        className={cn(
+                          "font-medium",
+                          itemCopied
+                            ? "text-emerald-700 dark:text-emerald-300"
+                            : "text-muted-foreground",
+                        )}
+                      >
+                        {itemCopied ? "URL copitee" : "Cliquez sur l'URL pour copier"}
+                      </span>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <Button
+                        type="button"
                         size="sm"
                         variant={itemCopied ? "default" : "secondary"}
                         onClick={() => copyFromHistory(itemUrl)}
                         className={cn(
-                          "transition-all",
+                          "font-semibold transition-all",
                           itemCopied &&
                             "bg-emerald-600 text-white hover:bg-emerald-600/90",
                         )}
@@ -517,13 +580,17 @@ export default function MediaUploadClient() {
                         )}
                         {itemCopied ? "Copiee" : "Copier URL"}
                       </Button>
-                      <Button size="sm" variant="outline" asChild>
-                        <a href={itemUrl} target="_blank" rel="noreferrer">
-                          <ExternalLink className="h-4 w-4" />
-                          Ouvrir
-                        </a>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => openUrl(itemUrl)}
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                        Ouvrir
                       </Button>
                       <Button
+                        type="button"
                         size="sm"
                         variant="ghost"
                         onClick={() => removeFromHistory(item.id)}
