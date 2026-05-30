@@ -5,6 +5,7 @@ import {
   LogOut,
   Moon,
   PanelLeftOpen,
+  Sparkles,
   ShieldCheck,
   Sun,
   User2,
@@ -122,6 +123,16 @@ export default function Sidebar({
   const isAdminView = pathname.startsWith("/admin");
   const isAdminTournamentView = isAdminTournamentPath(pathname);
   const isDark = mounted ? resolvedTheme === "dark" : false;
+  const accentDotClass = isAdminTournamentView
+    ? "bg-[#FF7A00]"
+    : isAdminView
+      ? "bg-sky-400"
+      : "bg-emerald-500";
+  const accentGlowClass = isAdminTournamentView
+    ? "bg-gradient-to-r from-[#FF7A00]/0 via-[#FF7A00]/70 to-[#FF7A00]/0"
+    : isAdminView
+      ? "bg-gradient-to-r from-sky-400/0 via-sky-400/70 to-sky-400/0"
+      : "bg-gradient-to-r from-emerald-400/0 via-emerald-400/70 to-emerald-400/0";
 
   const widthClasses = cn(
     sidebarState === "expanded" && "w-[320px]",
@@ -188,7 +199,7 @@ export default function Sidebar({
           type="button"
           variant="secondary"
           size="sm"
-          className="fixed left-3 top-20 z-50 gap-2 rounded-full border border-border/70 bg-background/90 shadow-md backdrop-blur"
+          className="fixed left-3 top-20 z-50 gap-2 rounded-full border border-border/70 bg-background/90 text-foreground shadow-md backdrop-blur dark:text-white"
           onClick={() => setSidebarState("expanded")}
         >
           <PanelLeftOpen className="h-4 w-4" />
@@ -207,8 +218,8 @@ export default function Sidebar({
       >
         <aside
           className={cn(
-            "flex flex-col overflow-y-auto border-r border-border/70 bg-background/95",
-            "supports-[backdrop-filter]:bg-background/90 supports-[backdrop-filter]:backdrop-blur",
+            "admin-sidebar-scrollbar flex flex-col overflow-y-auto border-r border-border/60 bg-background/95",
+            "supports-[backdrop-filter]:bg-background/88 supports-[backdrop-filter]:backdrop-blur",
             mobile
               ? [
                   "fixed inset-y-0 left-0 z-50 h-screen w-full max-w-[320px] transition-transform",
@@ -220,7 +231,7 @@ export default function Sidebar({
                 ],
           )}
         >
-          <div className="flex min-h-full flex-col px-4 pb-4 pt-4">
+          <div className="flex min-h-full flex-col bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.08),_transparent_30%)] px-4 pb-5 pt-5 dark:bg-[radial-gradient(circle_at_top,_rgba(96,165,250,0.09),_transparent_28%)]">
             {mobile && onClose ? (
               <div className="mb-2 flex justify-end">
                 <Button
@@ -270,26 +281,33 @@ export default function Sidebar({
 
             <div
               className={cn(
-                "mb-4 rounded-[1.5rem] border border-border/70 bg-background px-4 py-4 shadow-sm",
-                isAdminTournamentView
-                  ? "border-l-4 border-l-[#FF7A00]"
-                  : isAdminView
-                    ? "border-l-4 border-l-foreground"
-                    : "border-l-4 border-l-emerald-600",
+                "relative mb-5 rounded-[1.45rem] border border-white/8 bg-white/[0.04] px-4 py-4 shadow-[0_14px_32px_-24px_rgba(15,23,42,0.8)] backdrop-blur-sm",
                 collapsed && !mobile && "px-2.5 py-3",
               )}
             >
-              <div className="flex items-start justify-between gap-3">
+              <div
+                className={cn(
+                  "pointer-events-none absolute inset-x-5 top-0 h-px opacity-90",
+                  accentGlowClass,
+                )}
+              />
+              <div
+                className={cn(
+                  "flex min-h-[116px] items-start justify-between gap-3",
+                  !collapsed && "pr-1",
+                )}
+              >
                 {!collapsed ? (
-                  <div className="min-w-0 flex-1">
-                    <div className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  <div className="min-w-0 flex-1 pr-2">
+                    <div className="mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                      <span className={cn("h-2 w-2 rounded-full", accentDotClass)} />
                       {isAdminView ? <ShieldCheck className="h-3.5 w-3.5" /> : null}
                       <span>{isAdminView ? "Back-office" : "Dashboard"}</span>
                     </div>
-                    <p className="text-base font-semibold text-foreground">
+                    <p className="text-lg font-semibold tracking-tight text-foreground">
                       {heroTitle}
                     </p>
-                    <p className="mt-1 text-sm leading-5 text-muted-foreground">
+                    <p className="mt-1.5 max-w-[20rem] text-sm leading-5 text-muted-foreground">
                       {heroDescription}
                     </p>
                   </div>
@@ -297,7 +315,7 @@ export default function Sidebar({
 
                 <div
                   className={cn(
-                    "flex shrink-0 items-center gap-1",
+                    "flex shrink-0 items-center gap-2 self-start",
                     collapsed && !mobile && "mx-auto flex-col",
                   )}
                 >
@@ -309,7 +327,7 @@ export default function Sidebar({
                       aria-label={isDark ? "Passer au mode clair" : "Passer au mode sombre"}
                       title={isDark ? "Mode clair" : "Mode sombre"}
                       onClick={() => setTheme(isDark ? "light" : "dark")}
-                      className="h-10 w-10 rounded-full border border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground"
+                      className="h-9 w-9 rounded-full border border-white/8 bg-white/[0.05] text-muted-foreground hover:bg-white/[0.08] hover:text-foreground"
                     >
                       {isDark ? (
                         <Sun className="h-4 w-4" />
@@ -325,7 +343,7 @@ export default function Sidebar({
                       size="icon"
                       variant="ghost"
                       onClick={() => setSidebarState("hidden")}
-                      className="h-10 w-10 rounded-full border border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground"
+                      className="h-9 w-9 rounded-full border border-white/8 bg-white/[0.05] text-muted-foreground hover:bg-white/[0.08] hover:text-foreground"
                     >
                       <EyeOff className="h-4 w-4" />
                     </Button>
@@ -334,7 +352,15 @@ export default function Sidebar({
               </div>
             </div>
 
-            <div className="space-y-3">
+            {!collapsed ? (
+              <div className="mb-3 px-1">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-muted-foreground/75">
+                  Navigation
+                </p>
+              </div>
+            ) : null}
+
+            <div className="space-y-2.5 pb-24">
               {sections.map((section) => (
                 <SidebarSection
                   key={section.title}
@@ -349,29 +375,43 @@ export default function Sidebar({
 
             <div
               className={cn(
-                "mt-4 space-y-2 rounded-[1.5rem] border border-border/70 bg-background p-3 shadow-sm",
+                "sticky bottom-4 z-10 mt-auto rounded-[1.45rem] border border-white/8 bg-white/[0.04] p-3 shadow-[0_14px_32px_-24px_rgba(15,23,42,0.8)] backdrop-blur-sm",
                 collapsed && !mobile && "px-2 py-3",
               )}
             >
+              <div className="pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-r from-white/0 via-white/25 to-white/0 opacity-80" />
+              {!collapsed ? (
+                <div className="mb-3 flex items-center justify-between px-2">
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-muted-foreground/70">
+                      Session
+                    </p>
+                    <p className="mt-1 text-sm font-medium text-foreground">
+                      Espace personnel
+                    </p>
+                  </div>
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/8 bg-white/[0.05] text-muted-foreground">
+                    <Sparkles className="h-4 w-4" />
+                  </span>
+                </div>
+              ) : null}
+
               <Link
                 href="/"
                 onClick={mobile ? onClose : undefined}
                 className={cn(
-                  "flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
+                  "flex items-center gap-2.5 rounded-[1rem] px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-white/[0.06] hover:text-foreground",
                   collapsed && !mobile && "justify-center px-0",
                 )}
               >
-                {!collapsed ? (
-                  <span>Retour au site</span>
-                ) : (
-                  <PanelLeftOpen className="h-4 w-4" />
-                )}
+                <PanelLeftOpen className="h-4 w-4" />
+                {!collapsed ? <span>Retour au site</span> : null}
               </Link>
 
               {session ? (
                 <div
                   className={cn(
-                    "space-y-2",
+                    "space-y-2 border-t border-white/8 pt-3",
                     collapsed && !mobile && "flex flex-col items-center",
                   )}
                 >
@@ -379,7 +419,7 @@ export default function Sidebar({
                     href="/user"
                     onClick={mobile ? onClose : undefined}
                     className={cn(
-                      "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
+                      "flex items-center gap-3 rounded-[1rem] px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-white/[0.06] hover:text-foreground",
                       collapsed && !mobile && "justify-center px-0",
                     )}
                   >
@@ -392,7 +432,7 @@ export default function Sidebar({
                         className="h-8 w-8 rounded-full object-cover"
                       />
                     ) : (
-                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full border border-white/8 bg-white/[0.05]">
                         <User2 className="h-4 w-4" />
                       </span>
                     )}
@@ -401,7 +441,7 @@ export default function Sidebar({
                         <span className="block truncate font-medium text-foreground">
                           {session.user?.name ?? "Mon espace"}
                         </span>
-                        <span className="block text-xs text-muted-foreground">
+                        <span className="mt-0.5 block text-xs text-muted-foreground">
                           Ouvrir le profil
                         </span>
                       </span>
@@ -411,7 +451,7 @@ export default function Sidebar({
                   <Button
                     variant="ghost"
                     className={cn(
-                      "h-auto w-full justify-start rounded-xl px-3 py-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
+                      "h-auto w-full justify-start rounded-[1rem] px-3 py-2.5 text-sm text-muted-foreground hover:bg-white/[0.06] hover:text-foreground",
                       collapsed && !mobile && "justify-center px-0",
                     )}
                     onClick={() => void signOutToHome()}

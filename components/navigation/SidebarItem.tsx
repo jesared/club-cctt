@@ -56,7 +56,7 @@ export default function SidebarItem({
       onClick={onNavigate}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "relative flex items-start gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors duration-200 before:absolute before:bottom-2 before:left-0 before:top-2 before:w-1 before:rounded-full before:opacity-0",
+        "relative flex items-start gap-3 rounded-[1rem] px-3 py-2.5 text-sm transition-all duration-200 before:absolute before:bottom-2 before:left-0 before:top-2 before:w-1 before:rounded-full before:opacity-0",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         active
           ? "before:opacity-100"
@@ -67,7 +67,7 @@ export default function SidebarItem({
     >
       <span
         className={cn(
-          "mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors",
+          "mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-all duration-200",
           active ? palette.activeIcon : palette.icon,
           collapsed && "mt-0 h-9 w-9",
         )}
@@ -77,11 +77,18 @@ export default function SidebarItem({
 
       {!collapsed ? (
         <span className="min-w-0 flex-1">
-          <span className="block truncate font-medium text-foreground">
+          <span className="block truncate font-medium tracking-[-0.01em] text-foreground">
             {item.label}
           </span>
-          {active && item.description ? (
-            <span className="mt-0.5 block text-xs leading-4 text-muted-foreground">
+          {item.description ? (
+            <span
+              className={cn(
+                "mt-0.5 block text-xs leading-4 transition-opacity duration-200",
+                active
+                  ? "text-muted-foreground opacity-100"
+                  : "text-muted-foreground/80 opacity-72",
+              )}
+            >
               {item.description}
             </span>
           ) : null}
