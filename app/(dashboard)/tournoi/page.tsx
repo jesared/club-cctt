@@ -306,7 +306,7 @@ export default async function TournoiHomePage() {
                     Cliquer pour agrandir
                   </span>
                 </div>
-                <div className="rounded-[1.8rem] border border-border/70 bg-gradient-to-br from-primary/5 via-background to-background p-3 shadow-lg shadow-black/5 sm:p-4">
+                <div className="rounded-[1.6rem] p-1 sm:p-2">
                   <ImagePopup
                     src={eventImageUrl}
                     alt="Affiche officielle du tournoi CCTT"
@@ -314,7 +314,7 @@ export default async function TournoiHomePage() {
                     width={1200}
                     height={630}
                     shareLabel="Affiche officielle du tournoi CCTT"
-                    previewClassName="mx-auto max-h-[260px] w-full rounded-[1.35rem] border border-border/60 bg-card object-contain shadow-md shadow-black/10 sm:max-h-[340px] lg:max-h-[540px]"
+                    previewClassName="mx-auto max-h-[260px] w-full rounded-[1.45rem] object-contain sm:max-h-[340px] lg:max-h-[540px]"
                     popupImageClassName="max-h-[90vh] w-auto rounded-xl object-contain"
                   />
                 </div>
