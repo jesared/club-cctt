@@ -1,11 +1,15 @@
 import {
   AlertCircle,
   ArrowRight,
+  BriefcaseBusiness,
+  Building2,
   CalendarDays,
   CreditCard,
+  Dumbbell,
   FileText,
   FolderOpen,
   MessageSquare,
+  type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -19,8 +23,22 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
+import {
+  canAccessBureauSpace,
+  canAccessClubSpace,
+  canAccessEntraineurSpace,
+} from "@/lib/roles";
 import ProfileClient from "./profile-client";
 import UserMessagesSection from "./user-messages-section";
+
+type ReservedRoleCard = {
+  title: string;
+  description: string;
+  href: string;
+  icon: LucideIcon;
+  status: string;
+  cta: string;
+};
 
 export default async function UserProfilePage({
   searchParams,
@@ -28,8 +46,12 @@ export default async function UserProfilePage({
   searchParams?: Promise<{ forbidden?: string }>;
 }) {
   const resolved = await searchParams;
-  const showForbidden = resolved?.forbidden === "admin";
+  const forbiddenReason = resolved?.forbidden;
+  const forbiddenMessage = getForbiddenMessage(forbiddenReason);
   const session = await getCurrentSession();
+  const canAccessClub = canAccessClubSpace(session?.user?.role);
+  const canAccessBureau = canAccessBureauSpace(session?.user?.role);
+  const canAccessEntraineur = canAccessEntraineurSpace(session?.user?.role);
   const registrationWhere = session?.user?.id
     ? {
         OR: [
@@ -192,6 +214,41 @@ export default async function UserProfilePage({
       cta: "Ouvrir les documents",
     },
   ];
+  const reservedRoleCards: ReservedRoleCard[] = [
+    canAccessClub
+      ? {
+          title: "Espace club",
+          description:
+            "Ressources internes, annonces et raccourcis utiles a la vie du club.",
+          href: "/user/club",
+          icon: Building2,
+          status: "Point d'entree commun pour les contenus internes du club.",
+          cta: "Ouvrir l'espace club",
+        }
+      : null,
+    canAccessBureau
+      ? {
+          title: "Espace bureau",
+          description:
+            "Pilotage des priorites, organisation et coordination du bureau.",
+          href: "/user/bureau",
+          icon: BriefcaseBusiness,
+          status: "Concu pour les membres du bureau et les administrateurs.",
+          cta: "Ouvrir l'espace bureau",
+        }
+      : null,
+    canAccessEntraineur
+      ? {
+          title: "Espace entraineur",
+          description:
+            "Suivi sportif, groupes et ressources dediees a l'encadrement.",
+          href: "/user/entraineur",
+          icon: Dumbbell,
+          status: "Reserve aux entraineurs et aux administrateurs.",
+          cta: "Ouvrir l'espace entraineur",
+        }
+      : null,
+  ].filter((space): space is ReservedRoleCard => space !== null);
 
   return (
     <main className="mx-auto max-w-7xl space-y-6 px-4 py-8">
@@ -213,16 +270,16 @@ export default async function UserProfilePage({
         </div>
       </header>
 
-      {showForbidden ? (
+      {forbiddenMessage ? (
         <div className="rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3">
           <div className="flex items-start gap-3">
             <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
             <div className="space-y-1">
               <p className="text-sm font-medium text-foreground">
-                Acces reserve aux administrateurs.
+                {forbiddenMessage.title}
               </p>
               <p className="text-sm text-muted-foreground">
-                Vous avez ete redirige vers votre espace membre standard.
+                {forbiddenMessage.description}
               </p>
             </div>
           </div>
@@ -333,6 +390,54 @@ export default async function UserProfilePage({
         </div>
       </section>
 
+      {reservedRoleCards.length > 0 ? (
+        <section className="space-y-4">
+          <div>
+            <h2 className="text-xl font-semibold">Espaces reserves</h2>
+            <p className="text-sm text-muted-foreground">
+              Acces dedies a vos responsabilites internes au sein du club.
+            </p>
+          </div>
+
+          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+            {reservedRoleCards.map((space) => {
+              const Icon = space.icon;
+
+              return (
+                <Card
+                  key={space.href}
+                  className="border-border bg-card shadow-sm transition-colors duration-200 hover:shadow-md"
+                >
+                  <CardHeader className="space-y-3">
+                    <div className="space-y-2">
+                      <CardTitle className="flex items-center gap-2">
+                        <Icon className="h-4 w-4 text-primary" />
+                        {space.title}
+                      </CardTitle>
+                      <CardDescription>{space.description}</CardDescription>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {space.status}
+                    </p>
+                  </CardHeader>
+                  <CardContent>
+                    <Button asChild variant="ghost" className="px-0">
+                      <Link
+                        href={space.href}
+                        className="inline-flex items-center gap-2"
+                      >
+                        {space.cta}
+                        <ArrowRight className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
+
       <section className="space-y-4">
         <div>
           <h2 className="text-xl font-semibold">Mon profil</h2>
@@ -353,4 +458,35 @@ function formatMessageDate(value: Date) {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(value);
+}
+
+function getForbiddenMessage(reason?: string) {
+  switch (reason) {
+    case "admin":
+      return {
+        title: "Acces reserve aux administrateurs.",
+        description:
+          "Vous avez ete redirige vers votre espace membre standard.",
+      };
+    case "club":
+      return {
+        title: "Acces reserve a l'espace club.",
+        description:
+          "Votre compte n'a pas encore les droits necessaires pour cette zone.",
+      };
+    case "bureau":
+      return {
+        title: "Acces reserve a l'espace bureau.",
+        description:
+          "Cette partie est destinee aux membres du bureau et aux administrateurs.",
+      };
+    case "entraineur":
+      return {
+        title: "Acces reserve a l'espace entraineur.",
+        description:
+          "Cette partie est destinee aux entraineurs et aux administrateurs.",
+      };
+    default:
+      return null;
+  }
 }

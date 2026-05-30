@@ -1,18 +1,23 @@
 import {
   BadgeEuro,
   Banknote,
+  BriefcaseBusiness,
   Building2,
   CalendarCheck,
   CalendarClock,
+  CalendarDays,
   ClipboardPen,
   CopyPlus,
   Download,
+  Dumbbell,
   FileText,
   Handshake,
   Image as ImageIcon,
+  Layers3,
   LayoutDashboard,
   LayoutGrid,
   Mail,
+  Megaphone,
   MessageSquare,
   Receipt,
   Settings,
@@ -25,7 +30,12 @@ import {
 
 import type { PublicMenuVisibility } from "@/lib/menu-settings";
 import { isPublicMenuVisible } from "@/lib/menu-settings";
-import { normalizeRole } from "@/lib/roles";
+import {
+  canAccessBureauSpace,
+  canAccessClubSpace,
+  canAccessEntraineurSpace,
+  normalizeRole,
+} from "@/lib/roles";
 
 export type Role = "user" | "admin";
 export type NavigationSession = { user?: { role?: unknown } } | null;
@@ -36,6 +46,8 @@ export type MenuItem = {
   icon: LucideIcon;
   badge?: string;
   description?: string;
+  group?: string;
+  visible?: (role: unknown) => boolean;
 };
 
 export type NavigationBadges = Partial<Record<string, string | undefined>>;
@@ -75,11 +87,14 @@ export function getVisibleSections({
     })
     .map((section) => ({
       ...section,
-      items: section.items.map((item) => ({
-        ...item,
-        badge: badges?.[item.href] ?? item.badge,
-      })),
-    }));
+      items: section.items
+        .filter((item) => (item.visible ? item.visible(role) : true))
+        .map((item) => ({
+          ...item,
+          badge: badges?.[item.href] ?? item.badge,
+        })),
+    }))
+    .filter((section) => section.items.length > 0);
 }
 
 export function getVisibleSectionsHeader({
@@ -131,30 +146,131 @@ export const navigation: MenuSection[] = [
         label: "Mon profil",
         icon: User,
         description: "Infos du compte et vue d'ensemble personnelle.",
+        group: "Personnel",
       },
       {
         href: "/user/inscriptions",
         label: "Mes inscriptions",
         icon: ClipboardPen,
         description: "Retrouver les formulaires et participations en cours.",
+        group: "Personnel",
       },
       {
         href: "/user/paiements",
         label: "Mes paiements",
         icon: Receipt,
-        description: "Suivre les règlements et statuts de paiement.",
+        description: "Suivre les reglements et statuts de paiement.",
+        group: "Personnel",
       },
       {
         href: "/user/documents",
         label: "Mes documents",
         icon: FileText,
-        description: "Télécharger les fichiers utiles et justificatifs.",
+        description: "Telecharger les fichiers utiles et justificatifs.",
+        group: "Personnel",
       },
       {
         href: "/user/parametres",
-        label: "Paramètres",
+        label: "Parametres",
         icon: Settings,
-        description: "Mettre à jour les préférences et accès personnels.",
+        description: "Mettre a jour les preferences et acces personnels.",
+        group: "Personnel",
+      },
+      {
+        href: "/user/club",
+        label: "Espace club",
+        icon: Building2,
+        description: "Acceder aux annonces, documents et outils internes du club.",
+        group: "Club",
+        visible: canAccessClubSpace,
+      },
+      {
+        href: "/user/club/annonces",
+        label: "Club - Annonces",
+        icon: Megaphone,
+        description: "Consulter les annonces internes publiees pour la vie du club.",
+        group: "Club",
+        visible: canAccessClubSpace,
+      },
+      {
+        href: "/user/club/documents",
+        label: "Club - Documents",
+        icon: FileText,
+        description: "Retrouver la bibliotheque de ressources internes du club.",
+        group: "Club",
+        visible: canAccessClubSpace,
+      },
+      {
+        href: "/user/club/agenda",
+        label: "Club - Agenda",
+        icon: CalendarDays,
+        description: "Suivre les creneaux et temps forts du club.",
+        group: "Club",
+        visible: canAccessClubSpace,
+      },
+      {
+        href: "/user/club/contacts",
+        label: "Club - Contacts",
+        icon: Users,
+        description: "Voir les contacts utiles et reperes de l'equipe club.",
+        group: "Club",
+        visible: canAccessClubSpace,
+      },
+      {
+        href: "/user/bureau",
+        label: "Espace bureau",
+        icon: BriefcaseBusiness,
+        description: "Acceder aux outils de coordination et pilotage du bureau.",
+        group: "Bureau",
+        visible: canAccessBureauSpace,
+      },
+      {
+        href: "/user/bureau/reunions",
+        label: "Bureau - Reunions",
+        icon: CalendarCheck,
+        description: "Structurer les reunions et le suivi des decisions du bureau.",
+        group: "Bureau",
+        visible: canAccessBureauSpace,
+      },
+      {
+        href: "/user/bureau/documents",
+        label: "Bureau - Documents",
+        icon: Banknote,
+        description: "Centraliser les references et dossiers utiles au bureau.",
+        group: "Bureau",
+        visible: canAccessBureauSpace,
+      },
+      {
+        href: "/user/entraineur",
+        label: "Espace entraineur",
+        icon: Dumbbell,
+        description: "Acceder aux vues sportives et outils de l'encadrement.",
+        group: "Entraineur",
+        visible: canAccessEntraineurSpace,
+      },
+      {
+        href: "/user/entraineur/joueurs",
+        label: "Entraineur - Joueurs",
+        icon: UserPlus,
+        description: "Suivre les joueurs rattaches et leur activite.",
+        group: "Entraineur",
+        visible: canAccessEntraineurSpace,
+      },
+      {
+        href: "/user/entraineur/groupes",
+        label: "Entraineur - Groupes",
+        icon: Layers3,
+        description: "Preparer une repartition de groupes a partir des profils.",
+        group: "Entraineur",
+        visible: canAccessEntraineurSpace,
+      },
+      {
+        href: "/user/entraineur/documents",
+        label: "Entraineur - Documents",
+        icon: FileText,
+        description: "Retrouver les ressources et supports utiles aux seances.",
+        group: "Entraineur",
+        visible: canAccessEntraineurSpace,
       },
     ],
   },
@@ -173,10 +289,10 @@ export const navigation: MenuSection[] = [
         label: "Liste des inscrits",
         icon: CalendarCheck,
       },
-      { href: "/tournoi/resultats", label: "Résultats", icon: Trophy },
+      { href: "/tournoi/resultats", label: "Resultats", icon: Trophy },
       {
         href: "/tournoi/palmares",
-        label: "Palmarès",
+        label: "Palmares",
         icon: CalendarCheck,
       },
       {
@@ -193,7 +309,7 @@ export const navigation: MenuSection[] = [
       { href: "/club", label: "Club", icon: LayoutGrid },
       {
         href: "/club/comite-directeur",
-        label: "Comité directeur",
+        label: "Comite directeur",
         icon: Users,
       },
       { href: "/club/horaires", label: "Horaires", icon: CalendarClock },
@@ -208,7 +324,7 @@ export const navigation: MenuSection[] = [
   },
   {
     title: "Administration",
-    description: "Mettre à jour les contenus club et piloter les outils transverses.",
+    description: "Mettre a jour les contenus club et piloter les outils transverses.",
     roles: ["admin"],
     auth: true,
     items: [
@@ -216,53 +332,53 @@ export const navigation: MenuSection[] = [
         href: "/admin/messages",
         label: "Messages",
         icon: MessageSquare,
-        description: "Consulter les échanges et prioriser les demandes reçues.",
+        description: "Consulter les echanges et prioriser les demandes recues.",
       },
       {
         href: "/admin/users",
         label: "Utilisateurs",
         icon: Users,
-        description: "Gérer les comptes, rôles et accès de l'équipe.",
+        description: "Gerer les comptes, roles et acces de l'equipe.",
       },
       {
         href: "/admin/home",
         label: "Home",
         icon: LayoutGrid,
-        description: "Éditer la page d'accueil et ses mises en avant.",
+        description: "Editer la page d'accueil et ses mises en avant.",
       },
       {
         href: "/admin/comite-directeur",
-        label: "Comité",
+        label: "Comite",
         icon: Users,
-        description: "Mettre à jour l'équipe dirigeante et ses portraits.",
+        description: "Mettre a jour l'equipe dirigeante et ses portraits.",
       },
       {
         href: "/admin/horaires",
         label: "Horaires",
         icon: CalendarClock,
-        description: "Ajuster les créneaux et informations pratiques du club.",
+        description: "Ajuster les creneaux et informations pratiques du club.",
       },
       {
         href: "/admin/tarifs",
         label: "Tarifs",
         icon: BadgeEuro,
-        description: "Modifier les formules, montants et détails d'adhésion.",
+        description: "Modifier les formules, montants et details d'adhesion.",
       },
       {
         href: "/admin/partenaires",
         label: "Partenaires",
         icon: Handshake,
-        description: "Gérer les logos, liens et messages de soutien.",
+        description: "Gerer les logos, liens et messages de soutien.",
       },
       {
         href: "/admin/menu",
         label: "Menus",
         icon: Settings,
-        description: "Piloter la navigation publique et les accès visibles.",
+        description: "Piloter la navigation publique et les acces visibles.",
       },
       {
         href: "/admin/media",
-        label: "Médias",
+        label: "Medias",
         icon: ImageIcon,
         description: "Centraliser les visuels et ressources du site.",
       },
@@ -270,19 +386,19 @@ export const navigation: MenuSection[] = [
         href: "/admin/contact",
         label: "Contact",
         icon: Mail,
-        description: "Mettre à jour les coordonnées et messages de contact.",
+        description: "Mettre a jour les coordonnees et messages de contact.",
       },
       {
         href: "/admin/audit-ux",
         label: "Audit UX",
         icon: FileText,
-        description: "Suivre les améliorations et retours sur l'expérience.",
+        description: "Suivre les ameliorations et retours sur l'experience.",
       },
     ],
   },
   {
     title: "Admin tournoi",
-    description: "Opérations du tournoi, de l'inscription jusqu'aux exports salle.",
+    description: "Operations du tournoi, de l'inscription jusqu'aux exports salle.",
     roles: ["admin"],
     auth: true,
     items: [
@@ -290,7 +406,7 @@ export const navigation: MenuSection[] = [
         href: "/admin/tournoi",
         label: "Admin tournoi",
         icon: LayoutDashboard,
-        description: "Vue d'ensemble et accès central du back-office tournoi.",
+        description: "Vue d'ensemble et acces central du back-office tournoi.",
       },
       {
         href: "/admin/tournoi/inscriptions",
@@ -302,13 +418,13 @@ export const navigation: MenuSection[] = [
         href: "/admin/tournoi/paiement",
         label: "Paiements",
         icon: Banknote,
-        description: "Vérifier les règlements et traiter les cas en attente.",
+        description: "Verifier les reglements et traiter les cas en attente.",
       },
       {
         href: "/admin/tournoi/pointages",
         label: "Pointages",
         icon: CalendarCheck,
-        description: "Piloter l'accueil, la présence et les flux de salle.",
+        description: "Piloter l'accueil, la presence et les flux de salle.",
       },
       {
         href: "/admin/tournoi/joueurs",
@@ -320,7 +436,7 @@ export const navigation: MenuSection[] = [
         href: "/admin/tournoi/ajout-player",
         label: "Ajouter un joueur",
         icon: UserPlus,
-        description: "Créer rapidement une inscription manuelle.",
+        description: "Creer rapidement une inscription manuelle.",
       },
       {
         href: "/admin/tournoi/exports",
@@ -332,13 +448,13 @@ export const navigation: MenuSection[] = [
         href: "/admin/tournoi/nouveau",
         label: "Nouveau tournoi",
         icon: CopyPlus,
-        description: "Dupliquer une édition existante pour préparer la suivante.",
+        description: "Dupliquer une edition existante pour preparer la suivante.",
       },
       {
         href: "/admin/tournoi/documentation",
         label: "Documentation",
         icon: FileText,
-        description: "Retrouver les modes opératoires et supports équipe.",
+        description: "Retrouver les modes operatoires et supports equipe.",
       },
     ],
   },
