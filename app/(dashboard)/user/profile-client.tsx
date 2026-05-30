@@ -4,8 +4,15 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { authClient } from "@/lib/auth-client";
+import {
+  canAccessBureauSpace,
+  canAccessClubSpace,
+  canAccessEntraineurSpace,
+  getRoleLabel,
+} from "@/lib/roles";
 
 type FeedbackState =
   | {
@@ -27,6 +34,10 @@ export default function ProfileClient() {
   const trimmedName = name.trim();
   const isDirty = trimmedName !== savedName;
   const hasValidationError = feedback?.tone === "error" && trimmedName.length === 0;
+  const roleLabel = getRoleLabel(session?.user?.role);
+  const canAccessClub = canAccessClubSpace(session?.user?.role);
+  const canAccessBureau = canAccessBureauSpace(session?.user?.role);
+  const canAccessEntraineur = canAccessEntraineurSpace(session?.user?.role);
   const canSave =
     !!session &&
     saveState !== "saving" &&
@@ -102,6 +113,28 @@ export default function ProfileClient() {
                   ? session.user.email
                   : "Connectez-vous pour modifier votre profil."}
               </p>
+              {session ? (
+                <div className="flex flex-wrap items-center gap-2 pt-2">
+                  <Badge className="border-amber-300/70 bg-amber-300 text-amber-950 hover:bg-amber-300/90">
+                    Role: {roleLabel}
+                  </Badge>
+                  {canAccessClub ? (
+                    <Badge className="border-emerald-400/40 bg-emerald-500/15 text-emerald-200 hover:bg-emerald-500/20">
+                      Acces club
+                    </Badge>
+                  ) : null}
+                  {canAccessBureau ? (
+                    <Badge className="border-sky-400/40 bg-sky-500/15 text-sky-200 hover:bg-sky-500/20">
+                      Acces bureau
+                    </Badge>
+                  ) : null}
+                  {canAccessEntraineur ? (
+                    <Badge className="border-violet-400/40 bg-violet-500/15 text-violet-200 hover:bg-violet-500/20">
+                      Acces entraineur
+                    </Badge>
+                  ) : null}
+                </div>
+              ) : null}
             </div>
           </div>
 
