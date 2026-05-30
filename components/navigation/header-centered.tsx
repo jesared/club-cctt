@@ -308,20 +308,18 @@ export default function HeaderCentered({
                     const active = pathname.startsWith("/club");
 
                     return (
-                      <button
+                      <Link
                         key={section.title}
-                        type="button"
-                        aria-haspopup="dialog"
-                        aria-expanded={menuOpen && openSection === section.title}
+                        href="/club"
                         className={cn(
                           "rounded-full px-3.5 py-1.5 font-medium tracking-[0.01em] transition-colors",
                           active
                             ? "bg-slate-100/85 text-slate-900 dark:bg-slate-400/10 dark:text-white"
                             : "text-muted-foreground hover:bg-muted/45 hover:text-foreground",
                         )}
-                        onClick={() => openNavigationSection("Club")}>
+                      >
                         {desktopLabels.Club}
-                      </button>
+                      </Link>
                     );
                   })}
 
@@ -339,20 +337,18 @@ export default function HeaderCentered({
                     const active = pathname.startsWith("/tournoi");
 
                     return (
-                      <button
+                      <Link
                         key={section.title}
-                        type="button"
-                        aria-haspopup="dialog"
-                        aria-expanded={menuOpen && openSection === section.title}
+                        href="/tournoi"
                         className={cn(
                           "rounded-full px-3 py-1.5 text-[0.925rem] font-medium tracking-normal whitespace-nowrap transition-colors",
                           active
                             ? "bg-stone-100/90 text-stone-900 dark:bg-stone-400/10 dark:text-white"
                             : "text-muted-foreground hover:bg-muted/45 hover:text-foreground",
                         )}
-                        onClick={() => openNavigationSection("Tournoi")}>
+                      >
                         {desktopLabels.Tournoi}
-                      </button>
+                      </Link>
                     );
                   })}
               </div>

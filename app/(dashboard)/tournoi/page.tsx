@@ -1,6 +1,7 @@
-import {
+﻿import {
   CalendarClock,
   ClipboardCheck,
+  Mail,
   MapPin,
   TimerReset,
   Trophy,
@@ -9,6 +10,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import KpiPageViewTracker from "@/components/KpiPageViewTracker";
+import { ExternalMapLink } from "@/components/external-map-link";
 import { MetricTile, SectionEyebrow } from "@/components/public/marketing";
 import Reveal from "@/components/Reveal";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -130,6 +132,14 @@ function formatDateTime(value?: Date | null) {
   }).format(value);
 }
 
+function normalizeVenue(value?: string | null) {
+  return value?.trim() || null;
+}
+
+function buildMapDirectionsUrl(query: string) {
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(query)}`;
+}
+
 export default async function TournoiHomePage() {
   const session = await getCurrentSession();
   const userEmail = session?.user?.email?.trim().toLowerCase();
@@ -180,6 +190,10 @@ export default async function TournoiHomePage() {
   const isTournamentFinished = tournament?.endDate
     ? new Date() > tournament.endDate
     : false;
+  const tournamentVenue = normalizeVenue(tournament?.venue);
+  const tournamentMapUrl = tournamentVenue
+    ? buildMapDirectionsUrl(tournamentVenue)
+    : null;
 
   const hasUserRegistration =
     tournament && session?.user?.id
@@ -213,33 +227,13 @@ export default async function TournoiHomePage() {
     surPlace: `${(event.feeOnsiteCents / 100).toFixed(0)} EUR`,
   }));
 
-  const timelineSteps = [
-    {
-      title: "Je choisis mes tableaux",
-      detail:
-        tableaux.length > 0
-          ? `${tableaux.length} tableaux sont actuellement ouverts à l'inscription.`
-          : "Le programme complet sera ajouté ici dès qu'il sera disponible.",
-      icon: Trophy,
-    },
-    {
-      title: "Je valide mon inscription",
-      detail: registrationStatus.message,
-      icon: ClipboardCheck,
-    },
-    {
-      title: "Je prépare ma venue",
-      detail: `${contactContent.addressName}, ${contactContent.addressCity}.`,
-      icon: MapPin,
-    },
-  ];
 
   return (
     <main className="relative">
       <KpiPageViewTracker page="tournoi" label="tournoi-page" />
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-4 py-8 sm:px-6 sm:py-10">
         <section className="relative rounded-[2rem] border border-border/70 bg-background/92 p-6 shadow-xl shadow-black/5 backdrop-blur-sm md:p-8 lg:p-10">
-            <div className="relative space-y-8">
+            <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:items-start">
               <div className="space-y-6">
                 <div className="flex flex-wrap items-center gap-3">
                   <SectionEyebrow className="border-[#FF7A00]/35 bg-[#FF7A00]/10 text-[#FF7A00]">
@@ -252,7 +246,7 @@ export default async function TournoiHomePage() {
                 </div>
 
                 <div className="space-y-4">
-                  <h1 className="font-serif text-4xl font-bold leading-tight tracking-[-0.03em] text-foreground sm:text-5xl lg:text-6xl">
+                  <h1 className="font-serif text-3xl font-bold leading-tight tracking-[-0.03em] text-foreground sm:text-4xl lg:text-5xl">
                     {tournament?.name ?? "Tournoi CCTT"}
                   </h1>
                   <div className="flex flex-wrap gap-4 text-sm text-muted-foreground sm:text-base">
@@ -265,7 +259,7 @@ export default async function TournoiHomePage() {
                     </span>
                     <span className="inline-flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-[#FF7A00]" />
-                      {tournament?.venue ?? "Lieu à confirmer"}
+                      {tournamentVenue ?? "Lieu à confirmer"}
                     </span>
                   </div>
                   <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
@@ -306,8 +300,8 @@ export default async function TournoiHomePage() {
                 ) : null}
               </div>
 
-              <div className="mx-auto w-full max-w-4xl space-y-4">
-                <div className="flex justify-end">
+              <div className="w-full space-y-4 lg:pt-2">
+                <div className="flex justify-start lg:justify-end">
                   <span className="inline-flex rounded-full border border-border/70 bg-background/80 px-3 py-1 text-xs font-medium text-muted-foreground">
                     Cliquer pour agrandir
                   </span>
@@ -320,7 +314,7 @@ export default async function TournoiHomePage() {
                     width={1200}
                     height={630}
                     shareLabel="Affiche officielle du tournoi CCTT"
-                    previewClassName="mx-auto max-h-[260px] w-full rounded-[1.35rem] border border-border/60 bg-card object-contain shadow-md shadow-black/10 sm:max-h-[340px] lg:max-h-[420px]"
+                    previewClassName="mx-auto max-h-[260px] w-full rounded-[1.35rem] border border-border/60 bg-card object-contain shadow-md shadow-black/10 sm:max-h-[340px] lg:max-h-[540px]"
                     popupImageClassName="max-h-[90vh] w-auto rounded-xl object-contain"
                   />
                 </div>
@@ -328,19 +322,19 @@ export default async function TournoiHomePage() {
             </div>
         </section>
 
-        <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <section className="grid gap-3 lg:grid-cols-3">
           <Reveal>
-            <MetricTile
-              label="Statut"
-              value={registrationStatus.label}
-              detail={registrationStatus.message}
-            />
-          </Reveal>
-          <Reveal delay={100}>
             <MetricTile
               label="Tableaux ouverts"
               value={String(tableaux.length)}
               detail="Programme actuellement disponible à l'inscription."
+            />
+          </Reveal>
+          <Reveal delay={100}>
+            <MetricTile
+              label="Date limite"
+              value={formatDateTime(tournament?.registrationCloseAt)}
+              detail="Clôture des inscriptions en ligne."
             />
           </Reveal>
           <Reveal delay={200}>
@@ -350,90 +344,104 @@ export default async function TournoiHomePage() {
               detail={contactContent.responseDelay}
             />
           </Reveal>
-          <Reveal delay={300}>
-            <MetricTile
-              label="Date limite"
-              value={formatDateTime(tournament?.registrationCloseAt)}
-              detail="Date limite pour s'inscrire en ligne."
-            />
-          </Reveal>
         </section>
 
-        <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+        <section>
           <Reveal>
-            <Card className="rounded-[1.7rem] border-border/70 bg-card/94 shadow-sm shadow-black/5">
+            <Card className="rounded-[1.8rem] border-border/70 bg-card/94 shadow-sm shadow-black/5">
               <CardHeader className="space-y-3">
-                <SectionEyebrow tone="neutral">Infos pratiques</SectionEyebrow>
+                <SectionEyebrow tone="neutral">Préparer ma venue</SectionEyebrow>
                 <CardTitle className="font-serif text-3xl font-bold tracking-[-0.03em]">
-                  Toutes les infos pratiques du tournoi
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="grid gap-4 text-sm leading-relaxed text-muted-foreground sm:grid-cols-2">
-                <div className="rounded-2xl border border-border/70 bg-background/80 p-4">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                    Lieu
-                  </p>
-                  <p className="mt-2 font-medium text-foreground">
-                    {tournament?.venue ?? "À confirmer"}
-                  </p>
-                </div>
-                <div className="rounded-2xl border border-border/70 bg-background/80 p-4">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                    Contact
-                  </p>
-                  <p className="mt-2 font-medium text-foreground">
-                    {contactContent.email}
-                  </p>
-                </div>
-                <div className="rounded-2xl border border-border/70 bg-background/80 p-4">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                    Adresse
-                  </p>
-                  <p className="mt-2 font-medium text-foreground">
-                    {contactContent.addressName}
-                  </p>
-                  <p>{contactContent.addressLine}</p>
-                  <p>{contactContent.addressCity}</p>
-                </div>
-                <div className="rounded-2xl border border-border/70 bg-background/80 p-4">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                    Délai
-                  </p>
-                  <p className="mt-2 font-medium text-foreground">
-                    {contactContent.responseDelay}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </Reveal>
-
-          <Reveal delay={120}>
-            <Card className="rounded-[1.7rem] border-border/70 bg-card/94 shadow-sm shadow-black/5">
-              <CardHeader className="space-y-3">
-                <SectionEyebrow tone="neutral">Parcours joueur</SectionEyebrow>
-                <CardTitle className="font-serif text-3xl font-bold tracking-[-0.03em]">
-                  De l&apos;inscription à la salle
+                  Les infos vraiment utiles avant d&apos;arriver
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {timelineSteps.map((step) => (
-                  <div
-                    key={step.title}
-                    className="flex gap-4 rounded-2xl border border-border/70 bg-background/80 p-4"
-                  >
-                    <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                      <step.icon className="h-5 w-5" />
+                <div className="rounded-[1.5rem] border border-[#FF7A00]/20 bg-[#FF7A00]/8 p-5">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="space-y-2">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#cc6200]">
+                        Gymnase
+                      </p>
+                      <p className="text-lg font-semibold text-foreground">
+                        {tournamentVenue ?? "Lieu à confirmer"}
+                      </p>
+                      <p className="text-sm leading-relaxed text-muted-foreground">
+                        {tournamentMapUrl
+                          ? "Un seul lieu de référence pour venir le jour du tournoi."
+                          : "Le lieu sera ajouté ici dès qu'il sera confirmé."}
+                      </p>
                     </div>
-                    <div>
-                      <p className="font-medium text-foreground">
-                        {step.title}
-                      </p>
-                      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                        {step.detail}
-                      </p>
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#FF7A00]/12 text-[#FF7A00]">
+                      <MapPin className="h-5 w-5" />
                     </div>
                   </div>
-                ))}
+                  {tournamentMapUrl ? (
+                    <ExternalMapLink
+                      href={tournamentMapUrl}
+                      label="Ouvrir l'itinéraire"
+                      className="mt-4 inline-flex items-center gap-2 rounded-md border border-[#FF7A00]/30 bg-background/80 px-4 py-2 text-sm font-medium text-[#FF7A00] transition hover:bg-[#FF7A00]/10 focus-ring"
+                    />
+                  ) : null}
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="rounded-2xl border border-border/70 bg-background/80 p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <ClipboardCheck className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                          Inscriptions
+                        </p>
+                        <p className="mt-1 font-medium text-foreground">
+                          {registrationStatus.label}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                      {registrationStatus.message}
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-border/70 bg-background/80 p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <CalendarClock className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                          Date limite
+                        </p>
+                        <p className="mt-1 font-medium text-foreground">
+                          {formatDateTime(tournament?.registrationCloseAt)}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                      Clôture des inscriptions en ligne avant le tournoi.
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-border/70 bg-background/80 p-4 sm:col-span-2">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <Mail className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                          Contact organisation
+                        </p>
+                        <p className="mt-1 font-medium text-foreground">
+                          {contactContent.email}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                      {contactContent.responseDelay}
+                    </p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </Reveal>
@@ -589,3 +597,5 @@ export default async function TournoiHomePage() {
     </main>
   );
 }
+
+
