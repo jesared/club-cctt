@@ -13,9 +13,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-import { getCurrentSession } from "@/lib/session";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -30,6 +29,7 @@ import {
   canAccessEntraineurSpace,
   getRoleLabel,
 } from "@/lib/roles";
+import { getCurrentSession } from "@/lib/session";
 import ProfileClient from "./profile-client";
 import UserMessagesSection from "./user-messages-section";
 
@@ -207,8 +207,7 @@ export default async function UserProfilePage({
     },
     {
       title: "Mes documents",
-      description:
-        "0 document disponible pour le moment.",
+      description: "0 document disponible pour le moment.",
       href: "/user/documents",
       icon: FileText,
       metric: "0",
@@ -267,18 +266,18 @@ export default async function UserProfilePage({
               Role: {roleLabel}
             </Badge>
             {canAccessClub ? (
-              <Badge className="border-emerald-400/40 bg-emerald-500/15 text-emerald-200 hover:bg-emerald-500/20">
-                Acces club
+              <Badge className="border-emerald-300 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:border-emerald-400/40 dark:bg-emerald-500/15 dark:text-emerald-200 dark:hover:bg-emerald-500/20">
+                Club
               </Badge>
             ) : null}
             {canAccessBureau ? (
-              <Badge className="border-sky-400/40 bg-sky-500/15 text-sky-200 hover:bg-sky-500/20">
-                Acces bureau
+              <Badge className="border-sky-300 bg-sky-100 text-sky-800 hover:bg-sky-200 dark:border-sky-400/40 dark:bg-sky-500/15 dark:text-sky-200 dark:hover:bg-sky-500/20">
+                Bureau
               </Badge>
             ) : null}
             {canAccessEntraineur ? (
-              <Badge className="border-violet-400/40 bg-violet-500/15 text-violet-200 hover:bg-violet-500/20">
-                Acces entraineur
+              <Badge className="border-violet-300 bg-violet-100 text-violet-800 hover:bg-violet-200 dark:border-violet-400/40 dark:bg-violet-500/15 dark:text-violet-200 dark:hover:bg-violet-500/20">
+                Entraîneur
               </Badge>
             ) : null}
           </div>
@@ -393,42 +392,44 @@ export default async function UserProfilePage({
 
         <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {actionCards.map((action) => {
-          const Icon = action.icon;
+            const Icon = action.icon;
 
-          return (
-            <Card
-              key={action.href}
-              className="border-border bg-card shadow-sm transition-colors duration-200 hover:shadow-md"
-            >
-              <CardHeader className="space-y-3">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-2">
-                    <CardTitle className="flex items-center gap-2">
-                      <Icon className="h-4 w-4 text-primary" />
-                      {action.title}
-                    </CardTitle>
-                    <CardDescription>{action.description}</CardDescription>
+            return (
+              <Card
+                key={action.href}
+                className="border-border bg-card shadow-sm transition-colors duration-200 hover:shadow-md"
+              >
+                <CardHeader className="space-y-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="space-y-2">
+                      <CardTitle className="flex items-center gap-2">
+                        <Icon className="h-4 w-4 text-primary" />
+                        {action.title}
+                      </CardTitle>
+                      <CardDescription>{action.description}</CardDescription>
+                    </div>
+                    <div className="rounded-full border border-primary/15 bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
+                      {action.metric}
+                    </div>
                   </div>
-                  <div className="rounded-full border border-primary/15 bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
-                    {action.metric}
-                  </div>
-                </div>
-                <p className="text-sm text-muted-foreground">{action.status}</p>
-              </CardHeader>
-              <CardContent>
-                <Button asChild variant="ghost" className="px-0">
-                  <Link
-                    href={action.href}
-                    className="inline-flex items-center gap-2"
-                  >
-                    {action.cta}
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-          );
-        })}
+                  <p className="text-sm text-muted-foreground">
+                    {action.status}
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <Button asChild variant="ghost" className="px-0">
+                    <Link
+                      href={action.href}
+                      className="inline-flex items-center gap-2"
+                    >
+                      {action.cta}
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </section>
 

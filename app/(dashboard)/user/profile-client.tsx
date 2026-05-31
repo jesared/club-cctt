@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import { useEffect, useMemo, useState } from "react";
 
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { authClient } from "@/lib/auth-client";
 import {
@@ -14,12 +14,10 @@ import {
   getRoleLabel,
 } from "@/lib/roles";
 
-type FeedbackState =
-  | {
-      tone: "success" | "error" | "info";
-      message: string;
-    }
-  | null;
+type FeedbackState = {
+  tone: "success" | "error" | "info";
+  message: string;
+} | null;
 
 export default function ProfileClient() {
   const { data: session, refetch } = authClient.useSession();
@@ -33,16 +31,14 @@ export default function ProfileClient() {
   );
   const trimmedName = name.trim();
   const isDirty = trimmedName !== savedName;
-  const hasValidationError = feedback?.tone === "error" && trimmedName.length === 0;
+  const hasValidationError =
+    feedback?.tone === "error" && trimmedName.length === 0;
   const roleLabel = getRoleLabel(session?.user?.role);
   const canAccessClub = canAccessClubSpace(session?.user?.role);
   const canAccessBureau = canAccessBureauSpace(session?.user?.role);
   const canAccessEntraineur = canAccessEntraineurSpace(session?.user?.role);
   const canSave =
-    !!session &&
-    saveState !== "saving" &&
-    trimmedName.length > 0 &&
-    isDirty;
+    !!session && saveState !== "saving" && trimmedName.length > 0 && isDirty;
 
   useEffect(() => {
     setName(session?.user?.name ?? "");
@@ -119,18 +115,18 @@ export default function ProfileClient() {
                     Role: {roleLabel}
                   </Badge>
                   {canAccessClub ? (
-                    <Badge className="border-emerald-400/40 bg-emerald-500/15 text-emerald-200 hover:bg-emerald-500/20">
-                      Acces club
+                    <Badge className="border-emerald-300 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:border-emerald-400/40 dark:bg-emerald-500/15 dark:text-emerald-200 dark:hover:bg-emerald-500/20">
+                      Club
                     </Badge>
                   ) : null}
                   {canAccessBureau ? (
-                    <Badge className="border-sky-400/40 bg-sky-500/15 text-sky-200 hover:bg-sky-500/20">
-                      Acces bureau
+                    <Badge className="border-sky-300 bg-sky-100 text-sky-800 hover:bg-sky-200 dark:border-sky-400/40 dark:bg-sky-500/15 dark:text-sky-200 dark:hover:bg-sky-500/20">
+                      Bureau
                     </Badge>
                   ) : null}
                   {canAccessEntraineur ? (
-                    <Badge className="border-violet-400/40 bg-violet-500/15 text-violet-200 hover:bg-violet-500/20">
-                      Acces entraineur
+                    <Badge className="border-violet-300 bg-violet-100 text-violet-800 hover:bg-violet-200 dark:border-violet-400/40 dark:bg-violet-500/15 dark:text-violet-200 dark:hover:bg-violet-500/20">
+                      Entraîneur
                     </Badge>
                   ) : null}
                 </div>
@@ -139,9 +135,7 @@ export default function ProfileClient() {
           </div>
 
           <div className="text-sm text-muted-foreground">
-            {isDirty
-              ? "Modifications non enregistrees"
-              : "Profil a jour"}
+            {isDirty ? "Modifications non enregistrees" : "Profil a jour"}
           </div>
         </div>
       </CardHeader>
