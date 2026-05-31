@@ -341,6 +341,12 @@ export const navigation: MenuSection[] = [
         description: "Gerer les comptes, roles et acces de l'equipe.",
       },
       {
+        href: "/admin/documentation",
+        label: "Documentation",
+        icon: FileText,
+        description: "Retrouver les reperes internes, en commencant par les roles.",
+      },
+      {
         href: "/admin/home",
         label: "Home",
         icon: LayoutGrid,

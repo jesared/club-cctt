@@ -283,6 +283,12 @@ export default async function AdminPage() {
       Icon: Users,
     },
     {
+      href: "/admin/documentation",
+      label: "Documentation",
+      helper: "Roles, acces et reperes internes",
+      Icon: FileText,
+    },
+    {
       href: "/admin/audit-ux",
       label: "Audit UX",
       helper: "Suivi des pistes d'amélioration",
