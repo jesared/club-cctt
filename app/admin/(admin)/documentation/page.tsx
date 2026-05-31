@@ -24,9 +24,10 @@ const roles = [
   {
     key: "USER",
     title: "Membre",
+    badgeLabel: "Membre",
     Icon: User,
     badgeClassName:
-      "border-slate-400/40 bg-slate-500/15 text-slate-200 hover:bg-slate-500/20",
+      "border-slate-300 bg-slate-100 text-slate-700 hover:bg-slate-200 dark:border-slate-400/40 dark:bg-slate-500/15 dark:text-slate-200 dark:hover:bg-slate-500/20",
     summary: "Rôle par défaut pour un compte standard.",
     accesses: ["Mon profil", "Mes inscriptions", "Mes paiements", "Mes documents"],
     limits: "Pas d'accès aux espaces club, bureau, entraîneur ou administration.",
@@ -34,9 +35,10 @@ const roles = [
   {
     key: "CLUB",
     title: "Club",
+    badgeLabel: "Club",
     Icon: Building2,
     badgeClassName:
-      "border-emerald-400/40 bg-emerald-500/15 text-emerald-200 hover:bg-emerald-500/20",
+      "border-emerald-300 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:border-emerald-400/40 dark:bg-emerald-500/15 dark:text-emerald-200 dark:hover:bg-emerald-500/20",
     summary: "Pour les personnes qui doivent consulter les ressources internes du club.",
     accesses: [
       "Tout l'espace membre",
@@ -51,9 +53,10 @@ const roles = [
   {
     key: "BUREAU",
     title: "Bureau",
+    badgeLabel: "Bureau",
     Icon: BriefcaseBusiness,
     badgeClassName:
-      "border-sky-400/40 bg-sky-500/15 text-sky-200 hover:bg-sky-500/20",
+      "border-sky-300 bg-sky-100 text-sky-800 hover:bg-sky-200 dark:border-sky-400/40 dark:bg-sky-500/15 dark:text-sky-200 dark:hover:bg-sky-500/20",
     summary: "Pour les membres du bureau qui pilotent la vie du club.",
     accesses: ["Accès CLUB inclus", "Espace bureau", "Réunions bureau", "Documents bureau"],
     limits: "Pas d'accès au back-office admin. Le rôle bureau garde aussi l'accès à l'espace club.",
@@ -61,9 +64,10 @@ const roles = [
   {
     key: "ENTRAINEUR",
     title: "Entraîneur",
+    badgeLabel: "Entraîneur",
     Icon: Dumbbell,
     badgeClassName:
-      "border-violet-400/40 bg-violet-500/15 text-violet-200 hover:bg-violet-500/20",
+      "border-violet-300 bg-violet-100 text-violet-800 hover:bg-violet-200 dark:border-violet-400/40 dark:bg-violet-500/15 dark:text-violet-200 dark:hover:bg-violet-500/20",
     summary: "Pour l'encadrement sportif et le suivi des joueurs.",
     accesses: ["Accès CLUB inclus", "Espace entraîneur", "Joueurs", "Groupes", "Documents entraîneur"],
     limits: "Pas d'accès au back-office admin. Le rôle entraîneur garde aussi l'accès à l'espace club.",
@@ -71,6 +75,7 @@ const roles = [
   {
     key: "ADMIN",
     title: "Administrateur",
+    badgeLabel: "Admin",
     Icon: ShieldCheck,
     badgeClassName:
       "border-amber-300/70 bg-amber-300 text-amber-950 hover:bg-amber-300/90",
@@ -114,7 +119,8 @@ export default async function AdminDocumentationPage() {
       </Card>
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {roles.map(({ key, title, Icon, badgeClassName, summary, accesses, limits }) => (
+        {roles.map(
+          ({ key, title, badgeLabel, Icon, badgeClassName, summary, accesses, limits }) => (
           <Card key={key} className="border-border/70 bg-card shadow-sm">
             <CardHeader className="space-y-3">
               <div className="flex items-center justify-between gap-3">
@@ -125,7 +131,7 @@ export default async function AdminDocumentationPage() {
                   <CardTitle className="text-lg">{title}</CardTitle>
                 </div>
                 <Badge className={`rounded-full px-2.5 py-1 ${badgeClassName}`}>
-                  {key}
+                  {badgeLabel}
                 </Badge>
               </div>
               <CardDescription className="text-sm leading-6">
