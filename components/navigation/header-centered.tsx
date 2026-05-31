@@ -649,7 +649,7 @@ export default function HeaderCentered({
                       <div
                         role="dialog"
                         aria-label="Notifications"
-                        className="absolute right-0 top-[calc(100%+0.8rem)] z-50 w-[22rem] overflow-hidden rounded-[1.6rem] border border-border/70 bg-background/95 shadow-[0_24px_70px_rgba(15,23,42,0.18)] backdrop-blur dark:bg-slate-950/92 sm:w-[25rem]"
+                        className="fixed inset-x-3 top-[5.25rem] z-50 overflow-hidden rounded-[1.35rem] border border-border/70 bg-background/95 shadow-[0_24px_70px_rgba(15,23,42,0.18)] backdrop-blur dark:bg-slate-950/92 sm:absolute sm:right-0 sm:top-[calc(100%+0.8rem)] sm:left-auto sm:w-[25rem] sm:rounded-[1.6rem]"
                       >
                         <div className="border-b border-border/70 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.1),_transparent_58%)] px-4 py-4 dark:bg-[radial-gradient(circle_at_top,_rgba(96,165,250,0.12),_transparent_52%)]">
                           <div className="flex items-start justify-between gap-3">
@@ -671,7 +671,7 @@ export default function HeaderCentered({
                           </div>
                         </div>
 
-                        <div className="max-h-[24rem] overflow-y-auto px-3 py-3">
+                        <div className="max-h-[min(24rem,calc(100vh-7rem))] overflow-y-auto px-3 py-3 sm:max-h-[24rem]">
                           {isInboxLoading ? (
                             <div className="grid gap-2">
                               {Array.from({ length: 3 }).map((_, index) => (
