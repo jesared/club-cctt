@@ -8,22 +8,24 @@ datasource db {
 }
 
 model User {
-  id            String                   @id @default(cuid())
-  name          String
-  email         String                   @unique
-  emailVerified Boolean                  @default(false)
-  image         String?
-  role          Role                     @default(USER)
-  createdAt     DateTime                 @default(now())
-  updatedAt     DateTime                 @updatedAt
-  accounts      Account[]
-  messages      Message[]
-  reads         MessageRead[]
-  players       Player[]
-  sessions      Session[]
-  checkIns      TournamentCheckIn[]
-  registrations TournamentRegistration[]
-  mediaAssets   MediaAsset[]
+  id                   String               @id @default(cuid())
+  name                 String
+  email                String               @unique
+  emailVerified        Boolean              @default(false)
+  image                String?
+  role                 Role                 @default(USER)
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  accounts             Account[]
+  messages             Message[]
+  reads                MessageRead[]
+  notificationsCreated Notification[]       @relation("NotificationCreatedBy")
+  notificationReads    NotificationRead[]
+  players              Player[]
+  sessions             Session[]
+  checkIns             TournamentCheckIn[]
+  registrations        TournamentRegistration[]
+  mediaAssets          MediaAsset[]
 }
 
 model Player {
@@ -225,6 +227,44 @@ model MessageRead {
   @@unique([userId, messageId])
 }
 
+model Notification {
+  id              String                 @id @default(cuid())
+  type            NotificationType
+  priority        NotificationPriority   @default(NORMAL)
+  title           String
+  content         String
+  href            String?
+  sourceId        String?
+  sourceKind      NotificationSourceKind @default(MANUAL)
+  audience        NotificationAudience   @default(ALL_MEMBERS)
+  roleScope       Role?
+  createdByUserId String?
+  publishedAt     DateTime               @default(now())
+  expiresAt       DateTime?
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+  createdByUser   User?                  @relation("NotificationCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  reads           NotificationRead[]
+
+  @@index([publishedAt])
+  @@index([type, publishedAt])
+  @@index([audience, publishedAt])
+  @@index([roleScope, publishedAt])
+  @@index([sourceKind, sourceId])
+}
+
+model NotificationRead {
+  id             String       @id @default(cuid())
+  notificationId String
+  userId         String
+  readAt         DateTime     @default(now())
+  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([notificationId, userId])
+  @@index([userId, readAt])
+}
+
 model HorairesCache {
   id        String   @id
   data      Json
@@ -402,4 +442,36 @@ enum KpiEventType {
 enum MessageStatus {
   DRAFT
   PUBLISHED
+}
+
+enum NotificationType {
+  ANNOUNCEMENT
+  DOCUMENT
+  SCHEDULE
+  TOURNAMENT
+  SYSTEM
+}
+
+enum NotificationPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum NotificationSourceKind {
+  MESSAGE
+  DOCUMENT
+  HORAIRES
+  TOURNAMENT
+  MANUAL
+}
+
+enum NotificationAudience {
+  ALL_MEMBERS
+  CLUB_SPACE
+  BUREAU_SPACE
+  ENTRAINEUR_SPACE
+  ADMIN_ONLY
+  ROLE
 }

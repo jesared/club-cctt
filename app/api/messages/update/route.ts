@@ -1,3 +1,4 @@
+import { syncPublishedMessageNotification } from "@/lib/notifications";
 import { getCurrentSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { withPrismaRetry } from "@/lib/prisma-retry";
@@ -22,14 +23,20 @@ export async function POST(req: Request) {
   }
 
   const message = await withPrismaRetry(() =>
-    prisma.message.update({
-      where: { id },
-      data: {
-        title: normalizedTitle,
-        content: normalizedContent,
-        important: Boolean(important),
-        status: normalizedStatus,
-      },
+    prisma.$transaction(async (tx) => {
+      const updatedMessage = await tx.message.update({
+        where: { id },
+        data: {
+          title: normalizedTitle,
+          content: normalizedContent,
+          important: Boolean(important),
+          status: normalizedStatus,
+        },
+      });
+
+      await syncPublishedMessageNotification(updatedMessage, tx);
+
+      return updatedMessage;
     }),
   );
 

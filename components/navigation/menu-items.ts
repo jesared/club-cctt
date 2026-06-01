@@ -1,6 +1,7 @@
 import {
   BadgeEuro,
   Banknote,
+  BellRing,
   BriefcaseBusiness,
   Building2,
   CalendarCheck,
@@ -328,6 +329,12 @@ export const navigation: MenuSection[] = [
     roles: ["admin"],
     auth: true,
     items: [
+      {
+        href: "/admin/notifications",
+        label: "Notifications",
+        icon: BellRing,
+        description: "Verifier, corriger ou retirer les alertes envoyees aux utilisateurs.",
+      },
       {
         href: "/admin/messages",
         label: "Messages",

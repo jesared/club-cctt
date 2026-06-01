@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
+import { syncScheduleNotificationOnChange } from "@/lib/notifications";
 import { getCurrentSession } from "@/lib/session";
 import {
   defaultHorairesContent,
@@ -109,11 +110,27 @@ export async function PUT(req: Request) {
 
   const body = (await req.json()) as Partial<HorairesResponse["data"]>;
   const data = normalizeHorairesContent(body);
-
-  const saved = await prisma.horairesCache.upsert({
+  const existing = await prisma.horairesCache.findUnique({
     where: { id: ADMIN_CONTENT_ID },
-    update: { data },
-    create: { id: ADMIN_CONTENT_ID, data },
+  });
+
+  const saved = await prisma.$transaction(async (tx) => {
+    const result = await tx.horairesCache.upsert({
+      where: { id: ADMIN_CONTENT_ID },
+      update: { data },
+      create: { id: ADMIN_CONTENT_ID, data },
+    });
+
+    await syncScheduleNotificationOnChange({
+      previousData: normalizeHorairesContent(
+        (existing?.data as Partial<HorairesResponse["data"]>) ?? null,
+      ),
+      nextData: data,
+      createdByUserId: session.user.id,
+      client: tx,
+    });
+
+    return result;
   });
 
   revalidatePath("/club/horaires");

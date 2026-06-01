@@ -2,6 +2,7 @@ import Link from "next/link";
 import {
   ArrowRight,
   BadgeEuro,
+  BellRing,
   CalendarClock,
   FileText,
   Handshake,
@@ -20,12 +21,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { withNotificationSchemaFallback } from "@/lib/notification-safety";
 import { prisma } from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/session";
 
 function formatDateTime(value?: Date | null) {
   if (!value) {
-    return "À définir";
+    return "A definir";
   }
 
   return new Intl.DateTimeFormat("fr-FR", {
@@ -44,6 +46,7 @@ export default async function AdminPage() {
     totalUsers,
     totalMediaAssets,
     totalMessages,
+    totalNotifications,
     publishedMessages,
     draftMessages,
     currentTournament,
@@ -51,6 +54,7 @@ export default async function AdminPage() {
     prisma.user.count(),
     prisma.mediaAsset.count(),
     prisma.message.count(),
+    withNotificationSchemaFallback(() => prisma.notification.count(), 0),
     prisma.message.count({ where: { status: "PUBLISHED" } }),
     prisma.message.count({ where: { status: "DRAFT" } }),
     prisma.tournament.findFirst({
@@ -89,30 +93,30 @@ export default async function AdminPage() {
   const focusCards = [
     {
       label: "Tournoi en cours",
-      value: currentTournament?.name ?? "Aucun tournoi publié",
+      value: currentTournament?.name ?? "Aucun tournoi publie",
       detail: currentTournament
         ? `${currentTournament._count.events} tableau(x) et ${currentTournament._count.registrations} inscription(s).`
         : "Activez un tournoi pour alimenter le front public et les workflows.",
       Icon: Ticket,
     },
     {
-      label: "Inscriptions à traiter",
+      label: "Inscriptions a traiter",
       value: String(tournamentPendingRegistrations),
       detail: currentTournament
-        ? "Demandes en attente de validation sur le tournoi publié."
-        : "Aucun tournoi publié, donc aucune file de validation active.",
+        ? "Demandes en attente de validation sur le tournoi publie."
+        : "Aucun tournoi publie, donc aucune file de validation active.",
       Icon: CalendarClock,
     },
     {
-      label: "Messages brouillon",
-      value: String(draftMessages),
-      detail: `${publishedMessages} message(s) publié(s) sur ${totalMessages} au total.`,
-      Icon: Mail,
+      label: "Notifications",
+      value: String(totalNotifications),
+      detail: `${publishedMessages} message(s) publie(s) sur ${totalMessages} au total.`,
+      Icon: BellRing,
     },
     {
       label: "Utilisateurs",
       value: String(totalUsers),
-      detail: `${totalMediaAssets} média(s) stocké(s) dans la bibliothèque.`,
+      detail: `${totalMediaAssets} media(s) stocke(s) dans la bibliotheque.`,
       Icon: Users,
     },
   ];
@@ -121,7 +125,7 @@ export default async function AdminPage() {
     {
       title: "Pilotage tournoi",
       description:
-        "Le cœur opérationnel : inscriptions, paiements, pointages, exports et configuration.",
+        "Le coeur operationnel : inscriptions, paiements, pointages, exports et configuration.",
       href: "/admin/tournoi",
       tone: "border-primary/30 bg-primary/10",
       links: [
@@ -132,13 +136,13 @@ export default async function AdminPage() {
         },
         {
           href: "/admin/tournoi/paiement",
-          label: "Vérifier les paiements",
-          helper: "Suivi des règlements",
+          label: "Verifier les paiements",
+          helper: "Suivi des reglements",
         },
         {
           href: "/admin/tournoi/pointages",
           label: "Ouvrir les pointages",
-          helper: "Contrôle salle et présence",
+          helper: "Controle salle et presence",
         },
       ],
       Icon: Ticket,
@@ -146,7 +150,7 @@ export default async function AdminPage() {
     {
       title: "Contenus club",
       description:
-        "Les zones qui changent le site public : accueil, menu, contact et média.",
+        "Les zones qui changent le site public : accueil, menu, contact et media.",
       href: "/admin/home",
       tone: "border-border bg-card",
       links: [
@@ -162,13 +166,13 @@ export default async function AdminPage() {
         },
         {
           href: "/admin/contact",
-          label: "Mettre à jour le contact",
-          helper: "Coordonnées et aide",
+          label: "Mettre a jour le contact",
+          helper: "Coordonnees et aide",
         },
         {
           href: "/admin/horaires",
           label: "Modifier les horaires",
-          helper: "Jours, créneaux et badges",
+          helper: "Jours, creneaux et badges",
         },
         {
           href: "/admin/tarifs",
@@ -182,22 +186,27 @@ export default async function AdminPage() {
         },
         {
           href: "/admin/comite-directeur",
-          label: "Modifier le comité",
+          label: "Modifier le comite",
           helper: "Bureau, membres et photos",
         },
       ],
       Icon: LayoutGrid,
     },
     {
-      title: "Communication et contrôle",
+      title: "Communication et controle",
       description:
-        "Messages internes, accès utilisateurs, média et audit UX pour garder le site propre.",
-      href: "/admin/messages",
+        "Messages internes, notifications, acces utilisateurs, media et audit UX pour garder le site propre.",
+      href: "/admin/notifications",
       tone: "border-border bg-card",
       links: [
         {
+          href: "/admin/notifications",
+          label: "Piloter les notifications",
+          helper: `${totalNotifications} notification(s)`,
+        },
+        {
           href: "/admin/messages",
-          label: "Gérer les messages",
+          label: "Gerer les messages",
           helper: `${draftMessages} brouillon(s)`,
         },
         {
@@ -207,7 +216,7 @@ export default async function AdminPage() {
         },
         {
           href: "/admin/media",
-          label: "Ouvrir la médiathèque",
+          label: "Ouvrir la mediatheque",
           helper: `${totalMediaAssets} fichier(s)`,
         },
       ],
@@ -217,9 +226,15 @@ export default async function AdminPage() {
 
   const quickLinks = [
     {
+      href: "/admin/notifications",
+      label: "Notifications",
+      helper: "Cloche, historique et alertes auto",
+      Icon: BellRing,
+    },
+    {
       href: "/admin/tournoi/edition",
       label: "Configurer le tournoi",
-      helper: "Fiche et fenêtre d'inscription",
+      helper: "Fiche et fenetre d'inscription",
       Icon: CalendarClock,
     },
     {
@@ -237,13 +252,13 @@ export default async function AdminPage() {
     {
       href: "/admin/contact",
       label: "Contact club",
-      helper: "Coordonnées et disponibilités",
+      helper: "Coordonnees et disponibilites",
       Icon: Mail,
     },
     {
       href: "/admin/horaires",
       label: "Horaires club",
-      helper: "Planning public et créneaux",
+      helper: "Planning public et creneaux",
       Icon: CalendarClock,
     },
     {
@@ -260,8 +275,8 @@ export default async function AdminPage() {
     },
     {
       href: "/admin/comite-directeur",
-      label: "Comité directeur",
-      helper: "Équipe dirigeante et portraits",
+      label: "Comite directeur",
+      helper: "Equipe dirigeante et portraits",
       Icon: Users,
     },
     {
@@ -272,14 +287,14 @@ export default async function AdminPage() {
     },
     {
       href: "/admin/media",
-      label: "Média",
+      label: "Media",
       helper: "Images et ressources",
       Icon: ImageIcon,
     },
     {
       href: "/admin/users",
       label: "Utilisateurs",
-      helper: "Rôles et accès",
+      helper: "Roles et acces",
       Icon: Users,
     },
     {
@@ -291,7 +306,7 @@ export default async function AdminPage() {
     {
       href: "/admin/audit-ux",
       label: "Audit UX",
-      helper: "Suivi des pistes d'amélioration",
+      helper: "Suivi des pistes d'amelioration",
       Icon: ShieldCheck,
     },
   ];
@@ -316,9 +331,9 @@ export default async function AdminPage() {
             Administration
           </h1>
           <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
-            Cette page sert maintenant de point d&apos;entrée opératif : on y
-            retrouve les zones importantes, les compteurs utiles et les accès
-            rapides vers les tâches les plus fréquentes.
+            Cette page sert maintenant de point d&apos;entree operatif : on y
+            retrouve les zones importantes, les compteurs utiles et les acces
+            rapides vers les taches les plus frequentes.
           </p>
         </div>
       </header>
@@ -397,9 +412,9 @@ export default async function AdminPage() {
       <section className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.8fr)]">
         <Card className="border-border bg-card shadow-sm">
           <CardHeader className="space-y-2">
-            <CardTitle>Accès rapides</CardTitle>
+            <CardTitle>Acces rapides</CardTitle>
             <CardDescription>
-              Les entrées les plus utiles quand on veut agir tout de suite.
+              Les entrees les plus utiles quand on veut agir tout de suite.
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -424,17 +439,17 @@ export default async function AdminPage() {
 
         <Card className="border-border bg-card shadow-sm">
           <CardHeader className="space-y-2">
-            <CardTitle>État du back-office</CardTitle>
+            <CardTitle>Etat du back-office</CardTitle>
             <CardDescription>
-              Quelques repères pour savoir où se trouve le prochain point
+              Quelques reperes pour savoir ou se trouve le prochain point
               d&apos;attention.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 text-sm">
             <div className="rounded-2xl border border-border/70 bg-background/80 p-4">
-              <p className="font-medium text-foreground">Tournoi publié</p>
+              <p className="font-medium text-foreground">Tournoi publie</p>
               <p className="mt-1 text-muted-foreground">
-                {currentTournament?.name ?? "Aucun tournoi publié actuellement."}
+                {currentTournament?.name ?? "Aucun tournoi publie actuellement."}
               </p>
             </div>
 
@@ -457,11 +472,11 @@ export default async function AdminPage() {
             </div>
 
             <div className="rounded-2xl border border-border/70 bg-background/80 p-4">
-              <p className="font-medium text-foreground">Période du tournoi</p>
+              <p className="font-medium text-foreground">Periode du tournoi</p>
               <p className="mt-1 text-muted-foreground">
                 {currentTournament
                   ? `${formatDateTime(currentTournament.startDate)} -> ${formatDateTime(currentTournament.endDate)}`
-                  : "À définir"}
+                  : "A definir"}
               </p>
             </div>
           </CardContent>

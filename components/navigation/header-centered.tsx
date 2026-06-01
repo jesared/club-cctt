@@ -73,6 +73,7 @@ type HeaderInboxItem = {
   authorName: string | null;
   authorEmail: string | null;
   isUnread: boolean;
+  href: string;
 };
 
 export default function HeaderCentered({
@@ -86,9 +87,11 @@ export default function HeaderCentered({
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [unreadMessageCount, setUnreadMessageCount] = useState(0);
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   const [inboxItems, setInboxItems] = useState<HeaderInboxItem[]>([]);
   const [isInboxLoading, setIsInboxLoading] = useState(false);
+  const [pendingReadIds, setPendingReadIds] = useState<string[]>([]);
+  const [isMarkingAllRead, setIsMarkingAllRead] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [openSection, setOpenSection] = useState<string | null>("Club");
@@ -169,6 +172,7 @@ export default function HeaderCentered({
   );
 
   const isAdmin = isAdminRole(session?.user?.role);
+  const messagesHubHref = "/user/notifications";
   const tournoiVisible = isPublicMenuVisible(menuVisibility, "tournoi");
   const isDark = mounted ? resolvedTheme === "dark" : false;
 
@@ -239,54 +243,18 @@ export default function HeaderCentered({
 
   useEffect(() => {
     if (!session?.user) {
-      setUnreadMessageCount(0);
+      setUnreadNotificationCount(0);
       setInboxItems([]);
+      setPendingReadIds([]);
       return;
     }
 
     let cancelled = false;
 
-    async function loadInbox(previewOnly: boolean) {
-      if (!previewOnly) {
-        setIsInboxLoading(true);
-      }
-
-      try {
-        const response = await fetch("/api/messages/inbox", {
-          cache: "no-store",
-          credentials: "include",
-        });
-
-        if (!response.ok) {
-          throw new Error("Unable to load inbox.");
-        }
-
-        const data = (await response.json()) as {
-          unreadCount?: number;
-          items?: HeaderInboxItem[];
-        };
-
-        if (!cancelled) {
-          setUnreadMessageCount(
-            typeof data.unreadCount === "number" ? data.unreadCount : 0,
-          );
-
-          if (Array.isArray(data.items)) {
-            setInboxItems(data.items);
-          }
-        }
-      } catch {
-        if (!cancelled && !previewOnly) {
-          setInboxItems([]);
-        }
-      } finally {
-        if (!cancelled && !previewOnly) {
-          setIsInboxLoading(false);
-        }
-      }
-    }
-
-    void loadInbox(true);
+    void (async () => {
+      await fetchInbox({ previewOnly: true });
+      if (cancelled) return;
+    })();
 
     return () => {
       cancelled = true;
@@ -300,42 +268,10 @@ export default function HeaderCentered({
 
     let cancelled = false;
 
-    async function loadInbox() {
-      setIsInboxLoading(true);
-
-      try {
-        const response = await fetch("/api/messages/inbox", {
-          cache: "no-store",
-          credentials: "include",
-        });
-
-        if (!response.ok) {
-          throw new Error("Unable to load inbox.");
-        }
-
-        const data = (await response.json()) as {
-          unreadCount?: number;
-          items?: HeaderInboxItem[];
-        };
-
-        if (!cancelled) {
-          setUnreadMessageCount(
-            typeof data.unreadCount === "number" ? data.unreadCount : 0,
-          );
-          setInboxItems(Array.isArray(data.items) ? data.items : []);
-        }
-      } catch {
-        if (!cancelled) {
-          setInboxItems([]);
-        }
-      } finally {
-        if (!cancelled) {
-          setIsInboxLoading(false);
-        }
-      }
-    }
-
-    void loadInbox();
+    void (async () => {
+      await fetchInbox({ onEmptyError: true });
+      if (cancelled) return;
+    })();
 
     return () => {
       cancelled = true;
@@ -395,6 +331,137 @@ export default function HeaderCentered({
     window.location.href = "/";
   }
 
+  async function fetchInbox({
+    previewOnly = false,
+    onEmptyError = false,
+  }: {
+    previewOnly?: boolean;
+    onEmptyError?: boolean;
+  }) {
+    if (!previewOnly) {
+      setIsInboxLoading(true);
+    }
+
+    try {
+      const response = await fetch("/api/notifications/inbox", {
+        cache: "no-store",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error("Unable to load inbox.");
+      }
+
+      const data = (await response.json()) as {
+        unreadCount?: number;
+        items?: HeaderInboxItem[];
+      };
+
+      setUnreadNotificationCount(
+        typeof data.unreadCount === "number" ? data.unreadCount : 0,
+      );
+      setInboxItems(Array.isArray(data.items) ? data.items : []);
+    } catch {
+      if (onEmptyError) {
+        setInboxItems([]);
+      }
+    } finally {
+      if (!previewOnly) {
+        setIsInboxLoading(false);
+      }
+    }
+  }
+
+  async function markMessageAsRead(messageId: string) {
+    if (pendingReadIds.includes(messageId)) {
+      return false;
+    }
+
+    const targetMessage = inboxItems.find((item) => item.id === messageId);
+    if (!targetMessage?.isUnread) {
+      return true;
+    }
+
+    setPendingReadIds((current) => [...current, messageId]);
+    setInboxItems((current) =>
+      current.map((item) =>
+        item.id === messageId ? { ...item, isUnread: false } : item,
+      ),
+    );
+    setUnreadNotificationCount((current) => Math.max(current - 1, 0));
+
+    try {
+      const response = await fetch("/api/notifications/read", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ notificationId: messageId }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Unable to mark message as read.");
+      }
+
+      return true;
+    } catch {
+      setInboxItems((current) =>
+        current.map((item) =>
+          item.id === messageId ? { ...item, isUnread: true } : item,
+        ),
+      );
+      setUnreadNotificationCount((current) => current + 1);
+      return false;
+    } finally {
+      setPendingReadIds((current) => current.filter((id) => id !== messageId));
+    }
+  }
+
+  async function openInboxItem(item: HeaderInboxItem) {
+    await markMessageAsRead(item.id);
+    setNotificationsOpen(false);
+    router.push(item.href);
+  }
+
+  async function markAllMessagesAsRead() {
+    const unreadIds = inboxItems
+      .filter((item) => item.isUnread)
+      .map((item) => item.id);
+
+    if (unreadIds.length === 0 || isMarkingAllRead) {
+      return;
+    }
+
+    setIsMarkingAllRead(true);
+    setPendingReadIds((current) => [...new Set([...current, ...unreadIds])]);
+    setInboxItems((current) =>
+      current.map((item) => ({ ...item, isUnread: false })),
+    );
+    setUnreadNotificationCount(0);
+
+    try {
+      const response = await fetch("/api/notifications/read-all", {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        throw new Error("Unable to mark all messages as read.");
+      }
+    } catch {
+      setInboxItems((current) =>
+        current.map((item) =>
+          unreadIds.includes(item.id) ? { ...item, isUnread: true } : item,
+        ),
+      );
+      setUnreadNotificationCount(unreadIds.length);
+    } finally {
+      setPendingReadIds((current) =>
+        current.filter((id) => !unreadIds.includes(id)),
+      );
+      setIsMarkingAllRead(false);
+    }
+  }
+
   if (!isPublicRoute(pathname)) {
     return null;
   }
@@ -403,16 +470,16 @@ export default function HeaderCentered({
     setOpenSection(sectionTitle);
     setMenuOpen(true);
   };
-  const hasUnreadMessages = unreadMessageCount > 0;
+  const hasUnreadMessages = unreadNotificationCount > 0;
   const unreadMessageLabel =
-    unreadMessageCount > 9 ? "9+" : String(unreadMessageCount);
+    unreadNotificationCount > 9 ? "9+" : String(unreadNotificationCount);
   const headerActionSurface =
     "border border-border/70 bg-background/90 shadow-sm transition-all duration-200 dark:border-white/10 dark:bg-white/5";
   const inboxSummaryLabel =
-    unreadMessageCount > 0
-      ? `${unreadMessageCount} nouveau${
-          unreadMessageCount > 1 ? "x" : ""
-        } message${unreadMessageCount > 1 ? "s" : ""}`
+    unreadNotificationCount > 0
+      ? `${unreadNotificationCount} nouvelle${
+          unreadNotificationCount > 1 ? "s" : ""
+        } notification${unreadNotificationCount > 1 ? "s" : ""}`
       : "A jour";
 
   return (
@@ -600,7 +667,7 @@ export default function HeaderCentered({
                 <Link
                   href="/tournoi/inscription"
                   className={cn(
-                    "hidden h-11 items-center rounded-full px-4 text-sm font-semibold tracking-[0.02em] text-foreground hover:border-border hover:bg-background dark:text-white dark:hover:border-white/15 dark:hover:bg-white/8 md:inline-flex",
+                    "hidden h-10 items-center rounded-full px-3.5 text-[0.92rem] font-medium tracking-[0.01em] text-foreground/90 hover:border-border hover:bg-background hover:text-foreground dark:text-white/90 dark:hover:border-white/15 dark:hover:bg-white/8 dark:hover:text-white md:inline-flex",
                     headerActionSurface,
                   )}
                 >
@@ -615,9 +682,9 @@ export default function HeaderCentered({
                       type="button"
                       aria-label={
                         hasUnreadMessages
-                          ? `${unreadMessageCount} notification${
-                              unreadMessageCount > 1 ? "s" : ""
-                            } non lue${unreadMessageCount > 1 ? "s" : ""}`
+                          ? `${unreadNotificationCount} notification${
+                              unreadNotificationCount > 1 ? "s" : ""
+                            } non lue${unreadNotificationCount > 1 ? "s" : ""}`
                           : "Ouvrir les notifications"
                       }
                       aria-haspopup="dialog"
@@ -646,125 +713,167 @@ export default function HeaderCentered({
                     </button>
 
                     {notificationsOpen ? (
-                      <div
-                        role="dialog"
-                        aria-label="Notifications"
-                        className="fixed inset-x-3 top-[5.25rem] z-50 overflow-hidden rounded-[1.35rem] border border-border/70 bg-background/95 shadow-[0_24px_70px_rgba(15,23,42,0.18)] backdrop-blur dark:bg-slate-950/92 sm:absolute sm:right-0 sm:top-[calc(100%+0.8rem)] sm:left-auto sm:w-[25rem] sm:rounded-[1.6rem]"
-                      >
-                        <div className="border-b border-border/70 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.1),_transparent_58%)] px-4 py-4 dark:bg-[radial-gradient(circle_at_top,_rgba(96,165,250,0.12),_transparent_52%)]">
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="space-y-1">
-                              <p className="text-sm font-semibold text-foreground">
-                                Notifications
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                {inboxSummaryLabel}
-                              </p>
-                            </div>
-                            <Link
-                              href="/user"
-                              className="rounded-full border border-border/70 bg-background/80 px-3 py-1 text-xs font-medium text-foreground transition-colors hover:bg-muted"
-                              onClick={() => setNotificationsOpen(false)}
-                            >
-                              Voir tout
-                            </Link>
-                          </div>
-                        </div>
-
-                        <div className="max-h-[min(24rem,calc(100vh-7rem))] overflow-y-auto px-3 py-3 sm:max-h-[24rem]">
-                          {isInboxLoading ? (
-                            <div className="grid gap-2">
-                              {Array.from({ length: 3 }).map((_, index) => (
-                                <div
-                                  key={index}
-                                  className="rounded-2xl border border-border/60 bg-muted/25 px-3 py-3"
-                                >
-                                  <div className="h-3.5 w-24 rounded-full bg-muted" />
-                                  <div className="mt-3 h-4 w-3/4 rounded-full bg-muted" />
-                                  <div className="mt-2 h-3.5 w-full rounded-full bg-muted" />
-                                </div>
-                              ))}
-                            </div>
-                          ) : inboxItems.length === 0 ? (
-                            <div className="rounded-[1.35rem] border border-dashed border-border/70 bg-muted/15 px-4 py-6 text-center">
-                              <p className="text-sm font-medium text-foreground">
-                                Rien de nouveau pour le moment
-                              </p>
-                              <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                                Les prochaines annonces du club apparaitront ici.
-                              </p>
-                            </div>
-                          ) : (
-                            <div className="grid gap-2">
-                              {inboxItems.map((item) => {
-                                const preview =
-                                  item.content.length > 120
-                                    ? `${item.content.slice(0, 120).trimEnd()}...`
-                                    : item.content;
-                                const formattedDate = new Intl.DateTimeFormat(
-                                  "fr-FR",
-                                  {
-                                    day: "2-digit",
-                                    month: "short",
-                                  },
-                                ).format(new Date(item.createdAt));
-
-                                return (
-                                  <Link
-                                    key={item.id}
-                                    href="/user"
-                                    className={cn(
-                                      "rounded-[1.35rem] border px-3 py-3 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm",
-                                      item.isUnread
-                                        ? "border-rose-200/80 bg-rose-50/70 dark:border-rose-400/20 dark:bg-rose-400/8"
-                                        : "border-border/70 bg-background/70 hover:bg-muted/25",
-                                    )}
-                                    onClick={() => setNotificationsOpen(false)}
+                      <>
+                        <button
+                          type="button"
+                          aria-label="Fermer les notifications"
+                          className="fixed inset-0 z-40 bg-slate-950/28 backdrop-blur-[1px] sm:hidden"
+                          onClick={() => setNotificationsOpen(false)}
+                        />
+                        <div
+                          role="dialog"
+                          aria-label="Notifications"
+                          className="fixed inset-x-3 top-[5.25rem] z-50 overflow-hidden rounded-[1.35rem] border border-border/70 bg-background/95 shadow-[0_24px_70px_rgba(15,23,42,0.18)] backdrop-blur dark:bg-slate-950/92 sm:absolute sm:right-0 sm:top-[calc(100%+0.8rem)] sm:left-auto sm:w-[25rem] sm:rounded-[1.6rem]"
+                        >
+                          <div className="border-b border-border/70 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.1),_transparent_58%)] px-4 py-4 dark:bg-[radial-gradient(circle_at_top,_rgba(96,165,250,0.12),_transparent_52%)]">
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="space-y-1">
+                                <p className="text-sm font-semibold text-foreground">
+                                  Notifications
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  {inboxSummaryLabel}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {hasUnreadMessages ? (
+                                  <button
+                                    type="button"
+                                    className="rounded-full border border-border/70 bg-background/80 px-3 py-1 text-xs font-medium text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
+                                    disabled={isMarkingAllRead}
+                                    onClick={() => void markAllMessagesAsRead()}
                                   >
-                                    <div className="flex items-start justify-between gap-3">
-                                      <div className="flex items-center gap-2">
-                                        {item.isUnread ? (
-                                          <span className="h-2.5 w-2.5 rounded-full bg-rose-500 shadow-[0_0_0_4px_rgba(244,63,94,0.14)]" />
-                                        ) : (
-                                          <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/25" />
-                                        )}
-                                        <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                                          {formattedDate}
+                                    {isMarkingAllRead
+                                      ? "Lecture..."
+                                      : "Tout marquer comme lu"}
+                                  </button>
+                                ) : null}
+                                <Link
+                                  href={messagesHubHref}
+                                  className="rounded-full border border-border/70 bg-background/80 px-3 py-1 text-xs font-medium text-foreground transition-colors hover:bg-muted"
+                                  onClick={() => setNotificationsOpen(false)}
+                                >
+                                  Voir tout
+                                </Link>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="max-h-[min(24rem,calc(100vh-7rem))] overflow-y-auto px-3 py-3 sm:max-h-[24rem]">
+                            {isInboxLoading ? (
+                              <div className="grid gap-2">
+                                {Array.from({ length: 3 }).map((_, index) => (
+                                  <div
+                                    key={index}
+                                    className="rounded-2xl border border-border/60 bg-muted/25 px-3 py-3"
+                                  >
+                                    <div className="h-3.5 w-24 rounded-full bg-muted" />
+                                    <div className="mt-3 h-4 w-3/4 rounded-full bg-muted" />
+                                    <div className="mt-2 h-3.5 w-full rounded-full bg-muted" />
+                                  </div>
+                                ))}
+                              </div>
+                            ) : inboxItems.length === 0 ? (
+                              <div className="rounded-[1.35rem] border border-dashed border-border/70 bg-muted/15 px-4 py-6 text-center">
+                                <p className="text-sm font-medium text-foreground">
+                                  Rien de nouveau pour le moment
+                                </p>
+                                <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                                  Les prochaines annonces du club apparaitront ici.
+                                </p>
+                              </div>
+                            ) : (
+                              <div className="grid gap-2">
+                                {inboxItems.map((item) => {
+                                  const preview =
+                                    item.content.length > 120
+                                      ? `${item.content.slice(0, 120).trimEnd()}...`
+                                      : item.content;
+                                  const formattedDate = new Intl.DateTimeFormat(
+                                    "fr-FR",
+                                    {
+                                      day: "2-digit",
+                                      month: "short",
+                                    },
+                                  ).format(new Date(item.createdAt));
+
+                                  return (
+                                    <div
+                                      key={item.id}
+                                      className={cn(
+                                        "rounded-[1.35rem] border px-3 py-3 transition-all duration-200",
+                                        item.isUnread
+                                          ? "border-rose-200/80 bg-rose-50/70 dark:border-rose-400/20 dark:bg-rose-400/8"
+                                          : "border-border/70 bg-background/70",
+                                      )}
+                                    >
+                                      <div className="flex items-start justify-between gap-3">
+                                        <div className="flex items-center gap-2">
+                                          {item.isUnread ? (
+                                            <span className="h-2.5 w-2.5 rounded-full bg-rose-500 shadow-[0_0_0_4px_rgba(244,63,94,0.14)]" />
+                                          ) : (
+                                            <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/25" />
+                                          )}
+                                          <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
+                                            {formattedDate}
+                                          </p>
+                                        </div>
+                                        {item.important ? (
+                                          <span className="rounded-full bg-foreground px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-background dark:bg-white dark:text-slate-950">
+                                            Important
+                                          </span>
+                                        ) : null}
+                                      </div>
+
+                                      <div className="mt-2 space-y-1">
+                                        <p className="line-clamp-1 text-sm font-semibold text-foreground">
+                                          {item.title}
+                                        </p>
+                                        <p className="line-clamp-2 text-xs leading-5 text-muted-foreground">
+                                          {preview}
                                         </p>
                                       </div>
-                                      {item.important ? (
-                                        <span className="rounded-full bg-foreground px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-background dark:bg-white dark:text-slate-950">
-                                          Important
-                                        </span>
-                                      ) : null}
-                                    </div>
 
-                                    <div className="mt-2 space-y-1">
-                                      <p className="line-clamp-1 text-sm font-semibold text-foreground">
-                                        {item.title}
-                                      </p>
-                                      <p className="line-clamp-2 text-xs leading-5 text-muted-foreground">
-                                        {preview}
-                                      </p>
+                                      <div className="mt-3 flex items-center justify-between gap-2">
+                                        <p className="truncate text-[0.72rem] text-muted-foreground">
+                                          {item.authorName ||
+                                            item.authorEmail ||
+                                            "Club"}
+                                        </p>
+                                        <div className="flex items-center gap-2">
+                                          {item.isUnread ? (
+                                            <button
+                                              type="button"
+                                              className="rounded-full border border-border/70 bg-background/80 px-2.5 py-1 text-[0.68rem] font-medium text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
+                                              disabled={pendingReadIds.includes(
+                                                item.id,
+                                              )}
+                                              onClick={async () => {
+                                                await markMessageAsRead(item.id);
+                                              }}
+                                            >
+                                              {pendingReadIds.includes(item.id)
+                                                ? "Lecture..."
+                                                : "Marquer comme lu"}
+                                            </button>
+                                          ) : null}
+                                          <button
+                                            type="button"
+                                            className="rounded-full bg-foreground px-2.5 py-1 text-[0.68rem] font-medium text-background transition-opacity hover:opacity-90 dark:bg-white dark:text-slate-950"
+                                            onClick={() => void openInboxItem(item)}
+                                          >
+                                            Ouvrir
+                                          </button>
+                                        </div>
+                                      </div>
                                     </div>
-
-                                    <div className="mt-3 flex items-center justify-between gap-2">
-                                      <p className="truncate text-[0.72rem] text-muted-foreground">
-                                        {item.authorName ||
-                                          item.authorEmail ||
-                                          "Club"}
-                                      </p>
-                                      <span className="text-[0.72rem] font-medium text-foreground">
-                                        Ouvrir
-                                      </span>
-                                    </div>
-                                  </Link>
-                                );
-                              })}
-                            </div>
-                          )}
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      </div>
+                      </>
                     ) : null}
                   </div>
 

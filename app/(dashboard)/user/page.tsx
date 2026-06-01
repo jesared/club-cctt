@@ -1,6 +1,7 @@
 import {
   AlertCircle,
   ArrowRight,
+  BellRing,
   BriefcaseBusiness,
   Building2,
   CalendarDays,
@@ -8,7 +9,6 @@ import {
   Dumbbell,
   FileText,
   FolderOpen,
-  MessageSquare,
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -24,6 +24,11 @@ import {
 } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 import {
+  buildVisibleNotificationsWhere,
+  getDefaultNotificationHref,
+} from "@/lib/notifications";
+import { withNotificationSchemaFallback } from "@/lib/notification-safety";
+import {
   canAccessBureauSpace,
   canAccessClubSpace,
   canAccessEntraineurSpace,
@@ -31,7 +36,7 @@ import {
 } from "@/lib/roles";
 import { getCurrentSession } from "@/lib/session";
 import ProfileClient from "./profile-client";
-import UserMessagesSection from "./user-messages-section";
+import UserNotificationsSection from "./user-notifications-section";
 
 type ReservedRoleCard = {
   title: string;
@@ -64,42 +69,55 @@ export default async function UserProfilePage({
       }
     : undefined;
 
-  const [messages, unreadMessageCount, registrationCount, paymentRows] =
+  const notificationWhere = buildVisibleNotificationsWhere(session?.user?.role);
+
+  const [notifications, unreadNotificationCount, registrationCount, paymentRows] =
     await Promise.all([
-      prisma.message.findMany({
-        where: {
-          status: "PUBLISHED",
-        },
-        orderBy: [{ important: "desc" }, { createdAt: "desc" }],
-        take: 5,
-        include: {
-          author: {
-            select: {
-              name: true,
-              email: true,
-            },
-          },
-          reads: {
-            where: {
-              userId: session?.user?.id ?? "",
-            },
-            select: {
-              id: true,
-            },
-            take: 1,
-          },
-        },
-      }),
-      session?.user?.id
-        ? prisma.message.count({
-            where: {
-              reads: {
-                none: {
-                  userId: session.user.id,
+      withNotificationSchemaFallback(
+        () =>
+          prisma.notification.findMany({
+            where: notificationWhere,
+            orderBy: [{ priority: "desc" }, { publishedAt: "desc" }],
+            take: 5,
+            include: {
+              createdByUser: {
+                select: {
+                  name: true,
+                  email: true,
                 },
               },
+              reads: {
+                where: {
+                  userId: session?.user?.id ?? "",
+                },
+                select: {
+                  id: true,
+                },
+                take: 1,
+              },
             },
-          })
+          }),
+        [],
+      ),
+      session?.user?.id
+        ? withNotificationSchemaFallback(
+            () =>
+              prisma.notification.count({
+                where: {
+                  AND: [
+                    notificationWhere,
+                    {
+                      reads: {
+                        none: {
+                          userId: session.user.id,
+                        },
+                      },
+                    },
+                  ],
+                },
+              }),
+            0,
+          )
         : 0,
       registrationWhere
         ? prisma.tournamentRegistration.count({
@@ -169,9 +187,9 @@ export default async function UserProfilePage({
     },
     {
       label: "Messages non lus",
-      value: unreadMessageCount,
-      helper: "annonces a consulter",
-      icon: MessageSquare,
+      value: unreadNotificationCount,
+      helper: "elements a consulter",
+      icon: BellRing,
     },
   ];
   const actionCards = [
@@ -258,8 +276,8 @@ export default async function UserProfilePage({
         <div>
           <h1 className="text-2xl font-semibold">Espace membre</h1>
           <p className="text-sm text-muted-foreground">
-            Retrouvez vos inscriptions, paiements, documents et informations du
-            club en un seul endroit.
+            Retrouvez vos inscriptions, paiements, documents et notifications
+            du club en un seul endroit.
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <Badge className="border-amber-300/70 bg-amber-300 text-amber-950 hover:bg-amber-300/90">
@@ -356,27 +374,34 @@ export default async function UserProfilePage({
       <section className="space-y-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="text-xl font-semibold">Messages du club</h2>
+            <h2 className="text-xl font-semibold">Notifications recentes</h2>
             <p className="text-sm text-muted-foreground">
-              Les informations importantes et les dernieres annonces du club.
+              Les dernieres annonces, mises a jour et changements utiles pour
+              votre espace.
             </p>
           </div>
           <Button asChild variant="outline" size="sm">
-            <Link href="/club/contact">Contacter le club</Link>
+            <Link href="/user/notifications">Voir tout l'historique</Link>
           </Button>
         </div>
 
-        <UserMessagesSection
+        <UserNotificationsSection
           canMarkAsRead={Boolean(session?.user?.id)}
-          messages={messages.map((message) => ({
-            id: message.id,
-            title: message.title,
-            content: message.content,
-            important: message.important,
-            formattedDate: formatMessageDate(message.createdAt),
-            authorName: message.author.name,
-            authorEmail: message.author.email,
-            isUnread: Boolean(session?.user?.id) && message.reads.length === 0,
+          notifications={notifications.map((notification) => ({
+            id: notification.id,
+            title: notification.title,
+            content: notification.content,
+            href:
+              notification.href ??
+              getDefaultNotificationHref(session?.user?.role ?? null),
+            isImportant:
+              notification.priority === "HIGH" ||
+              notification.priority === "URGENT",
+            formattedDate: formatMessageDate(notification.publishedAt),
+            authorName: notification.createdByUser?.name ?? null,
+            authorEmail: notification.createdByUser?.email ?? null,
+            isUnread:
+              Boolean(session?.user?.id) && notification.reads.length === 0,
           }))}
         />
       </section>
