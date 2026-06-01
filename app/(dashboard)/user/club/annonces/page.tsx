@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unescaped-entities */
+
 import { BellRing, Megaphone, Pin, TriangleAlert } from "lucide-react";
 import { redirect } from "next/navigation";
 

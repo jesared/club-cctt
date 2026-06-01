@@ -14,6 +14,7 @@ import {
   normalizeContactSubject,
 } from "@/lib/contact-subjects";
 import { prisma } from "@/lib/prisma";
+import { getContactFormAvailability } from "@/lib/public-form-availability";
 
 export default async function ContactPage({
   searchParams,
@@ -26,6 +27,7 @@ export default async function ContactPage({
   const content = normalizeContactContent(existing ?? defaultContactContent);
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
   const initialSubject = normalizeContactSubject(resolvedSearchParams?.sujet);
+  const contactAvailability = getContactFormAvailability();
 
   return (
     <div className="mx-auto max-w-6xl space-y-10 px-4 py-8 sm:py-12">
@@ -166,7 +168,43 @@ export default async function ContactPage({
               </CardHeader>
 
               <CardContent>
-                <ContactForm initialSubject={initialSubject} />
+                {contactAvailability.isAvailable ? (
+                  <ContactForm initialSubject={initialSubject} />
+                ) : (
+                  <div className="space-y-4">
+                    <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4 text-sm text-foreground">
+                      <p className="font-medium">Formulaire temporairement indisponible</p>
+                      <p className="mt-1 text-muted-foreground">
+                        {contactAvailability.message}
+                      </p>
+                      <p className="mt-3 text-muted-foreground">
+                        En attendant, vous pouvez ecrire directement a{" "}
+                        <a
+                          href={`mailto:${content.email}`}
+                          className="font-medium text-[#FF2E88] hover:underline"
+                        >
+                          {content.email}
+                        </a>
+                        .
+                      </p>
+                    </div>
+
+                    <div className="flex flex-wrap gap-3">
+                      <Link
+                        href={`mailto:${content.email}`}
+                        className="inline-flex items-center justify-center rounded-md border px-4 py-2 text-sm hover:bg-muted"
+                      >
+                        Envoyer un e-mail
+                      </Link>
+                      <Link
+                        href={content.ctaPrimaryHref}
+                        className="inline-flex items-center justify-center rounded-md border px-4 py-2 text-sm hover:bg-muted"
+                      >
+                        {content.ctaPrimaryLabel}
+                      </Link>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </section>

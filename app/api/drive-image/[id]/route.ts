@@ -2,8 +2,11 @@ export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
 
-const DEFAULT_LOGO_PATH = "http://localhost:3000/partenaires/default-logo.svg";
-// en prod Vercel utilisera automatiquement le domaine réel
+function redirectToDefaultLogo(request: Request) {
+  return NextResponse.redirect(
+    new URL("/partenaires/default-logo.svg", request.url),
+  );
+}
 
 export async function GET(
   req: Request,
@@ -11,26 +14,22 @@ export async function GET(
 ) {
   const { id } = await context.params;
 
-  // 🛑 CAS 1 : pas d'id → logo par défaut
   if (!id || id.trim().length === 0) {
-    return NextResponse.redirect(DEFAULT_LOGO_PATH);
+    return redirectToDefaultLogo(req);
   }
 
   try {
     const url = `https://lh3.googleusercontent.com/d/${id}`;
-
     const res = await fetch(url);
 
-    // 🛑 CAS 2 : Google refuse
     if (!res.ok) {
-      return NextResponse.redirect(DEFAULT_LOGO_PATH);
+      return redirectToDefaultLogo(req);
     }
 
     const contentType = res.headers.get("content-type");
 
-    // 🛑 CAS 3 : Google renvoie HTML
     if (!contentType || !contentType.startsWith("image")) {
-      return NextResponse.redirect(DEFAULT_LOGO_PATH);
+      return redirectToDefaultLogo(req);
     }
 
     const buffer = await res.arrayBuffer();
@@ -42,6 +41,6 @@ export async function GET(
       },
     });
   } catch {
-    return NextResponse.redirect(DEFAULT_LOGO_PATH);
+    return redirectToDefaultLogo(req);
   }
 }

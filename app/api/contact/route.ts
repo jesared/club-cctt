@@ -3,6 +3,7 @@ import {
   isContactSubject,
   normalizeContactSubject,
 } from "@/lib/contact-subjects";
+import { getContactFormAvailability } from "@/lib/public-form-availability";
 import { NextRequest, NextResponse } from "next/server";
 
 type ContactPayload = {
@@ -84,6 +85,18 @@ async function sendWithWebhook(
 }
 
 export async function POST(request: NextRequest) {
+  const availability = getContactFormAvailability();
+
+  if (!availability.isAvailable) {
+    return NextResponse.json(
+      {
+        message:
+          "Le formulaire de contact n'est pas encore disponible. Merci d'ecrire directement a communication@cctt.fr.",
+      },
+      { status: 503 },
+    );
+  }
+
   const clientIp =
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
     request.headers.get("x-real-ip") ??
@@ -156,7 +169,7 @@ export async function POST(request: NextRequest) {
 
   if (!sent) {
     console.error(
-      "Contact form is not configured: missing webhook or email provider",
+      "Contact form delivery failed despite available configuration",
     );
     return NextResponse.json(
       {

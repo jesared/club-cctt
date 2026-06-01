@@ -391,7 +391,6 @@ export default function TournamentRegistrationForm({
 
   const readyToSubmit = profileReady && formData.tables.length > 0;
   const selectedWaitlistCount = formData.waitlistTables.length;
-  const selectedDirectCount = selectedTables.length - selectedWaitlistCount;
   const currentStepDefinition = steps[currentStep];
   const hasFfttPlayer = ffttLookup.status === "success";
 
@@ -1119,7 +1118,6 @@ export default function TournamentRegistrationForm({
 
           <aside className="hidden border-l border-border/70 bg-muted/15 p-4 xl:block">
             <WizardSummary
-              currentStep={currentStep}
               formData={formData}
               profileReady={profileReady}
               readyToSubmit={readyToSubmit}
@@ -1616,14 +1614,12 @@ function ReviewStep({
 }
 
 function WizardSummary({
-  currentStep,
   formData,
   profileReady,
   readyToSubmit,
   selectedTables,
   selectedTotalCents,
 }: {
-  currentStep: number;
   formData: RegistrationPayload;
   profileReady: boolean;
   readyToSubmit: boolean;

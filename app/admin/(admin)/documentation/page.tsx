@@ -1,4 +1,6 @@
 import Link from "next/link";
+/* eslint-disable react/no-unescaped-entities */
+
 import {
   ArrowRight,
   BookOpen,

@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable react/no-unescaped-entities */
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, Copy, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";

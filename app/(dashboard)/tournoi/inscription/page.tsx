@@ -2,6 +2,7 @@ import KpiPageViewTracker from "@/components/KpiPageViewTracker";
 import Reveal from "@/components/Reveal";
 import TournamentRegistrationForm from "@/components/TournamentRegistrationForm";
 import { prisma } from "@/lib/prisma";
+import { getTournamentRegistrationNotificationAvailability } from "@/lib/public-form-availability";
 import { getCurrentSession } from "@/lib/session";
 import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-window";
 import { redirect } from "next/navigation";
@@ -112,6 +113,8 @@ export default async function InscriptionsPage() {
     },
   });
   const registrationStatus = getTournamentRegistrationStatus(tournament);
+  const notificationAvailability =
+    getTournamentRegistrationNotificationAvailability();
 
   const tableOptions = (tournament?.events ?? []).map((event) => {
     const maxPlayers = event.maxPlayers ?? null;
@@ -195,14 +198,32 @@ export default async function InscriptionsPage() {
       </Reveal>
 
       <Reveal>
-        {registrationStatus.canRegister ? (
+        {registrationStatus.canRegister && notificationAvailability.isAvailable ? (
           <TournamentRegistrationForm tableOptions={tableOptions} />
         ) : (
           <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4 text-sm text-foreground">
-            <p className="font-medium">{registrationStatus.label}</p>
-            <p className="mt-1 text-muted-foreground">
-              {registrationStatus.message}
+            <p className="font-medium">
+              {notificationAvailability.isAvailable
+                ? registrationStatus.label
+                : "Inscriptions temporairement indisponibles"}
             </p>
+            <p className="mt-1 text-muted-foreground">
+              {notificationAvailability.isAvailable
+                ? registrationStatus.message
+                : notificationAvailability.message}
+            </p>
+            {!notificationAvailability.isAvailable ? (
+              <p className="mt-3 text-muted-foreground">
+                Merci d&apos;ecrire a{" "}
+                <a
+                  href="mailto:inscriptions-tournoi@cctt.fr"
+                  className="font-medium text-foreground underline underline-offset-2"
+                >
+                  inscriptions-tournoi@cctt.fr
+                </a>{" "}
+                pour toute demande urgente.
+              </p>
+            ) : null}
           </div>
         )}
       </Reveal>

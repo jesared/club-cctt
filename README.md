@@ -1,8 +1,8 @@
-# Châlons-en-Champagne Tennis de Table (CCTT)
+# Chalons-en-Champagne Tennis de Table (CCTT)
 
-Site vitrine du club de tennis de table de Châlons-en-Champagne. Le site présente le club, ses horaires, ses tarifs et met en avant les événements annuels.
+Site du club de tennis de table de Chalons-en-Champagne. Le projet couvre la presentation du club, les contenus publics, l'espace membre et l'administration du tournoi.
 
-## Prérequis
+## Prerequis
 
 - Node.js 20+
 - npm 10+ (ou yarn/pnpm/bun)
@@ -16,40 +16,73 @@ npm install
 
 ## Configuration
 
-1. Créez un fichier `.env` à partir d’un modèle local.
-2. Définissez au minimum `DATABASE_URL`.
+1. Creez un fichier `.env` a partir de `.env.example`.
+2. Renseignez les variables correspondant a votre environnement.
 
-## Base de données (Prisma)
+### Variables minimales
+
+- `DATABASE_URL` : connexion PostgreSQL.
+- `NEXT_PUBLIC_SITE_URL` : URL publique du site.
+- `BETTER_AUTH_URL` : URL utilisee par Better Auth pour les callbacks.
+- `AUTH_SECRET` : secret d'authentification principal.
+- `AUTH_GOOGLE_ID`
+- `AUTH_GOOGLE_SECRET`
+
+### Variables requises si le formulaire de contact est ouvert
+
+- `RESEND_API_KEY`
+- `CONTACT_TO_EMAIL`
+
+Optionnel : `CONTACT_FROM_EMAIL` ou `CONTACT_WEBHOOK_URL`.
+
+### Variables requises si les inscriptions tournoi sont ouvertes
+
+- `RESEND_API_KEY` + `TOURNAMENT_REGISTRATION_TO_EMAIL`
+
+ou
+
+- `TOURNAMENT_REGISTRATION_WEBHOOK_URL`
+
+### Variables de contenu externe
+
+- `COMITE_JSON_ID`
+- `HORAIRES_JSON_ID`
+- `PARTENAIRES_JSON_ID`
+- `TARIFS_JSON_ID`
+
+Sans ces variables, certaines pages publiques pourront retomber sur le cache ou le contenu de repli.
+
+## Base de donnees (Prisma)
 
 Le projet utilise Prisma Migrate avec les migrations du dossier `prisma/migrations`.
 
-### Initialiser une base vide (local/dev)
+### Initialiser une base vide
 
 ```bash
 npx prisma migrate deploy
 ```
 
-### Cas d’une base déjà existante (erreur `P3005`)
+### Cas d'une base deja existante (erreur `P3005`)
 
-Si vous obtenez l’erreur suivante :
+Si vous obtenez l'erreur suivante :
 
 ```txt
 Error: P3005
 The database schema is not empty.
 ```
 
-cela signifie que Prisma tente d’appliquer des migrations sur une base déjà peuplée sans historique Prisma.
+cela signifie que Prisma tente d'appliquer des migrations sur une base deja peuplee sans historique Prisma.
 
-Dans ce cas, baseliner la base existante avec la première migration du projet :
+Dans ce cas, baseliner la base existante avec la premiere migration du projet :
 
 ```bash
 npx prisma migrate resolve --applied 20260210144025_init
 npx prisma migrate deploy
 ```
 
-> Si plusieurs migrations ont déjà été appliquées manuellement, marquez-les aussi comme `--applied` dans l’ordre avant `migrate deploy`.
+Si plusieurs migrations ont deja ete appliquees manuellement, marquez-les aussi comme `--applied` dans l'ordre avant `migrate deploy`.
 
-## Démarrage en local
+## Demarrage en local
 
 ```bash
 npm run dev
@@ -60,43 +93,53 @@ Puis ouvrez [http://localhost:3000](http://localhost:3000).
 ## Scripts utiles
 
 ```bash
-npm run dev     # Lancer le serveur de développement
-npm run build   # Build de production
-npm run start   # Démarrer le build de production
-npm run lint    # Lint du projet
-npm run seed:admin-tournoi # Seed admin tournoi
+npm run dev
+npm run build
+npm run start
+npm run lint
+npm test
+npm run seed:admin-tournoi
 ```
 
 ## Structure du projet
 
-- `app/` : routes et pages (App Router Next.js).
-- `components/` : composants UI réutilisables.
-- `public/` : assets statiques (images, logos).
-- `lib/` : utilitaires et helpers.
-- `prisma/` : schéma, migrations et scripts de seed.
+- `app/` : routes et pages (App Router Next.js)
+- `components/` : composants UI reutilisables
+- `public/` : assets statiques
+- `lib/` : utilitaires et helpers
+- `prisma/` : schema, migrations et scripts de seed
 
-## Déploiement
+## Deploiement
 
-Le projet peut être déployé sur Vercel ou tout hébergeur compatible Node.js.
+Le projet peut etre deploye sur Vercel ou tout hebergeur compatible Node.js.
 
-1. Construire le projet :
+1. Verifier que les variables d'environnement de production sont definies.
+2. Construire le projet :
 
    ```bash
    npm run build
    ```
 
-2. Démarrer en production :
+3. Demarrer en production :
 
    ```bash
    npm run start
    ```
 
+### Checklist go-live minimale
+
+- `NEXT_PUBLIC_SITE_URL` et `BETTER_AUTH_URL` pointent vers le vrai domaine.
+- Les formulaires publics ont leurs variables d'envoi configurees.
+- Les pages club chargent correctement leurs contenus externes.
+- `npm run build` passe.
+- `npx vitest run --pool=vmThreads` passe.
+
 ## Contribution
 
-1. Créer une branche dédiée.
-2. Décrire clairement les changements.
-3. Vérifier que le lint passe avant de proposer une PR.
+1. Creer une branche dediee.
+2. Decrire clairement les changements.
+3. Verifier que le lint passe avant de proposer une PR.
 
 ## Contact
 
-Pour toute question liée au site : communication@cctt.fr
+Pour toute question liee au site : communication@cctt.fr

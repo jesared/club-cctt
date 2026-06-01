@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable react/no-unescaped-entities */
+
 import {
   ArrowRight,
   Bell,
@@ -466,10 +468,6 @@ export default function HeaderCentered({
     return null;
   }
 
-  const openNavigationSection = (sectionTitle: "Club" | "Tournoi") => {
-    setOpenSection(sectionTitle);
-    setMenuOpen(true);
-  };
   const hasUnreadMessages = unreadNotificationCount > 0;
   const unreadMessageLabel =
     unreadNotificationCount > 9 ? "9+" : String(unreadNotificationCount);

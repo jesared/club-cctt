@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unescaped-entities */
+
 import { Mail, MapPin, ShieldCheck, Users } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";

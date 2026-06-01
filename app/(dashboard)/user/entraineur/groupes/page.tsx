@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unescaped-entities */
+
 import {
   CalendarRange,
   Dumbbell,

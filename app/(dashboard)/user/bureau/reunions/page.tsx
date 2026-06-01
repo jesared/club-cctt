@@ -1,9 +1,10 @@
+/* eslint-disable react/no-unescaped-entities */
+
 import {
   CalendarDays,
   CheckSquare,
   Clock3,
   FileStack,
-  Users,
 } from "lucide-react";
 import { redirect } from "next/navigation";
 

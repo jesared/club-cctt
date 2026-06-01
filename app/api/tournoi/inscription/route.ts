@@ -15,10 +15,24 @@ import {
 } from "@/lib/tournament-registration";
 import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-window";
 import { prisma } from "@/lib/prisma";
+import { getTournamentRegistrationNotificationAvailability } from "@/lib/public-form-availability";
 import { RegistrationEventStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
+  const notificationAvailability =
+    getTournamentRegistrationNotificationAvailability();
+
+  if (!notificationAvailability.isAvailable) {
+    return NextResponse.json(
+      {
+        message:
+          "Les inscriptions en ligne sont temporairement indisponibles. Merci de contacter inscriptions-tournoi@cctt.fr.",
+      },
+      { status: 503 },
+    );
+  }
+
   const clientIp =
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
     request.headers.get("x-real-ip") ??
@@ -223,7 +237,7 @@ export async function POST(request: NextRequest) {
 
   if (!sent) {
     console.error(
-      "Tournament registration form is not configured: missing webhook or email provider",
+      "Tournament registration delivery failed despite available configuration",
       {
         email: payload.email,
         licenseNumber: payload.licenseNumber,
