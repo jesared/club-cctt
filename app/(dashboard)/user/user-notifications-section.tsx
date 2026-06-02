@@ -90,10 +90,10 @@ export default function UserNotificationsSection({
       <Card className="border-dashed">
         <CardContent className="pt-6">
           <p className="font-medium text-foreground">
-            Aucune notification recente pour le moment.
+            Aucune notification récente pour le moment.
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Les nouvelles annonces, documents et changements apparaitront ici.
+            Les nouvelles annonces, documents et changements apparaîtront ici.
           </p>
         </CardContent>
       </Card>
@@ -166,7 +166,7 @@ export default function UserNotificationsSection({
                     onClick={() => void markNotificationAsRead(notification)}
                   >
                     {pendingReadId === notification.id
-                      ? "Mise a jour..."
+                      ? "Mise à jour..."
                       : "Marquer comme lu"}
                   </Button>
                 ) : (

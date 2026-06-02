@@ -42,7 +42,7 @@ export default function ProfileClient() {
     if (!isDirty) {
       setFeedback({
         tone: "info",
-        message: "Aucune modification a enregistrer.",
+        message: "Aucune modification à enregistrer.",
       });
       return;
     }
@@ -69,7 +69,7 @@ export default function ProfileClient() {
     setSaveState("idle");
     setFeedback({
       tone: "success",
-      message: "Nom d'affichage mis a jour.",
+      message: "Nom d'affichage mis à jour.",
     });
   }
 
@@ -87,7 +87,7 @@ export default function ProfileClient() {
             />
             <div className="min-w-0 space-y-0.5">
               <p className="text-sm font-medium text-foreground">
-                {savedName || "Nom d'affichage non renseigne"}
+                {savedName || "Nom d'affichage non renseigné"}
               </p>
               <p className="truncate text-xs text-muted-foreground">
                 {session
@@ -129,7 +129,7 @@ export default function ProfileClient() {
               </div>
             </label>
             <p className="text-xs text-muted-foreground">
-              Utilise dans votre espace membre et les vues associees.
+              Utilisé dans votre espace membre et les vues associées.
             </p>
           </div>
         </div>
@@ -146,7 +146,7 @@ export default function ProfileClient() {
             role="status"
             aria-live="polite"
           >
-            {feedback?.message ?? "Modification non enregistree."}
+            {feedback?.message ?? "Modification non enregistrée."}
           </p>
         ) : null}
       </CardContent>

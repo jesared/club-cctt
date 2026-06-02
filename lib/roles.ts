@@ -5,7 +5,7 @@ const ROLE_LABELS: Record<ManagedRole, string> = {
   USER: "Membre",
   CLUB: "Club",
   BUREAU: "Bureau",
-  ENTRAINEUR: "Entraineur",
+  ENTRAINEUR: "Entraîneur",
   ADMIN: "Administrateur",
 };
 

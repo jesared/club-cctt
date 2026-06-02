@@ -164,7 +164,7 @@ export default async function UserProfilePage({
       icon: CalendarDays,
     },
     {
-      label: "A regler",
+      label: "À régler",
       value: pendingPaymentCount,
       helper: "paiements en attente",
       icon: CreditCard,
@@ -172,7 +172,7 @@ export default async function UserProfilePage({
     {
       label: "Non lus",
       value: unreadNotificationCount,
-      helper: "notifications a consulter",
+      helper: "notifications à consulter",
       icon: BellRing,
     },
   ];
@@ -197,7 +197,7 @@ export default async function UserProfilePage({
     },
     {
       title: "Mes documents",
-      description: "Pieces et justificatifs utiles",
+      description: "Pièces et justificatifs utiles",
       href: "/user/documents",
       icon: FileText,
     },
@@ -219,7 +219,7 @@ export default async function UserProfilePage({
       : null,
     canAccessEntraineur
       ? {
-          title: "Espace entraineur",
+          title: "Espace entraîneur",
           href: "/user/entraineur",
           icon: Dumbbell,
         }
@@ -237,7 +237,7 @@ export default async function UserProfilePage({
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <Badge className="border-amber-300/70 bg-amber-300 text-amber-950 hover:bg-amber-300/90">
-              Role: {roleLabel}
+              Rôle : {roleLabel}
             </Badge>
             {canAccessClub ? (
               <Badge className="border-emerald-300 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:border-emerald-400/40 dark:bg-emerald-500/15 dark:text-emerald-200 dark:hover:bg-emerald-500/20">
@@ -282,12 +282,12 @@ export default async function UserProfilePage({
                 Vous faites partie du club ?
               </p>
               <p className="text-sm text-muted-foreground">
-                Vous pouvez demander le role Club pour acceder a l&apos;espace
-                prive, aux annonces internes et aux documents reserves.
+                Vous pouvez demander le rôle Club pour accéder à l&apos;espace
+                privé, aux annonces internes et aux documents réservés.
               </p>
             </div>
             <Button asChild variant="outline">
-              <Link href="/club/contact">Demander l&apos;acces club</Link>
+              <Link href="/club/contact">Demander l&apos;accès club</Link>
             </Button>
           </div>
         </section>
@@ -329,9 +329,9 @@ export default async function UserProfilePage({
         <div className="space-y-4">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h2 className="text-lg font-semibold">Notifications recentes</h2>
+              <h2 className="text-lg font-semibold">Notifications récentes</h2>
               <p className="text-sm text-muted-foreground">
-                Les dernieres informations utiles du club.
+                Les dernières informations utiles du club.
               </p>
             </div>
             <Button asChild variant="outline" size="sm">
@@ -362,7 +362,7 @@ export default async function UserProfilePage({
 
         <div className="space-y-3">
           <div>
-            <h2 className="text-lg font-semibold">Acces rapides</h2>
+            <h2 className="text-lg font-semibold">Accès rapides</h2>
             <p className="text-sm text-muted-foreground">
               Vos pages les plus utiles.
             </p>
@@ -399,9 +399,9 @@ export default async function UserProfilePage({
       {reservedRoleCards.length > 0 ? (
         <section className="space-y-3">
           <div>
-            <h2 className="text-lg font-semibold">Espaces reserves</h2>
+            <h2 className="text-lg font-semibold">Espaces réservés</h2>
             <p className="text-sm text-muted-foreground">
-              Acces lies a vos responsabilites dans le club.
+              Accès liés à vos responsabilités dans le club.
             </p>
           </div>
 
@@ -433,8 +433,8 @@ export default async function UserProfilePage({
         <div>
           <h2 className="text-lg font-semibold">Mon profil</h2>
           <p className="text-sm text-muted-foreground">
-            Mettez a jour votre nom d&apos;affichage et verifiez les
-            informations liees a votre compte.
+            Mettez à jour votre nom d&apos;affichage et vérifiez les
+            informations liées à votre compte.
           </p>
         </div>
 
@@ -455,27 +455,27 @@ function getForbiddenMessage(reason?: string) {
   switch (reason) {
     case "admin":
       return {
-        title: "Acces reserve aux administrateurs.",
+        title: "Accès réservé aux administrateurs.",
         description:
-          "Vous avez ete redirige vers votre espace membre standard.",
+          "Vous avez été redirigé vers votre espace membre standard.",
       };
     case "club":
       return {
-        title: "Acces reserve a l'espace club.",
+        title: "Accès réservé à l'espace club.",
         description:
-          "Votre compte n'a pas encore les droits necessaires pour cette zone. Si vous faites partie du club, vous pouvez demander le role Club pour obtenir l'acces.",
+          "Votre compte n'a pas encore les droits nécessaires pour cette zone. Si vous faites partie du club, vous pouvez demander le rôle Club pour obtenir l'accès.",
       };
     case "bureau":
       return {
-        title: "Acces reserve a l'espace bureau.",
+        title: "Accès réservé à l'espace bureau.",
         description:
-          "Cette partie est destinee aux membres du bureau et aux administrateurs.",
+          "Cette partie est destinée aux membres du bureau et aux administrateurs.",
       };
     case "entraineur":
       return {
-        title: "Acces reserve a l'espace entraineur.",
+        title: "Accès réservé à l'espace entraîneur.",
         description:
-          "Cette partie est destinee aux entraineurs et aux administrateurs.",
+          "Cette partie est destinée aux entraîneurs et aux administrateurs.",
       };
     default:
       return null;
