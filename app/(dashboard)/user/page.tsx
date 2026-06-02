@@ -1,5 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
-
 import {
   AlertCircle,
   ArrowRight,
@@ -10,20 +8,13 @@ import {
   CreditCard,
   Dumbbell,
   FileText,
-  FolderOpen,
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 import {
   buildVisibleNotificationsWhere,
@@ -42,11 +33,8 @@ import UserNotificationsSection from "./user-notifications-section";
 
 type ReservedRoleCard = {
   title: string;
-  description: string;
   href: string;
   icon: LucideIcon;
-  status: string;
-  cta: string;
 };
 
 export default async function UserProfilePage({
@@ -172,25 +160,19 @@ export default async function UserProfilePage({
     {
       label: "Inscriptions",
       value: registrationCount,
-      helper: "joueurs ou dossiers suivis",
+      helper: "dossiers suivis",
       icon: CalendarDays,
     },
     {
-      label: "Paiements en attente",
+      label: "A regler",
       value: pendingPaymentCount,
-      helper: "dossiers restant a regler",
+      helper: "paiements en attente",
       icon: CreditCard,
     },
     {
-      label: "Documents",
-      value: 0,
-      helper: "bibliotheque bientot alimentee",
-      icon: FolderOpen,
-    },
-    {
-      label: "Messages non lus",
+      label: "Non lus",
       value: unreadNotificationCount,
-      helper: "elements a consulter",
+      helper: "notifications a consulter",
       icon: BellRing,
     },
   ];
@@ -199,82 +181,54 @@ export default async function UserProfilePage({
       title: "Mes inscriptions",
       description:
         registrationCount > 0
-          ? `${registrationCount} dossier${registrationCount > 1 ? "s" : ""} suivi${registrationCount > 1 ? "s" : ""}.`
-          : "Aucune inscription suivie pour le moment.",
+          ? `${registrationCount} dossier${registrationCount > 1 ? "s" : ""} suivi${registrationCount > 1 ? "s" : ""}`
+          : "Aucune inscription suivie",
       href: "/user/inscriptions",
       icon: CalendarDays,
-      metric: `${registrationCount}`,
-      status:
-        registrationCount > 0
-          ? "Consultez vos joueurs, leurs tableaux et leur statut."
-          : "Retrouvez ici vos inscriptions des que le premier dossier est cree.",
-      cta: "Ouvrir les inscriptions",
     },
     {
       title: "Mes paiements",
       description:
         pendingPaymentCount > 0
-          ? `${pendingPaymentCount} paiement${pendingPaymentCount > 1 ? "s" : ""} en attente.`
-          : "Aucun paiement en attente.",
+          ? `${pendingPaymentCount} paiement${pendingPaymentCount > 1 ? "s" : ""} en attente`
+          : "Aucun paiement en attente",
       href: "/user/paiements",
       icon: CreditCard,
-      metric: `${pendingPaymentCount}`,
-      status:
-        pendingPaymentCount > 0
-          ? "Suivez le reste a regler et l'etat des dossiers."
-          : "Tous vos dossiers regles apparaissent ici comme soldes.",
-      cta: "Voir mes paiements",
     },
     {
       title: "Mes documents",
-      description: "0 document disponible pour le moment.",
+      description: "Pieces et justificatifs utiles",
       href: "/user/documents",
       icon: FileText,
-      metric: "0",
-      status:
-        "La bibliotheque sera alimentee avec vos pieces et justificatifs utiles.",
-      cta: "Ouvrir les documents",
     },
   ];
   const reservedRoleCards: ReservedRoleCard[] = [
     canAccessClub
       ? {
           title: "Espace club",
-          description:
-            "Ressources internes, annonces et raccourcis utiles a la vie du club.",
           href: "/user/club",
           icon: Building2,
-          status: "Point d'entree commun pour les contenus internes du club.",
-          cta: "Ouvrir l'espace club",
         }
       : null,
     canAccessBureau
       ? {
           title: "Espace bureau",
-          description:
-            "Pilotage des priorites, organisation et coordination du bureau.",
           href: "/user/bureau",
           icon: BriefcaseBusiness,
-          status: "Concu pour les membres du bureau et les administrateurs.",
-          cta: "Ouvrir l'espace bureau",
         }
       : null,
     canAccessEntraineur
       ? {
           title: "Espace entraineur",
-          description:
-            "Suivi sportif, groupes et ressources dediees a l'encadrement.",
           href: "/user/entraineur",
           icon: Dumbbell,
-          status: "Reserve aux entraineurs et aux administrateurs.",
-          cta: "Ouvrir l'espace entraineur",
         }
       : null,
   ].filter((space): space is ReservedRoleCard => space !== null);
 
   return (
-    <main className="mx-auto max-w-7xl space-y-6 px-4 py-8">
-      <header className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <main className="mx-auto max-w-7xl space-y-6 px-4 py-6">
+      <header>
         <div>
           <h1 className="text-2xl font-semibold">Espace membre</h1>
           <p className="text-sm text-muted-foreground">
@@ -301,14 +255,6 @@ export default async function UserProfilePage({
               </Badge>
             ) : null}
           </div>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button asChild variant="secondary">
-            <Link href="/tournoi">Voir le tournoi</Link>
-          </Button>
-          <Button asChild>
-            <Link href="/user/inscriptions">Voir mes inscriptions</Link>
-          </Button>
         </div>
       </header>
 
@@ -347,7 +293,7 @@ export default async function UserProfilePage({
         </section>
       ) : null}
 
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-3 sm:grid-cols-3">
         {dashboardMetrics.map((metric) => {
           const Icon = metric.icon;
 
@@ -356,161 +302,136 @@ export default async function UserProfilePage({
               key={metric.label}
               className="border-border/70 bg-card/95 shadow-xs [background-image:none]"
             >
-              <CardContent className="space-y-2 p-5">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+              <CardContent className="flex items-center gap-4 p-4">
+                <div className="rounded-xl bg-primary/10 p-2.5 text-primary">
+                  <Icon className="h-4 w-4" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                     {metric.label}
                   </p>
-                  <Icon className="h-4 w-4 text-primary" />
+                  <div className="mt-1 flex items-baseline gap-2">
+                    <p className="text-2xl font-semibold text-foreground">
+                      {metric.value}
+                    </p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {metric.helper}
+                    </p>
+                  </div>
                 </div>
-                <p className="text-3xl font-semibold text-foreground">
-                  {metric.value}
-                </p>
-                <p className="text-xs text-muted-foreground">{metric.helper}</p>
               </CardContent>
             </Card>
           );
         })}
       </section>
 
-      <section className="space-y-4">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+      <section className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
+        <div className="space-y-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h2 className="text-lg font-semibold">Notifications recentes</h2>
+              <p className="text-sm text-muted-foreground">
+                Les dernieres informations utiles du club.
+              </p>
+            </div>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/user/notifications">Voir l&apos;historique</Link>
+            </Button>
+          </div>
+
+          <UserNotificationsSection
+            canMarkAsRead={Boolean(session?.user?.id)}
+            notifications={notifications.map((notification) => ({
+              id: notification.id,
+              title: notification.title,
+              content: notification.content,
+              href:
+                notification.href ??
+                getDefaultNotificationHref(session?.user?.role ?? null),
+              isImportant:
+                notification.priority === "HIGH" ||
+                notification.priority === "URGENT",
+              formattedDate: formatMessageDate(notification.publishedAt),
+              authorName: notification.createdByUser?.name ?? null,
+              authorEmail: notification.createdByUser?.email ?? null,
+              isUnread:
+                Boolean(session?.user?.id) && notification.reads.length === 0,
+            }))}
+          />
+        </div>
+
+        <div className="space-y-3">
           <div>
-            <h2 className="text-xl font-semibold">Notifications recentes</h2>
+            <h2 className="text-lg font-semibold">Acces rapides</h2>
             <p className="text-sm text-muted-foreground">
-              Les dernieres annonces, mises a jour et changements utiles pour
-              votre espace.
+              Vos pages les plus utiles.
             </p>
           </div>
-          <Button asChild variant="outline" size="sm">
-            <Link href="/user/notifications">Voir tout l'historique</Link>
-          </Button>
-        </div>
-
-        <UserNotificationsSection
-          canMarkAsRead={Boolean(session?.user?.id)}
-          notifications={notifications.map((notification) => ({
-            id: notification.id,
-            title: notification.title,
-            content: notification.content,
-            href:
-              notification.href ??
-              getDefaultNotificationHref(session?.user?.role ?? null),
-            isImportant:
-              notification.priority === "HIGH" ||
-              notification.priority === "URGENT",
-            formattedDate: formatMessageDate(notification.publishedAt),
-            authorName: notification.createdByUser?.name ?? null,
-            authorEmail: notification.createdByUser?.email ?? null,
-            isUnread:
-              Boolean(session?.user?.id) && notification.reads.length === 0,
-          }))}
-        />
-      </section>
-
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-xl font-semibold">Actions et outils</h2>
-          <p className="text-sm text-muted-foreground">
-            Accedez directement aux espaces utiles avec un contexte clair sur
-            chaque dossier.
-          </p>
-        </div>
-
-        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          <Card className="overflow-hidden border-border bg-card shadow-sm">
           {actionCards.map((action) => {
             const Icon = action.icon;
 
             return (
-              <Card
+              <Link
                 key={action.href}
-                className="border-border bg-card shadow-sm transition-colors duration-200 hover:shadow-md"
+                href={action.href}
+                className="flex items-center gap-3 border-b border-border/70 px-4 py-3 transition-colors last:border-b-0 hover:bg-muted/40"
               >
-                <CardHeader className="space-y-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="space-y-2">
-                      <CardTitle className="flex items-center gap-2">
-                        <Icon className="h-4 w-4 text-primary" />
-                        {action.title}
-                      </CardTitle>
-                      <CardDescription>{action.description}</CardDescription>
-                    </div>
-                    <div className="rounded-full border border-primary/15 bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
-                      {action.metric}
-                    </div>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {action.status}
+                <div className="rounded-lg bg-primary/10 p-2 text-primary">
+                  <Icon className="h-4 w-4" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-foreground">
+                    {action.title}
                   </p>
-                </CardHeader>
-                <CardContent>
-                  <Button asChild variant="ghost" className="px-0">
-                    <Link
-                      href={action.href}
-                      className="inline-flex items-center gap-2"
-                    >
-                      {action.cta}
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {action.description}
+                  </p>
+                </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground" />
+              </Link>
             );
           })}
+          </Card>
         </div>
       </section>
 
       {reservedRoleCards.length > 0 ? (
-        <section className="space-y-4">
+        <section className="space-y-3">
           <div>
-            <h2 className="text-xl font-semibold">Espaces reserves</h2>
+            <h2 className="text-lg font-semibold">Espaces reserves</h2>
             <p className="text-sm text-muted-foreground">
-              Acces dedies a vos responsabilites internes au sein du club.
+              Acces lies a vos responsabilites dans le club.
             </p>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-3">
             {reservedRoleCards.map((space) => {
               const Icon = space.icon;
 
               return (
-                <Card
+                <Link
                   key={space.href}
-                  className="border-border bg-card shadow-sm transition-colors duration-200 hover:shadow-md"
+                  href={space.href}
+                  className="flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 shadow-xs transition-colors hover:bg-muted/40"
                 >
-                  <CardHeader className="space-y-3">
-                    <div className="space-y-2">
-                      <CardTitle className="flex items-center gap-2">
-                        <Icon className="h-4 w-4 text-primary" />
-                        {space.title}
-                      </CardTitle>
-                      <CardDescription>{space.description}</CardDescription>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {space.status}
-                    </p>
-                  </CardHeader>
-                  <CardContent>
-                    <Button asChild variant="ghost" className="px-0">
-                      <Link
-                        href={space.href}
-                        className="inline-flex items-center gap-2"
-                      >
-                        {space.cta}
-                        <ArrowRight className="h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
+                  <div className="rounded-lg bg-primary/10 p-2 text-primary">
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  <p className="flex-1 text-sm font-medium text-foreground">
+                    {space.title}
+                  </p>
+                  <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                </Link>
               );
             })}
           </div>
         </section>
       ) : null}
 
-      <section className="space-y-4">
+      <section className="space-y-3">
         <div>
-          <h2 className="text-xl font-semibold">Mon profil</h2>
+          <h2 className="text-lg font-semibold">Mon profil</h2>
           <p className="text-sm text-muted-foreground">
             Mettez a jour votre nom d&apos;affichage et verifiez les
             informations liees a votre compte.
