@@ -217,7 +217,7 @@ export default function Sidebar({
       >
         <aside
           className={cn(
-            "admin-sidebar-scrollbar flex flex-col overflow-y-auto border-r border-border/60 bg-background/95",
+            "flex flex-col overflow-hidden border-r border-border/60 bg-background/95",
             "supports-[backdrop-filter]:bg-background/88 supports-[backdrop-filter]:backdrop-blur",
             mobile
               ? [
@@ -230,7 +230,7 @@ export default function Sidebar({
                 ],
           )}
         >
-          <div className="flex min-h-full flex-col bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.08),_transparent_30%)] px-4 pb-5 pt-5 dark:bg-[radial-gradient(circle_at_top,_rgba(96,165,250,0.09),_transparent_28%)]">
+          <div className="flex h-full min-h-0 flex-col bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.08),_transparent_30%)] px-4 pb-5 pt-5 dark:bg-[radial-gradient(circle_at_top,_rgba(96,165,250,0.09),_transparent_28%)]">
             {mobile && onClose ? (
               <div className="mb-2 flex justify-end">
                 <Button
@@ -359,7 +359,7 @@ export default function Sidebar({
               </div>
             ) : null}
 
-            <div className="space-y-2 pb-24">
+            <div className="admin-sidebar-scrollbar min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
               {sections.map((section) => (
                 <SidebarSection
                   key={section.title}
@@ -374,7 +374,7 @@ export default function Sidebar({
 
             <div
               className={cn(
-                "sticky bottom-3 z-10 mt-auto grid gap-1 rounded-[0.95rem] border border-border/30 bg-background/40 p-1.5 backdrop-blur-sm",
+                "z-10 mt-3 grid shrink-0 gap-1 rounded-[0.95rem] border border-border/30 bg-background/40 p-1.5 backdrop-blur-sm",
                 session && !collapsed && "grid-cols-2",
                 collapsed && !mobile && "px-1.5 py-1.5",
               )}
