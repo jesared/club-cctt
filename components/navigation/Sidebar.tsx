@@ -221,7 +221,7 @@ export default function Sidebar({
             "supports-[backdrop-filter]:bg-background/88 supports-[backdrop-filter]:backdrop-blur",
             mobile
               ? [
-                  "fixed inset-y-0 left-0 z-50 h-screen w-full max-w-[352px] transition-transform",
+                  "fixed inset-y-0 left-0 z-50 h-dvh w-full max-w-[352px] transition-transform",
                   isMobileOpen ? "translate-x-0" : "-translate-x-full",
                 ]
               : [
@@ -230,7 +230,15 @@ export default function Sidebar({
                 ],
           )}
         >
-          <div className="flex h-full min-h-0 flex-col bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.08),_transparent_30%)] px-4 pb-5 pt-5 dark:bg-[radial-gradient(circle_at_top,_rgba(96,165,250,0.09),_transparent_28%)]">
+          <div
+            className={cn(
+              "flex h-full min-h-0 flex-col bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.08),_transparent_30%)] px-4 pt-5 dark:bg-[radial-gradient(circle_at_top,_rgba(96,165,250,0.09),_transparent_28%)]",
+              mobile
+                ? "pb-[calc(1.25rem+env(safe-area-inset-bottom))]"
+                : "pb-5",
+            )}
+          >
+            <div className="admin-sidebar-scrollbar min-h-0 flex-1 overflow-y-auto pr-1">
             {mobile && onClose ? (
               <div className="mb-2 flex justify-end">
                 <Button
@@ -359,7 +367,7 @@ export default function Sidebar({
               </div>
             ) : null}
 
-            <div className="admin-sidebar-scrollbar min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
+            <div className="space-y-2">
               {sections.map((section) => (
                 <SidebarSection
                   key={section.title}
@@ -370,6 +378,7 @@ export default function Sidebar({
                   onNavigate={mobile ? onClose : undefined}
                 />
               ))}
+            </div>
             </div>
 
             <div
