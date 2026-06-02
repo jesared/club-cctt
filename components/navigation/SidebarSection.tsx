@@ -42,7 +42,7 @@ export default function SidebarSection({
   return (
     <section
       className={cn(
-        "relative rounded-[1.45rem] border px-2 py-2 transition-all duration-200",
+        "relative rounded-[1.4rem] border px-1.5 py-1.5 transition-all duration-200",
         open ? palette.sectionExpanded : palette.section,
       )}
     >
@@ -58,17 +58,17 @@ export default function SidebarSection({
         onClick={onToggle}
         aria-expanded={open}
         className={cn(
-          "flex w-full items-center rounded-[1rem] px-3 py-3 text-left transition-colors hover:bg-white/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          "flex w-full items-center rounded-[1.05rem] px-2.5 py-2.5 text-left transition-colors hover:bg-white/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
           collapsed && "justify-center px-1 py-2.5",
         )}
       >
         {!collapsed ? (
           <div className="min-w-0 flex-1">
-            <p className="truncate text-[15px] font-semibold tracking-[-0.01em] text-foreground">
+            <p className="truncate text-[14px] font-semibold tracking-[-0.01em] text-foreground">
               {section.title}
             </p>
             {section.description ? (
-              <p className="mt-1 line-clamp-2 text-[12px] leading-4 text-muted-foreground/90">
+              <p className="mt-1 line-clamp-2 text-[11px] leading-[1.45] text-muted-foreground/88">
                 {section.description}
               </p>
             ) : null}
@@ -85,12 +85,12 @@ export default function SidebarSection({
       </button>
 
       {open ? (
-        <div className="space-y-2 px-1 pb-1">
+        <div className="space-y-1.5 px-0.5 pb-0.5 pt-0.5">
           {groupedItems.map((group) => (
-            <div key={group.group || "default"} className="space-y-1.5">
+            <div key={group.group || "default"} className="space-y-1">
               {!collapsed && group.group ? (
-                <div className="px-3 pt-2.5">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-muted-foreground/80">
+                <div className="px-2.5 pt-2">
+                  <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/75">
                     {group.group}
                   </p>
                 </div>

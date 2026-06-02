@@ -1,7 +1,5 @@
 "use client";
 
-/* eslint-disable react/no-unescaped-entities */
-
 import {
   ArrowRight,
   Bell,
@@ -1078,13 +1076,13 @@ export default function HeaderCentered({
                   <section
                     key={section.title}
                     className={cn(
-                      "overflow-hidden rounded-[1.6rem] border px-2 py-2 transition-all duration-200",
+                      "overflow-hidden rounded-[1.45rem] border px-1.5 py-1.5 transition-all duration-200",
                       palette.section,
                     )}
                   >
                     <button
                       type="button"
-                      className="flex w-full items-center justify-between rounded-[1.1rem] px-3 py-3 text-left transition-colors hover:bg-background/50"
+                      className="flex w-full items-center justify-between rounded-[1.05rem] px-2.5 py-2.5 text-left transition-colors hover:bg-background/55"
                       onClick={() =>
                         setOpenSection((prev) =>
                           prev === section.title ? null : section.title,
@@ -1095,35 +1093,35 @@ export default function HeaderCentered({
                       <div className="flex min-w-0 items-start gap-3">
                         <span
                           className={cn(
-                            "mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
+                            "mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
                             expanded ? palette.activeIcon : palette.icon,
                           )}
                         >
-                          <Icon className="h-4 w-4" />
+                          <Icon className="h-3.5 w-3.5" />
                         </span>
                         <div className="min-w-0">
                           {meta ? (
-                            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground/85">
+                            <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/80">
                               {meta.eyebrow}
                             </p>
                           ) : null}
-                          <p className="mt-1 text-sm font-semibold text-foreground">
+                          <p className="mt-0.5 text-[13px] font-semibold tracking-[-0.01em] text-foreground">
                             {section.title}
                           </p>
                           {meta ? (
-                            <p className="mt-0.5 text-xs leading-4 text-muted-foreground">
+                            <p className="mt-1 max-w-[17rem] text-[11px] leading-[1.45] text-muted-foreground/90">
                               {meta.description}
                             </p>
                           ) : null}
                         </div>
                       </div>
                       <div className="ml-3 flex shrink-0 items-center gap-2">
-                        <span className="rounded-full bg-background/80 px-2 py-1 text-[11px] font-medium text-muted-foreground shadow-sm">
+                        <span className="rounded-full bg-background/75 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground shadow-sm">
                           {section.items.length}
                         </span>
                         <ChevronDown
                           className={cn(
-                            "h-4 w-4 text-muted-foreground transition-transform",
+                            "h-3.5 w-3.5 text-muted-foreground transition-transform",
                             expanded ? "rotate-180" : "rotate-0",
                           )}
                         />
@@ -1131,7 +1129,7 @@ export default function HeaderCentered({
                     </button>
 
                     {expanded ? (
-                      <div className="space-y-1.5 px-1 pb-1">
+                      <div className="space-y-1.5 px-0.5 pb-0.5 pt-1">
                         {section.items.map((submenuItem) => {
                           const active = isItemActive(
                             pathname,
@@ -1145,7 +1143,7 @@ export default function HeaderCentered({
                               href={submenuItem.href}
                               onClick={() => setMenuOpen(false)}
                               className={cn(
-                                "group relative flex items-start gap-3 rounded-[1rem] px-3 py-3 text-sm transition-colors before:absolute before:bottom-2 before:left-0 before:top-2 before:w-1 before:rounded-full before:opacity-0",
+                                "group relative flex items-start gap-2.5 rounded-[1rem] px-2.5 py-2.5 text-[13px] transition-colors before:absolute before:bottom-2 before:left-0 before:top-2 before:w-1 before:rounded-full before:opacity-0",
                                 active
                                   ? "before:opacity-100 shadow-sm"
                                   : "text-muted-foreground",
@@ -1154,27 +1152,27 @@ export default function HeaderCentered({
                             >
                               <span
                                 className={cn(
-                                  "mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
+                                  "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full",
                                   active
                                     ? palette.activeIcon
                                     : palette.icon,
                                 )}
                               >
-                                <submenuItem.icon className="h-3.5 w-3.5" />
+                                <submenuItem.icon className="h-3 w-3" />
                               </span>
                               <span className="min-w-0">
-                                <span className="block font-medium text-foreground">
+                                <span className="block font-medium leading-4 text-foreground">
                                   {submenuItem.label}
                                 </span>
                                 {helper ? (
-                                  <span className="mt-0.5 block text-xs leading-4 text-muted-foreground">
+                                  <span className="mt-1 block text-[11px] leading-[1.45] text-muted-foreground/90">
                                     {helper}
                                   </span>
                                 ) : null}
                               </span>
                               <ArrowRight
                                 className={cn(
-                                  "ml-auto mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground transition-all",
+                                  "ml-auto mt-0.5 h-3 w-3 shrink-0 text-muted-foreground transition-all",
                                   active
                                     ? "translate-x-0 opacity-100"
                                     : "opacity-0 group-hover:translate-x-0.5 group-hover:opacity-100",
@@ -1190,11 +1188,11 @@ export default function HeaderCentered({
                             href={meta.cta.href}
                             onClick={() => setMenuOpen(false)}
                             className={cn(
-                              "inline-flex w-full items-center justify-center gap-2 rounded-[1rem] px-3 py-2.5 text-sm font-medium transition-colors",
+                              "inline-flex w-full items-center justify-center gap-2 rounded-[1rem] px-2.5 py-2.5 text-[13px] font-medium transition-colors",
                               palette.cta,
                             )}
                           >
-                            <Sparkles className="h-3.5 w-3.5" />
+                            <Sparkles className="h-3 w-3" />
                             {meta.cta.label}
                           </Link>
                         ) : null}
@@ -1205,83 +1203,70 @@ export default function HeaderCentered({
               })}
             </section>
 
-            <section className="sticky bottom-4 z-10 mt-auto space-y-2 rounded-[1.45rem] border border-border/70 bg-background/92 px-3 pb-3 pt-3.5 shadow-[0_14px_32px_-24px_rgba(15,23,42,0.8)] backdrop-blur">
-              <div className="px-1">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-muted-foreground/80">
-                  Session
-                </p>
-              </div>
-              {isAdmin ? (
-                <Link
-                  href="/admin"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-2.5 rounded-[1rem] border border-transparent px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:border-border/70 hover:bg-muted/45 hover:text-foreground"
-                >
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
-                    <ShieldMinus className="h-3.5 w-3.5" />
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block font-medium text-foreground">
-                      Administration
-                    </span>
-                    <span className="block text-xs text-muted-foreground">
-                      Outils de gestion du club
-                    </span>
-                  </span>
-                </Link>
-              ) : null}
-
-              {session ? (
-                <Link
-                  href="/user"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-2.5 rounded-[1rem] border border-transparent px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:border-border/70 hover:bg-muted/45 hover:text-foreground"
-                >
-                  {session.user.image ? (
-                    <Image
-                      src={session.user.image}
-                      alt="Avatar"
-                      width={32}
-                      height={32}
-                      className="h-7 w-7 rounded-full object-cover"
-                    />
-                  ) : (
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
-                      <User2 className="h-3.5 w-3.5" />
-                    </span>
-                  )}
-                  <span className="min-w-0">
-                    <span className="block font-medium text-foreground">
-                      Mon espace
-                    </span>
-                    <span className="block text-xs text-muted-foreground">
-                      Profil, documents et suivis
-                    </span>
-                  </span>
-                </Link>
-              ) : (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-auto w-full justify-start rounded-[1rem] border border-transparent px-3 py-2.5 text-sm text-muted-foreground hover:border-border/70 hover:bg-muted/45 hover:text-foreground"
-                  asChild
-                >
+            <section className="sticky bottom-3 z-10 mt-auto rounded-[0.95rem] border border-border/35 bg-background/45 p-1.5 backdrop-blur">
+              <div
+                className={cn(
+                  "grid gap-1",
+                  isAdmin && session ? "grid-cols-2" : "grid-cols-1",
+                )}
+              >
+                {isAdmin ? (
                   <Link
-                    href="/auth/signin?callbackUrl=/user"
+                    href="/admin"
                     onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-2 rounded-[0.8rem] border border-border/30 bg-background/50 px-2 py-1.5 text-[12px] text-muted-foreground transition-colors hover:bg-muted/45 hover:text-foreground"
                   >
-                    <LogIn className="h-4 w-4" />
-                    <span className="min-w-0 text-left">
-                      <span className="block font-medium text-foreground">
-                        Connexion
-                      </span>
-                      <span className="block text-xs text-muted-foreground">
-                        Acceder a l'espace membre
-                      </span>
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted/80">
+                      <ShieldMinus className="h-3 w-3" />
+                    </span>
+                    <span className="truncate text-[12px] font-medium text-foreground/90">
+                      Admin
                     </span>
                   </Link>
-                </Button>
-              )}
+                ) : null}
+
+                {session ? (
+                  <Link
+                    href="/user"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-2 rounded-[0.8rem] border border-border/30 bg-background/50 px-2 py-1.5 text-[12px] text-muted-foreground transition-colors hover:bg-muted/45 hover:text-foreground"
+                  >
+                    {session.user.image ? (
+                      <Image
+                        src={session.user.image}
+                        alt="Avatar"
+                        width={24}
+                        height={24}
+                        className="h-6 w-6 shrink-0 rounded-full object-cover"
+                      />
+                    ) : (
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted/80">
+                        <User2 className="h-3 w-3" />
+                      </span>
+                    )}
+                    <span className="truncate text-[12px] font-medium text-foreground/90">
+                      {session.user.name?.split(" ")[0] || "Mon espace"}
+                    </span>
+                  </Link>
+                ) : (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-auto w-full justify-start rounded-[0.8rem] border border-border/30 bg-background/50 px-2 py-1.5 text-[12px] text-muted-foreground hover:bg-muted/45 hover:text-foreground"
+                    asChild
+                  >
+                    <Link
+                      href="/auth/signin?callbackUrl=/user"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      <LogIn className="h-3.5 w-3.5 shrink-0" />
+                      <span className="truncate text-left text-[12px] font-medium text-foreground/90">
+                        Connexion
+                      </span>
+                    </Link>
+                  </Button>
+                )}
+              </div>
             </section>
           </div>
         </div>

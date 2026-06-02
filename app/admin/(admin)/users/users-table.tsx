@@ -103,11 +103,11 @@ export default function UsersTable({
 
   return (
     <Card className="overflow-hidden border-border/70 shadow-sm">
-      <CardHeader className="gap-4 border-b border-border/60 bg-muted/20">
+      <CardHeader className="gap-3 border-b border-border/60 bg-muted/20 px-4 py-4">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-1">
-            <CardTitle className="text-xl">Utilisateurs</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-lg">Utilisateurs</CardTitle>
+            <CardDescription className="max-w-2xl text-xs leading-5">
               Une vue compacte pour vérifier les rôles, les emails et les
               comptes rattachés à des joueurs.
             </CardDescription>
@@ -120,7 +120,7 @@ export default function UsersTable({
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4 p-4">
+      <CardContent className="space-y-3 p-4">
         <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_220px]">
           <label className="grid gap-2">
             <span className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
@@ -159,7 +159,7 @@ export default function UsersTable({
           </label>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1.5">
           <FilterStat label="Visibles" value={filteredStats.visible} />
           <FilterStat label="Admins" value={filteredStats.admins} />
           <FilterStat label="Clubs" value={filteredStats.clubs} />
@@ -189,11 +189,10 @@ export default function UsersTable({
               <Table className="table-fixed">
                 <TableHeader className="bg-muted/30">
                   <TableRow className="hover:bg-muted/30">
-                    <TableHead className="h-9 w-[21%]">Nom</TableHead>
-                    <TableHead className="h-9 w-[31%]">Email</TableHead>
-                    <TableHead className="h-9 w-[14%]">Rôle</TableHead>
-                    <TableHead className="h-9 w-[10%]">Licenciés</TableHead>
-                    <TableHead className="h-9 w-[24%] px-3">Actions</TableHead>
+                    <TableHead className="h-9 w-[22%] px-3">Utilisateur</TableHead>
+                    <TableHead className="h-9 w-[29%] px-3">Email</TableHead>
+                    <TableHead className="h-9 w-[19%] px-3">Profil</TableHead>
+                    <TableHead className="h-9 w-[30%] px-3">Accès</TableHead>
                   </TableRow>
                 </TableHeader>
 
@@ -232,7 +231,7 @@ function DesktopUserRow({
 
   return (
     <TableRow key={user.id} className="align-middle">
-      <TableCell className="py-3 pr-3">
+      <TableCell className="px-3 py-3">
         <div className="space-y-0.5">
           <p className="font-medium text-foreground">
             {user.name || "Compte sans nom"}
@@ -240,26 +239,20 @@ function DesktopUserRow({
         </div>
       </TableCell>
 
-      <TableCell className="py-3 pr-3 text-muted-foreground">
-        <div className="truncate" title={user.email || "Aucun email"}>
+      <TableCell className="px-3 py-3 text-muted-foreground">
+        <div className="truncate text-xs" title={user.email || "Aucun email"}>
           {user.email || "Aucun email"}
         </div>
       </TableCell>
 
-      <TableCell className="py-3 pr-3">
-        <Badge variant={roleMeta.variant} className="rounded-full px-2.5 py-1">
+      <TableCell className="px-3 py-3">
+        <Badge variant={roleMeta.variant} className="rounded-full px-2 py-0.5 text-[11px]">
           {roleMeta.label}
         </Badge>
       </TableCell>
 
-      <TableCell className="py-3 pr-3">
-        <span className="inline-flex min-w-10 items-center justify-center rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-foreground">
-          {user.players.length}
-        </span>
-      </TableCell>
-
-      <TableCell className="py-3 pl-2 pr-2">
-        <div className="space-y-1.5">
+      <TableCell className="px-3 py-3">
+        <div className="space-y-1">
           <div className="flex items-center gap-1">
             <RoleActionForm
               user={user}
@@ -275,8 +268,8 @@ function DesktopUserRow({
           </div>
 
           {user.isProtected ? (
-            <div className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-              <ShieldCheck className="h-3.5 w-3.5" />
+            <div className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+              <ShieldCheck className="h-3 w-3" />
               Protégé
             </div>
           ) : null}
@@ -388,7 +381,7 @@ function RoleActionForm({
         name="role"
         className={
           compact
-            ? `admin-select h-8 min-w-[6.35rem] max-w-[6.35rem] py-1 pr-6 pl-2 text-[10.5px] ${
+            ? `admin-select h-8 min-w-[5.8rem] max-w-[5.8rem] py-1 pl-2 pr-6 text-[10px] ${
                 hasPendingChange
                   ? "border-amber-400/80 ring-1 ring-amber-400/50"
                   : ""
@@ -474,7 +467,7 @@ function FilterStat({
   value: number;
 }) {
   return (
-    <div className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/80 px-3 py-1.5 text-xs text-muted-foreground shadow-xs">
+    <div className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/70 px-2.5 py-1 text-[11px] text-muted-foreground shadow-xs">
       <span className="font-semibold text-foreground">{value}</span>
       <span>{label}</span>
     </div>
@@ -513,7 +506,7 @@ function RoleSubmitButton({
       className={
         compact
           ? hasPendingChange
-            ? "h-8 min-w-[4.9rem] bg-amber-500 px-2.5 text-[10.5px] font-semibold text-amber-950 hover:bg-amber-400"
+            ? "h-8 min-w-[4.5rem] bg-amber-500 px-2 text-[10px] font-semibold text-amber-950 hover:bg-amber-400"
             : "size-7"
           : `gap-1.5 sm:min-w-[9.5rem] ${
               hasPendingChange

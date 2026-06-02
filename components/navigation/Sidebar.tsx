@@ -5,7 +5,6 @@ import {
   LogOut,
   Moon,
   PanelLeftOpen,
-  Sparkles,
   ShieldCheck,
   Sun,
   User2,
@@ -135,7 +134,7 @@ export default function Sidebar({
       : "bg-gradient-to-r from-emerald-400/0 via-emerald-400/70 to-emerald-400/0";
 
   const widthClasses = cn(
-    sidebarState === "expanded" && "w-[320px]",
+    sidebarState === "expanded" && "w-[352px]",
     sidebarState === "collapsed" && "w-[92px]",
     sidebarState === "hidden" && "w-0 overflow-hidden",
   );
@@ -222,7 +221,7 @@ export default function Sidebar({
             "supports-[backdrop-filter]:bg-background/88 supports-[backdrop-filter]:backdrop-blur",
             mobile
               ? [
-                  "fixed inset-y-0 left-0 z-50 h-screen w-full max-w-[320px] transition-transform",
+                  "fixed inset-y-0 left-0 z-50 h-screen w-full max-w-[352px] transition-transform",
                   isMobileOpen ? "translate-x-0" : "-translate-x-full",
                 ]
               : [
@@ -281,7 +280,7 @@ export default function Sidebar({
 
             <div
               className={cn(
-                "relative mb-5 rounded-[1.45rem] border border-white/8 bg-white/[0.04] px-4 py-4 shadow-[0_14px_32px_-24px_rgba(15,23,42,0.8)] backdrop-blur-sm",
+                "relative mb-4 rounded-[1.35rem] border border-white/8 bg-white/[0.04] px-3.5 py-3.5 shadow-[0_14px_32px_-24px_rgba(15,23,42,0.8)] backdrop-blur-sm",
                 collapsed && !mobile && "px-2.5 py-3",
               )}
             >
@@ -293,21 +292,21 @@ export default function Sidebar({
               />
               <div
                 className={cn(
-                  "flex min-h-[116px] items-start justify-between gap-3",
+                  "flex min-h-[104px] items-start justify-between gap-3",
                   !collapsed && "pr-1",
                 )}
               >
                 {!collapsed ? (
                   <div className="min-w-0 flex-1 pr-2">
-                    <div className="mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    <div className="mb-2.5 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                       <span className={cn("h-2 w-2 rounded-full", accentDotClass)} />
                       {isAdminView ? <ShieldCheck className="h-3.5 w-3.5" /> : null}
                       <span>{isAdminView ? "Back-office" : "Dashboard"}</span>
                     </div>
-                    <p className="text-lg font-semibold tracking-tight text-foreground">
+                    <p className="text-[17px] font-semibold tracking-tight text-foreground">
                       {heroTitle}
                     </p>
-                    <p className="mt-1.5 max-w-[20rem] text-sm leading-5 text-muted-foreground">
+                    <p className="mt-1.5 max-w-[20rem] text-[13px] leading-[1.5] text-muted-foreground/90">
                       {heroDescription}
                     </p>
                   </div>
@@ -353,14 +352,14 @@ export default function Sidebar({
             </div>
 
             {!collapsed ? (
-              <div className="mb-3 px-1">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-muted-foreground/75">
+              <div className="mb-2.5 px-1">
+                <p className="text-[9px] font-semibold uppercase tracking-[0.24em] text-muted-foreground/72">
                   Navigation
                 </p>
               </div>
             ) : null}
 
-            <div className="space-y-2.5 pb-24">
+            <div className="space-y-2 pb-24">
               {sections.map((section) => (
                 <SidebarSection
                   key={section.title}
@@ -375,90 +374,79 @@ export default function Sidebar({
 
             <div
               className={cn(
-                "sticky bottom-4 z-10 mt-auto rounded-[1.45rem] border border-white/8 bg-white/[0.04] p-3 shadow-[0_14px_32px_-24px_rgba(15,23,42,0.8)] backdrop-blur-sm",
-                collapsed && !mobile && "px-2 py-3",
+                "sticky bottom-3 z-10 mt-auto grid gap-1 rounded-[0.95rem] border border-border/30 bg-background/40 p-1.5 backdrop-blur-sm",
+                session && !collapsed && "grid-cols-2",
+                collapsed && !mobile && "px-1.5 py-1.5",
               )}
             >
-              <div className="pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-r from-white/0 via-white/25 to-white/0 opacity-80" />
-              {!collapsed ? (
-                <div className="mb-3 flex items-center justify-between px-2">
-                  <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-muted-foreground/70">
-                      Session
-                    </p>
-                    <p className="mt-1 text-sm font-medium text-foreground">
-                      Espace personnel
-                    </p>
-                  </div>
-                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/8 bg-white/[0.05] text-muted-foreground">
-                    <Sparkles className="h-4 w-4" />
-                  </span>
-                </div>
-              ) : null}
-
               <Link
                 href="/"
                 onClick={mobile ? onClose : undefined}
                 className={cn(
-                  "flex items-center gap-2.5 rounded-[1rem] px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-white/[0.06] hover:text-foreground",
+                  "flex items-center gap-2 rounded-[0.8rem] border border-border/25 bg-background/45 px-2 py-1.5 text-[12px] text-muted-foreground transition-colors hover:bg-foreground/4 hover:text-foreground",
                   collapsed && !mobile && "justify-center px-0",
                 )}
               >
-                <PanelLeftOpen className="h-4 w-4" />
-                {!collapsed ? <span>Retour au site</span> : null}
+                <PanelLeftOpen className="h-3.5 w-3.5" />
+                {!collapsed ? <span>Site</span> : null}
               </Link>
 
               {session ? (
                 <div
                   className={cn(
-                    "space-y-2 border-t border-white/8 pt-3",
-                    collapsed && !mobile && "flex flex-col items-center",
+                    "min-w-0",
+                    collapsed && !mobile && "flex justify-center",
                   )}
                 >
+                  <div
+                    className={cn(
+                      "grid gap-1",
+                      "grid-cols-1",
+                    )}
+                  >
                   <Link
                     href="/user"
                     onClick={mobile ? onClose : undefined}
                     className={cn(
-                      "flex items-center gap-3 rounded-[1rem] px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-white/[0.06] hover:text-foreground",
-                      collapsed && !mobile && "justify-center px-0",
+                      "flex min-w-0 items-center gap-2 rounded-[0.8rem] border border-border/25 bg-background/45 px-2 py-1.5 text-[12px] text-muted-foreground transition-colors hover:bg-foreground/4 hover:text-foreground",
+                      collapsed && !mobile && "justify-center px-1.5",
                     )}
                   >
                     {session.user?.image ? (
                       <Image
                         src={session.user.image}
                         alt="Avatar"
-                        width={32}
-                        height={32}
-                        className="h-8 w-8 rounded-full object-cover"
+                        width={24}
+                        height={24}
+                        className="h-6 w-6 rounded-full object-cover"
                       />
                     ) : (
-                      <span className="flex h-8 w-8 items-center justify-center rounded-full border border-white/8 bg-white/[0.05]">
-                        <User2 className="h-4 w-4" />
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full border border-border/35 bg-foreground/[0.04]">
+                        <User2 className="h-3 w-3" />
                       </span>
                     )}
                     {!collapsed ? (
-                      <span className="min-w-0">
-                        <span className="block truncate font-medium text-foreground">
-                          {session.user?.name ?? "Mon espace"}
-                        </span>
-                        <span className="mt-0.5 block text-xs text-muted-foreground">
-                          Ouvrir le profil
-                        </span>
+                      <span className="truncate text-[12px] font-medium text-foreground/90">
+                        {session.user?.name?.split(" ")[0] ?? "Mon espace"}
                       </span>
                     ) : null}
                   </Link>
 
                   <Button
                     variant="ghost"
+                    size="icon"
                     className={cn(
-                      "h-auto w-full justify-start rounded-[1rem] px-3 py-2.5 text-sm text-muted-foreground hover:bg-white/[0.06] hover:text-foreground",
-                      collapsed && !mobile && "justify-center px-0",
+                      "hidden",
+                      collapsed && !mobile && "h-7 w-7",
                     )}
                     onClick={() => void signOutToHome()}
+                    aria-label="DÃ©connexion"
+                    title="DÃ©connexion"
                   >
-                    <LogOut className="h-4 w-4" />
+                    <LogOut className="h-3.5 w-3.5" />
                     {!collapsed ? "Déconnexion" : null}
                   </Button>
+                  </div>
                 </div>
               ) : null}
             </div>
