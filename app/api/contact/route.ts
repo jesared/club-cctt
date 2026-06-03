@@ -40,7 +40,7 @@ async function sendWithResend(
   }
 
   const from =
-    process.env.CONTACT_FROM_EMAIL ?? "Contact CCTT <onboarding@resend.dev>";
+    process.env.CONTACT_FROM_EMAIL ?? "CCTT <contact@mail.cctt.fr>";
 
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",

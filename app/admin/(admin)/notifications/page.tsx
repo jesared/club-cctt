@@ -5,6 +5,7 @@ import {
   BellPlus,
   CheckCircle2,
   LoaderCircle,
+  Mail,
   Pencil,
   RefreshCw,
   Search,
@@ -68,6 +69,7 @@ type DraftNotification = {
   href: string;
   audience: NotificationItem["audience"];
   roleScope: NonNullable<NotificationItem["roleScope"]>;
+  sendEmail: boolean;
 };
 
 type ToastState = {
@@ -76,6 +78,18 @@ type ToastState = {
 };
 
 type NotificationFilter = "ALL" | "AUTO" | "MANUAL" | "IMPORTANT";
+
+type NotificationEmailDelivery = {
+  attempted: boolean;
+  sent: number;
+  failed: number;
+  error?: string;
+};
+
+type CreateNotificationResponse = {
+  notification: NotificationItem;
+  emailDelivery: NotificationEmailDelivery;
+};
 
 const AUDIENCE_LABELS: Record<NotificationItem["audience"], string> = {
   ALL_MEMBERS: "Tous",
@@ -102,6 +116,7 @@ const EMPTY_DRAFT: DraftNotification = {
   href: "",
   audience: "ALL_MEMBERS",
   roleScope: "USER",
+  sendEmail: false,
 };
 
 function formatDateTime(value: string) {
@@ -268,6 +283,7 @@ export default function AdminNotificationsPage() {
           href: draft.href.trim() || null,
           audience: draft.audience,
           roleScope: draft.audience === "ROLE" ? draft.roleScope : null,
+          sendEmail: draft.sendEmail,
         }),
       });
 
@@ -280,11 +296,20 @@ export default function AdminNotificationsPage() {
         );
       }
 
-      const created = (await response.json()) as NotificationItem;
+      const createdResponse =
+        (await response.json()) as CreateNotificationResponse;
+      const created = createdResponse.notification;
       setNotifications((current) => [created, ...current]);
       setDraft(EMPTY_DRAFT);
       setPublishAttempted(false);
-      showToast("success", "Notification envoyee.");
+      showToast(
+        createdResponse.emailDelivery.failed > 0 ? "error" : "success",
+        createdResponse.emailDelivery.attempted
+          ? createdResponse.emailDelivery.failed > 0
+            ? `Notification creee, mais l'envoi email a echoue pour ${createdResponse.emailDelivery.failed} destinataire(s).`
+            : `Notification envoyee. ${createdResponse.emailDelivery.sent} email(s) envoye(s).`
+          : "Notification envoyee.",
+      );
     } catch (error) {
       showToast(
         "error",
@@ -622,6 +647,30 @@ export default function AdminNotificationsPage() {
               ) : null}
             </label>
           </div>
+
+          <label className="flex items-start gap-3 rounded-xl border border-border/70 bg-muted/30 p-4">
+            <input
+              type="checkbox"
+              checked={draft.sendEmail}
+              onChange={(event) =>
+                setDraft((current) => ({
+                  ...current,
+                  sendEmail: event.target.checked,
+                }))
+              }
+              className="mt-1 h-4 w-4 rounded border-border accent-primary"
+            />
+            <span className="grid gap-1">
+              <span className="flex items-center gap-2 text-sm font-medium">
+                <Mail className="h-4 w-4 text-primary" />
+                Envoyer aussi par email
+              </span>
+              <span className="text-sm text-muted-foreground">
+                Les utilisateurs vises par l&apos;audience recevront aussi un
+                email depuis contact@mail.cctt.fr.
+              </span>
+            </span>
+          </label>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-muted-foreground">

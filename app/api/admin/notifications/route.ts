@@ -4,6 +4,7 @@ import {
   isNotificationSchemaMissingError,
   withNotificationSchemaFallback,
 } from "@/lib/notification-safety";
+import { sendNotificationEmail } from "@/lib/notification-email";
 import { prisma } from "@/lib/prisma";
 import { withPrismaRetry } from "@/lib/prisma-retry";
 import { isAdminRole } from "@/lib/roles";
@@ -23,6 +24,7 @@ type CreateNotificationPayload = {
     | "ADMIN_ONLY"
     | "ROLE";
   roleScope?: "USER" | "CLUB" | "BUREAU" | "ENTRAINEUR" | "ADMIN" | null;
+  sendEmail?: boolean;
 };
 
 export async function GET() {
@@ -148,7 +150,11 @@ export async function POST(req: Request) {
       }),
     );
 
-    return NextResponse.json(notification, { status: 201 });
+    const emailDelivery = body.sendEmail
+      ? await sendNotificationEmail(notification)
+      : { attempted: false, sent: 0, failed: 0 };
+
+    return NextResponse.json({ notification, emailDelivery }, { status: 201 });
   } catch (error) {
     if (isNotificationSchemaMissingError(error)) {
       return NextResponse.json(
