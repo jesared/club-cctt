@@ -103,7 +103,7 @@ export default async function UserClubAgendaPage() {
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold">Agenda interne</h1>
           <p className="max-w-3xl text-sm text-muted-foreground">
-            Une vue simple des rythmes du club: seances hebdomadaires, temps
+            Une vue simple des rythmes du club: séances hebdomadaires, temps
             forts tournoi et points de repere utiles pour l'organisation.
           </p>
         </div>
@@ -117,18 +117,18 @@ export default async function UserClubAgendaPage() {
             </p>
             <p className="text-3xl font-semibold">{schedule.jours.length}</p>
             <p className="text-xs text-muted-foreground">
-              Jours avec au moins un creneau reference.
+              Jours avec au moins un créneau reference.
             </p>
           </CardContent>
         </Card>
         <Card className="border-border/70 bg-card/95 shadow-xs [background-image:none]">
           <CardContent className="space-y-2 p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Creneaux semaine
+              Créneaux semaine
             </p>
             <p className="text-3xl font-semibold">{weeklySessions}</p>
             <p className="text-xs text-muted-foreground">
-              Seances recensees dans l'organisation hebdomadaire.
+              Séances recensees dans l'organisation hebdomadaire.
             </p>
           </CardContent>
         </Card>
@@ -139,7 +139,7 @@ export default async function UserClubAgendaPage() {
             </p>
             <p className="text-3xl font-semibold">{tournaments.length}</p>
             <p className="text-xs text-muted-foreground">
-              Evenements tournoi publies ou recemment clos.
+              Evenements tournoi publiés ou recemment clos.
             </p>
           </CardContent>
         </Card>
@@ -168,7 +168,7 @@ export default async function UserClubAgendaPage() {
               Cadence hebdomadaire
             </CardTitle>
             <CardDescription>
-              Les jours et creneaux deja references pour organiser la semaine club.
+              Les jours et créneaux déjà references pour organiser la semaine club.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -185,7 +185,7 @@ export default async function UserClubAgendaPage() {
                   <div className="flex items-center justify-between gap-3">
                     <p className="font-medium text-foreground">{day.jour}</p>
                     <span className="text-xs text-muted-foreground">
-                      {day.seances.length} creneau{day.seances.length > 1 ? "x" : ""}
+                      {day.seances.length} créneau{day.seances.length > 1 ? "x" : ""}
                     </span>
                   </div>
                   <div className="mt-3 space-y-2">
@@ -199,7 +199,7 @@ export default async function UserClubAgendaPage() {
                           <p className="font-medium text-foreground">
                             {session.horaire || "Horaire a preciser"}
                           </p>
-                          <p>{session.label || "Seance sans detail complementaire."}</p>
+                          <p>{session.label || "Séance sans detail complementaire."}</p>
                         </div>
                       </div>
                     ))}
@@ -217,7 +217,7 @@ export default async function UserClubAgendaPage() {
               Temps forts tournoi
             </CardTitle>
             <CardDescription>
-              Une vue rapide des evenements tournoi deja visibles dans le site.
+              Une vue rapide des evenements tournoi déjà visibles dans le site.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">

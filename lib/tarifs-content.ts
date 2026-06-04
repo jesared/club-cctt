@@ -108,7 +108,7 @@ export const defaultTarifsContent: TarifsData = {
 const LEGACY_TARIFS_TEXT_FIXES = new Map<string, string>([
   ["Je decouvre le club", "Je découvre le club"],
   ["Decouvrir le club", "Découvrir le club"],
-  ["Je joue deja regulierement", "Je joue déjà régulièrement"],
+  ["Je joue déjà régulièrement", "Je joue déjà régulièrement"],
   ["Moyens de paiement acceptes", "Moyens de paiement acceptés"],
   ["Cheque ou numeraire", "Chèque ou numéraire"],
   ["Cheques-vacances", "Chèques-vacances"],
@@ -125,13 +125,13 @@ const LEGACY_TARIFS_TEXT_FIXES = new Map<string, string>([
   ["La participation a la vie du club", "La participation à la vie du club"],
   ["Modalites d'inscription", "Modalités d'inscription"],
   [
-    "Pour toute inscription ou demande de renseignement, merci de nous contacter. Les tarifs peuvent evoluer selon les categories et les situations particulieres.",
+    "Pour toute inscription ou demande de renseignement, merci de nous contacter. Les tarifs peuvent evoluer selon les catégories et les situations particulieres.",
     "Pour toute inscription ou demande de renseignement, merci de nous contacter. Les tarifs peuvent évoluer selon les catégories et les situations particulières.",
   ],
-  ["Competition", "Compétition"],
-  ["Competition + Criterium Federal", "Compétition + Critérium fédéral"],
+  ["Compétition", "Compétition"],
+  ["Compétition + Criterium Federal", "Compétition + Critérium fédéral"],
   ["(Veterans & Senior)", "(Vétérans & Senior)"],
-  ["(2015 et apres)", "(2015 et après)"],
+  ["(2015 et après)", "(2015 et après)"],
 ]);
 
 function coerceString(value: unknown) {

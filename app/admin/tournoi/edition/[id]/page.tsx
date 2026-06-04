@@ -12,7 +12,7 @@ export default async function TournamentEditionPage({ params }: PageProps) {
   return (
     <TournamentAdminPage
       title="Edition du tournoi"
-      description="Modifiez le tournoi et ses tableaux tant qu'il n'a pas demarre.">
+      description="Modifiez le tournoi et ses tableaux tant qu'il n'a pas démarré.">
       <TournamentEditor tournamentId={id} />
     </TournamentAdminPage>
   );

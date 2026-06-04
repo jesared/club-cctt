@@ -136,13 +136,13 @@ export default async function AdminPage() {
         },
         {
           href: "/admin/tournoi/paiement",
-          label: "Verifier les paiements",
+          label: "Vérifier les paiements",
           helper: "Suivi des reglements",
         },
         {
           href: "/admin/tournoi/pointages",
           label: "Ouvrir les pointages",
-          helper: "Controle salle et presence",
+          helper: "Contrôle salle et présence",
         },
       ],
       Icon: Ticket,
@@ -167,12 +167,12 @@ export default async function AdminPage() {
         {
           href: "/admin/contact",
           label: "Mettre a jour le contact",
-          helper: "Coordonnees et aide",
+          helper: "Coordonnées et aide",
         },
         {
           href: "/admin/horaires",
           label: "Modifier les horaires",
-          helper: "Jours, creneaux et badges",
+          helper: "Jours, créneaux et badges",
         },
         {
           href: "/admin/tarifs",
@@ -193,7 +193,7 @@ export default async function AdminPage() {
       Icon: LayoutGrid,
     },
     {
-      title: "Communication et controle",
+      title: "Communication et contrôle",
       description:
         "Messages internes, notifications, acces utilisateurs, media et audit UX pour garder le site propre.",
       href: "/admin/notifications",
@@ -206,7 +206,7 @@ export default async function AdminPage() {
         },
         {
           href: "/admin/messages",
-          label: "Gerer les messages",
+          label: "Gérer les messages",
           helper: `${draftMessages} brouillon(s)`,
         },
         {
@@ -252,13 +252,13 @@ export default async function AdminPage() {
     {
       href: "/admin/contact",
       label: "Contact club",
-      helper: "Coordonnees et disponibilites",
+      helper: "Coordonnées et disponibilites",
       Icon: Mail,
     },
     {
       href: "/admin/horaires",
       label: "Horaires club",
-      helper: "Planning public et creneaux",
+      helper: "Planning public et créneaux",
       Icon: CalendarClock,
     },
     {
@@ -276,7 +276,7 @@ export default async function AdminPage() {
     {
       href: "/admin/comite-directeur",
       label: "Comite directeur",
-      helper: "Equipe dirigeante et portraits",
+      helper: "Équipe dirigeante et portraits",
       Icon: Users,
     },
     {
@@ -300,7 +300,7 @@ export default async function AdminPage() {
     {
       href: "/admin/documentation",
       label: "Documentation",
-      helper: "Roles, acces et reperes internes",
+      helper: "Roles, acces et repères internes",
       Icon: FileText,
     },
     {
@@ -331,7 +331,7 @@ export default async function AdminPage() {
             Administration
           </h1>
           <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
-            Cette page sert maintenant de point d&apos;entree operatif : on y
+            Cette page sert maintenant de point d&apos;entree opératif : on y
             retrouve les zones importantes, les compteurs utiles et les acces
             rapides vers les taches les plus frequentes.
           </p>
@@ -439,9 +439,9 @@ export default async function AdminPage() {
 
         <Card className="border-border bg-card shadow-sm">
           <CardHeader className="space-y-2">
-            <CardTitle>Etat du back-office</CardTitle>
+            <CardTitle>État du back-office</CardTitle>
             <CardDescription>
-              Quelques reperes pour savoir ou se trouve le prochain point
+              Quelques repères pour savoir ou se trouve le prochain point
               d&apos;attention.
             </CardDescription>
           </CardHeader>

@@ -269,7 +269,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
 
   async function saveTournament() {
     if (!timelineState.canEditTournamentStatus) {
-      alert("Le tournoi est en cours. Le statut pourra etre change une fois termine.");
+      alert("Le tournoi est en cours. Le statut pourra être change une fois termine.");
       return;
     }
     setSavingTournament(true);
@@ -292,7 +292,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
 
   async function createEvent() {
     if (!timelineState.canEditEvents) {
-      alert("Le tournoi a deja demarre.");
+      alert("Le tournoi a déjà démarré.");
       return;
     }
     if (!hasCompleteDateTime(newEvent.startAt)) {
@@ -325,7 +325,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
 
   async function updateEvent(event: EventForm) {
     if (!timelineState.canEditEvents) {
-      alert("Le tournoi a deja demarre.");
+      alert("Le tournoi a déjà démarré.");
       return;
     }
     if (!hasCompleteDateTime(event.startAt)) {
@@ -356,7 +356,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
   async function deleteEvent(id: string) {
     if (!confirm("Supprimer ce tableau ?")) return;
     if (!timelineState.canEditEvents) {
-      alert("Le tournoi a deja demarre.");
+      alert("Le tournoi a déjà démarré.");
       return;
     }
     setSavingEvent(id);
@@ -417,7 +417,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
         </div>
       ) : timelineState.hasStarted ? (
         <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-          Le tournoi a deja demarre. Les modifications sont bloquees pendant le tournoi.
+          Le tournoi a déjà démarré. Les modifications sont bloquées pendant le tournoi.
         </div>
       ) : null}
 
@@ -633,7 +633,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
               {tournament.name || "Tournoi sans nom"}
             </p>
             <p className="text-muted-foreground">
-              La suppression est definitive. Verifiez que vous n&apos;avez plus
+              La suppression est definitive. Vérifiez que vous n&apos;avez plus
               besoin de conserver les donnees de ce tournoi.
             </p>
           </div>

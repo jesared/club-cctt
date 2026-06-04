@@ -56,14 +56,14 @@ function getMetaHelp(meta: ComiteResponse["meta"] | null) {
   }
 
   if (meta.source === "admin") {
-    return "Les modifications enregistrees ici sont deja prioritaires sur la page publique.";
+    return "Les modifications enregistrees ici sont déjà prioritaires sur la page publique.";
   }
 
   if (meta.source === "drive") {
     return "Au premier enregistrement ici, le site utilisera cette version admin a la place de Drive.";
   }
 
-  return "Aucune source distante valide n'a ete trouvee. Vous pouvez reconstruire le contenu ici.";
+  return "Aucune source distante valide n'a été trouvee. Vous pouvez reconstruire le contenu ici.";
 }
 
 function formatUpdatedAt(value: string | null) {
@@ -87,7 +87,7 @@ function ImagePreview({
   if (!photo) {
     return (
       <div className="flex h-40 items-center justify-center px-4 text-center text-sm text-muted-foreground">
-        Ajoutez une photo pour l&apos;apercu.
+        Ajoutez une photo pour l&apos;aperçu.
       </div>
     );
   }
@@ -265,10 +265,10 @@ export default function AdminComiteDirecteurPage() {
           </CardHeader>
           <CardContent className="flex flex-wrap gap-6 text-sm text-muted-foreground">
             <p>
-              Derniere mise a jour connue :{" "}
+              Dernière mise a jour connue :{" "}
               {formatUpdatedAt(meta?.updatedAt ?? null)}
             </p>
-            <p>{loading ? "Chargement..." : "Contenu pret a etre edite."}</p>
+            <p>{loading ? "Chargement..." : "Contenu prêt a être edite."}</p>
           </CardContent>
         </Card>
       </header>

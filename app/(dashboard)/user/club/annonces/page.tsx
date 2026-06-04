@@ -60,7 +60,7 @@ export default async function UserClubAnnoncesPage() {
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold">Annonces internes</h1>
           <p className="max-w-3xl text-sm text-muted-foreground">
-            Cette page regroupe les annonces publiees dans l'outil de messages
+            Cette page regroupe les annonces publiées dans l'outil de messages
             pour en faire un point d'entree plus simple pour les personnes qui
             participent a la vie du club.
           </p>
@@ -75,7 +75,7 @@ export default async function UserClubAnnoncesPage() {
             </p>
             <p className="text-3xl font-semibold">{messages.length}</p>
             <p className="text-xs text-muted-foreground">
-              Messages publies remontes dans l'espace club.
+              Messages publiés remontes dans l'espace club.
             </p>
           </CardContent>
         </Card>
@@ -97,14 +97,14 @@ export default async function UserClubAnnoncesPage() {
             </p>
             <p className="text-lg font-semibold">Brief interne</p>
             <p className="text-xs text-muted-foreground">
-              A utiliser comme mur d'infos avant relai vers les adherents.
+              A utiliser comme mur d'infos avant relai vers les adhérents.
             </p>
           </CardContent>
         </Card>
         <Card className="border-border/70 bg-card/95 shadow-xs [background-image:none]">
           <CardContent className="space-y-2 p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Prochaine evolution
+              Prochaine évolution
             </p>
             <p className="text-lg font-semibold">Ciblage</p>
             <p className="text-xs text-muted-foreground">
@@ -118,7 +118,7 @@ export default async function UserClubAnnoncesPage() {
         <div>
           <h2 className="text-xl font-semibold">Fil des annonces</h2>
           <p className="text-sm text-muted-foreground">
-            Les messages ci-dessous proviennent des publications deja gerees
+            Les messages ci-dessous proviennent des publications déjà gérées
             dans l'administration.
           </p>
         </div>
@@ -127,10 +127,10 @@ export default async function UserClubAnnoncesPage() {
           <Card className="border-dashed">
             <CardContent className="pt-6">
               <p className="font-medium text-foreground">
-                Aucune annonce publiee pour le moment.
+                Aucune annonce publiée pour le moment.
               </p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Les prochaines communications internes apparaitront ici.
+                Les prochaines communications internes apparaîtront ici.
               </p>
             </CardContent>
           </Card>
@@ -188,7 +188,7 @@ export default async function UserClubAnnoncesPage() {
               Bon usage
             </CardTitle>
             <CardDescription>
-              Quelques regles simples pour faire de cet espace un vrai canal
+              Quelques règles simples pour faire de cet espace un vrai canal
               utile.
             </CardDescription>
           </CardHeader>

@@ -29,19 +29,19 @@ const MANUAL_ITEMS: ManualChecklistItem[] = [
   {
     id: "signals",
     title: "Valider la mise en avant publique",
-    description: "Verifier rapidement la home, les affiches et les messages visibles aux joueurs.",
+    description: "Vérifier rapidement la home, les affiches et les messages visibles aux joueurs.",
     href: "/admin/tournoi",
   },
   {
     id: "desk",
-    title: "Preparer la table d'accueil",
+    title: "Préparer la table d'accueil",
     description: "Confirmer badges, caisse, listing et materiel de pointage.",
     href: "/admin/tournoi/pointages",
   },
   {
     id: "exports",
     title: "Faire un dernier test d'export",
-    description: "Verifier que les fichiers juge-arbitre et caisse sortent correctement.",
+    description: "Vérifier que les fichiers juge-arbitre et caisse sortent correctement.",
     href: "/admin/tournoi/exports",
   },
 ];
@@ -57,7 +57,7 @@ function getStatusPresentation(status: ChecklistStatus) {
       };
     case "warning":
       return {
-        label: "A verifier",
+        label: "A vérifier",
         icon: AlertCircle,
         tone: "border-amber-200 bg-amber-50 text-amber-800",
         iconTone: "text-amber-600",
@@ -98,7 +98,7 @@ export function ActionsChecklist({ autoItems }: ActionsChecklistProps) {
           Checklist de gestion
         </h2>
         <p className="text-sm text-muted-foreground">
-          Les statuts utiles remontent automatiquement, le reste reste en controle manuel.
+          Les statuts utiles remontent automatiquement, le reste reste en contrôle manuel.
         </p>
       </div>
 

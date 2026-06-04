@@ -89,7 +89,7 @@ export default async function UserEntraineurJoueursPage() {
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold">Joueurs</h1>
           <p className="max-w-3xl text-sm text-muted-foreground">
-            Premiere base de suivi sportif avec la liste des joueurs deja
+            Première base de suivi sportif avec la liste des joueurs déjà
             rattaches au site, leurs informations principales et leur niveau
             d'activite sur les inscriptions.
           </p>
@@ -115,7 +115,7 @@ export default async function UserEntraineurJoueursPage() {
             </p>
             <p className="text-3xl font-semibold">{registeredPlayers}</p>
             <p className="text-xs text-muted-foreground">
-              Joueurs deja utilises dans au moins une inscription.
+              Joueurs déjà utilisés dans au moins une inscription.
             </p>
           </CardContent>
         </Card>
@@ -231,7 +231,7 @@ export default async function UserEntraineurJoueursPage() {
                 <Trophy className="mt-0.5 h-4 w-4 text-primary" />
                 <p className="text-sm text-muted-foreground">
                   Utiliser le nombre d'inscriptions comme signal simple
-                  d'activite competition.
+                  d'activite compétition.
                 </p>
               </div>
             </CardContent>

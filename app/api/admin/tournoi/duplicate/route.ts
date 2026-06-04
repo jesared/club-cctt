@@ -52,14 +52,14 @@ export async function POST(request: Request) {
 
   if (!slug || !name || !startDate || !endDate) {
     return NextResponse.json(
-      { error: "Nom, slug, debut et fin du tournoi sont requis." },
+      { error: "Nom, slug, début et fin du tournoi sont requis." },
       { status: 400 },
     );
   }
 
   if (endDate.getTime() < startDate.getTime()) {
     return NextResponse.json(
-      { error: "La fin du tournoi doit etre apres le debut." },
+      { error: "La fin du tournoi doit être après le début." },
       { status: 400 },
     );
   }
@@ -70,7 +70,7 @@ export async function POST(request: Request) {
     registrationCloseAt.getTime() < registrationOpenAt.getTime()
   ) {
     return NextResponse.json(
-      { error: "La fermeture des inscriptions doit etre apres l'ouverture." },
+      { error: "La fermeture des inscriptions doit être après l'ouverture." },
       { status: 400 },
     );
   }
@@ -96,7 +96,7 @@ export async function POST(request: Request) {
 
   if (slugOwner) {
     return NextResponse.json(
-      { error: "Ce slug est deja utilise par un autre tournoi." },
+      { error: "Ce slug est déjà utilise par un autre tournoi." },
       { status: 409 },
     );
   }

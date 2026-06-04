@@ -39,7 +39,7 @@ const LEGACY_CONTACT_TEXT_FIXES = new Map<string, string>([
     defaultContactContent.intro,
   ],
   [
-    "RÃ©ponse habituelle sous 24h Ã  72h.",
+    "R\u00c3\u00a9ponse habituelle sous 24h \u00c3\u00a0 72h.",
     defaultContactContent.responseDelay,
   ],
   [
@@ -47,12 +47,12 @@ const LEGACY_CONTACT_TEXT_FIXES = new Map<string, string>([
     defaultContactContent.responseDelay,
   ],
   [
-    "ChÃ¢lons-en-Champagne Tennis de Table",
+    "Ch\u00c3\u00a2lons-en-Champagne Tennis de Table",
     defaultContactContent.addressLine,
   ],
-  ["ChÃ¢lons-en-Champagne", defaultContactContent.addressCity],
+  ["Ch\u00c3\u00a2lons-en-Champagne", defaultContactContent.addressCity],
   [
-    "Une question sur les horaires, les tarifs ou la pratique ? Ã‰crivez-nous et nous vous rÃ©pondons rapidement.",
+    "Une question sur les horaires, les tarifs ou la pratique ? \u00c3\u2030crivez-nous et nous vous r\u00c3\u00a9pondons rapidement.",
     defaultContactContent.intro,
   ],
 ]);

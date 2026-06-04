@@ -23,7 +23,7 @@ npm install
 
 - `DATABASE_URL` : connexion PostgreSQL.
 - `NEXT_PUBLIC_SITE_URL` : URL publique du site.
-- `BETTER_AUTH_URL` : URL utilisee par Better Auth pour les callbacks.
+- `BETTER_AUTH_URL` : URL utilisée par Better Auth pour les callbacks.
 - `AUTH_SECRET` : secret d'authentification principal.
 - `AUTH_GOOGLE_ID`
 - `AUTH_GOOGLE_SECRET`
@@ -44,7 +44,7 @@ ou
 
 - `TOURNAMENT_REGISTRATION_WEBHOOK_URL`
 
-Recommande pour envoyer aussi un e-mail recapitulatif au joueur :
+Recommande pour envoyer aussi un e-mail récapitulatif au joueur :
 
 - `TOURNAMENT_REGISTRATION_CONFIRMATION_FROM_EMAIL`
 - `TOURNAMENT_REGISTRATION_REPLY_TO_EMAIL`
@@ -68,7 +68,7 @@ Le projet utilise Prisma Migrate avec les migrations du dossier `prisma/migratio
 npx prisma migrate deploy
 ```
 
-### Cas d'une base deja existante (erreur `P3005`)
+### Cas d'une base déjà existante (erreur `P3005`)
 
 Si vous obtenez l'erreur suivante :
 
@@ -77,16 +77,16 @@ Error: P3005
 The database schema is not empty.
 ```
 
-cela signifie que Prisma tente d'appliquer des migrations sur une base deja peuplee sans historique Prisma.
+cela signifie que Prisma tente d'appliquer des migrations sur une base déjà peuplee sans historique Prisma.
 
-Dans ce cas, baseliner la base existante avec la premiere migration du projet :
+Dans ce cas, baseliner la base existante avec la première migration du projet :
 
 ```bash
 npx prisma migrate resolve --applied 20260210144025_init
 npx prisma migrate deploy
 ```
 
-Si plusieurs migrations ont deja ete appliquees manuellement, marquez-les aussi comme `--applied` dans l'ordre avant `migrate deploy`.
+Si plusieurs migrations ont déjà été appliquees manuellement, marquez-les aussi comme `--applied` dans l'ordre avant `migrate deploy`.
 
 ## Demarrage en local
 
@@ -117,9 +117,9 @@ npm run seed:admin-tournoi
 
 ## Deploiement
 
-Le projet peut etre deploye sur Vercel ou tout hebergeur compatible Node.js.
+Le projet peut être deploye sur Vercel ou tout hebergeur compatible Node.js.
 
-1. Verifier que les variables d'environnement de production sont definies.
+1. Vérifier que les variables d'environnement de production sont definies.
 2. Construire le projet :
 
    ```bash
@@ -142,9 +142,9 @@ Le projet peut etre deploye sur Vercel ou tout hebergeur compatible Node.js.
 
 ## Contribution
 
-1. Creer une branche dediee.
+1. Creer une branche dédiée.
 2. Decrire clairement les changements.
-3. Verifier que le lint passe avant de proposer une PR.
+3. Vérifier que le lint passe avant de proposer une PR.
 
 ## Contact
 

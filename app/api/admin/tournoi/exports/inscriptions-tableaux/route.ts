@@ -23,7 +23,7 @@ export async function GET() {
 
   const rows = await getRegistrationsByTable(tournament.id);
 
-  const header = ["Tableau", "Categorie", "Inscrits", "Liste d'attente"];
+  const header = ["Tableau", "Catégorie", "Inscrits", "Liste d'attente"];
   const csv = [
     header.map(toCsvValue).join(";"),
     ...rows.map((row) =>

@@ -674,7 +674,7 @@ export default function AdminNotificationsPage() {
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-muted-foreground">
-              La notification sera publiee tout de suite dans la cloche et
+              La notification sera publiée tout de suite dans la cloche et
               l&apos;historique des utilisateurs vises.
             </p>
             <div className="flex flex-wrap gap-2">

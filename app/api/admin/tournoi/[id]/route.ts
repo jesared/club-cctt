@@ -119,7 +119,7 @@ export async function PUT(
 
   if (!startDate || !endDate) {
     return NextResponse.json(
-      { error: "Dates de debut et fin requises." },
+      { error: "Dates de début et fin requises." },
       { status: 400 },
     );
   }
@@ -130,7 +130,7 @@ export async function PUT(
   if (!canEditAllFields) {
     if (!canEditStatusOnly) {
       return NextResponse.json(
-        { error: "Le tournoi est en cours. Le statut pourra etre modifie une fois termine." },
+        { error: "Le tournoi est en cours. Le statut pourra être modifie une fois termine." },
         { status: 409 },
       );
     }
@@ -147,7 +147,7 @@ export async function PUT(
 
     if (!unchangedFields) {
       return NextResponse.json(
-        { error: "Une fois le tournoi termine, seul le statut peut encore etre modifie." },
+        { error: "Une fois le tournoi termine, seul le statut peut encore être modifie." },
         { status: 409 },
       );
     }

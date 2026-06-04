@@ -507,7 +507,7 @@ export default async function TournoiHomePage() {
 
                           <div className="mt-4 rounded-2xl border border-border/70 bg-muted/20 p-3">
                             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                              Categorie
+                              Catégorie
                             </p>
                             <p className="mt-1 text-sm font-medium text-foreground">
                               {tableau.categorie}
@@ -559,7 +559,7 @@ export default async function TournoiHomePage() {
                             <th className="px-4 py-3">Code</th>
                             <th className="px-4 py-3">Date</th>
                             <th className="px-4 py-3">Heure</th>
-                            <th className="px-4 py-3">Categorie</th>
+                            <th className="px-4 py-3">Catégorie</th>
                             <th className="px-4 py-3">En ligne</th>
                             <th className="px-4 py-3">Sur place</th>
                           </tr>

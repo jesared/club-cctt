@@ -212,7 +212,7 @@ export default async function TarifsPage() {
                   label.includes("licence") || label.includes("licence fftt")
                     ? IdCard
                     : label.includes("créneau") ||
-                        label.includes("creneau") ||
+                        label.includes("créneau") ||
                         label.includes("entraînement") ||
                         label.includes("entrainement")
                       ? Clock

@@ -5,9 +5,10 @@
   "scripts": {
     "setup": "npm install && prisma generate",
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run check:accents && next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint && npm run check:accents",
+    "check:accents": "node scripts/check-french-accents.mjs",
     "test": "vitest run",
     "postinstall": "prisma generate",
     "seed:admin-tournoi": "node prisma/seed-admin-tournoi.mjs"

@@ -26,13 +26,13 @@ export default async function UserEntraineurPage() {
     <MemberRoleHub
       eyebrow="Espace entraineur"
       title="Suivi sportif et organisation des groupes"
-      description="Cette page centralise les acces dedies a l'encadrement sportif, avec un point d'entree clair pour preparer les seances et retrouver les ressources utiles."
+      description="Cette page centralise les acces dédiés a l'encadrement sportif, avec un point d'entree clair pour préparer les séances et retrouver les ressources utiles."
       links={[
         {
           href: "/user/entraineur",
           title: "Tableau de bord entraineur",
           description:
-            "Vue d'ensemble des seances, des groupes et des points d'attention sportifs.",
+            "Vue d'ensemble des séances, des groupes et des points d'attention sportifs.",
           icon: Dumbbell,
         },
         {
@@ -46,7 +46,7 @@ export default async function UserEntraineurPage() {
           href: "/user/entraineur/groupes",
           title: "Groupes",
           description:
-            "Organisation par groupe d'entrainement, niveau ou creneau.",
+            "Organisation par groupe d'entrainement, niveau ou créneau.",
           icon: CalendarRange,
         },
         {
@@ -61,7 +61,7 @@ export default async function UserEntraineurPage() {
           href: "/user/entraineur/documents",
           title: "Documents coach",
           description:
-            "Ressources pedagogiques, plannings et documents de seance.",
+            "Ressources pédagogiques, plannings et documents de séance.",
           icon: FileText,
         },
       ]}

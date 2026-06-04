@@ -25,9 +25,9 @@ import { getCurrentSession } from "@/lib/session";
 
 const coachResources = [
   {
-    title: "Horaires et creneaux",
+    title: "Horaires et créneaux",
     description:
-      "Reference utile pour preparer les seances et rappeler les bons horaires.",
+      "Reference utile pour préparer les séances et rappeler les bons horaires.",
     href: "/club/horaires",
     icon: CalendarRange,
     badge: "Disponible",
@@ -35,13 +35,13 @@ const coachResources = [
   {
     title: "Liste joueurs",
     description:
-      "Base de travail pour identifier les joueurs deja rattaches au site.",
+      "Base de travail pour identifier les joueurs déjà rattaches au site.",
     href: "/user/entraineur/joueurs",
     icon: Dumbbell,
     badge: "Disponible",
   },
   {
-    title: "Tarifs et adhesion",
+    title: "Tarifs et adhésion",
     description:
       "Support pratique pour les questions recurrentes des joueurs ou des familles.",
     href: "/club/tarifs",
@@ -52,7 +52,7 @@ const coachResources = [
 
 const coachFolders = [
   {
-    title: "Seances et contenus",
+    title: "Séances et contenus",
     description: "Fiches d'exercices, themes d'entrainement, cycles et ateliers.",
   },
   {
@@ -60,7 +60,7 @@ const coachFolders = [
     description: "Listes par groupe, observations, points d'attention et objectifs.",
   },
   {
-    title: "Competition",
+    title: "Compétition",
     description: "Convocations, organisation, feuilles de route et rappels utiles.",
   },
 ];
@@ -86,8 +86,8 @@ export default async function UserEntraineurDocumentsPage() {
           <h1 className="text-2xl font-semibold">Documents coach</h1>
           <p className="max-w-3xl text-sm text-muted-foreground">
             Cette page sert de base documentaire pour l'encadrement sportif,
-            avec les premieres references deja presentes sur le site et une
-            structure claire pour les futures ressources pedagogiques.
+            avec les premieres references déjà presentes sur le site et une
+            structure claire pour les futures ressources pédagogiques.
           </p>
         </div>
       </header>
@@ -100,7 +100,7 @@ export default async function UserEntraineurDocumentsPage() {
             </p>
             <p className="text-3xl font-semibold">{coachResources.length}</p>
             <p className="text-xs text-muted-foreground">
-              Liens utiles deja exploitables dans le quotidien coach.
+              Liens utiles déjà exploitables dans le quotidien coach.
             </p>
           </CardContent>
         </Card>
@@ -111,7 +111,7 @@ export default async function UserEntraineurDocumentsPage() {
             </p>
             <p className="text-3xl font-semibold">{coachFolders.length}</p>
             <p className="text-xs text-muted-foreground">
-              Categories simples pour les supports sportifs reserves.
+              Catégories simples pour les supports sportifs réservés.
             </p>
           </CardContent>
         </Card>
@@ -122,16 +122,16 @@ export default async function UserEntraineurDocumentsPage() {
             </p>
             <p className="text-lg font-semibold">Boite a outils</p>
             <p className="text-xs text-muted-foreground">
-              Centraliser ici les contenus utiles avant, pendant et apres les seances.
+              Centraliser ici les contenus utiles avant, pendant et après les séances.
             </p>
           </CardContent>
         </Card>
         <Card className="border-border/70 bg-card/95 shadow-xs [background-image:none]">
           <CardContent className="space-y-2 p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Prochaine evolution
+              Prochaine évolution
             </p>
-            <p className="text-lg font-semibold">Supports seances</p>
+            <p className="text-lg font-semibold">Supports séances</p>
             <p className="text-xs text-muted-foreground">
               Ajouter ensuite vraies fiches d'exercices, convocations et plannings.
             </p>
@@ -143,7 +143,7 @@ export default async function UserEntraineurDocumentsPage() {
         <div>
           <h2 className="text-xl font-semibold">References disponibles</h2>
           <p className="text-sm text-muted-foreground">
-            Les premiers appuis utiles pour preparer les seances et repondre aux
+            Les premiers appuis utiles pour préparer les séances et répondre aux
             questions les plus courantes.
           </p>
         </div>
@@ -185,7 +185,7 @@ export default async function UserEntraineurDocumentsPage() {
               Structure recommandee
             </CardTitle>
             <CardDescription>
-              Une base simple pour classer les ressources sportives et eviter
+              Une base simple pour classer les ressources sportives et éviter
               les fichiers disperses.
             </CardDescription>
           </CardHeader>
@@ -211,14 +211,14 @@ export default async function UserEntraineurDocumentsPage() {
               Pistes d'enrichissement
             </CardTitle>
             <CardDescription>
-              Cette page pourra accueillir ensuite des fiches seances, checklists
-              de competition et supports de progression.
+              Cette page pourra accueillir ensuite des fiches séances, checklists
+              de compétition et supports de progression.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-muted-foreground">
             <div className="flex items-start gap-3">
               <ClipboardList className="mt-0.5 h-4 w-4 text-primary" />
-              <p>Modeles de feuille de presence et rappels de seance.</p>
+              <p>Modèles de feuille de présence et rappels de séance.</p>
             </div>
             <div className="flex items-start gap-3">
               <FileText className="mt-0.5 h-4 w-4 text-primary" />

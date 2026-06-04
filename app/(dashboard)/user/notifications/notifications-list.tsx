@@ -135,7 +135,7 @@ export default function NotificationsList({
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
             Les nouvelles annonces, documents et changements importants
-            apparaitront ici.
+            apparaîtront ici.
           </p>
         </CardContent>
       </Card>

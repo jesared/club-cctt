@@ -46,7 +46,7 @@ export async function POST(
 
   if (!isEditable(tournament.startDate)) {
     return NextResponse.json(
-      { error: "Le tournoi a deja demarre, modification impossible." },
+      { error: "Le tournoi a déjà démarré, modification impossible." },
       { status: 409 },
     );
   }

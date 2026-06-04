@@ -10,7 +10,7 @@ export default function NotFoundPage() {
       </p>
       <h1 className="text-3xl font-semibold">Page introuvable</h1>
       <p className="text-sm text-muted-foreground">
-        Cette page n&apos;existe pas ou a ete deplacee. Verifiez l&apos;adresse ou
+        Cette page n&apos;existe pas ou a été déplacée. Vérifiez l&apos;adresse ou
         revenez au site.
       </p>
 

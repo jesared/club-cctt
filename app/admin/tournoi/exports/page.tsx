@@ -5,7 +5,7 @@ import Link from "next/link";
 const exportsList = [
   { name: "inscriptions-tableaux.csv", description: "Inscriptions regroupées par tableau et catégorie." },
   { name: "paiements-tournoi.csv", description: "Tarifs anticipés / sur place et statut de règlement." },
-  { name: "pointages-creneaux.csv", description: "Liste de pointage triée par date et horaire." },
+  { name: "pointages-créneaux.csv", description: "Liste de pointage triée par date et horaire." },
   { name: "joueurs-tableaux.csv", description: "Liste des joueurs avec leurs tableaux associés." },
   { name: "tableaux.zip", description: "Un fichier CSV par tableau, regroupé dans un zip." },
 ];
@@ -38,7 +38,7 @@ export default async function AdminTournoiExportsPage() {
                   >
                     Telecharger
                   </Link>
-                ) : entry.name === "pointages-creneaux.csv" ? (
+                ) : entry.name === "pointages-créneaux.csv" ? (
                   <Link
                     href="/api/admin/tournoi/exports/pointages-creneaux"
                     prefetch={false}

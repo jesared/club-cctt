@@ -161,7 +161,7 @@ export default function AdminTarifsPage() {
 
   function updateBlocField(
     index: number,
-    key: "categorie" | "details",
+    key: "catégorie" | "details",
     value: string,
   ) {
     setForm((current) => ({
@@ -407,7 +407,7 @@ export default function AdminTarifsPage() {
                         className="w-full rounded border px-3 py-2"
                         value={bloc.categorie}
                         onChange={(event) =>
-                          updateBlocField(blocIndex, "categorie", event.target.value)
+                          updateBlocField(blocIndex, "catégorie", event.target.value)
                         }
                       />
                     </div>

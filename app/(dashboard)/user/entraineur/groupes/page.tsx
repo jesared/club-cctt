@@ -47,7 +47,7 @@ function getPlayerTier(points: number | null) {
   if (points === null) return "A qualifier";
   if (points < 700) return "Progression";
   if (points < 1000) return "Intermediaire";
-  return "Competition";
+  return "Compétition";
 }
 
 export default async function UserEntraineurGroupesPage() {
@@ -78,7 +78,7 @@ export default async function UserEntraineurGroupesPage() {
   ]);
 
   const tiers = [
-    "Competition",
+    "Compétition",
     "Intermediaire",
     "Progression",
     "A qualifier",
@@ -98,8 +98,8 @@ export default async function UserEntraineurGroupesPage() {
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold">Groupes</h1>
           <p className="max-w-3xl text-sm text-muted-foreground">
-            Cette premiere version sert a preparer les groupes a partir des
-            creneaux du club et des profils joueurs deja connus. Ce ne sont pas
+            Cette première version sert a préparer les groupes a partir des
+            créneaux du club et des profils joueurs déjà connus. Ce ne sont pas
             encore des affectations officielles.
           </p>
         </div>
@@ -120,13 +120,13 @@ export default async function UserEntraineurGroupesPage() {
         <Card className="border-border/70 bg-card/95 shadow-xs [background-image:none]">
           <CardContent className="space-y-2 p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Creneaux club
+              Créneaux club
             </p>
             <p className="text-3xl font-semibold">
               {schedule.jours.reduce((sum, day) => sum + day.seances.length, 0)}
             </p>
             <p className="text-xs text-muted-foreground">
-              Seances disponibles pour penser la repartition.
+              Séances disponibles pour penser la repartition.
             </p>
           </CardContent>
         </Card>
@@ -137,7 +137,7 @@ export default async function UserEntraineurGroupesPage() {
             </p>
             <p className="text-3xl font-semibold">{groupedPlayers.length}</p>
             <p className="text-xs text-muted-foreground">
-              Niveaux de travail proposes pour organiser les seances.
+              Niveaux de travail proposes pour organiser les séances.
             </p>
           </CardContent>
         </Card>
@@ -163,7 +163,7 @@ export default async function UserEntraineurGroupesPage() {
             </CardTitle>
             <CardDescription>
               Les joueurs sont regroupes ici a partir des points connus pour
-              aider a structurer les seances.
+              aider a structurer les séances.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -204,24 +204,24 @@ export default async function UserEntraineurGroupesPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CalendarRange className="h-4 w-4 text-primary" />
-                Appui par creneaux
+                Appui par créneaux
               </CardTitle>
               <CardDescription>
-                Les seances actuelles du club a utiliser comme base
+                Les séances actuelles du club a utiliser comme base
                 d'organisation des groupes.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {schedule.jours.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  Aucun creneau n'est encore disponible.
+                  Aucun créneau n'est encore disponible.
                 </p>
               ) : (
                 schedule.jours.map((day) => (
                   <div key={day.jour} className="rounded-xl border border-border/70 bg-muted/20 px-4 py-3">
                     <p className="font-medium text-foreground">{day.jour}</p>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      {day.seances.length} creneau{day.seances.length > 1 ? "x" : ""} reference{day.seances.length > 1 ? "s" : ""}
+                      {day.seances.length} créneau{day.seances.length > 1 ? "x" : ""} reference{day.seances.length > 1 ? "s" : ""}
                     </p>
                   </div>
                 ))
@@ -233,7 +233,7 @@ export default async function UserEntraineurGroupesPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Trophy className="h-4 w-4 text-primary" />
-                Prochaine evolution
+                Prochaine évolution
               </CardTitle>
               <CardDescription>
                 La suite naturelle sera d'ajouter de vraies affectations par
@@ -247,7 +247,7 @@ export default async function UserEntraineurGroupesPage() {
               </div>
               <div className="flex items-start gap-3">
                 <Dumbbell className="mt-0.5 h-4 w-4 text-primary" />
-                <p>Brancher ensuite les seances, presences et contenus coach.</p>
+                <p>Brancher ensuite les séances, presences et contenus coach.</p>
               </div>
             </CardContent>
           </Card>

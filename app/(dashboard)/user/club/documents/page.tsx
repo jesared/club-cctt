@@ -25,9 +25,9 @@ import { getCurrentSession } from "@/lib/session";
 
 const availableDocuments = [
   {
-    title: "Horaires et creneaux",
+    title: "Horaires et créneaux",
     description:
-      "Reference utile pour les seances, les ouvertures de salle et l'organisation hebdomadaire.",
+      "Reference utile pour les séances, les ouvertures de salle et l'organisation hebdomadaire.",
     href: "/club/horaires",
     badge: "Disponible",
     icon: CalendarClock,
@@ -35,7 +35,7 @@ const availableDocuments = [
   {
     title: "Tarifs et formules",
     description:
-      "Base commune pour repondre aux questions d'adhesion, de cotisation et d'inscription.",
+      "Base commune pour répondre aux questions d'adhésion, de cotisation et d'inscription.",
     href: "/club/tarifs",
     badge: "Disponible",
     icon: FileText,
@@ -43,7 +43,7 @@ const availableDocuments = [
   {
     title: "Comite directeur",
     description:
-      "Vue rapide sur les responsables du club et les interlocuteurs deja affiches sur le site.",
+      "Vue rapide sur les responsables du club et les interlocuteurs déjà affiches sur le site.",
     href: "/club/comite-directeur",
     badge: "Disponible",
     icon: Users,
@@ -67,7 +67,7 @@ const comingSoonFolders = [
   {
     title: "Communication",
     description:
-      "Logos, affiches, visuels partenaires et modeles de publication.",
+      "Logos, affiches, visuels partenaires et modèles de publication.",
   },
   {
     title: "Organisation evenements",
@@ -96,7 +96,7 @@ export default async function UserClubDocumentsPage() {
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold">Documents du club</h1>
           <p className="max-w-3xl text-sm text-muted-foreground">
-            Cette premiere version rassemble les ressources deja exploitables
+            Cette première version rassemble les ressources déjà exploitables
             dans le site et pose la structure de la future bibliotheque
             interne.
           </p>
@@ -111,7 +111,7 @@ export default async function UserClubDocumentsPage() {
             </p>
             <p className="text-3xl font-semibold">{availableDocuments.length}</p>
             <p className="text-xs text-muted-foreground">
-              Liens utiles deja consultables par l'equipe club.
+              Liens utiles déjà consultables par l'équipe club.
             </p>
           </CardContent>
         </Card>
@@ -133,8 +133,8 @@ export default async function UserClubDocumentsPage() {
             </p>
             <p className="text-lg font-semibold">Base commune</p>
             <p className="text-xs text-muted-foreground">
-              Utiliser cette page comme point d'entree avant un vrai depot de
-              fichiers reserves.
+              Utiliser cette page comme point d'entree avant un vrai dépôt de
+              fichiers réservés.
             </p>
           </CardContent>
         </Card>
@@ -143,10 +143,10 @@ export default async function UserClubDocumentsPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
               Prochaine etape
             </p>
-            <p className="text-lg font-semibold">Depot interne</p>
+            <p className="text-lg font-semibold">Dépôt interne</p>
             <p className="text-xs text-muted-foreground">
-              Ajouter plus tard de vrais PDF, modeles et justificatifs reserves
-              a l'equipe.
+              Ajouter plus tard de vrais PDF, modèles et justificatifs réservés
+              a l'équipe.
             </p>
           </CardContent>
         </Card>
@@ -156,7 +156,7 @@ export default async function UserClubDocumentsPage() {
         <div>
           <h2 className="text-xl font-semibold">Ressources disponibles</h2>
           <p className="text-sm text-muted-foreground">
-            Des points d'entree deja utiles pour repondre aux questions
+            Des points d'entree déjà utiles pour répondre aux questions
             courantes et retrouver les informations officielles du club.
           </p>
         </div>
@@ -201,10 +201,10 @@ export default async function UserClubDocumentsPage() {
 
       <section className="space-y-4">
         <div>
-          <h2 className="text-xl font-semibold">Bibliotheques a preparer</h2>
+          <h2 className="text-xl font-semibold">Bibliotheques a préparer</h2>
           <p className="text-sm text-muted-foreground">
             La structure est prete pour accueillir ensuite de vrais contenus
-            internes par categorie.
+            internes par catégorie.
           </p>
         </div>
 

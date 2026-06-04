@@ -49,7 +49,7 @@ export default async function UserClubContactsPage() {
           <h1 className="text-2xl font-semibold">Contacts utiles</h1>
           <p className="max-w-3xl text-sm text-muted-foreground">
             Un annuaire simple pour retrouver les points de contact du club, le
-            noyau dirigeant et les reperes deja visibles dans le site.
+            noyau dirigeant et les repères déjà visibles dans le site.
           </p>
         </div>
       </header>
@@ -109,7 +109,7 @@ export default async function UserClubContactsPage() {
               Contact club
             </CardTitle>
             <CardDescription>
-              Les coordonnees centrales deja configurees sur le site.
+              Les coordonnées centrales déjà configurees sur le site.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 text-sm">
@@ -140,10 +140,10 @@ export default async function UserClubContactsPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ShieldCheck className="h-4 w-4 text-primary" />
-              Equipe visible
+              Équipe visible
             </CardTitle>
             <CardDescription>
-              Les personnes deja affichees comme reperes club dans les contenus.
+              Les personnes déjà affichees comme repères club dans les contenus.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">

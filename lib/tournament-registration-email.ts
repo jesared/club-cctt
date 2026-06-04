@@ -76,9 +76,9 @@ export function buildTournamentRegistrationPlayerText(
   return [
     `Bonjour ${payload.firstName},`,
     "",
-    `Votre demande d'inscription au ${context.tournamentName} a bien ete enregistree.`,
+    `Votre demande d'inscription au ${context.tournamentName} a bien été enregistree.`,
     "",
-    "Recapitulatif:",
+    "Récapitulatif:",
     `- Joueur: ${payload.firstName} ${payload.lastName}`,
     `- Licence: ${payload.licenseNumber}`,
     `- Club: ${payload.club}`,

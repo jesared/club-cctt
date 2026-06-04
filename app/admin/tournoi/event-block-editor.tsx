@@ -134,7 +134,7 @@ export default function EventBlockEditor() {
         <div className="flex flex-wrap items-start justify-between gap-3 rounded-lg border bg-background/60 p-3">
           <div className="min-w-0 flex-1">
             <p className="text-xs uppercase tracking-wide text-muted-foreground">
-              Apercu
+              Aperçu
             </p>
             <p className="mt-2 text-sm font-semibold text-foreground">
               {form.eventEnabled ? form.eventTitle || "Evenement du club" : "Bloc masque"}

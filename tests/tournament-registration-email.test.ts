@@ -34,7 +34,7 @@ const context = {
     },
     {
       code: "OPEN",
-      label: "Toutes categories",
+      label: "Toutes catégories",
       startAt: new Date("2027-04-03T13:30:00.000Z"),
       feeOnlineCents: 1100,
       status: RegistrationEventStatus.WAITLISTED,

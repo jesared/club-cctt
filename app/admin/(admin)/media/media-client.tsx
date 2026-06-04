@@ -371,11 +371,11 @@ export default function MediaUploadClient() {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={previewUrl}
-                    alt="Apercu"
+                    alt="Aperçu"
                     className="max-h-[220px] w-full rounded-lg object-contain"
                   />
                 ) : (
-                  <span className="text-sm">Apercu de l&apos;image</span>
+                  <span className="text-sm">Aperçu de l&apos;image</span>
                 )}
               </div>
 

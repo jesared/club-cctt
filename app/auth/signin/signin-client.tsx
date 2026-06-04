@@ -110,7 +110,7 @@ export default function SignInClient() {
           </div>
           {emailStatus === "sent" ? (
             <p className="text-xs text-emerald-500">
-              Lien envoye. Verifiez votre email.
+              Lien envoye. Vérifiez votre email.
             </p>
           ) : null}
           {emailStatus === "error" ? (

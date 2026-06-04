@@ -27,7 +27,7 @@ const bureauResources = [
   {
     title: "Gestion utilisateurs",
     description:
-      "Verifier les roles bureau, club et entraineur pour garder les acces coherents.",
+      "Vérifier les roles bureau, club et entraineur pour garder les acces coherents.",
     href: "/admin/users",
     icon: BriefcaseBusiness,
     badge: "Disponible",
@@ -41,7 +41,7 @@ const bureauResources = [
     badge: "Disponible",
   },
   {
-    title: "Tarifs et adhesion",
+    title: "Tarifs et adhésion",
     description:
       "Base commune pour les echanges sur cotisations, licences et inscriptions.",
     href: "/club/tarifs",
@@ -51,7 +51,7 @@ const bureauResources = [
   {
     title: "Comite directeur",
     description:
-      "Vue publique actuelle sur l'equipe dirigeante, utile comme point de verification.",
+      "Vue publique actuelle sur l'équipe dirigeante, utile comme point de verification.",
     href: "/club/comite-directeur",
     icon: Shield,
     badge: "Disponible",
@@ -69,7 +69,7 @@ const bureauFolders = [
   },
   {
     title: "Tresorerie",
-    description: "Budget, pieces comptables, echeances et justificatifs.",
+    description: "Budget, pièces comptables, echeances et justificatifs.",
   },
 ];
 
@@ -94,7 +94,7 @@ export default async function UserBureauDocumentsPage() {
           <h1 className="text-2xl font-semibold">Documents bureau</h1>
           <p className="max-w-3xl text-sm text-muted-foreground">
             Cette page pose la base documentaire du bureau: d'abord avec les
-            references deja presentes sur le site, puis avec des categories
+            references déjà presentes sur le site, puis avec des catégories
             claires pour accueillir les vrais documents internes.
           </p>
         </div>
@@ -108,7 +108,7 @@ export default async function UserBureauDocumentsPage() {
             </p>
             <p className="text-3xl font-semibold">{bureauResources.length}</p>
             <p className="text-xs text-muted-foreground">
-              Points d'entree deja exploitables par le bureau.
+              Points d'entree déjà exploitables par le bureau.
             </p>
           </CardContent>
         </Card>
@@ -130,16 +130,16 @@ export default async function UserBureauDocumentsPage() {
             </p>
             <p className="text-lg font-semibold">Base de reference</p>
             <p className="text-xs text-muted-foreground">
-              Unifier les sources avant de stocker de vrais fichiers reserves.
+              Unifier les sources avant de stocker de vrais fichiers réservés.
             </p>
           </CardContent>
         </Card>
         <Card className="border-border/70 bg-card/95 shadow-xs [background-image:none]">
           <CardContent className="space-y-2 p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Prochaine evolution
+              Prochaine évolution
             </p>
-            <p className="text-lg font-semibold">Depot bureau</p>
+            <p className="text-lg font-semibold">Dépôt bureau</p>
             <p className="text-xs text-muted-foreground">
               Ajouter ensuite comptes-rendus, PDF internes et dossiers sensibles.
             </p>
@@ -151,7 +151,7 @@ export default async function UserBureauDocumentsPage() {
         <div>
           <h2 className="text-xl font-semibold">References disponibles</h2>
           <p className="text-sm text-muted-foreground">
-            Ces ressources existantes peuvent deja servir de base commune au
+            Ces ressources existantes peuvent déjà servir de base commune au
             bureau avant l'ouverture d'une vraie bibliotheque privee.
           </p>
         </div>
@@ -193,7 +193,7 @@ export default async function UserBureauDocumentsPage() {
               Structure documentaire recommandee
             </CardTitle>
             <CardDescription>
-              Une organisation simple pour eviter que les pieces du bureau
+              Une organisation simple pour éviter que les pièces du bureau
               partent dans tous les sens.
             </CardDescription>
           </CardHeader>
@@ -220,7 +220,7 @@ export default async function UserBureauDocumentsPage() {
             </CardTitle>
             <CardDescription>
               Commencer par centraliser les references, puis brancher un vrai
-              depot de fichiers reserves dans une etape suivante.
+              dépôt de fichiers réservés dans une etape suivante.
             </CardDescription>
           </CardHeader>
         </Card>

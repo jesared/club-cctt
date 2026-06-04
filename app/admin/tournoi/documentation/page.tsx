@@ -27,7 +27,7 @@ const sections = [
     href: "/admin/tournoi/documentation/nouveau",
     items: [
       "Dupliquer une edition existante pour repartir d'une base reelle.",
-      "Recaler les dates et verifier les tableaux avant publication.",
+      "Recaler les dates et vérifier les tableaux avant publication.",
       "Garder les inscriptions et paiements separes de la nouvelle edition.",
     ],
   },

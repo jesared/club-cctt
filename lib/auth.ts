@@ -73,7 +73,7 @@ async function sendMagicLinkEmail({
       <div style="font-family:Arial,Helvetica,sans-serif;line-height:1.6;color:#111;">
         <h2 style="margin:0 0 12px;">Connexion a ${appName}</h2>
         <p>Bonjour,</p>
-        <p>Voici votre lien de connexion securise :</p>
+        <p>Voici votre lien de connexion sécurisé :</p>
         <p style="margin:20px 0;">
           <a href="${url}" style="background:#111;color:#fff;padding:10px 16px;border-radius:6px;text-decoration:none;display:inline-block;">
             Se connecter
@@ -84,7 +84,7 @@ async function sendMagicLinkEmail({
           <span>${url}</span>
         </p>
         <p style="font-size:12px;color:#777;">
-          Demande effectuee pour <strong>${host}</strong>. Si vous n'etes pas a l'origine de cette demande, ignorez cet email.
+          Demande effectuée pour <strong>${host}</strong>. Si vous n'etes pas a l'origine de cette demande, ignorez cet email.
         </p>
       </div>
     `,

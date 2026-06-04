@@ -71,7 +71,7 @@ export function getTournamentRegistrationStatus(
       state: "UNAVAILABLE",
       canRegister: false,
       label: "Dates a confirmer",
-      message: "Les dates d'inscription n'ont pas encore ete confirmees.",
+      message: "Les dates d'inscription n'ont pas encore été confirmées.",
     };
   }
 

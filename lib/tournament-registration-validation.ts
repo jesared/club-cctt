@@ -124,12 +124,12 @@ export function validateAndNormalizeRegistration(
   if (!/^\d{1,5}$/.test(points)) {
     return {
       ok: false,
-      message: "Les points doivent etre un nombre positif.",
+      message: "Les points doivent être un nombre positif.",
     };
   }
 
   if (!["M", "F"].includes(gender)) {
-    return { ok: false, message: "Le genre doit etre M ou F." };
+    return { ok: false, message: "Le genre doit être M ou F." };
   }
 
   if (tables.length === 0) {

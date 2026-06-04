@@ -449,8 +449,8 @@ export default function Sidebar({
                       collapsed && !mobile && "h-7 w-7",
                     )}
                     onClick={() => void signOutToHome()}
-                    aria-label="DÃ©connexion"
-                    title="DÃ©connexion"
+                    aria-label="Déconnexion"
+                    title="Déconnexion"
                   >
                     <LogOut className="h-3.5 w-3.5" />
                     {!collapsed ? "Déconnexion" : null}

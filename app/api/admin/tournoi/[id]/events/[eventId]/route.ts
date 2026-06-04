@@ -46,7 +46,7 @@ export async function PUT(
 
   if (!isEditable(tournament.startDate)) {
     return NextResponse.json(
-      { error: "Le tournoi a deja demarre, modification impossible." },
+      { error: "Le tournoi a déjà démarré, modification impossible." },
       { status: 409 },
     );
   }
@@ -127,7 +127,7 @@ export async function DELETE(
 
   if (!isEditable(tournament.startDate)) {
     return NextResponse.json(
-      { error: "Le tournoi a deja demarre, suppression impossible." },
+      { error: "Le tournoi a déjà démarré, suppression impossible." },
       { status: 409 },
     );
   }

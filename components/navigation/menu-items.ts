@@ -283,7 +283,7 @@ export const navigation: MenuSection[] = [
         label: "Liste des inscrits",
         icon: CalendarCheck,
       },
-      { href: "/tournoi/resultats", label: "Resultats", icon: Trophy },
+      { href: "/tournoi/resultats", label: "Résultats", icon: Trophy },
       {
         href: "/tournoi/palmares",
         label: "Palmares",

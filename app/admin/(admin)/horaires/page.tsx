@@ -399,7 +399,7 @@ export default function AdminHorairesPage() {
 
                   {jour.seances.map((seance, seanceIndex) => (
                     <div
-                      key={`seance-${jourIndex}-${seanceIndex}`}
+                      key={`séance-${jourIndex}-${seanceIndex}`}
                       className="rounded-2xl border border-border/70 bg-background/70 p-4"
                     >
                       <div className="flex flex-wrap gap-2">

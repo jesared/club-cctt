@@ -1,21 +1,21 @@
 # Checklist De Recette Pre-Lancement
 
-Cette checklist sert a valider que le site est pret a etre mis en ligne sans blocage majeur. L'objectif n'est pas de tout retester indefiniment, mais de verifier les parcours critiques, les etats degradés visibles et les fonctions sensibles avant le go-live.
+Cette checklist sert a valider que le site est prêt a être mis en ligne sans blocage majeur. L'objectif n'est pas de tout retester indéfiniment, mais de vérifier les parcours critiques, les états degradés visibles et les fonctions sensibles avant le go-live.
 
-## Regles D'Usage
+## Règles D'Usage
 
 - Faire la recette sur mobile et desktop.
 - Tester avec un compte non connecte, un compte membre et un compte admin.
 - Noter chaque point avec `OK`, `A corriger`, ou `Non applicable`.
-- En cas d'erreur, noter l'URL, l'action effectuee et le resultat observe.
+- En cas d'erreur, noter l'URL, l'action effectuée et le résultat observe.
 
 ## 1. Verification Technique De Base
 
 - `npm run lint` passe.
 - `npm run build` passe.
 - `npx vitest run --pool=vmThreads` passe.
-- Le site demarre sans erreur serveur bloquante.
-- Aucune erreur console bloquante n'apparait sur les pages critiques.
+- Le site démarré sans erreur serveur bloquante.
+- Aucune erreur console bloquante n'apparaît sur les pages critiques.
 - Les variables de production sont bien renseignees.
 - L'authentification Google et les secrets d'auth sont valides.
 - Les formulaires publics ont une vraie configuration d'envoi.
@@ -42,7 +42,7 @@ Cette checklist sert a valider que le site est pret a etre mis en ligne sans blo
 ### Horaires
 
 - [app/(dashboard)/club/horaires/page.tsx](C:/Users/User/Documents/Web/cctt-club/app/(dashboard)/club/horaires/page.tsx) charge sans erreur.
-- Les creneaux s'affichent.
+- Les créneaux s'affichent.
 - Le badge de fraicheur des donnees est coherent.
 - Le fallback degrade reste compréhensible si les donnees externes sont absentes.
 
@@ -63,7 +63,7 @@ Cette checklist sert a valider que le site est pret a etre mis en ligne sans blo
 ### Contact
 
 - [app/(dashboard)/club/contact/page.tsx](C:/Users/User/Documents/Web/cctt-club/app/(dashboard)/club/contact/page.tsx) charge sans erreur.
-- Les coordonnees club sont correctes.
+- Les coordonnées club sont correctes.
 - Si le formulaire est actif, il est visible et soumis correctement.
 - Si le formulaire est inactif, le message de fallback et l'e-mail direct sont bien visibles.
 - Les motifs de contact pre-remplissent bien le sujet.
@@ -73,7 +73,7 @@ Cette checklist sert a valider que le site est pret a etre mis en ligne sans blo
 - Un visiteur non connecte peut ouvrir `/auth/signin`.
 - La connexion fonctionne.
 - La deconnexion fonctionne.
-- La redirection apres connexion revient bien sur la page demandee.
+- La redirection après connexion revient bien sur la page demandee.
 - Un utilisateur non connecte tente `/user` et est bien redirige vers la connexion.
 - Un utilisateur non admin tente `/admin` et est bien redirige/refuse proprement.
 
@@ -93,13 +93,13 @@ Cette checklist sert a valider que le site est pret a etre mis en ligne sans blo
 - Si la config d'envoi n'est pas prete, le bloc d'indisponibilite s'affiche clairement.
 - La recherche FFTT fonctionne avec une licence valide.
 - Une licence invalide retourne un message propre.
-- Les champs joueur se remplissent correctement apres lookup FFTT.
+- Les champs joueur se remplissent correctement après lookup FFTT.
 - Le filtrage des tableaux correspond bien au genre et aux points.
 - Les tableaux complets passent bien en logique liste d'attente.
-- Le recapitulatif avant envoi est coherent.
-- Une soumission valide retourne un message de succes clair.
+- Le récapitulatif avant envoi est coherent.
+- Une soumission valide retourne un message de succès clair.
 - Une double inscription retourne un message clair.
-- Le lien vers `/user/inscriptions` apparait quand il doit apparaitre.
+- Le lien vers `/user/inscriptions` apparaît quand il doit apparaitre.
 
 ### Pages Tournoi Secondaires
 
@@ -112,7 +112,7 @@ Cette checklist sert a valider que le site est pret a etre mis en ligne sans blo
 
 ### Tableau De Bord Utilisateur
 
-- [app/(dashboard)/user/page.tsx](C:/Users/User/Documents/Web/cctt-club/app/(dashboard)/user/page.tsx) charge apres connexion.
+- [app/(dashboard)/user/page.tsx](C:/Users/User/Documents/Web/cctt-club/app/(dashboard)/user/page.tsx) charge après connexion.
 - Les cartes principales sont coherentes.
 - Les notifications recentes s'affichent.
 - Les liens vers inscriptions, paiements et documents fonctionnent.
@@ -162,11 +162,11 @@ Cette checklist sert a valider que le site est pret a etre mis en ligne sans blo
 - `/user/entraineur/groupes` charge.
 - `/user/entraineur/documents` charge.
 
-### Controle D'Acces
+### Contrôle D'Acces
 
-- Un utilisateur sans role Club est bloque sur les pages Club reservees.
-- Un utilisateur sans role Bureau est bloque sur les pages Bureau reservees.
-- Un utilisateur sans role Entraineur est bloque sur les pages Entraineur reservees.
+- Un utilisateur sans role Club est bloque sur les pages Club réservées.
+- Un utilisateur sans role Bureau est bloque sur les pages Bureau réservées.
+- Un utilisateur sans role Entraineur est bloque sur les pages Entraineur réservées.
 - Les redirections `forbidden` restent comprehensibles.
 
 ## 8. Administration
@@ -221,7 +221,7 @@ Cette checklist sert a valider que le site est pret a etre mis en ligne sans blo
 - Les pointages s'affichent.
 - Les exports critiques se generent sans erreur.
 
-## 10. Etats Degrades Et Cas Limites
+## 10. États Degrades Et Cas Limites
 
 - Le site reste exploitable si Drive ne repond pas.
 - Le site reste exploitable si aucun tournoi publie n'existe.
@@ -233,9 +233,9 @@ Cette checklist sert a valider que le site est pret a etre mis en ligne sans blo
 
 - Tous les points critiques ci-dessus sont `OK`.
 - Aucun point `A corriger` ne concerne auth, admin, contact ou inscription tournoi.
-- Les variables de prod reelles ont ete verifiees une derniere fois.
+- Les variables de prod réelles ont été vérifiées une dernière fois.
 - Une sauvegarde / possibilite de rollback est connue.
-- La personne qui publie sait comment verifier rapidement la sante du site apres mise en ligne.
+- La personne qui publie sait comment vérifier rapidement la santé du site après mise en ligne.
 
 ## Verdict
 

@@ -79,7 +79,7 @@ export function buildScheduleNotification(
     type: "SCHEDULE",
     title: "Planning du club mis a jour",
     content:
-      "Les horaires et creneaux du club viennent d'etre modifies. Verifiez l'agenda interne pour consulter la derniere version.",
+      "Les horaires et créneaux du club viennent d'être modifiés. Vérifiez l'agenda interne pour consulter la dernière version.",
     href: "/user/club/agenda",
     priority: "HIGH",
     sourceId: "admin",

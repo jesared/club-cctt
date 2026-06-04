@@ -277,11 +277,11 @@ export async function POST(request: NextRequest) {
       message:
         waitlistedTables.length > 0
           ? delivery.playerConfirmed
-            ? `Inscription envoyée. Vous êtes sur liste d'attente pour : ${waitlistedTables.join(", ")}. Un e-mail recapitulatif vient de vous etre envoye.`
+            ? `Inscription envoyée. Vous êtes sur liste d'attente pour : ${waitlistedTables.join(", ")}. Un e-mail récapitulatif vient de vous être envoye.`
             : `Inscription envoyée. Vous êtes sur liste d'attente pour : ${waitlistedTables.join(", ")}.`
           : delivery.playerConfirmed
-            ? "Inscription envoyée avec succes. Un e-mail recapitulatif vient de vous etre envoye."
-            : "Inscription envoyée avec succes. Votre dossier est bien enregistre.",
+            ? "Inscription envoyée avec succès. Un e-mail récapitulatif vient de vous être envoye."
+            : "Inscription envoyée avec succès. Votre dossier est bien enregistre.",
     },
     { status: 200 },
   );

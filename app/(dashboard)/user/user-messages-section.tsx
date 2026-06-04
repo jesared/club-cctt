@@ -105,7 +105,7 @@ export default function UserMessagesSection({
             Aucun message du club pour le moment.
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Les prochaines annonces apparaitront ici.
+            Les prochaines annonces apparaîtront ici.
           </p>
         </CardContent>
       </Card>

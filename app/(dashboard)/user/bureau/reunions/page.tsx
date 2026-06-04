@@ -32,7 +32,7 @@ const meetingChecklist = [
   "Valider la date, le lieu et les participants du prochain bureau.",
   "Rassembler les points a traiter: budget, salle, compet, communication.",
   "Noter les decisions et les responsables avant diffusion.",
-  "Suivre les actions ouvertes au debut de la reunion suivante.",
+  "Suivre les actions ouvertes au début de la réunion suivante.",
 ];
 
 const agendaTemplate = [
@@ -81,7 +81,7 @@ export default async function UserBureauReunionsPage() {
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold">Reunions du bureau</h1>
           <p className="max-w-3xl text-sm text-muted-foreground">
-            Cette premiere version sert de base de pilotage pour organiser les
+            Cette première version sert de base de pilotage pour organiser les
             reunions, retrouver les participants et cadrer un fonctionnement
             commun avant l'ajout de comptes-rendus structurés.
           </p>
@@ -96,7 +96,7 @@ export default async function UserBureauReunionsPage() {
             </p>
             <p className="text-3xl font-semibold">{bureauCount}</p>
             <p className="text-xs text-muted-foreground">
-              Comptes explicitement identifies comme bureau.
+              Comptes explicitement identifiés comme bureau.
             </p>
           </CardContent>
         </Card>
@@ -125,7 +125,7 @@ export default async function UserBureauReunionsPage() {
         <Card className="border-border/70 bg-card/95 shadow-xs [background-image:none]">
           <CardContent className="space-y-2 p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Prochaine evolution
+              Prochaine évolution
             </p>
             <p className="text-lg font-semibold">Comptes-rendus</p>
             <p className="text-xs text-muted-foreground">
@@ -169,7 +169,7 @@ export default async function UserBureauReunionsPage() {
               Check-list de preparation
             </CardTitle>
             <CardDescription>
-              Les reflexes utiles pour passer d'une reunion a une vraie boucle
+              Les reflexes utiles pour passer d'une réunion a une vraie boucle
               de suivi.
             </CardDescription>
           </CardHeader>
@@ -188,7 +188,7 @@ export default async function UserBureauReunionsPage() {
         <div>
           <h2 className="text-xl font-semibold">Participants du bureau</h2>
           <p className="text-sm text-muted-foreground">
-            Les comptes deja identifies pour les acces bureau et la coordination
+            Les comptes déjà identifiés pour les acces bureau et la coordination
             des reunions.
           </p>
         </div>

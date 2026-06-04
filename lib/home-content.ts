@@ -65,7 +65,7 @@ const LEGACY_HOME_TEXT_FIXES = new Map<string, string>([
     defaultHomeContent.heroSubtitle,
   ],
   [
-    "Club de tennis de table a Chalons-en-Champagne - loisirs et competition, jeunes et adultes.",
+    "Club de tennis de table a Chalons-en-Champagne - loisirs et compétition, jeunes et adultes.",
     defaultHomeContent.heroSubtitle,
   ],
   [
@@ -73,16 +73,16 @@ const LEGACY_HOME_TEXT_FIXES = new Map<string, string>([
     defaultHomeContent.welcomeText1,
   ],
   [
-    "Encadre par une equipe d'entraineurs diplomes, le club met l'accent sur la progression, le respect et le plaisir du jeu.",
+    "Encadre par une équipe d'entraineurs diplomes, le club met l'accent sur la progression, le respect et le plaisir du jeu.",
     defaultHomeContent.welcomeText2,
   ],
   [
     "Enfants, adultes, debutants ou joueurs confirmes : chacun trouve sa place au CCTT.",
     defaultHomeContent.highlight1Text,
   ],
-  ["Loisir & competition", defaultHomeContent.highlight2Title],
+  ["Loisir & compétition", defaultHomeContent.highlight2Title],
   [
-    "Une pratique adaptee a vos objectifs, du loisir a la competition officielle.",
+    "Une pratique adaptee a vos objectifs, du loisir a la compétition officielle.",
     defaultHomeContent.highlight2Text,
   ],
   [

@@ -137,7 +137,7 @@ const steps: StepDefinition[] = [
     id: "review",
     title: "Validation finale",
     shortTitle: "Validation",
-    description: "Controle du dossier avant envoi.",
+    description: "Contrôle du dossier avant envoi.",
     icon: ClipboardCheck,
   },
 ];
@@ -806,7 +806,7 @@ export default function TournamentRegistrationForm({
       setFeedback({
         type: "error",
         message:
-          "Verifiez les informations signalees avant d'envoyer votre demande.",
+          "Vérifiez les informations signalees avant d'envoyer votre demande.",
       });
       focusWizardTop();
       return;
@@ -854,7 +854,7 @@ export default function TournamentRegistrationForm({
         message:
           error instanceof Error
             ? error.message
-            : "Envoi impossible pour le moment. Verifiez vos informations, puis reessayez dans quelques minutes.",
+            : "Envoi impossible pour le moment. Vérifiez vos informations, puis reessayez dans quelques minutes.",
       });
       focusWizardTop();
     } finally {

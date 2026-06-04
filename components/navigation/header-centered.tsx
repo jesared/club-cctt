@@ -107,8 +107,8 @@ export default function HeaderCentered({
           description: "Decouvrir le club, ses horaires et ses infos utiles.",
           cta: { href: "/club/contact", label: "Contacter le club" },
           items: {
-            "/club/horaires": "Creneaux, salles et periodes d'ouverture.",
-            "/club/tarifs": "Tarifs et formules d'adhesion.",
+            "/club/horaires": "Créneaux, salles et periodes d'ouverture.",
+            "/club/tarifs": "Tarifs et formules d'adhésion.",
             "/club/partenaires": "Soutiens et partenaires du club.",
             "/club/comite-directeur": "Équipe dirigeante du club.",
             "/club/contact": "Contact et localisation.",
@@ -117,13 +117,13 @@ export default function HeaderCentered({
         Tournoi: {
           eyebrow: "Tournoi",
           icon: Trophy,
-          description: "Suivre le tournoi, l'inscription et les resultats.",
+          description: "Suivre le tournoi, l'inscription et les résultats.",
           cta: { href: "/tournoi/inscription", label: "S'inscrire au tournoi" },
           items: {
-            "/tournoi": "Presentation et dates cles.",
+            "/tournoi": "Presentation et dates clés.",
             "/tournoi/inscription": "Formulaire d'inscription en ligne.",
             "/tournoi/liste-inscrits": "Liste des participants.",
-            "/tournoi/resultats": "Resultats et classements.",
+            "/tournoi/resultats": "Résultats et classements.",
             "/tournoi/palmares": "Palmares des editions precedentes.",
             "/tournoi/affiches": "Affiches et supports officiels.",
           } as Record<string, string>,
@@ -775,7 +775,7 @@ export default function HeaderCentered({
                                   Rien de nouveau pour le moment
                                 </p>
                                 <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                                  Les prochaines annonces du club apparaitront ici.
+                                  Les prochaines annonces du club apparaîtront ici.
                                 </p>
                               </div>
                             ) : (

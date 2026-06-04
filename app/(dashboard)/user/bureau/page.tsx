@@ -47,7 +47,7 @@ export default async function UserBureauPage() {
           href: "/user/bureau/documents",
           title: "Documents bureau",
           description:
-            "Pieces administratives, references et dossiers a partager entre membres du bureau.",
+            "Pièces administratives, references et dossiers a partager entre membres du bureau.",
           icon: FileText,
         },
         {
@@ -62,7 +62,7 @@ export default async function UserBureauPage() {
           href: "/user/bureau/finances",
           title: "Finances",
           description:
-            "Documents de tresorerie, pieces de suivi et echeances administratives.",
+            "Documents de tresorerie, pièces de suivi et echeances administratives.",
           icon: Wallet,
           disabled: true,
         },

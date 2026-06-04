@@ -7,8 +7,8 @@ const sections = [
   {
     title: "1) Choisir l'edition source",
     items: [
-      "Repartir du tournoi le plus proche de l'edition a preparer.",
-      "Verifier le nombre de tableaux qui seront copies.",
+      "Repartir du tournoi le plus proche de l'edition a préparer.",
+      "Vérifier le nombre de tableaux qui seront copies.",
       "Les inscriptions et paiements ne sont jamais dupliques.",
     ],
   },
@@ -16,7 +16,7 @@ const sections = [
     title: "2) Recaler les dates",
     items: [
       "La page propose les memes dates avec un an d'ecart.",
-      "Les horaires des tableaux suivent le decalage entre l'ancien et le nouveau debut.",
+      "Les horaires des tableaux suivent le decalage entre l'ancien et le nouveau début.",
       "Relire les ouvertures et fermetures d'inscription.",
     ],
   },
@@ -25,7 +25,7 @@ const sections = [
     items: [
       "Creer le tournoi en brouillon.",
       "La page redirige vers l'edition du nouveau tournoi.",
-      "Verifier les tableaux, prix, categories et limites de points.",
+      "Vérifier les tableaux, prix, catégories et limites de points.",
     ],
   },
   {

@@ -342,7 +342,7 @@ export default function AdminMessagesPage() {
           helper="tous statuts confondus"
         />
         <MetricCard
-          label="Publies"
+          label="Publiés"
           value={publishedCount}
           helper="visibles par les membres"
         />
@@ -515,7 +515,7 @@ export default function AdminMessagesPage() {
             <div className="space-y-1">
               <CardTitle className="text-xl">Messages</CardTitle>
               <CardDescription>
-                Consulte les brouillons et les messages publies, modifie un
+                Consulte les brouillons et les messages publiés, modifie un
                 contenu ou retire une annonce devenue obsolete.
               </CardDescription>
             </div>
@@ -526,7 +526,7 @@ export default function AdminMessagesPage() {
                 active={messageFilter === "ALL"}
               />
               <MessageCountBadge
-                label="Publies"
+                label="Publiés"
                 value={publishedCount}
                 active={messageFilter === "PUBLISHED"}
               />
@@ -578,7 +578,7 @@ export default function AdminMessagesPage() {
                   variant={messageFilter === "PUBLISHED" ? "default" : "outline"}
                   onClick={() => setMessageFilter("PUBLISHED")}
                 >
-                  Publies
+                  Publiés
                 </Button>
                 <Button
                   type="button"
@@ -611,10 +611,10 @@ export default function AdminMessagesPage() {
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="space-y-1">
                   <p className="font-medium text-foreground">
-                    La liste des messages n&apos;a pas pu etre chargee.
+                    La liste des messages n&apos;a pas pu être chargée.
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Verifie la connexion ou reessaie dans quelques instants.
+                    Vérifié la connexion ou reessaie dans quelques instants.
                   </p>
                 </div>
                 <Button variant="outline" onClick={() => void refreshMessages()}>
@@ -629,7 +629,7 @@ export default function AdminMessagesPage() {
                   Aucun message publie pour le moment.
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Utilise le formulaire ci-dessus pour publier la premiere
+                  Utilise le formulaire ci-dessus pour publier la première
                   information du club.
                 </p>
               </div>
@@ -876,7 +876,7 @@ export default function AdminMessagesPage() {
               </div>
 
               <p className="text-sm leading-6 text-muted-foreground">
-                Verifie bien que cette annonce n&apos;est plus utile avant de
+                Vérifié bien que cette annonce n&apos;est plus utile avant de
                 confirmer la suppression.
               </p>
             </div>
@@ -1004,7 +1004,7 @@ export default function AdminMessagesPage() {
                   id="edit-message-content-help"
                   className="text-sm text-muted-foreground"
                 >
-                  Verifie les dates, le lieu et les consignes avant
+                  Vérifié les dates, le lieu et les consignes avant
                   enregistrement.
                 </span>
                 {editContentError ? (
@@ -1085,7 +1085,7 @@ export default function AdminMessagesPage() {
                   ? "Enregistrement en cours..."
                   : editTitleError || editContentError
                     ? "Le titre et le contenu sont obligatoires."
-                    : "Les changements seront visibles apres validation."}
+                    : "Les changements seront visibles après validation."}
               </p>
               <div className="flex w-full flex-col-reverse gap-2 sm:w-auto sm:flex-row">
                 <DialogClose asChild>

@@ -84,8 +84,8 @@ export async function POST(request: Request) {
           ? "Document mis a jour"
           : "Nouveau document disponible",
         content: existing
-          ? `Le document ${assetLabel} a ete mis a jour dans la bibliotheque du club.`
-          : `Le document ${assetLabel} vient d'etre ajoute dans la bibliotheque du club.`,
+          ? `Le document ${assetLabel} a été mis a jour dans la bibliotheque du club.`
+          : `Le document ${assetLabel} vient d'être ajoute dans la bibliotheque du club.`,
         href: "/user/club/documents",
         sourceId: mediaPublicId,
         createdByUserId: session.user.id,
