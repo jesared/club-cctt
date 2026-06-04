@@ -35,6 +35,7 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
     select: {
       id: true,
       name: true,
+      status: true,
       events: {
         where: {
           status: {
@@ -87,6 +88,28 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
       },
     },
   });
+
+  if (tournament?.status === "SUSPENDED") {
+    return (
+      <main className="mx-auto max-w-7xl space-y-8 px-4 py-10">
+        <Reveal>
+          <div className="space-y-4">
+            <div className="space-y-1">
+              <h1 className="text-2xl font-semibold">Liste des inscrits</h1>
+              <p className="text-sm text-muted-foreground">
+                {tournament.name} - inscriptions suspendues
+              </p>
+            </div>
+
+            <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">
+              La liste des inscrits est temporairement masquée pendant la
+              suspension des inscriptions.
+            </p>
+          </div>
+        </Reveal>
+      </main>
+    );
+  }
 
   const rawPlayers =
     tournament?.events.flatMap((event) =>

@@ -1,7 +1,6 @@
 ﻿import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Reveal from "@/components/Reveal";
-import Link from "next/link";
 import WinnersCarouselLazy from "./winners-carousel-lazy";
 
 type Winner = {
@@ -406,18 +405,6 @@ export default function TournoiPalmaresPage() {
                 </tbody>
               </table>
             </div>
-            <p className="mt-4 text-xs text-muted-foreground">
-              Source des données :{" "}
-              <Link
-                href="https://tournoi.cctt.fr/palmares/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline underline-offset-2"
-              >
-                tournoi.cctt.fr/palmares
-              </Link>
-              .
-            </p>
           </CardContent>
         </Card>
       </Reveal>
