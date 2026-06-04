@@ -8,7 +8,9 @@ import {
 } from "@prisma/client";
 import { ACTIVE_TOURNAMENT_STATUSES } from "@/lib/tournament-status";
 import {
+  buildTournamentRegistrationAdminHtml,
   buildTournamentRegistrationAdminText,
+  buildTournamentRegistrationPlayerHtml,
   buildTournamentRegistrationPlayerText,
   type RegistrationEmailContext,
 } from "./tournament-registration-email";
@@ -108,6 +110,7 @@ async function sendAdminWithResend(
       subject: `Inscription tournoi: ${payload.firstName} ${payload.lastName}`,
       reply_to: payload.email,
       text: buildTournamentRegistrationAdminText(payload, context),
+      html: buildTournamentRegistrationAdminHtml(payload, context),
     }),
   });
 
@@ -145,6 +148,7 @@ async function sendPlayerConfirmationWithResend(
       subject: `Confirmation d'inscription - ${context.tournamentName}`,
       ...(replyTo ? { reply_to: replyTo } : {}),
       text: buildTournamentRegistrationPlayerText(payload, context),
+      html: buildTournamentRegistrationPlayerHtml(payload, context),
     }),
   });
 

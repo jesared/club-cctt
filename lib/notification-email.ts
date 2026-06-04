@@ -6,6 +6,7 @@ import type {
   User,
 } from "@prisma/client";
 
+import { renderEmailTemplate } from "@/lib/email-template";
 import { prisma } from "@/lib/prisma";
 
 type NotificationEmailTarget = Pick<User, "email" | "role">;
@@ -68,14 +69,6 @@ function buildNotificationUrl(href: string | null) {
   return baseUrl ? `${baseUrl.replace(/\/$/, "")}${href}` : href;
 }
 
-function escapeHtml(value: string) {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
-
 async function sendResendEmail(input: {
   recipients: string[];
   notification: Pick<Notification, "title" | "content" | "href">;
@@ -104,17 +97,17 @@ async function sendResendEmail(input: {
     .filter(Boolean)
     .join("\n");
 
-  const html = `
-    <div style="font-family:Arial,Helvetica,sans-serif;line-height:1.6;color:#111;">
-      <h2 style="margin:0 0 12px;">${escapeHtml(input.notification.title)}</h2>
-      <p style="white-space:pre-line;">${escapeHtml(input.notification.content)}</p>
-      ${
-        url
-          ? `<p style="margin:20px 0;"><a href="${escapeHtml(url)}" style="background:#111;color:#fff;padding:10px 16px;border-radius:6px;text-decoration:none;display:inline-block;">Ouvrir dans l'espace CCTT</a></p>`
-          : ""
-      }
-    </div>
-  `;
+  const html = renderEmailTemplate({
+    eyebrow: "Notification club",
+    title: input.notification.title,
+    body: input.notification.content,
+    cta: url
+      ? {
+          label: "Ouvrir dans l'espace CCTT",
+          href: url,
+        }
+      : undefined,
+  });
 
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",

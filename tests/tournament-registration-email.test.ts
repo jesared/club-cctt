@@ -2,7 +2,9 @@ import { RegistrationEventStatus } from "@prisma/client";
 import { describe, expect, it } from "vitest";
 
 import {
+  buildTournamentRegistrationAdminHtml,
   buildTournamentRegistrationAdminText,
+  buildTournamentRegistrationPlayerHtml,
   buildTournamentRegistrationPlayerText,
 } from "../lib/tournament-registration-email";
 
@@ -59,5 +61,23 @@ describe("tournament registration email builders", () => {
     expect(text).toContain("Votre demande d'inscription");
     expect(text).toContain("liste d'attente");
     expect(text).toContain("inscriptions-tournoi@cctt.fr");
+  });
+
+  it("builds modern admin html with player details", () => {
+    const html = buildTournamentRegistrationAdminHtml(payload, context);
+
+    expect(html).toContain("<!doctype html>");
+    expect(html).toContain("Nouvelle inscription tournoi");
+    expect(html).toContain("Lina Martin");
+    expect(html).toContain("liste d&#039;attente");
+  });
+
+  it("builds modern player html with club branding", () => {
+    const html = buildTournamentRegistrationPlayerHtml(payload, context);
+
+    expect(html).toContain("Châlons-en-Champagne tennis de table");
+    expect(html).toContain("Inscription reçue, Lina");
+    expect(html).toContain("Récapitulatif");
+    expect(html).toContain("inscriptions-tournoi@cctt.fr");
   });
 });

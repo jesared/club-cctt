@@ -12,7 +12,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://club.cctt.fr",
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://cctt.fr",
   ),
   title: "Chalons-en-Champagne Tennis de Table",
   description: "Club de tennis de table a Chalons-en-Champagne",

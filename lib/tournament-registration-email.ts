@@ -1,5 +1,6 @@
 import { RegistrationEventStatus } from "@prisma/client";
 
+import { renderEmailTemplate } from "./email-template";
 import type { NormalizedRegistrationPayload } from "./tournament-registration-validation";
 
 export type RegistrationEmailEvent = {
@@ -94,4 +95,74 @@ export function buildTournamentRegistrationPlayerText(
     "Conservez ce message jusqu'au tournoi.",
     `Pour toute question, contactez l'organisation: ${context.tournamentContactEmail}`,
   ].join("\n");
+}
+
+function buildEventSummary(selectedEvents: RegistrationEmailEvent[]) {
+  return selectedEvents
+    .map(
+      (event) =>
+        `${event.code} - ${event.label} - ${formatDateTime(event.startAt)} - ${formatAmount(event.feeOnlineCents)}${
+          event.status === RegistrationEventStatus.WAITLISTED
+            ? " - liste d'attente"
+            : ""
+        }`,
+    )
+    .join("\n");
+}
+
+export function buildTournamentRegistrationAdminHtml(
+  payload: NormalizedRegistrationPayload,
+  context: RegistrationEmailContext,
+) {
+  return renderEmailTemplate({
+    eyebrow: "Nouvelle inscription tournoi",
+    title: `${payload.firstName} ${payload.lastName}`,
+    intro: `Une nouvelle demande vient d'être déposée pour ${context.tournamentName}.`,
+    infoTitle: "Coordonnées joueur",
+    infoItems: [
+      { label: "Nom", value: payload.lastName },
+      { label: "Prénom", value: payload.firstName },
+      { label: "Email", value: payload.email },
+      { label: "Téléphone", value: payload.phone },
+      { label: "Licence", value: payload.licenseNumber },
+      { label: "Points", value: payload.points || "Non renseigné" },
+      { label: "Genre", value: payload.gender || "Non renseigné" },
+      { label: "Club", value: payload.club },
+      { label: "Tableaux", value: buildEventSummary(context.selectedEvents) },
+      {
+        label: "Liste d'attente",
+        value: payload.waitlistTables.join(", ") || "Aucune",
+      },
+    ],
+  });
+}
+
+export function buildTournamentRegistrationPlayerHtml(
+  payload: NormalizedRegistrationPayload,
+  context: RegistrationEmailContext,
+) {
+  const waitlistedEvents = context.selectedEvents.filter(
+    (event) => event.status === RegistrationEventStatus.WAITLISTED,
+  );
+  const waitlistCodes = waitlistedEvents.map((event) => event.code).join(", ");
+
+  return renderEmailTemplate({
+    eyebrow: "Confirmation d'inscription",
+    title: `Inscription reçue, ${payload.firstName}`,
+    intro: `Votre demande d'inscription au ${context.tournamentName} a bien été enregistrée.`,
+    body: "Conservez ce message jusqu'au tournoi. L'organisation reviendra vers vous si une information doit être complétée.",
+    infoTitle: "Récapitulatif",
+    infoItems: [
+      { label: "Joueur", value: `${payload.firstName} ${payload.lastName}` },
+      { label: "Licence", value: payload.licenseNumber },
+      { label: "Club", value: payload.club },
+      { label: "Points", value: payload.points || "Non renseigné" },
+      { label: "Tableaux", value: buildEventSummary(context.selectedEvents) },
+    ],
+    note:
+      waitlistedEvents.length > 0
+        ? `Vous êtes actuellement sur liste d'attente pour ${waitlistCodes}.`
+        : "Tous les tableaux demandés sont bien enregistrés.",
+    footer: `Pour toute question, contactez l'organisation : ${context.tournamentContactEmail}`,
+  });
 }

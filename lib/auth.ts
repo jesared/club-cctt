@@ -4,6 +4,7 @@ import { nextCookies } from "better-auth/next-js";
 import { magicLink } from "better-auth/plugins/magic-link";
 import { createTransport } from "nodemailer";
 
+import { renderEmailTemplate } from "@/lib/email-template";
 import { prisma } from "@/lib/prisma";
 
 const googleClientId =
@@ -22,7 +23,11 @@ const authSecret =
   process.env.NEXTAUTH_SECRET;
 
 const appName = process.env.NEXT_PUBLIC_APP_NAME ?? "CCTT";
-const baseURL = process.env.BETTER_AUTH_URL ?? process.env.NEXT_PUBLIC_SITE_URL;
+const canonicalSiteURL =
+  process.env.BETTER_AUTH_URL ??
+  process.env.NEXT_PUBLIC_BETTER_AUTH_URL ??
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  "https://cctt.fr";
 const emailServer =
   process.env.EMAIL_SERVER ??
   process.env.GOOGLE_EMAIL_SERVER ??
@@ -31,6 +36,56 @@ const emailFrom =
   process.env.EMAIL_FROM ??
   process.env.GOOGLE_EMAIL_FROM ??
   process.env.GOOGLE_SMTP_FROM;
+
+function parseList(value?: string) {
+  return (value ?? "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function getHostname(value?: string) {
+  if (!value) {
+    return undefined;
+  }
+
+  try {
+    return new URL(value.startsWith("http") ? value : `https://${value}`)
+      .hostname;
+  } catch {
+    return undefined;
+  }
+}
+
+const trustedOrigins = Array.from(
+  new Set([
+    "https://cctt.fr",
+    "https://www.cctt.fr",
+    "https://club.cctt.fr",
+    process.env.BETTER_AUTH_URL,
+    process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
+    process.env.NEXT_PUBLIC_SITE_URL,
+    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined,
+    ...parseList(
+      process.env.BETTER_AUTH_TRUSTED_ORIGINS ??
+        process.env.AUTH_TRUSTED_ORIGINS,
+    ),
+  ].filter((origin): origin is string => Boolean(origin))),
+);
+
+const allowedHosts = Array.from(
+  new Set([
+    "cctt.fr",
+    "www.cctt.fr",
+    "club.cctt.fr",
+    "*.vercel.app",
+    getHostname(canonicalSiteURL),
+    getHostname(process.env.NEXT_PUBLIC_SITE_URL),
+    getHostname(process.env.VERCEL_URL),
+    getHostname(process.env.VERCEL_PROJECT_PRODUCTION_URL),
+    ...trustedOrigins.map(getHostname),
+  ].filter((host): host is string => Boolean(host))),
+);
 
 if (!googleClientId || !googleClientSecret) {
   console.error(
@@ -68,26 +123,23 @@ async function sendMagicLinkEmail({
     to: email,
     from: emailFrom,
     subject: `Votre lien de connexion ${appName}`,
-    text: `Bonjour,\n\nVoici votre lien de connexion pour ${appName} :\n${url}\n\nSi vous n'etes pas a l'origine de cette demande, ignorez cet email.\n`,
-    html: `
-      <div style="font-family:Arial,Helvetica,sans-serif;line-height:1.6;color:#111;">
-        <h2 style="margin:0 0 12px;">Connexion a ${appName}</h2>
-        <p>Bonjour,</p>
-        <p>Voici votre lien de connexion sécurisé :</p>
-        <p style="margin:20px 0;">
-          <a href="${url}" style="background:#111;color:#fff;padding:10px 16px;border-radius:6px;text-decoration:none;display:inline-block;">
-            Se connecter
-          </a>
-        </p>
-        <p style="font-size:12px;color:#555;">
-          Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :<br/>
-          <span>${url}</span>
-        </p>
-        <p style="font-size:12px;color:#777;">
-          Demande effectuée pour <strong>${host}</strong>. Si vous n'etes pas a l'origine de cette demande, ignorez cet email.
-        </p>
-      </div>
-    `,
+    text: `Bonjour,\n\nVoici votre lien de connexion pour ${appName} :\n${url}\n\nSi vous n'êtes pas à l'origine de cette demande, ignorez cet email.\n`,
+    html: renderEmailTemplate({
+      eyebrow: "Connexion sécurisée",
+      title: `Connexion à ${appName}`,
+      intro: "Bonjour,",
+      body: "Votre lien de connexion sécurisé est prêt. Il vous permet d'accéder à votre espace club.",
+      cta: {
+        label: "Se connecter",
+        href: url,
+      },
+      infoTitle: "Détails de la demande",
+      infoItems: [
+        { label: "Site", value: host },
+        { label: "Lien de secours", value: url },
+      ],
+      note: "Si vous n'êtes pas à l'origine de cette demande, vous pouvez simplement ignorer cet email.",
+    }),
   });
 
   const failed = result.rejected.concat(result.pending).filter(Boolean);
@@ -98,7 +150,12 @@ async function sendMagicLinkEmail({
 
 export const auth = betterAuth({
   appName,
-  ...(baseURL ? { baseURL } : {}),
+  baseURL: {
+    allowedHosts,
+    fallback: canonicalSiteURL,
+    protocol: canonicalSiteURL.startsWith("http://") ? "http" : "https",
+  },
+  trustedOrigins,
   ...(authSecret ? { secret: authSecret } : {}),
   database: prismaAdapter(prisma, {
     provider: "postgresql",

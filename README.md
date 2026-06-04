@@ -23,7 +23,9 @@ npm install
 
 - `DATABASE_URL` : connexion PostgreSQL.
 - `NEXT_PUBLIC_SITE_URL` : URL publique du site.
-- `BETTER_AUTH_URL` : URL utilisée par Better Auth pour les callbacks.
+- `BETTER_AUTH_URL` : URL canonique utilisée par Better Auth pour les callbacks.
+- `NEXT_PUBLIC_BETTER_AUTH_URL` : meme URL cote client, utile si l'auth est servie sur un domaine explicite.
+- `BETTER_AUTH_TRUSTED_ORIGINS` : origines autorisees separees par des virgules.
 - `AUTH_SECRET` : secret d'authentification principal.
 - `AUTH_GOOGLE_ID`
 - `AUTH_GOOGLE_SECRET`
@@ -134,7 +136,9 @@ Le projet peut être deploye sur Vercel ou tout hebergeur compatible Node.js.
 
 ### Checklist go-live minimale
 
-- `NEXT_PUBLIC_SITE_URL` et `BETTER_AUTH_URL` pointent vers le vrai domaine.
+- `NEXT_PUBLIC_SITE_URL`, `BETTER_AUTH_URL` et `NEXT_PUBLIC_BETTER_AUTH_URL` pointent vers le vrai domaine, par exemple `https://cctt.fr`.
+- `BETTER_AUTH_TRUSTED_ORIGINS` contient les variantes utilisées en production, par exemple `https://cctt.fr,https://www.cctt.fr`.
+- La console Google OAuth autorise l'URI de redirection `https://cctt.fr/api/auth/callback/google` et, si `www` reste accessible, `https://www.cctt.fr/api/auth/callback/google`.
 - Les formulaires publics ont leurs variables d'envoi configurees.
 - Les pages club chargent correctement leurs contenus externes.
 - `npm run build` passe.
