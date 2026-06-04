@@ -19,8 +19,6 @@ import { getCurrentSession } from "@/lib/session";
 import { normalizeContactContent } from "@/lib/contact-content";
 import {
   DEFAULT_EVENT_IMAGE_URL,
-  normalizeHomeContent,
-  resolveEventImageUrl,
 } from "@/lib/home-content";
 import { prisma } from "@/lib/prisma";
 import { tournamentRegistrationContent } from "@/lib/tournament-registration-content";
@@ -141,6 +139,16 @@ function buildMapDirectionsUrl(query: string) {
   return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(query)}`;
 }
 
+function resolveTournamentPosterUrl(value: string | null | undefined) {
+  if (typeof value !== "string") {
+    return "";
+  }
+
+  const normalizedValue = value.trim();
+
+  return normalizedValue === DEFAULT_EVENT_IMAGE_URL ? "" : normalizedValue;
+}
+
 export default async function TournoiHomePage() {
   const session = await getCurrentSession();
   const userEmail = session?.user?.email?.trim().toLowerCase();
@@ -185,8 +193,7 @@ export default async function TournoiHomePage() {
   const contactContent = normalizeContactContent(
     contactContentRaw ?? undefined,
   );
-  const homeContent = normalizeHomeContent(homeContentRaw ?? undefined);
-  const eventImageUrl = resolveEventImageUrl(homeContent.eventImageUrl);
+  const eventImageUrl = resolveTournamentPosterUrl(homeContentRaw?.eventImageUrl);
   const registrationStatus = getTournamentRegistrationStatus(tournament);
   const isTournamentFinished = tournament?.endDate
     ? new Date() > tournament.endDate
@@ -301,25 +308,27 @@ export default async function TournoiHomePage() {
                 ) : null}
               </div>
 
-              <div className="w-full space-y-4 lg:pt-2">
-                <div className="flex justify-start lg:justify-end">
-                  <span className="inline-flex rounded-full border border-border/70 bg-background/80 px-3 py-1 text-xs font-medium text-muted-foreground">
-                    Cliquer pour agrandir
-                  </span>
+              {eventImageUrl ? (
+                <div className="w-full space-y-4 lg:pt-2">
+                  <div className="flex justify-start lg:justify-end">
+                    <span className="inline-flex rounded-full border border-border/70 bg-background/80 px-3 py-1 text-xs font-medium text-muted-foreground">
+                      Cliquer pour agrandir
+                    </span>
+                  </div>
+                  <div className="rounded-[1.6rem] p-1 sm:p-2">
+                    <ImagePopup
+                      src={eventImageUrl}
+                      alt="Affiche officielle du tournoi CCTT"
+                      title={tournament?.name ?? "Tournoi CCTT"}
+                      width={1200}
+                      height={630}
+                      shareLabel="Affiche officielle du tournoi CCTT"
+                      previewClassName="mx-auto max-h-[260px] w-full rounded-[1.45rem] object-contain sm:max-h-[340px] lg:max-h-[540px]"
+                      popupImageClassName="max-h-[90vh] w-auto rounded-xl object-contain"
+                    />
+                  </div>
                 </div>
-                <div className="rounded-[1.6rem] p-1 sm:p-2">
-                  <ImagePopup
-                    src={eventImageUrl}
-                    alt="Affiche officielle du tournoi CCTT"
-                    title={tournament?.name ?? "Tournoi CCTT"}
-                    width={1200}
-                    height={630}
-                    shareLabel="Affiche officielle du tournoi CCTT"
-                    previewClassName="mx-auto max-h-[260px] w-full rounded-[1.45rem] object-contain sm:max-h-[340px] lg:max-h-[540px]"
-                    popupImageClassName="max-h-[90vh] w-auto rounded-xl object-contain"
-                  />
-                </div>
-              </div>
+              ) : null}
             </div>
         </section>
 
