@@ -70,7 +70,7 @@ export default async function UserClubAgendaPage() {
     prisma.tournament.findMany({
       where: {
         status: {
-          in: ["PUBLISHED", "CLOSED"],
+          in: ["PUBLISHED", "SUSPENDED", "CLOSED"],
         },
       },
       select: {

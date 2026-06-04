@@ -20,7 +20,7 @@ type TournamentSource = {
   registrationCloseAt: string | null;
   startDate: string;
   endDate: string;
-  status: "DRAFT" | "PUBLISHED" | "CLOSED" | "ARCHIVED";
+  status: "DRAFT" | "PUBLISHED" | "SUSPENDED" | "CLOSED" | "ARCHIVED";
   eventsCount: number;
 };
 

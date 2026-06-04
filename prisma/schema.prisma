@@ -382,6 +382,7 @@ enum Role {
 enum TournamentStatus {
   DRAFT
   PUBLISHED
+  SUSPENDED
   CLOSED
   ARCHIVED
 }

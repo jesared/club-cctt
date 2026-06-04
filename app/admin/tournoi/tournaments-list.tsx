@@ -12,7 +12,7 @@ type TournamentItem = {
   id: string;
   name: string;
   slug: string;
-  status: "DRAFT" | "PUBLISHED" | "CLOSED" | "ARCHIVED";
+  status: "DRAFT" | "PUBLISHED" | "SUSPENDED" | "CLOSED" | "ARCHIVED";
   startDate: string;
   endDate: string;
 };
@@ -40,6 +40,8 @@ function statusLabel(status: TournamentItem["status"]) {
       return "Actif";
     case "DRAFT":
       return "Brouillon";
+    case "SUSPENDED":
+      return "Suspendu";
     case "CLOSED":
       return "Clos";
     case "ARCHIVED":
@@ -55,6 +57,8 @@ function statusClasses(status: TournamentItem["status"]) {
       return "border-emerald-200 bg-emerald-100 text-emerald-700";
     case "DRAFT":
       return "border-amber-200 bg-amber-100 text-amber-700";
+    case "SUSPENDED":
+      return "border-orange-200 bg-orange-100 text-orange-700";
     case "ARCHIVED":
       return "border-slate-200 bg-slate-100 text-slate-700";
     case "CLOSED":
@@ -92,6 +96,7 @@ export function TournamentsList({
   const highlightedTournament =
     tournaments.find((tournament) => tournament.id === highlightedTournamentId) ??
     tournaments.find((tournament) => tournament.status === "PUBLISHED") ??
+    tournaments.find((tournament) => tournament.status === "SUSPENDED") ??
     tournaments[0] ??
     null;
 
@@ -160,6 +165,10 @@ export function TournamentsList({
                   {highlightedTournament.status === "PUBLISHED" ? (
                     <span className="inline-flex items-center rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700">
                       Actif sur le site
+                    </span>
+                  ) : highlightedTournament.status === "SUSPENDED" ? (
+                    <span className="inline-flex items-center rounded-md border border-orange-200 bg-orange-50 px-3 py-2 text-sm font-semibold text-orange-700">
+                      En ligne, inscriptions suspendues
                     </span>
                   ) : (
                     <Button
@@ -240,6 +249,10 @@ export function TournamentsList({
                             {tournament.status === "PUBLISHED" ? (
                               <span className="text-xs font-semibold text-emerald-600">
                                 Actif
+                              </span>
+                            ) : tournament.status === "SUSPENDED" ? (
+                              <span className="text-xs font-semibold text-orange-600">
+                                Suspendu
                               </span>
                             ) : (
                               <Button

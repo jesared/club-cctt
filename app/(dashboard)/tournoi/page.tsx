@@ -25,6 +25,7 @@ import {
 import { prisma } from "@/lib/prisma";
 import { tournamentRegistrationContent } from "@/lib/tournament-registration-content";
 import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-window";
+import { ACTIVE_TOURNAMENT_STATUSES } from "@/lib/tournament-status";
 import TournamentActionBar from "./tournament-action-bar";
 
 export const metadata: Metadata = {
@@ -146,7 +147,7 @@ export default async function TournoiHomePage() {
   const [tournament, contactContentRaw, homeContentRaw] = await Promise.all([
     prisma.tournament.findFirst({
       where: {
-        status: "PUBLISHED",
+        status: { in: ACTIVE_TOURNAMENT_STATUSES },
       },
       orderBy: [{ startDate: "desc" }],
       select: {

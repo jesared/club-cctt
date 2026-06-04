@@ -10,6 +10,7 @@ export type TournamentRegistrationState =
   | "UNAVAILABLE"
   | "UPCOMING"
   | "OPEN"
+  | "SUSPENDED"
   | "CLOSED";
 
 export type TournamentRegistrationStatus = {
@@ -35,7 +36,26 @@ export function getTournamentRegistrationStatus(
   tournament: TournamentRegistrationWindow | null | undefined,
   now = new Date(),
 ): TournamentRegistrationStatus {
-  if (!tournament || tournament.status !== "PUBLISHED") {
+  if (!tournament) {
+    return {
+      state: "UNAVAILABLE",
+      canRegister: false,
+      label: "Inscriptions indisponibles",
+      message: "Aucun tournoi publie n'est disponible pour le moment.",
+    };
+  }
+
+  if (tournament.status === "SUSPENDED") {
+    return {
+      state: "SUSPENDED",
+      canRegister: false,
+      label: "Inscriptions suspendues",
+      message:
+        "Les inscriptions sont temporairement suspendues. Merci de revenir un peu plus tard.",
+    };
+  }
+
+  if (tournament.status !== "PUBLISHED") {
     return {
       state: "UNAVAILABLE",
       canRegister: false,

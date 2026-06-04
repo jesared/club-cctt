@@ -21,6 +21,7 @@ import {
 } from "@/lib/home-content";
 import { prisma } from "@/lib/prisma";
 import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-window";
+import { ACTIVE_TOURNAMENT_STATUSES } from "@/lib/tournament-status";
 
 export const metadata: Metadata = {
   title: "CCTT | Club de tennis de table à Châlons-en-Champagne",
@@ -75,7 +76,7 @@ export default async function Home() {
       where: { id: "default" },
     }),
     prisma.tournament.findFirst({
-      where: { status: "PUBLISHED" },
+      where: { status: { in: ACTIVE_TOURNAMENT_STATUSES } },
       orderBy: [{ startDate: "desc" }],
       select: {
         name: true,

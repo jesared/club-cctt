@@ -16,7 +16,7 @@ export async function GET() {
   }
 
   const tournament = await prisma.tournament.findFirst({
-    where: { status: { in: ["PUBLISHED", "DRAFT"] } },
+    where: { status: { in: ["PUBLISHED", "SUSPENDED", "DRAFT"] } },
     orderBy: [{ startDate: "desc" }],
     select: { id: true },
   });

@@ -26,6 +26,7 @@ import {
 import { getCurrentSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-window";
+import { ACTIVE_TOURNAMENT_STATUSES } from "@/lib/tournament-status";
 
 const DATE_TIME_FORMATTER = new Intl.DateTimeFormat("fr-FR", {
   day: "2-digit",
@@ -67,7 +68,7 @@ export default async function MesInscriptionsPage({ searchParams }: PageProps) {
 
   const [currentTournament, registrations] = await Promise.all([
     prisma.tournament.findFirst({
-      where: { status: "PUBLISHED" },
+      where: { status: { in: ACTIVE_TOURNAMENT_STATUSES } },
       orderBy: [{ startDate: "desc" }],
       select: {
         id: true,

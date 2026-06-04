@@ -167,6 +167,8 @@ export async function PUT(
       status:
         body.status === "PUBLISHED"
           ? "PUBLISHED"
+          : body.status === "SUSPENDED"
+            ? "SUSPENDED"
           : body.status === "CLOSED"
             ? "CLOSED"
             : body.status === "ARCHIVED"

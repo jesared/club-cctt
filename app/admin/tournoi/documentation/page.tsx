@@ -16,7 +16,7 @@ const sections = [
     icon: ClipboardPen,
     href: "/admin/tournoi/documentation/preparer",
     items: [
-      "Créer le tournoi (statut DRAFT puis PUBLISHED).",
+      "Créer le tournoi (statut DRAFT puis PUBLISHED, avec SUSPENDED si les inscriptions doivent être coupées temporairement).",
       "Définir les dates d'ouverture/fermeture des inscriptions.",
       "Configurer les tableaux (codes, horaires, points, prix).",
     ],

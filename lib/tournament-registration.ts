@@ -6,6 +6,12 @@ import {
   RegistrationSource,
   type Role,
 } from "@prisma/client";
+import { ACTIVE_TOURNAMENT_STATUSES } from "@/lib/tournament-status";
+import {
+  buildTournamentRegistrationAdminText,
+  buildTournamentRegistrationPlayerText,
+  type RegistrationEmailContext,
+} from "./tournament-registration-email";
 import type { NormalizedRegistrationPayload } from "./tournament-registration-validation";
 
 export {
@@ -34,16 +40,24 @@ export async function checkRateLimit(clientIp: string) {
 
 export async function sendRegistrationNotifications(
   payload: NormalizedRegistrationPayload,
+  context: RegistrationEmailContext,
 ) {
-  const sentWithWebhook = await sendWithWebhook(payload);
-  if (sentWithWebhook) {
-    return true;
-  }
+  const adminNotifiedWithWebhook = await sendWithWebhook(payload, context);
+  const adminNotifiedWithResend = adminNotifiedWithWebhook
+    ? false
+    : await sendAdminWithResend(payload, context);
+  const playerConfirmed = await sendPlayerConfirmationWithResend(payload, context);
 
-  return sendWithResend(payload);
+  return {
+    adminNotified: adminNotifiedWithWebhook || adminNotifiedWithResend,
+    playerConfirmed,
+  };
 }
 
-async function sendWithWebhook(payload: NormalizedRegistrationPayload) {
+async function sendWithWebhook(
+  payload: NormalizedRegistrationPayload,
+  context: RegistrationEmailContext,
+) {
   const webhookUrl = process.env.TOURNAMENT_REGISTRATION_WEBHOOK_URL;
 
   if (!webhookUrl) {
@@ -57,6 +71,8 @@ async function sendWithWebhook(payload: NormalizedRegistrationPayload) {
     },
     body: JSON.stringify({
       ...payload,
+      tournamentName: context.tournamentName,
+      selectedEvents: context.selectedEvents,
       source: "cctt-tournament-registration-form",
       sentAt: new Date().toISOString(),
     }),
@@ -65,7 +81,10 @@ async function sendWithWebhook(payload: NormalizedRegistrationPayload) {
   return response.ok;
 }
 
-async function sendWithResend(payload: NormalizedRegistrationPayload) {
+async function sendAdminWithResend(
+  payload: NormalizedRegistrationPayload,
+  context: RegistrationEmailContext,
+) {
   const resendApiKey = process.env.RESEND_API_KEY;
   const to = process.env.TOURNAMENT_REGISTRATION_TO_EMAIL;
 
@@ -75,7 +94,7 @@ async function sendWithResend(payload: NormalizedRegistrationPayload) {
 
   const from =
     process.env.TOURNAMENT_REGISTRATION_FROM_EMAIL ??
-    "Inscriptions tournoi CCTT <onboarding@resend.dev>";
+    "CCTT Tournoi <contact@mail.cctt.fr>";
 
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -88,18 +107,44 @@ async function sendWithResend(payload: NormalizedRegistrationPayload) {
       to,
       subject: `Inscription tournoi: ${payload.firstName} ${payload.lastName}`,
       reply_to: payload.email,
-      text: [
-        `Nom: ${payload.lastName}`,
-        `Prenom: ${payload.firstName}`,
-        `Email: ${payload.email}`,
-        `Téléphone: ${payload.phone}`,
-        `No licence: ${payload.licenseNumber}`,
-        `Points: ${payload.points || "Non renseigné"}`,
-        `Genre: ${payload.gender || "Non renseigné"}`,
-        `Club: ${payload.club}`,
-        `Tableaux: ${payload.tables.join(", ")}`,
-        `Liste d'attente: ${payload.waitlistTables.join(", ") || "Aucune"}`,
-      ].join("\n"),
+      text: buildTournamentRegistrationAdminText(payload, context),
+    }),
+  });
+
+  return response.ok;
+}
+
+async function sendPlayerConfirmationWithResend(
+  payload: NormalizedRegistrationPayload,
+  context: RegistrationEmailContext,
+) {
+  const resendApiKey = process.env.RESEND_API_KEY;
+
+  if (!resendApiKey) {
+    return false;
+  }
+
+  const from =
+    process.env.TOURNAMENT_REGISTRATION_CONFIRMATION_FROM_EMAIL ??
+    process.env.TOURNAMENT_REGISTRATION_FROM_EMAIL ??
+    "CCTT Tournoi <contact@mail.cctt.fr>";
+
+  const replyTo =
+    process.env.TOURNAMENT_REGISTRATION_REPLY_TO_EMAIL ??
+    process.env.TOURNAMENT_REGISTRATION_TO_EMAIL;
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${resendApiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from,
+      to: payload.email,
+      subject: `Confirmation d'inscription - ${context.tournamentName}`,
+      ...(replyTo ? { reply_to: replyTo } : {}),
+      text: buildTournamentRegistrationPlayerText(payload, context),
     }),
   });
 
@@ -127,7 +172,7 @@ export async function getLatestPublishedTournamentForRegistration() {
   return withPrismaRetry(() =>
     prisma.tournament.findFirst({
       where: {
-        status: "PUBLISHED",
+        status: { in: ACTIVE_TOURNAMENT_STATUSES },
       },
       orderBy: [{ startDate: "desc" }],
       select: {
@@ -225,7 +270,10 @@ export async function getSelectedEvents(
       select: {
         id: true,
         code: true,
+        label: true,
         status: true,
+        startAt: true,
+        feeOnlineCents: true,
         gender: true,
         minPoints: true,
         maxPoints: true,

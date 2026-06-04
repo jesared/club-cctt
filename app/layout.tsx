@@ -6,6 +6,7 @@ import Header from "@/components/layout/header";
 import { getPublicMenuVisibility } from "@/lib/menu-settings";
 import { prisma } from "@/lib/prisma";
 import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-window";
+import { ACTIVE_TOURNAMENT_STATUSES } from "@/lib/tournament-status";
 
 import "./globals.css";
 
@@ -30,7 +31,7 @@ export default async function RootLayout({
   const [menuVisibility, tournament] = await Promise.all([
     getPublicMenuVisibility(),
     prisma.tournament.findFirst({
-      where: { status: "PUBLISHED" },
+      where: { status: { in: ACTIVE_TOURNAMENT_STATUSES } },
       orderBy: [{ startDate: "desc" }],
       select: {
         status: true,

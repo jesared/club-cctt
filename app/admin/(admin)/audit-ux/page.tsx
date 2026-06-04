@@ -257,7 +257,7 @@ export default async function AdminAuditUxPage() {
   const since30Days = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
   const tournament = await prisma.tournament.findFirst({
-    where: { status: "PUBLISHED" },
+    where: { status: { in: ["PUBLISHED", "SUSPENDED"] } },
     orderBy: [{ startDate: "desc" }],
     select: {
       id: true,

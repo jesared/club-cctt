@@ -38,10 +38,16 @@ Optionnel : `CONTACT_FROM_EMAIL` ou `CONTACT_WEBHOOK_URL`.
 ### Variables requises si les inscriptions tournoi sont ouvertes
 
 - `RESEND_API_KEY` + `TOURNAMENT_REGISTRATION_TO_EMAIL`
+- `TOURNAMENT_REGISTRATION_FROM_EMAIL`
 
 ou
 
 - `TOURNAMENT_REGISTRATION_WEBHOOK_URL`
+
+Recommande pour envoyer aussi un e-mail recapitulatif au joueur :
+
+- `TOURNAMENT_REGISTRATION_CONFIRMATION_FROM_EMAIL`
+- `TOURNAMENT_REGISTRATION_REPLY_TO_EMAIL`
 
 ### Variables de contenu externe
 

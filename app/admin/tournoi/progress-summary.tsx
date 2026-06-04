@@ -9,6 +9,7 @@ type ProgressSummaryProps = {
 const STATUS_LABEL: Record<TournamentProgress["registrationStatus"], string> = {
   CLOSED: "Inscriptions fermées",
   OPEN: "Inscriptions ouvertes",
+  SUSPENDED: "Inscriptions suspendues",
   UPCOMING: "Inscriptions à venir",
 };
 

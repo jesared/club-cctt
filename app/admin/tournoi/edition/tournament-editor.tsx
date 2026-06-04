@@ -27,7 +27,7 @@ type TournamentForm = {
   registrationCloseAt: string;
   startDate: string;
   endDate: string;
-  status: "DRAFT" | "PUBLISHED" | "CLOSED" | "ARCHIVED";
+  status: "DRAFT" | "PUBLISHED" | "SUSPENDED" | "CLOSED" | "ARCHIVED";
 };
 
 type EventForm = {
@@ -413,7 +413,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
     <div className="space-y-6">
       {timelineState.hasEnded ? (
         <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
-          Le tournoi est termine. Seul le statut reste modifiable ici pour pouvoir le passer sur CLOSED ou ARCHIVED.
+          Le tournoi est termine. Seul le statut reste modifiable ici pour pouvoir le passer sur SUSPENDED, CLOSED ou ARCHIVED.
         </div>
       ) : timelineState.hasStarted ? (
         <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
@@ -478,9 +478,13 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
             >
               <option value="DRAFT">DRAFT</option>
               <option value="PUBLISHED">PUBLISHED</option>
+              <option value="SUSPENDED">SUSPENDED</option>
               <option value="CLOSED">CLOSED</option>
               <option value="ARCHIVED">ARCHIVED</option>
             </select>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Utilisez <strong>SUSPENDED</strong> pour garder la page tournoi visible tout en fermant temporairement les inscriptions.
+            </p>
           </div>
           <div className="admin-field-wide">
             <label className="admin-label">Description</label>

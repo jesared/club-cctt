@@ -1,5 +1,6 @@
 ﻿import { prisma } from "@/lib/prisma";
 import { RegistrationEventStatus, RegistrationStatus } from "@prisma/client";
+import { ACTIVE_TOURNAMENT_STATUSES } from "@/lib/tournament-status";
 import {
   getEffectivePaidCents,
   getPaymentStatusFromAmounts,
@@ -134,7 +135,7 @@ export type TournamentDashboardStats = {
 };
 
 export type TournamentProgress = {
-  registrationStatus: "CLOSED" | "OPEN" | "UPCOMING";
+  registrationStatus: "CLOSED" | "OPEN" | "UPCOMING" | "SUSPENDED";
   daysToStart: number | null;
   paymentsPending: number;
   tablesFull: number;
@@ -225,7 +226,7 @@ function formatCategory(minPoints: number | null, maxPoints: number | null) {
 
 export async function getCurrentTournament() {
   const published = await prisma.tournament.findFirst({
-    where: { status: "PUBLISHED" },
+    where: { status: { in: ACTIVE_TOURNAMENT_STATUSES } },
     orderBy: [{ startDate: "desc" }],
     select: {
       id: true,
@@ -413,7 +414,9 @@ export async function getTournamentProgress(
   const registrationCloseAt = tournament.registrationCloseAt;
   let registrationStatus: TournamentProgress["registrationStatus"] = "CLOSED";
 
-  if (registrationOpenAt && now < registrationOpenAt) {
+  if (tournament.status === "SUSPENDED") {
+    registrationStatus = "SUSPENDED";
+  } else if (registrationOpenAt && now < registrationOpenAt) {
     registrationStatus = "UPCOMING";
   } else if (
     registrationOpenAt &&

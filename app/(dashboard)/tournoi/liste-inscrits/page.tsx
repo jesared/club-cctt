@@ -28,7 +28,7 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
   const tournament = await prisma.tournament.findFirst({
     where: {
       status: {
-        in: ["PUBLISHED", "DRAFT"],
+        in: ["PUBLISHED", "SUSPENDED", "DRAFT"],
       },
     },
     orderBy: [{ startDate: "desc" }],

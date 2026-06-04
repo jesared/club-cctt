@@ -35,7 +35,7 @@ export async function POST(request: Request) {
 
   await prisma.$transaction(async (tx) => {
     await tx.tournament.updateMany({
-      where: { status: "PUBLISHED", NOT: { id: tournamentId } },
+      where: { status: { in: ["PUBLISHED", "SUSPENDED"] }, NOT: { id: tournamentId } },
       data: { status: "CLOSED" },
     });
 

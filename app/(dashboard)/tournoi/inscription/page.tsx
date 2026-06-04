@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { getTournamentRegistrationNotificationAvailability } from "@/lib/public-form-availability";
 import { getCurrentSession } from "@/lib/session";
 import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-window";
+import { ACTIVE_TOURNAMENT_STATUSES } from "@/lib/tournament-status";
 import { redirect } from "next/navigation";
 
 function formatEventLabel(event: {
@@ -73,7 +74,7 @@ export default async function InscriptionsPage() {
 
   const tournament = await prisma.tournament.findFirst({
     where: {
-      status: "PUBLISHED",
+      status: { in: ACTIVE_TOURNAMENT_STATUSES },
     },
     orderBy: [{ startDate: "desc" }],
     select: {

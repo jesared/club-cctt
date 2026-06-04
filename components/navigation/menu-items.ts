@@ -171,13 +171,6 @@ export const navigation: MenuSection[] = [
         group: "Personnel",
       },
       {
-        href: "/user/parametres",
-        label: "Paramètres",
-        icon: Settings,
-        description: "Mettre à jour les préférences et accès personnels.",
-        group: "Personnel",
-      },
-      {
         href: "/user/club",
         label: "Espace club",
         icon: Building2,

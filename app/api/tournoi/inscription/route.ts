@@ -233,9 +233,28 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const sent = await sendRegistrationNotifications(payload);
+  const delivery = await sendRegistrationNotifications(payload, {
+    tournamentName: tournament.name,
+    tournamentContactEmail:
+      process.env.TOURNAMENT_REGISTRATION_REPLY_TO_EMAIL ??
+      process.env.TOURNAMENT_REGISTRATION_TO_EMAIL ??
+      "inscriptions-tournoi@cctt.fr",
+    selectedEvents: selectedEventsWithStatus.map((event) => {
+      const selectedEvent = selectedEvents.find(
+        (selected) => selected.id === event.id,
+      );
 
-  if (!sent) {
+      return {
+        code: event.code,
+        label: selectedEvent?.label ?? event.code,
+        startAt: selectedEvent?.startAt ?? new Date(),
+        feeOnlineCents: selectedEvent?.feeOnlineCents ?? 0,
+        status: event.status,
+      };
+    }),
+  });
+
+  if (!delivery.adminNotified) {
     console.error(
       "Tournament registration delivery failed despite available configuration",
       {
@@ -257,8 +276,12 @@ export async function POST(request: NextRequest) {
     {
       message:
         waitlistedTables.length > 0
-          ? `Inscription envoyée. Vous êtes sur liste d'attente pour : ${waitlistedTables.join(", ")}.`
-          : "Inscription envoyée avec succès. Vous recevrez un e-mail de confirmation après validation.",
+          ? delivery.playerConfirmed
+            ? `Inscription envoyée. Vous êtes sur liste d'attente pour : ${waitlistedTables.join(", ")}. Un e-mail recapitulatif vient de vous etre envoye.`
+            : `Inscription envoyée. Vous êtes sur liste d'attente pour : ${waitlistedTables.join(", ")}.`
+          : delivery.playerConfirmed
+            ? "Inscription envoyée avec succes. Un e-mail recapitulatif vient de vous etre envoye."
+            : "Inscription envoyée avec succes. Votre dossier est bien enregistre.",
     },
     { status: 200 },
   );

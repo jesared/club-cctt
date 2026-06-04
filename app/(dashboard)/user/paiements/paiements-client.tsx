@@ -1,6 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import {
+  CheckCircle2,
+  CircleDollarSign,
+  Clock3,
+  WalletCards,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -31,6 +37,18 @@ type Props = {
   rows: PaymentRow[];
 };
 
+function getStatusTone(statusLabel: string) {
+  if (statusLabel === "Payé") {
+    return "border-emerald-400/30 bg-emerald-500/10 text-emerald-200";
+  }
+
+  if (statusLabel === "Partiel") {
+    return "border-amber-400/40 bg-amber-400/10 text-amber-100";
+  }
+
+  return "border-sky-400/35 bg-sky-400/10 text-sky-100";
+}
+
 export default function PaiementsClient({ rows }: Props) {
   const [viewMode, setViewMode] = useState<"cards" | "list">("list");
   const [hidePaid, setHidePaid] = useState(false);
@@ -38,6 +56,13 @@ export default function PaiementsClient({ rows }: Props) {
   const filteredRows = hidePaid
     ? rows.filter((row) => row.statusLabel !== "Payé")
     : rows;
+  const totalDueCents = rows.reduce((sum, row) => sum + row.totalDueCents, 0);
+  const totalPaidCents = rows.reduce((sum, row) => sum + row.paidCents, 0);
+  const totalRemainingCents = rows.reduce(
+    (sum, row) => sum + row.remainingCents,
+    0,
+  );
+  const pendingCount = rows.filter((row) => row.remainingCents > 0).length;
 
   if (rows.length === 0) {
     return (
@@ -57,29 +82,98 @@ export default function PaiementsClient({ rows }: Props) {
   }
 
   return (
-    <>
-      <div className="flex flex-wrap items-center gap-2">
-        <Button
-          type="button"
-          variant={viewMode === "cards" ? "default" : "secondary"}
-          onClick={() => setViewMode("cards")}
-        >
-          Vue cartes
-        </Button>
-        <Button
-          type="button"
-          variant={viewMode === "list" ? "default" : "secondary"}
-          onClick={() => setViewMode("list")}
-        >
-          Vue liste
-        </Button>
-        <Button
-          type="button"
-          variant={hidePaid ? "default" : "secondary"}
-          onClick={() => setHidePaid((current) => !current)}
-        >
-          {hidePaid ? "Afficher payés" : "Masquer payés"}
-        </Button>
+    <div className="space-y-4">
+      <section className="grid gap-3 md:grid-cols-3">
+        <Card className="border-border/70 bg-card/95 shadow-sm">
+          <CardContent className="flex items-center gap-3 p-4">
+            <span className="rounded-lg bg-primary/10 p-2 text-primary">
+              <CircleDollarSign className="h-4 w-4" />
+            </span>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                Total dû
+              </p>
+              <p className="text-xl font-semibold text-foreground">
+                {formatEuro(totalDueCents)}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border-border/70 bg-card/95 shadow-sm">
+          <CardContent className="flex items-center gap-3 p-4">
+            <span className="rounded-lg bg-emerald-500/10 p-2 text-emerald-300">
+              <CheckCircle2 className="h-4 w-4" />
+            </span>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                Déjà payé
+              </p>
+              <p className="text-xl font-semibold text-foreground">
+                {formatEuro(totalPaidCents)}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border-border/70 bg-card/95 shadow-sm">
+          <CardContent className="flex items-center gap-3 p-4">
+            <span className="rounded-lg bg-amber-400/10 p-2 text-amber-200">
+              <Clock3 className="h-4 w-4" />
+            </span>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                Reste
+              </p>
+              <p className="text-xl font-semibold text-foreground">
+                {formatEuro(totalRemainingCents)}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      <div className="flex flex-col gap-3 rounded-xl border border-border/70 bg-card/80 p-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <span className="hidden rounded-lg bg-primary/10 p-2 text-primary sm:inline-flex">
+            <WalletCards className="h-4 w-4" />
+          </span>
+          <div>
+            <p className="text-sm font-medium text-foreground">
+              {filteredRows.length} dossier
+              {filteredRows.length > 1 ? "s" : ""} affiché
+              {filteredRows.length > 1 ? "s" : ""}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {pendingCount} dossier{pendingCount > 1 ? "s" : ""} avec un
+              règlement restant.
+            </p>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant={viewMode === "cards" ? "default" : "secondary"}
+            onClick={() => setViewMode("cards")}
+          >
+            Vue cartes
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={viewMode === "list" ? "default" : "secondary"}
+            onClick={() => setViewMode("list")}
+          >
+            Vue liste
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={hidePaid ? "default" : "secondary"}
+            onClick={() => setHidePaid((current) => !current)}
+          >
+            {hidePaid ? "Afficher payés" : "Masquer payés"}
+          </Button>
+        </div>
       </div>
 
       {filteredRows.length === 0 ? (
@@ -152,35 +246,71 @@ export default function PaiementsClient({ rows }: Props) {
           ))}
         </section>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
-          <table className="min-w-full text-sm">
-            <thead className="border-b text-left text-muted-foreground">
-              <tr>
-                <th className="px-4 py-3">Tournoi</th>
-                <th className="px-4 py-3">Joueur</th>
-                <th className="px-4 py-3">Statut</th>
-                <th className="px-4 py-3">Dû</th>
-                <th className="px-4 py-3">Payé</th>
-                <th className="px-4 py-3">Reste</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/60">
-              {filteredRows.map((row) => (
-                <tr key={row.id}>
-                  <td className="px-4 py-3">{row.tournamentName}</td>
-                  <td className="px-4 py-3">{row.playerName}</td>
-                  <td className="px-4 py-3">{row.statusLabel}</td>
-                  <td className="px-4 py-3">{formatEuro(row.totalDueCents)}</td>
-                  <td className="px-4 py-3">{formatEuro(row.paidCents)}</td>
-                  <td className="px-4 py-3">
-                    {formatEuro(row.remainingCents)}
-                  </td>
+        <div className="overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="min-w-[760px] w-full text-sm">
+              <thead className="border-b border-border/70 bg-muted/35 text-left text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                <tr>
+                  <th className="px-4 py-3">Dossier</th>
+                  <th className="px-4 py-3">Joueur</th>
+                  <th className="px-4 py-3">Statut</th>
+                  <th className="px-4 py-3 text-right">Dû</th>
+                  <th className="px-4 py-3 text-right">Payé</th>
+                  <th className="px-4 py-3 text-right">Reste</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-border/60">
+                {filteredRows.map((row) => (
+                  <tr
+                    key={row.id}
+                    className="transition-colors hover:bg-muted/30"
+                  >
+                    <td className="px-4 py-4">
+                      <div className="min-w-0">
+                        <p className="font-medium text-foreground">
+                          {row.tournamentName}
+                        </p>
+                        {row.tables.length > 0 ? (
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            Tableaux : {row.tables.join(", ")}
+                          </p>
+                        ) : null}
+                      </div>
+                    </td>
+                    <td className="px-4 py-4 text-muted-foreground">
+                      {row.playerName}
+                    </td>
+                    <td className="px-4 py-4">
+                      <span
+                        className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-medium ${getStatusTone(row.statusLabel)}`}
+                      >
+                        {row.statusLabel}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4 text-right tabular-nums text-muted-foreground">
+                      {formatEuro(row.totalDueCents)}
+                    </td>
+                    <td className="px-4 py-4 text-right tabular-nums text-muted-foreground">
+                      {formatEuro(row.paidCents)}
+                    </td>
+                    <td className="px-4 py-4 text-right">
+                      <span
+                        className={`font-semibold tabular-nums ${
+                          row.remainingCents > 0
+                            ? "text-amber-100"
+                            : "text-emerald-200"
+                        }`}
+                      >
+                        {formatEuro(row.remainingCents)}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

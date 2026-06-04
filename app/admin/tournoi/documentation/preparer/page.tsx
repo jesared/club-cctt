@@ -39,7 +39,7 @@ const steps = [
   {
     title: "5) Publier",
     items: [
-      "Passer le tournoi en `PUBLISHED`.",
+      "Passer le tournoi en `PUBLISHED` puis utiliser `SUSPENDED` si les inscriptions doivent être interrompues sans retirer la page du site.",
       "Ouvrir les inscriptions à la date prévue.",
       "Surveiller les premiers dossiers et ajuster si besoin.",
     ],
