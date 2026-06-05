@@ -20,7 +20,7 @@ export default function Reveal({ children, className = "", delay = 0 }: RevealPr
           setIsVisible(true);
         }
       },
-      { threshold: 0.2 },
+      { threshold: 0 },
     );
 
     observer.observe(ref.current);
