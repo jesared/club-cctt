@@ -1,8 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 
 import TrackedLink from "@/components/TrackedLink";
 
@@ -14,13 +12,7 @@ type TournamentActionBarProps = {
   hasUserRegistration: boolean;
 };
 
-const getStickyOffset = () =>
-  typeof window !== "undefined" &&
-  window.matchMedia("(min-width: 640px)").matches
-    ? 92
-    : 88;
-
-function ActionButtons({
+export default function TournamentActionBar({
   canRegister,
   registrationLabel,
   registrationHref,
@@ -58,54 +50,5 @@ function ActionButtons({
         </Link>
       ) : null}
     </div>
-  );
-}
-
-export default function TournamentActionBar(props: TournamentActionBarProps) {
-  const rowRef = useRef<HTMLDivElement | null>(null);
-  const [isFixed, setIsFixed] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-
-    const syncFixedState = () => {
-      const row = rowRef.current;
-      if (!row) return;
-
-      setIsFixed(row.getBoundingClientRect().top <= getStickyOffset());
-    };
-
-    syncFixedState();
-    window.addEventListener("scroll", syncFixedState, { passive: true });
-    window.addEventListener("resize", syncFixedState);
-
-    return () => {
-      window.removeEventListener("scroll", syncFixedState);
-      window.removeEventListener("resize", syncFixedState);
-    };
-  }, []);
-
-  return (
-    <>
-      <div
-        ref={rowRef}
-        className={isFixed ? "invisible pointer-events-none" : ""}
-        aria-hidden={isFixed}
-      >
-        <ActionButtons {...props} />
-      </div>
-
-      {isMounted && isFixed
-        ? createPortal(
-            <div className="fixed inset-x-0 top-[5.5rem] z-40 px-4 sm:top-[5.75rem] sm:px-6">
-              <div className="mx-auto max-w-7xl md:px-8 lg:px-10">
-                <ActionButtons {...props} />
-              </div>
-            </div>,
-            document.body,
-          )
-        : null}
-    </>
   );
 }
