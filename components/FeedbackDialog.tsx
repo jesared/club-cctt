@@ -1,6 +1,13 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import {
+  FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Bug, Check, Lightbulb, Loader2 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -42,6 +49,8 @@ const initialFormData: FeedbackFormData = {
   website: "",
 };
 
+const successCloseDelayMs = 1200;
+
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function validateForm(data: FeedbackFormData) {
@@ -66,6 +75,9 @@ function validateForm(data: FeedbackFormData) {
 
 export default function FeedbackDialog() {
   const pathname = usePathname();
+  const successCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState<FeedbackFormData>(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -78,8 +90,27 @@ export default function FeedbackDialog() {
       ? pathname ?? "/"
       : `${window.location.pathname}${window.location.search}${window.location.hash}`;
 
+  const clearSuccessCloseTimer = useCallback(() => {
+    if (successCloseTimerRef.current) {
+      clearTimeout(successCloseTimerRef.current);
+      successCloseTimerRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => clearSuccessCloseTimer, [clearSuccessCloseTimer]);
+
+  const handleOpenChange = useCallback((nextOpen: boolean) => {
+    setOpen(nextOpen);
+
+    if (!nextOpen) {
+      clearSuccessCloseTimer();
+      setFeedback((current) => (current?.type === "success" ? null : current));
+    }
+  }, [clearSuccessCloseTimer]);
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    clearSuccessCloseTimer();
     setHasSubmitted(true);
     setFeedback(null);
 
@@ -116,6 +147,11 @@ export default function FeedbackDialog() {
       });
       setFormData(initialFormData);
       setHasSubmitted(false);
+      successCloseTimerRef.current = setTimeout(() => {
+        setOpen(false);
+        setFeedback(null);
+        successCloseTimerRef.current = null;
+      }, successCloseDelayMs);
     } catch (error) {
       setFeedback({
         type: "error",
@@ -130,14 +166,14 @@ export default function FeedbackDialog() {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <Tooltip>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <Tooltip className="fixed bottom-4 right-4 z-40 sm:bottom-5 sm:right-5">
         <TooltipTrigger asChild>
           <DialogTrigger asChild>
             <Button
               type="button"
               variant="outline"
-              className="fixed bottom-4 right-4 z-40 h-11 w-11 rounded-full border-sky-400/35 bg-background/88 p-0 text-sky-600 shadow-md shadow-slate-950/10 backdrop-blur hover:border-sky-400/60 hover:bg-sky-50 hover:text-sky-700 dark:border-sky-300/25 dark:bg-slate-900/82 dark:text-sky-300 dark:hover:border-sky-300/45 dark:hover:bg-sky-500/10 dark:hover:text-sky-200 sm:bottom-5 sm:right-5"
+              className="h-11 w-11 rounded-full border-sky-400/35 bg-background/88 p-0 text-sky-600 shadow-md shadow-slate-950/10 backdrop-blur hover:border-sky-400/60 hover:bg-sky-50 hover:text-sky-700 dark:border-sky-300/25 dark:bg-slate-900/82 dark:text-sky-300 dark:hover:border-sky-300/45 dark:hover:bg-sky-500/10 dark:hover:text-sky-200"
               aria-label="Signaler un bug ou proposer une suggestion"
             >
               <Bug className="h-4 w-4" />
