@@ -34,14 +34,14 @@ export default function AppShell({
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-muted/20">
+    <div className="app-shell fixed inset-0 flex overflow-hidden bg-muted/20">
       {/* SIDEBAR DESKTOP */}
       <div className="hidden md:block">
         <Sidebar badges={sidebarBadges} />
       </div>
 
       {/* CONTENT */}
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="app-shell__content flex min-w-0 flex-1 flex-col">
         {/* MOBILE MENU */}
         <div className="md:hidden">
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
@@ -81,7 +81,7 @@ export default function AppShell({
         </header>
 
         {/* MAIN */}
-        <main className="flex-1 overflow-y-auto px-4 pb-8 pt-16 md:px-8 md:py-6">
+        <main className="app-shell__main flex-1 overflow-y-auto px-4 pb-8 pt-16 md:px-8 md:py-6">
           <div className="mx-auto w-full max-w-7xl">{children}</div>
         </main>
       </div>

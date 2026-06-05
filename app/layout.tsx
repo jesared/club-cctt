@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 
 import Providers from "@/components/Providers";
-import Footer from "@/components/layout/footer";
-import Header from "@/components/layout/header";
+import RootChrome from "@/components/layout/root-chrome";
 import { getPublicMenuVisibility } from "@/lib/menu-settings";
 import { prisma } from "@/lib/prisma";
 import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-window";
@@ -46,14 +45,12 @@ export default async function RootLayout({
     <html lang="fr" suppressHydrationWarning>
       <body className="min-h-screen bg-background text-foreground antialiased">
         <Providers>
-          <div className="flex min-h-screen flex-col">
-            <Header
-              menuVisibility={menuVisibility}
-              showTournamentRegistration={registrationStatus.canRegister}
-            />
-            <main className="flex-1">{children}</main>
-            <Footer menuVisibility={menuVisibility} />
-          </div>
+          <RootChrome
+            menuVisibility={menuVisibility}
+            showTournamentRegistration={registrationStatus.canRegister}
+          >
+            {children}
+          </RootChrome>
         </Providers>
       </body>
     </html>

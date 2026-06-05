@@ -3,6 +3,22 @@
 
 @custom-variant dark (&:is(.dark *));
 
+.app-shell {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  overflow: hidden;
+}
+
+.app-shell__content {
+  min-height: 0;
+}
+
+.app-shell__main {
+  min-height: 0;
+  overflow-y: auto;
+}
+
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.3211 0 0);
