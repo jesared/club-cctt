@@ -1,8 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 import Reveal from "@/components/Reveal";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export const metadata: Metadata = {
   title: "Le club CCTT - Horaires, tarifs et contact",
@@ -114,25 +122,28 @@ export default function ClubPage() {
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-3">
-                <Link
-                  href="/club/horaires"
-                  className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:opacity-90"
+              <div
+                className="inline-flex w-full flex-col gap-1 rounded-lg border border-border bg-muted/30 p-1 sm:w-fit sm:flex-row"
+                role="group"
+                aria-label="Actions club"
+              >
+                <Button asChild className="h-10 rounded-md shadow-none">
+                  <Link href="/club/horaires">Voir les horaires</Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="ghost"
+                  className="h-10 rounded-md shadow-none"
                 >
-                  Voir les horaires
-                </Link>
-                <Link
-                  href="/club/tarifs"
-                  className="inline-flex items-center justify-center rounded-md border px-4 py-2 text-sm hover:bg-muted"
+                  <Link href="/club/tarifs">Voir les tarifs</Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="ghost"
+                  className="h-10 rounded-md shadow-none"
                 >
-                  Voir les tarifs
-                </Link>
-                <Link
-                  href="/club/contact"
-                  className="inline-flex items-center justify-center rounded-md border px-4 py-2 text-sm hover:bg-muted"
-                >
-                  Contacter le club
-                </Link>
+                  <Link href="/club/contact">Contacter le club</Link>
+                </Button>
               </div>
             </div>
 
@@ -166,18 +177,24 @@ export default function ClubPage() {
         <div className="grid gap-4 lg:grid-cols-3">
           {quickStartCards.map((item, index) => (
             <Reveal key={item.title} delay={index * 120}>
-              <Card className="bg-muted/30 card-hover hover:border-[#2F6BFF]/80">
+              <Card className="flex h-full flex-col bg-muted/30 card-hover hover:border-[#2F6BFF]/80">
                 <CardHeader>
                   <CardTitle>{item.title}</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="flex-1">
                   <p className="text-sm leading-relaxed text-muted-foreground">
                     {item.description}
                   </p>
-                  <Link href={item.href} className="text-sm font-medium text-[#2F6BFF]">
-                    {item.label}
-                  </Link>
                 </CardContent>
+                <CardFooter className="mt-auto border-t border-border/45 pt-4">
+                  <Link
+                    href={item.href}
+                    className="group inline-flex items-center gap-2 text-sm font-medium text-[#2F6BFF]"
+                  >
+                    {item.label}
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                </CardFooter>
               </Card>
             </Reveal>
           ))}
@@ -228,18 +245,24 @@ export default function ClubPage() {
         <div className="grid gap-4">
           {clubSections.map((item, index) => (
             <Reveal key={item.title} delay={index * 120}>
-              <Card className="card-hover hover:border-[#2F6BFF]/80">
+              <Card className="flex h-full flex-col card-hover hover:border-[#2F6BFF]/80">
                 <CardHeader>
                   <CardTitle>{item.title}</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="flex-1">
                   <p className="text-sm text-muted-foreground">
                     {item.description}
                   </p>
-                  <Link href={item.href} className="text-sm font-medium text-[#2F6BFF]">
-                    {item.label}
-                  </Link>
                 </CardContent>
+                <CardFooter className="mt-auto border-t border-border/45 pt-4">
+                  <Link
+                    href={item.href}
+                    className="group inline-flex items-center gap-2 text-sm font-medium text-[#2F6BFF]"
+                  >
+                    {item.label}
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                </CardFooter>
               </Card>
             </Reveal>
           ))}
@@ -258,25 +281,28 @@ export default function ClubPage() {
                 plus simple reste de nous contacter pour un conseil rapide ou un
                 premier essai.
               </p>
-              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                <Link
-                  href="/club/contact"
-                  className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:opacity-90 sm:w-auto"
+              <div
+                className="inline-flex w-full flex-col gap-1 rounded-lg border border-border bg-background/70 p-1 sm:w-fit sm:flex-row"
+                role="group"
+                aria-label="Actions d'orientation"
+              >
+                <Button asChild className="h-10 rounded-md shadow-none">
+                  <Link href="/club/contact">Contacter le club</Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="ghost"
+                  className="h-10 rounded-md shadow-none"
                 >
-                  Contacter le club
-                </Link>
-                <Link
-                  href="/club/horaires"
-                  className="inline-flex w-full items-center justify-center rounded-md border px-4 py-2 text-sm hover:bg-muted sm:w-auto"
+                  <Link href="/club/horaires">Voir les horaires</Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="ghost"
+                  className="h-10 rounded-md shadow-none"
                 >
-                  Voir les horaires
-                </Link>
-                <Link
-                  href="/club/tarifs"
-                  className="inline-flex w-full items-center justify-center rounded-md border px-4 py-2 text-sm hover:bg-muted sm:w-auto"
-                >
-                  Voir les tarifs
-                </Link>
+                  <Link href="/club/tarifs">Voir les tarifs</Link>
+                </Button>
               </div>
             </CardContent>
           </Card>

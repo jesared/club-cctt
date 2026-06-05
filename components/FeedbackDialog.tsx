@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { Bug, Check, Lightbulb, Loader2 } from "lucide-react";
+import { Bug, Check, Lightbulb, Loader2, Mail, MessageSquare, User } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 type FeedbackKind = "BUG" | "SUGGESTION";
 
@@ -195,66 +196,74 @@ export default function FeedbackDialog() {
         </DialogHeader>
 
         <form className="mt-5 space-y-4" onSubmit={handleSubmit} noValidate>
-          <div className="grid grid-cols-2 gap-2">
-            <button
+          <div
+            className="grid grid-cols-2 overflow-hidden rounded-lg border border-border bg-muted/30 p-1"
+            role="group"
+            aria-label="Type de retour"
+          >
+            <Button
               type="button"
+              variant={formData.kind === "BUG" ? "default" : "ghost"}
+              className="h-9 rounded-md"
               onClick={() =>
                 setFormData((current) => ({ ...current, kind: "BUG" }))
               }
-              className={`focus-ring flex h-11 items-center justify-center gap-2 rounded-md border text-sm font-medium transition ${
-                formData.kind === "BUG"
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-background hover:bg-muted/50"
-              }`}
               aria-pressed={formData.kind === "BUG"}
             >
               <Bug className="h-4 w-4" />
               Bug
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant={formData.kind === "SUGGESTION" ? "default" : "ghost"}
+              className="h-9 rounded-md"
               onClick={() =>
                 setFormData((current) => ({
                   ...current,
                   kind: "SUGGESTION",
                 }))
               }
-              className={`focus-ring flex h-11 items-center justify-center gap-2 rounded-md border text-sm font-medium transition ${
-                formData.kind === "SUGGESTION"
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-background hover:bg-muted/50"
-              }`}
               aria-pressed={formData.kind === "SUGGESTION"}
             >
               <Lightbulb className="h-4 w-4" />
               Suggestion
-            </button>
+            </Button>
           </div>
 
           <div>
             <label htmlFor="feedback-message" className="mb-1 block text-sm font-medium">
               Message
             </label>
-            <textarea
-              id="feedback-message"
-              rows={5}
-              required
-              minLength={10}
-              maxLength={2000}
-              className="form-field"
-              placeholder="Expliquez rapidement ce que vous avez vu ou ce que vous proposez..."
-              value={formData.message}
-              onChange={(event) =>
-                setFormData((current) => ({
-                  ...current,
-                  message: event.target.value,
-                }))
-              }
-              aria-invalid={hasSubmitted && errors.message ? "true" : "false"}
-              aria-describedby={
-                hasSubmitted && errors.message ? "feedback-message-error" : undefined
-              }
-            />
+            <div
+              className={cn(
+                "flex rounded-md border border-input bg-background focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
+                hasSubmitted && errors.message && "border-destructive ring-destructive/20",
+              )}
+            >
+              <div className="flex shrink-0 items-start border-r border-border/70 bg-muted/30 px-3 py-3 text-muted-foreground">
+                <MessageSquare className="h-4 w-4" />
+              </div>
+              <textarea
+                id="feedback-message"
+                rows={5}
+                required
+                minLength={10}
+                maxLength={2000}
+                className="min-h-32 w-full resize-y bg-transparent px-3 py-2 text-sm outline-none placeholder:text-muted-foreground"
+                placeholder="Expliquez rapidement ce que vous avez vu ou ce que vous proposez..."
+                value={formData.message}
+                onChange={(event) =>
+                  setFormData((current) => ({
+                    ...current,
+                    message: event.target.value,
+                  }))
+                }
+                aria-invalid={hasSubmitted && errors.message ? "true" : "false"}
+                aria-describedby={
+                  hasSubmitted && errors.message ? "feedback-message-error" : undefined
+                }
+              />
+            </div>
             {hasSubmitted && errors.message ? (
               <p id="feedback-message-error" className="form-error" role="alert">
                 {errors.message}
@@ -267,43 +276,58 @@ export default function FeedbackDialog() {
               <label htmlFor="feedback-name" className="mb-1 block text-sm font-medium">
                 Nom
               </label>
-              <input
-                id="feedback-name"
-                type="text"
-                maxLength={100}
-                className="form-field"
-                placeholder="Optionnel"
-                value={formData.name}
-                onChange={(event) =>
-                  setFormData((current) => ({
-                    ...current,
-                    name: event.target.value,
-                  }))
-                }
-              />
+              <div className="flex min-h-10 overflow-hidden rounded-md border border-input bg-background focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]">
+                <div className="flex shrink-0 items-center border-r border-border/70 bg-muted/30 px-3 text-muted-foreground">
+                  <User className="h-4 w-4" />
+                </div>
+                <input
+                  id="feedback-name"
+                  type="text"
+                  maxLength={100}
+                  className="min-w-0 flex-1 bg-transparent px-3 py-2 text-sm outline-none placeholder:text-muted-foreground"
+                  placeholder="Optionnel"
+                  value={formData.name}
+                  onChange={(event) =>
+                    setFormData((current) => ({
+                      ...current,
+                      name: event.target.value,
+                    }))
+                  }
+                />
+              </div>
             </div>
             <div>
               <label htmlFor="feedback-email" className="mb-1 block text-sm font-medium">
                 Email
               </label>
-              <input
-                id="feedback-email"
-                type="email"
-                maxLength={150}
-                className="form-field"
-                placeholder="Optionnel"
-                value={formData.email}
-                onChange={(event) =>
-                  setFormData((current) => ({
-                    ...current,
-                    email: event.target.value,
-                  }))
-                }
-                aria-invalid={hasSubmitted && errors.email ? "true" : "false"}
-                aria-describedby={
-                  hasSubmitted && errors.email ? "feedback-email-error" : undefined
-                }
-              />
+              <div
+                className={cn(
+                  "flex min-h-10 overflow-hidden rounded-md border border-input bg-background focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
+                  hasSubmitted && errors.email && "border-destructive ring-destructive/20",
+                )}
+              >
+                <div className="flex shrink-0 items-center border-r border-border/70 bg-muted/30 px-3 text-muted-foreground">
+                  <Mail className="h-4 w-4" />
+                </div>
+                <input
+                  id="feedback-email"
+                  type="email"
+                  maxLength={150}
+                  className="min-w-0 flex-1 bg-transparent px-3 py-2 text-sm outline-none placeholder:text-muted-foreground"
+                  placeholder="Optionnel"
+                  value={formData.email}
+                  onChange={(event) =>
+                    setFormData((current) => ({
+                      ...current,
+                      email: event.target.value,
+                    }))
+                  }
+                  aria-invalid={hasSubmitted && errors.email ? "true" : "false"}
+                  aria-describedby={
+                    hasSubmitted && errors.email ? "feedback-email-error" : undefined
+                  }
+                />
+              </div>
               {hasSubmitted && errors.email ? (
                 <p id="feedback-email-error" className="form-error" role="alert">
                   {errors.email}

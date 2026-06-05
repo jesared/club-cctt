@@ -3,7 +3,14 @@
 /* eslint-disable react/no-unescaped-entities */
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, Copy, ExternalLink } from "lucide-react";
+import {
+  Check,
+  Copy,
+  ExternalLink,
+  LayoutGrid,
+  List,
+  MoreVertical,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,6 +22,7 @@ import {
 import { cn } from "@/lib/utils";
 
 type UploadState = "idle" | "uploading" | "done" | "error";
+type HistoryView = "grid" | "list";
 
 type UploadResult = {
   secure_url: string;
@@ -36,6 +44,19 @@ type MediaHistoryItem = UploadResult & {
   } | null;
 };
 
+type MediaActionsMenuProps = {
+  id: string;
+  itemUrl: string;
+  itemCopied: boolean;
+  onCopy: (url: string) => Promise<void>;
+  onOpen: (url: string) => void;
+  onRemove: (id: string) => Promise<void>;
+};
+
+type MediaUrlInputGroupProps = MediaActionsMenuProps & {
+  copyLabel?: string;
+};
+
 const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? "";
 const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ?? "";
 const defaultFolder = process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER ?? "cctt-club";
@@ -47,6 +68,13 @@ function formatBytes(bytes?: number) {
   if (kb < 1024) return `${kb.toFixed(1)} Ko`;
   const mb = kb / 1024;
   return `${mb.toFixed(1)} Mo`;
+}
+
+function formatCreatedAt(value: string) {
+  return new Date(value).toLocaleString("fr-FR", {
+    dateStyle: "short",
+    timeStyle: "short",
+  });
 }
 
 async function readJsonSafe(response: Response) {
@@ -80,6 +108,213 @@ function fallbackCopyText(text: string) {
   }
 }
 
+function MediaActionsMenu({
+  id,
+  itemUrl,
+  itemCopied,
+  onCopy,
+  onOpen,
+  onRemove,
+}: MediaActionsMenuProps) {
+  const [open, setOpen] = useState(false);
+  const [menuPosition, setMenuPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+
+  function openMenu(button: HTMLButtonElement) {
+    const rect = button.getBoundingClientRect();
+    const menuWidth = 168;
+    const menuHeight = 132;
+    const viewportGap = 8;
+
+    setMenuPosition({
+      top: Math.min(
+        rect.bottom + viewportGap,
+        window.innerHeight - menuHeight - viewportGap,
+      ),
+      left: Math.max(
+        viewportGap,
+        Math.min(
+          rect.right - menuWidth,
+          window.innerWidth - menuWidth - viewportGap,
+        ),
+      ),
+    });
+    setOpen(true);
+  }
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    function handlePointerDown(event: MouseEvent) {
+      const target = event.target as Node | null;
+      if (
+        target &&
+        !rootRef.current?.contains(target) &&
+        !menuRef.current?.contains(target)
+      ) {
+        setOpen(false);
+      }
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    }
+
+    function closeMenu() {
+      setOpen(false);
+    }
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("resize", closeMenu);
+    window.addEventListener("scroll", closeMenu, true);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("resize", closeMenu);
+      window.removeEventListener("scroll", closeMenu, true);
+    };
+  }, [open]);
+
+  async function handleCopy() {
+    await onCopy(itemUrl);
+    setOpen(false);
+  }
+
+  function handleOpen() {
+    onOpen(itemUrl);
+    setOpen(false);
+  }
+
+  async function handleRemove() {
+    await onRemove(id);
+    setOpen(false);
+  }
+
+  return (
+    <div ref={rootRef} className="relative flex justify-end">
+      <Button
+        type="button"
+        size="icon"
+        variant="ghost"
+        className={cn("size-8", open && "bg-muted")}
+        onClick={(event) => {
+          if (open) {
+            setOpen(false);
+            return;
+          }
+
+          openMenu(event.currentTarget);
+        }}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-label="Ouvrir les actions du media"
+        title="Actions"
+      >
+        <MoreVertical className="h-4 w-4" />
+      </Button>
+
+      {open && menuPosition ? (
+        <div
+          ref={menuRef}
+          role="menu"
+          className="fixed z-50 min-w-40 rounded-md border bg-popover p-1 shadow-lg"
+          style={{
+            top: menuPosition.top,
+            left: menuPosition.left,
+          }}
+        >
+          <button
+            type="button"
+            role="menuitem"
+            onClick={handleCopy}
+            className="flex w-full items-center gap-2 rounded px-3 py-2 text-left text-xs hover:bg-muted"
+          >
+            {itemCopied ? (
+              <Check className="h-4 w-4" />
+            ) : (
+              <Copy className="h-4 w-4" />
+            )}
+            {itemCopied ? "Copié" : "Copier URL"}
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={handleOpen}
+            className="flex w-full items-center gap-2 rounded px-3 py-2 text-left text-xs hover:bg-muted"
+          >
+            <ExternalLink className="h-4 w-4" />
+            Ouvrir
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={handleRemove}
+            className="flex w-full items-center gap-2 rounded px-3 py-2 text-left text-xs text-destructive hover:bg-muted"
+          >
+            Retirer
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function MediaUrlInputGroup({
+  id,
+  itemUrl,
+  itemCopied,
+  onCopy,
+  onOpen,
+  onRemove,
+  copyLabel = "URL du media",
+}: MediaUrlInputGroupProps) {
+  return (
+    <div
+      className={cn(
+        "flex min-h-9 w-full overflow-hidden rounded-lg border bg-background transition-colors",
+        itemCopied
+          ? "border-emerald-500/40 bg-emerald-500/10"
+          : "border-border/70 hover:border-primary/40",
+      )}
+    >
+      <button
+        type="button"
+        onClick={() => onCopy(itemUrl)}
+        className={cn(
+          "min-w-0 flex-1 truncate px-2.5 py-2 text-left font-mono text-[11px] transition-colors",
+          itemCopied
+            ? "text-emerald-700 dark:text-emerald-300"
+            : "text-muted-foreground hover:bg-primary/5",
+        )}
+        title={itemUrl}
+        aria-label={copyLabel}
+      >
+        {itemUrl}
+      </button>
+      <div className="flex shrink-0 items-center border-l border-border/70 bg-muted/20 px-1">
+        <MediaActionsMenu
+          id={id}
+          itemUrl={itemUrl}
+          itemCopied={itemCopied}
+          onCopy={onCopy}
+          onOpen={onOpen}
+          onRemove={onRemove}
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function MediaUploadClient() {
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -92,6 +327,7 @@ export default function MediaUploadClient() {
   const [historyError, setHistoryError] = useState<string | null>(null);
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [historyView, setHistoryView] = useState<HistoryView>("list");
   const copiedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const cloudinaryReady = cloudName && uploadPreset;
@@ -313,7 +549,6 @@ export default function MediaUploadClient() {
               dans le `.env`, puis relancez le serveur.
             </div>
           )}
-
           <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
             <div className="space-y-4">
               <div className="space-y-2">
@@ -483,12 +718,44 @@ export default function MediaUploadClient() {
             <div className="text-xs text-muted-foreground">
               {history.length} media{history.length > 1 ? "s" : ""}
             </div>
-            <input
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Rechercher (nom, url, admin)"
-              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm sm:max-w-xs"
-            />
+            <div className="flex min-h-10 w-full overflow-hidden rounded-lg border border-border bg-background shadow-sm sm:w-[420px]">
+              <div
+                className="flex shrink-0 items-center gap-1 border-r border-border bg-muted/30 p-1"
+                role="group"
+                aria-label="Vue de l'historique media"
+              >
+                <Button
+                  type="button"
+                  size="icon"
+                  variant={historyView === "grid" ? "default" : "ghost"}
+                  className="size-8 rounded-md"
+                  onClick={() => setHistoryView("grid")}
+                  aria-pressed={historyView === "grid"}
+                  title="Vue grille"
+                >
+                  <LayoutGrid className="h-4 w-4" />
+                  <span className="sr-only">Vue grille</span>
+                </Button>
+                <Button
+                  type="button"
+                  size="icon"
+                  variant={historyView === "list" ? "default" : "ghost"}
+                  className="size-8 rounded-md"
+                  onClick={() => setHistoryView("list")}
+                  aria-pressed={historyView === "list"}
+                  title="Vue liste"
+                >
+                  <List className="h-4 w-4" />
+                  <span className="sr-only">Vue liste</span>
+                </Button>
+              </div>
+              <input
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Rechercher (nom, url, admin)"
+                className="min-w-0 flex-1 bg-transparent px-3 py-2 text-sm outline-none placeholder:text-muted-foreground"
+              />
+            </div>
           </div>
 
           {historyLoading ? (
@@ -503,7 +770,7 @@ export default function MediaUploadClient() {
             <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
               Aucun media trouve.
             </div>
-          ) : (
+          ) : historyView === "grid" ? (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {filteredHistory.map((item) => {
                 const itemUrl = getItemUrl(item);
@@ -538,19 +805,14 @@ export default function MediaUploadClient() {
                           : "—"}
                       </span>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => copyFromHistory(itemUrl)}
-                      className={cn(
-                        "block w-full truncate rounded-lg border px-2.5 py-2 text-left font-mono text-[11px] transition-colors",
-                        itemCopied
-                          ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
-                          : "border-border/70 bg-muted/30 text-muted-foreground hover:border-primary/40 hover:bg-primary/5",
-                      )}
-                      title={itemUrl}
-                    >
-                      {itemUrl}
-                    </button>
+                    <MediaUrlInputGroup
+                      id={item.id}
+                      itemUrl={itemUrl}
+                      itemCopied={itemCopied}
+                      onCopy={copyFromHistory}
+                      onOpen={openUrl}
+                      onRemove={removeFromHistory}
+                    />
                     <div className="flex items-center justify-between gap-2 text-[11px]">
                       <span
                         className={cn(
@@ -560,48 +822,18 @@ export default function MediaUploadClient() {
                             : "text-muted-foreground",
                         )}
                       >
-                        {itemCopied ? "URL copitee" : "Cliquez sur l'URL pour copier"}
+                        {itemCopied ? (
+                          <span className="inline-flex items-center gap-1">
+                            <Check className="h-3.5 w-3.5" />
+                            Copié
+                          </span>
+                        ) : (
+                          "Cliquez sur l'URL pour copier"
+                        )}
                       </span>
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant={itemCopied ? "default" : "secondary"}
-                        onClick={() => copyFromHistory(itemUrl)}
-                        className={cn(
-                          "font-semibold transition-all",
-                          itemCopied &&
-                            "bg-emerald-600 text-white hover:bg-emerald-600/90",
-                        )}
-                      >
-                        {itemCopied ? (
-                          <Check className="h-4 w-4" />
-                        ) : (
-                          <Copy className="h-4 w-4" />
-                        )}
-                        {itemCopied ? "Copiee" : "Copier URL"}
-                      </Button>
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        onClick={() => openUrl(itemUrl)}
-                      >
-                        <ExternalLink className="h-4 w-4" />
-                        Ouvrir
-                      </Button>
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => removeFromHistory(item.id)}
-                      >
-                        Retirer
-                      </Button>
-                    </div>
                     <div className="text-[11px]">
-                      {new Date(item.createdAt).toLocaleString()}
+                      {formatCreatedAt(item.createdAt)}
                     </div>
                     {item.uploadedByUser?.name ||
                     item.uploadedByUser?.email ? (
@@ -614,26 +846,64 @@ export default function MediaUploadClient() {
                 );
             })}
             </div>
+          ) : (
+            <div className="space-y-3">
+              {filteredHistory.map((item) => {
+                const itemUrl = getItemUrl(item);
+                const itemCopied = copiedUrl === itemUrl;
+                const title = item.public_id ?? item.publicId ?? "Media";
+                const dimensions =
+                  item.width && item.height
+                    ? `${item.width}x${item.height}`
+                    : "—";
+                const uploader =
+                  item.uploadedByUser?.name ?? item.uploadedByUser?.email;
+
+                return (
+                  <div
+                    key={item.id}
+                    className={cn(
+                      "grid gap-3 rounded-xl border bg-card p-3 transition-colors sm:grid-cols-[96px_minmax(0,1fr)]",
+                      itemCopied ? "border-emerald-500/40" : "border-border",
+                    )}
+                  >
+                    <div className="h-24 overflow-hidden rounded-lg bg-muted/40 sm:h-24 sm:w-24">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={itemUrl}
+                        alt={title}
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                      />
+                    </div>
+
+                    <div className="min-w-0 space-y-2 text-xs text-muted-foreground">
+                      <div className="truncate text-sm font-medium text-foreground">
+                        {title}
+                      </div>
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                        <span>{formatBytes(item.bytes)}</span>
+                        <span>{dimensions}</span>
+                        <span>{formatCreatedAt(item.createdAt)}</span>
+                        {uploader ? <span>Par {uploader}</span> : null}
+                      </div>
+                      <MediaUrlInputGroup
+                        id={item.id}
+                        itemUrl={itemUrl}
+                        itemCopied={itemCopied}
+                        onCopy={copyFromHistory}
+                        onOpen={openUrl}
+                        onRemove={removeFromHistory}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           )}
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Prerequis Cloudinary</CardTitle>
-          <CardDescription>
-            Creez un upload preset en mode unsigned (cloudinary dashboard).
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-2 text-sm text-muted-foreground">
-          <div>Env vars attendues :</div>
-          <ul className="list-disc pl-5">
-            <li>`NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`</li>
-            <li>`NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET`</li>
-            <li>`NEXT_PUBLIC_CLOUDINARY_FOLDER` (optionnel)</li>
-          </ul>
-        </CardContent>
-      </Card>
     </div>
   );
 }

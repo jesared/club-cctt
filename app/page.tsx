@@ -223,11 +223,15 @@ export default async function Home() {
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <div
+                  className="inline-flex w-full flex-col gap-1 rounded-lg border border-border bg-background/70 p-1 shadow-sm sm:w-fit sm:flex-row"
+                  role="group"
+                  aria-label="Actions principales"
+                >
                   <Button
                     asChild
                     size="lg"
-                    className="h-11 rounded-md bg-[#2F6BFF] px-6 text-white shadow-lg shadow-[#2F6BFF]/25 transition hover:-translate-y-0.5 hover:bg-[#255AE8] hover:shadow-[#2F6BFF]/35"
+                    className="h-11 rounded-md bg-[#2F6BFF] px-6 text-white shadow-none transition hover:bg-[#255AE8]"
                   >
                     <Link href={primaryHeroAction.href}>
                       {primaryHeroAction.label}
@@ -238,7 +242,7 @@ export default async function Home() {
                     asChild
                     size="lg"
                     variant="outline"
-                    className="h-11 rounded-md border-[#FF2E88]/45 bg-[#FF2E88]/8 px-6 text-[#FF2E88] transition hover:-translate-y-0.5 hover:border-[#FF2E88] hover:bg-[#FF2E88]/14 hover:text-[#FF2E88]"
+                    className="h-11 rounded-md border-[#FF2E88]/45 bg-[#FF2E88]/8 px-6 text-[#FF2E88] shadow-none transition hover:border-[#FF2E88] hover:bg-[#FF2E88]/14 hover:text-[#FF2E88]"
                   >
                     <Link href={secondaryHeroAction.href}>
                       {secondaryHeroAction.label}
@@ -271,33 +275,35 @@ export default async function Home() {
             </div>
           </Reveal>
 
-          <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
+          <div className="grid items-stretch gap-4 lg:grid-cols-2 xl:grid-cols-4">
             {intentionCards.map((item, index) => {
               const Icon = item.Icon;
 
               return (
-                <Reveal key={item.title} delay={index * 90}>
+                <Reveal key={item.title} className="h-full" delay={index * 90}>
                   <Link
                     href={item.href}
-                    className={`group block rounded-[1.65rem] border p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md ${item.tone} ${item.hoverTone}`}
+                    className={`group flex h-full min-h-[236px] flex-col overflow-hidden rounded-[1.65rem] border shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md ${item.tone} ${item.hoverTone}`}
                   >
-                    <div className="flex items-center justify-between gap-3">
-                      <span
-                        className={`rounded-full bg-background/80 p-2 ${item.iconTone}`}
-                      >
-                        <Icon className="h-5 w-5" />
-                      </span>
+                    <div className="flex flex-1 flex-col p-5">
+                      <div className="flex items-center justify-between gap-3">
+                        <span
+                          className={`rounded-full bg-background/80 p-2 ${item.iconTone}`}
+                        >
+                          <Icon className="h-5 w-5" />
+                        </span>
+                      </div>
+                      <p className="mt-5 text-xl font-semibold tracking-[-0.025em] text-foreground">
+                        {item.title}
+                      </p>
+                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                        {item.description}
+                      </p>
+                    </div>
+                    <div className="mt-auto flex items-center justify-between gap-3 border-t border-border/50 bg-background/35 px-5 py-3 text-sm font-medium text-primary transition-colors group-hover:bg-primary/5">
+                      <span>{item.label}</span>
                       <ArrowRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-primary" />
                     </div>
-                    <p className="mt-5 text-xl font-semibold tracking-[-0.025em] text-foreground">
-                      {item.title}
-                    </p>
-                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                      {item.description}
-                    </p>
-                    <p className="mt-4 text-sm font-medium text-primary">
-                      {item.label}
-                    </p>
                   </Link>
                 </Reveal>
               );
