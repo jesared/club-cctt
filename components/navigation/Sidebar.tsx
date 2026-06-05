@@ -409,16 +409,16 @@ export default function Sidebar({
                 >
                   <div
                     className={cn(
-                      "grid gap-1",
-                      "grid-cols-1",
+                      "flex min-w-0 items-center gap-1 rounded-[0.8rem] border border-border/25 bg-background/45 px-1.5 py-1.5 text-[12px] text-muted-foreground",
+                      collapsed && !mobile && "justify-center border-0 bg-transparent p-0",
                     )}
                   >
                   <Link
                     href="/user"
                     onClick={mobile ? onClose : undefined}
                     className={cn(
-                      "flex min-w-0 items-center gap-2 rounded-[0.8rem] border border-border/25 bg-background/45 px-2 py-1.5 text-[12px] text-muted-foreground transition-colors hover:bg-foreground/4 hover:text-foreground",
-                      collapsed && !mobile && "justify-center px-1.5",
+                      "flex min-w-0 flex-1 items-center gap-2 rounded-[0.65rem] px-0.5 transition-colors hover:text-foreground",
+                      collapsed && !mobile && "hidden",
                     )}
                   >
                     {session.user?.image ? (
@@ -445,15 +445,14 @@ export default function Sidebar({
                     variant="ghost"
                     size="icon"
                     className={cn(
-                      "hidden",
-                      collapsed && !mobile && "h-7 w-7",
+                      "h-7 w-7 shrink-0 rounded-full text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-500/10 dark:hover:text-red-300",
+                      collapsed && !mobile && "border border-border/25 bg-background/45",
                     )}
                     onClick={() => void signOutToHome()}
                     aria-label="Déconnexion"
                     title="Déconnexion"
                   >
                     <LogOut className="h-3.5 w-3.5" />
-                    {!collapsed ? "Déconnexion" : null}
                   </Button>
                   </div>
                 </div>

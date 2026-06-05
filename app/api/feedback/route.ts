@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { sendNotificationEmail } from "@/lib/notification-email";
-import { createNotification } from "@/lib/notifications";
-import { getContactFormAvailability } from "@/lib/public-form-availability";
+import { getFeedbackFormAvailability } from "@/lib/public-form-availability";
 import { checkPersistentRateLimit } from "@/lib/rate-limit";
 import { getCurrentSession } from "@/lib/session";
 
@@ -70,7 +68,7 @@ async function sendWithResend(input: {
   user?: { name?: string | null; email?: string | null } | null;
 }) {
   const resendApiKey = process.env.RESEND_API_KEY;
-  const to = process.env.CONTACT_TO_EMAIL;
+  const to = process.env.FEEDBACK_TO_EMAIL ?? "jesared@gmail.com";
 
   if (!resendApiKey || !to) {
     return false;
@@ -99,42 +97,14 @@ async function sendWithResend(input: {
   return response.ok;
 }
 
-async function sendWithWebhook(input: {
-  kind: FeedbackKind;
-  message: string;
-  page: string;
-  name: string;
-  email: string;
-  user?: { name?: string | null; email?: string | null } | null;
-}) {
-  const webhookUrl =
-    process.env.FEEDBACK_WEBHOOK_URL ?? process.env.CONTACT_WEBHOOK_URL;
-
-  if (!webhookUrl) {
-    return false;
-  }
-
-  const response = await fetch(webhookUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      ...input,
-      source: "cctt-feedback-form",
-      sentAt: new Date().toISOString(),
-    }),
-  });
-
-  return response.ok;
-}
-
 export async function POST(request: NextRequest) {
-  const availability = getContactFormAvailability();
+  const availability = getFeedbackFormAvailability();
 
   if (!availability.isAvailable) {
     return NextResponse.json(
       {
         message:
-          "Le formulaire n'est pas disponible pour le moment. Merci d'ecrire directement a communication@cctt.fr.",
+          "Le formulaire n'est pas disponible pour le moment. Merci d'ecrire directement a jesared@gmail.com.",
       },
       { status: 503 },
     );
@@ -208,33 +178,13 @@ export async function POST(request: NextRequest) {
       ? { name: session.user.name, email: session.user.email }
       : null,
   };
-  const label = kind === "BUG" ? "Bug" : "Suggestion";
-  const title = `${label} signale depuis le site`;
-  const content = buildFeedbackText(normalized);
+  const sent = await sendWithResend(normalized);
 
-  const notification = await createNotification({
-    type: "SYSTEM",
-    title,
-    content,
-    href: page.startsWith("/") ? page : "/admin",
-    priority: kind === "BUG" ? "HIGH" : "NORMAL",
-    audience: "ADMIN_ONLY",
-    sourceKind: "MANUAL",
-  });
-
-  const sent =
-    (await sendWithWebhook(normalized)) ||
-    (await sendWithResend(normalized));
-
-  if (!sent && notification) {
-    await sendNotificationEmail(notification);
-  }
-
-  if (!sent && !notification) {
+  if (!sent) {
     return NextResponse.json(
       {
         message:
-          "Le service est temporairement indisponible. Merci d'ecrire directement a communication@cctt.fr.",
+          "Le service est temporairement indisponible. Merci d'ecrire directement a jesared@gmail.com.",
       },
       { status: 503 },
     );

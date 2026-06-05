@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
-import { Bug, Check, Lightbulb, Loader2, MessageSquare } from "lucide-react";
+import { Bug, Check, Lightbulb, Loader2 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -136,12 +136,11 @@ export default function FeedbackDialog() {
           <DialogTrigger asChild>
             <Button
               type="button"
-              size="icon"
               variant="outline"
-              className="fixed bottom-4 right-4 z-40 size-10 rounded-full border-border/70 bg-background/90 shadow-lg backdrop-blur hover:bg-muted sm:bottom-5 sm:right-5"
+              className="fixed bottom-4 right-4 z-40 h-11 w-11 rounded-full border-sky-400/35 bg-background/88 p-0 text-sky-600 shadow-md shadow-slate-950/10 backdrop-blur hover:border-sky-400/60 hover:bg-sky-50 hover:text-sky-700 dark:border-sky-300/25 dark:bg-slate-900/82 dark:text-sky-300 dark:hover:border-sky-300/45 dark:hover:bg-sky-500/10 dark:hover:text-sky-200 sm:bottom-5 sm:right-5"
               aria-label="Signaler un bug ou proposer une suggestion"
             >
-              <MessageSquare className="h-4 w-4" />
+              <Bug className="h-4 w-4" />
             </Button>
           </DialogTrigger>
         </TooltipTrigger>

@@ -931,7 +931,7 @@ export default function HeaderCentered({
                       <button
                         type="button"
                         role="menuitem"
-                        className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm text-foreground transition-colors hover:bg-muted"
+                        className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-500/10 dark:hover:text-red-300"
                         onClick={() => void signOutToHome()}
                       >
                         <LogOut className="h-4 w-4" />
@@ -1226,28 +1226,39 @@ export default function HeaderCentered({
                 ) : null}
 
                 {session ? (
-                  <Link
-                    href="/user"
-                    onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-2 rounded-[0.8rem] border border-border/30 bg-background/50 px-2 py-1.5 text-[12px] text-muted-foreground transition-colors hover:bg-muted/45 hover:text-foreground"
-                  >
-                    {session.user.image ? (
-                      <Image
-                        src={session.user.image}
-                        alt="Avatar"
-                        width={24}
-                        height={24}
-                        className="h-6 w-6 shrink-0 rounded-full object-cover"
-                      />
-                    ) : (
-                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted/80">
-                        <User2 className="h-3 w-3" />
+                  <div className="flex items-center gap-1 rounded-[0.8rem] border border-border/30 bg-background/50 px-1.5 py-1.5 text-[12px] text-muted-foreground">
+                    <Link
+                      href="/user"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex min-w-0 flex-1 items-center gap-2 rounded-[0.65rem] px-0.5 transition-colors hover:text-foreground"
+                    >
+                      {session.user.image ? (
+                        <Image
+                          src={session.user.image}
+                          alt="Avatar"
+                          width={24}
+                          height={24}
+                          className="h-6 w-6 shrink-0 rounded-full object-cover"
+                        />
+                      ) : (
+                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted/80">
+                          <User2 className="h-3 w-3" />
+                        </span>
+                      )}
+                      <span className="truncate text-[12px] font-medium text-foreground/90">
+                        {session.user.name?.split(" ")[0] || "Mon espace"}
                       </span>
-                    )}
-                    <span className="truncate text-[12px] font-medium text-foreground/90">
-                      {session.user.name?.split(" ")[0] || "Mon espace"}
-                    </span>
-                  </Link>
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => void signOutToHome()}
+                      aria-label="Déconnexion"
+                      title="Déconnexion"
+                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-500/10 dark:hover:text-red-300"
+                    >
+                      <LogOut className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
                 ) : (
                   <Button
                     size="sm"

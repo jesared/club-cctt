@@ -45,6 +45,30 @@ export function getContactFormAvailability(
   };
 }
 
+export function getFeedbackFormAvailability(
+  env: NodeJS.ProcessEnv = process.env,
+): PublicFormAvailability {
+  const hasConfiguredDelivery = hasResendDelivery(
+    env.RESEND_API_KEY,
+    env.FEEDBACK_TO_EMAIL ?? "jesared@gmail.com",
+  );
+
+  if (hasConfiguredDelivery) {
+    return {
+      isAvailable: true,
+      message: "Le formulaire de feedback est configure.",
+      missing: [],
+    };
+  }
+
+  return {
+    isAvailable: false,
+    message:
+      "Le formulaire de feedback n'est pas encore disponible sur cet environnement.",
+    missing: ["RESEND_API_KEY + FEEDBACK_TO_EMAIL"],
+  };
+}
+
 export function getTournamentRegistrationNotificationAvailability(
   env: NodeJS.ProcessEnv = process.env,
 ): PublicFormAvailability {
