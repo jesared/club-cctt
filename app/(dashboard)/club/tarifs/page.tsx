@@ -278,16 +278,34 @@ export default async function TarifsPage() {
                 </p>
               </div>
 
-              <div className="flex flex-wrap items-center gap-3">
-                <Button asChild size="lg" className="min-w-[200px]">
+              <div
+                className="inline-flex w-full flex-col gap-1 rounded-lg border border-border bg-background/70 p-1 sm:w-fit sm:flex-row"
+                role="group"
+                aria-label="Actions inscription"
+              >
+                <Button
+                  asChild
+                  size="lg"
+                  className="h-10 rounded-md shadow-none"
+                >
                   <Link href={primaryCtaHref}>{primaryCtaLabel}</Link>
                 </Button>
                 {showContactSecondaryCta ? (
-                  <Button asChild size="lg" variant="outline">
+                  <Button
+                    asChild
+                    size="lg"
+                    variant="ghost"
+                    className="h-10 rounded-md shadow-none"
+                  >
                     <Link href="/club/contact">Contacter le club</Link>
                   </Button>
                 ) : (
-                  <Button asChild size="lg" variant="outline">
+                  <Button
+                    asChild
+                    size="lg"
+                    variant="ghost"
+                    className="h-10 rounded-md shadow-none"
+                  >
                     <Link href="/club/horaires">Voir les horaires</Link>
                   </Button>
                 )}

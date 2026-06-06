@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const clubContextLinks = [
@@ -22,24 +23,31 @@ export default function ClubContextNav() {
   return (
     <nav
       aria-label="Navigation club"
-      className="rounded-2xl border border-border/70 bg-muted/20 p-3"
+      className="inline-flex w-full flex-col gap-1 rounded-2xl border border-border/70 bg-muted/20 p-1 sm:w-fit sm:flex-row"
     >
-      <div className="flex flex-wrap items-center gap-2">
-        {clubContextLinks.map((item) => (
-          <Link
+      {clubContextLinks.map((item) => {
+        const active = isActive(pathname, item.href);
+
+        return (
+          <Button
             key={item.href}
-            href={item.href}
+            asChild
+            variant={active ? "outline" : "ghost"}
             className={cn(
-              "inline-flex items-center justify-center rounded-full border px-3 py-2 text-sm transition-colors",
-              isActive(pathname, item.href)
-                ? "border-primary bg-primary/10 text-primary"
-                : "border-border/70 bg-background/80 text-muted-foreground hover:border-primary/30 hover:bg-muted hover:text-foreground",
+              "h-10 rounded-xl px-4 shadow-none",
+              active
+                ? "border-primary bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary"
+                : "text-muted-foreground hover:text-foreground",
             )}
+          >
+          <Link
+            href={item.href}
           >
             {item.label}
           </Link>
-        ))}
-      </div>
+          </Button>
+        );
+      })}
     </nav>
   );
 }

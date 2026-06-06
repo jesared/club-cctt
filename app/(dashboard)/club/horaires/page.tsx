@@ -173,30 +173,48 @@ export default async function HorairesPage() {
               delay={index * 120}
               className="mb-6 break-inside-avoid"
             >
-              <Card className="card-hover">
-                <CardHeader className="space-y-2">
+              <Card className="overflow-hidden card-hover">
+                <CardHeader className="border-b border-border/55 bg-muted/10">
                   <CardTitle>{jour.jour}</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <ul className="space-y-4">
+                <CardContent className="p-0">
+                  <ul className="divide-y divide-border/45">
                     {jour.seances.map((seance, i) => (
                       <li
                         key={i}
-                        className="rounded-2xl border border-border/70 bg-background/80 p-4"
+                        className="grid grid-cols-[1rem_1fr] gap-3 bg-background/65 px-4 py-4 transition-colors hover:bg-muted/20"
                       >
-                        <div className="flex flex-wrap items-center gap-2">
-                          {seance.type.map((type) => (
-                            <Badge key={type} variant={type}>
-                              {getBadgeLabel(type)}
-                            </Badge>
-                          ))}
+                        <div
+                          className="relative flex justify-center"
+                          aria-hidden="true"
+                        >
+                          {i < jour.seances.length - 1 ? (
+                            <span className="absolute top-5 h-[calc(100%+1.5rem)] w-px bg-border/70" />
+                          ) : null}
+                          <span className="relative mt-1 size-2 rounded-full bg-[#00D9FF] shadow-[0_0_0_4px_color-mix(in_oklch,var(--background)_76%,transparent)]" />
                         </div>
-                        <p className="mt-3 text-base font-medium text-foreground">
-                          {seance.horaire}
-                        </p>
-                        <p className="mt-1 text-sm text-muted-foreground">
+
+                        <div className="min-w-0">
+                          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                            <p className="text-lg font-semibold leading-none text-foreground">
+                              {seance.horaire}
+                            </p>
+                            <div className="flex flex-wrap gap-1.5 sm:justify-end">
+                              {seance.type.map((type) => (
+                                <Badge
+                                  key={type}
+                                  variant={type}
+                                  className="h-6 rounded-full px-2.5"
+                                >
+                                  {getBadgeLabel(type)}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                           {seance.label || "Créneau sans précision complémentaire."}
-                        </p>
+                          </p>
+                        </div>
                       </li>
                     ))}
                   </ul>
@@ -236,11 +254,19 @@ export default async function HorairesPage() {
                 votre profil.
               </p>
 
-              <div className="flex flex-wrap gap-3">
-                <Button asChild>
+              <div
+                className="inline-flex w-full flex-col gap-1 rounded-lg border border-border bg-background/70 p-1 sm:w-fit sm:flex-row"
+                role="group"
+                aria-label="Actions essai gratuit"
+              >
+                <Button asChild className="h-10 rounded-md shadow-none">
                   <Link href="/club/contact">Contacter le club</Link>
                 </Button>
-                <Button asChild variant="outline">
+                <Button
+                  asChild
+                  variant="ghost"
+                  className="h-10 rounded-md shadow-none"
+                >
                   <Link href="/club/tarifs">Voir les tarifs</Link>
                 </Button>
               </div>

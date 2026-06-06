@@ -602,6 +602,22 @@
     border-color 200ms var(--ease-out-quart);
 }
 
+.form-input-group {
+  @apply relative;
+}
+
+.form-input-group .form-field {
+  @apply pl-11;
+}
+
+.form-input-group__icon {
+  @apply pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground;
+}
+
+.form-input-group__icon--textarea {
+  @apply top-3.5 translate-y-0;
+}
+
 .form-field:focus-visible {
   box-shadow: 0 0 0 2px var(--primary),
     0 0 0 6px color-mix(in oklch, var(--primary) 18%, transparent);

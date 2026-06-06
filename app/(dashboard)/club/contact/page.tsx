@@ -1,4 +1,5 @@
 import ContactForm from "@/components/ContactForm";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ClubContextNav from "@/components/public/club-context-nav";
 import Reveal from "@/components/Reveal";
@@ -135,19 +136,29 @@ export default async function ContactPage({
                   </div>
                 </div>
 
-                <div className="flex flex-wrap gap-3 pt-2">
-                  <Link
-                    href={content.ctaPrimaryHref}
-                    className="inline-flex items-center justify-center rounded-md border px-4 py-2 text-sm hover:bg-muted"
+                <div
+                  className="inline-flex w-full flex-col gap-1 rounded-lg border border-border bg-background/70 p-1 sm:w-fit sm:flex-row"
+                  role="group"
+                  aria-label="Actions coordonnées"
+                >
+                  <Button
+                    asChild
+                    variant="ghost"
+                    className="h-10 rounded-md shadow-none"
                   >
-                    {content.ctaPrimaryLabel}
-                  </Link>
-                  <Link
-                    href={content.ctaSecondaryHref}
-                    className="inline-flex items-center justify-center rounded-md border px-4 py-2 text-sm hover:bg-muted"
+                    <Link href={content.ctaPrimaryHref}>
+                      {content.ctaPrimaryLabel}
+                    </Link>
+                  </Button>
+                  <Button
+                    asChild
+                    variant="ghost"
+                    className="h-10 rounded-md shadow-none"
                   >
-                    {content.ctaSecondaryLabel}
-                  </Link>
+                    <Link href={content.ctaSecondaryHref}>
+                      {content.ctaSecondaryLabel}
+                    </Link>
+                  </Button>
                 </div>
               </CardContent>
             </Card>

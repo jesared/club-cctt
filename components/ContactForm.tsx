@@ -1,7 +1,14 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { Check, Loader2 } from "lucide-react";
+import {
+  Check,
+  ListChecks,
+  Loader2,
+  Mail,
+  MessageSquareText,
+  User,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -224,21 +231,24 @@ export default function ContactForm({
         <label htmlFor="name" className="mb-1 block text-sm font-medium">
           Nom
         </label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          required
-          minLength={2}
-          maxLength={100}
-          placeholder="Votre nom"
-          value={formData.name}
-          onChange={(event) => setFieldValue("name", event.target.value)}
-          onBlur={() => markFieldAsTouched("name")}
-          aria-invalid={fieldErrors.name ? "true" : "false"}
-          aria-describedby={fieldErrors.name ? "name-error" : undefined}
-          className="form-field"
-        />
+        <div className="form-input-group">
+          <User className="form-input-group__icon h-4 w-4" aria-hidden="true" />
+          <input
+            type="text"
+            id="name"
+            name="name"
+            required
+            minLength={2}
+            maxLength={100}
+            placeholder="Votre nom"
+            value={formData.name}
+            onChange={(event) => setFieldValue("name", event.target.value)}
+            onBlur={() => markFieldAsTouched("name")}
+            aria-invalid={fieldErrors.name ? "true" : "false"}
+            aria-describedby={fieldErrors.name ? "name-error" : undefined}
+            className="form-field"
+          />
+        </div>
         {fieldErrors.name ? (
           <p id="name-error" className="form-error" role="alert">
             {fieldErrors.name}
@@ -250,20 +260,23 @@ export default function ContactForm({
         <label htmlFor="email" className="mb-1 block text-sm font-medium">
           E-mail
         </label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          required
-          maxLength={150}
-          placeholder="votre@email.fr"
-          value={formData.email}
-          onChange={(event) => setFieldValue("email", event.target.value)}
-          onBlur={() => markFieldAsTouched("email")}
-          aria-invalid={fieldErrors.email ? "true" : "false"}
-          aria-describedby={fieldErrors.email ? "email-error" : undefined}
-          className="form-field"
-        />
+        <div className="form-input-group">
+          <Mail className="form-input-group__icon h-4 w-4" aria-hidden="true" />
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            maxLength={150}
+            placeholder="votre@email.fr"
+            value={formData.email}
+            onChange={(event) => setFieldValue("email", event.target.value)}
+            onBlur={() => markFieldAsTouched("email")}
+            aria-invalid={fieldErrors.email ? "true" : "false"}
+            aria-describedby={fieldErrors.email ? "email-error" : undefined}
+            className="form-field"
+          />
+        </div>
         {fieldErrors.email ? (
           <p id="email-error" className="form-error" role="alert">
             {fieldErrors.email}
@@ -275,7 +288,12 @@ export default function ContactForm({
         <label htmlFor="subject" className="mb-1 block text-sm font-medium">
           Sujet
         </label>
-        <select
+        <div className="form-input-group">
+          <ListChecks
+            className="form-input-group__icon h-4 w-4"
+            aria-hidden="true"
+          />
+          <select
           id="subject"
           name="subject"
           required
@@ -292,7 +310,8 @@ export default function ContactForm({
               {option}
             </option>
           ))}
-        </select>
+          </select>
+        </div>
         {fieldErrors.subject ? (
           <p id="subject-error" className="form-error" role="alert">
             {fieldErrors.subject}
@@ -304,21 +323,27 @@ export default function ContactForm({
         <label htmlFor="message" className="mb-1 block text-sm font-medium">
           Message
         </label>
-        <textarea
-          id="message"
-          name="message"
-          rows={5}
-          required
-          minLength={10}
-          maxLength={5000}
-          placeholder="Votre message..."
-          value={formData.message}
-          onChange={(event) => setFieldValue("message", event.target.value)}
-          onBlur={() => markFieldAsTouched("message")}
-          aria-invalid={fieldErrors.message ? "true" : "false"}
-          aria-describedby={fieldErrors.message ? "message-error" : undefined}
-          className="form-field"
-        />
+        <div className="form-input-group">
+          <MessageSquareText
+            className="form-input-group__icon form-input-group__icon--textarea h-4 w-4"
+            aria-hidden="true"
+          />
+          <textarea
+            id="message"
+            name="message"
+            rows={5}
+            required
+            minLength={10}
+            maxLength={5000}
+            placeholder="Votre message..."
+            value={formData.message}
+            onChange={(event) => setFieldValue("message", event.target.value)}
+            onBlur={() => markFieldAsTouched("message")}
+            aria-invalid={fieldErrors.message ? "true" : "false"}
+            aria-describedby={fieldErrors.message ? "message-error" : undefined}
+            className="form-field"
+          />
+        </div>
         {fieldErrors.message ? (
           <p id="message-error" className="form-error" role="alert">
             {fieldErrors.message}
