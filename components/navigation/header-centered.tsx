@@ -510,6 +510,25 @@ export default function HeaderCentered({
                 )}
               </button>
 
+              <button
+                type="button"
+                aria-label={
+                  isDark ? "Passer au mode clair" : "Passer au mode sombre"
+                }
+                title={isDark ? "Mode clair" : "Mode sombre"}
+                className={cn(
+                  "inline-flex h-10 w-10 items-center justify-center rounded-full border border-transparent bg-muted/20 text-slate-600 transition-colors hover:bg-muted/55 hover:text-slate-900 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10 dark:hover:text-white md:hidden",
+                  isDark && "text-amber-300/90 hover:text-amber-200",
+                )}
+                onClick={() => setTheme(isDark ? "light" : "dark")}
+              >
+                {isDark ? (
+                  <Sun className="h-4 w-4" />
+                ) : (
+                  <Moon className="h-4 w-4" />
+                )}
+              </button>
+
               <div className="hidden items-center gap-1.5 md:flex">
                 {desktopSections.map((section) => {
                   const active =
@@ -635,7 +654,7 @@ export default function HeaderCentered({
                 }
                 title={isDark ? "Mode clair" : "Mode sombre"}
                 className={cn(
-                  "inline-flex h-11 w-11 items-center justify-center rounded-full text-slate-600 hover:text-slate-950 dark:text-slate-200 dark:hover:text-white",
+                  "hidden h-11 w-11 items-center justify-center rounded-full text-slate-600 hover:text-slate-950 dark:text-slate-200 dark:hover:text-white md:inline-flex",
                   headerActionSurface,
                   isDark && "text-amber-300/90 hover:text-amber-200",
                 )}
