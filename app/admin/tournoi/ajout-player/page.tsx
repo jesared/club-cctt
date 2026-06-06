@@ -10,6 +10,11 @@ import { redirect } from "next/navigation";
 import { requireAdminSession, TournamentAdminPage } from "../_components";
 import { getCurrentTournament, getTournamentTables } from "../data";
 import { AddPlayerForm } from "./add-player-form";
+import {
+  findExistingTournamentRegistrationByLicense,
+  formatExistingRegistrationOwner,
+  formatExistingRegistrationPlayer,
+} from "@/lib/tournament-registration";
 
 type PageProps = {
   searchParams?: Promise<{
@@ -66,6 +71,21 @@ async function createPlayerRegistration(formData: FormData) {
 
   if (!session?.user?.id) {
     redirect("/admin/tournoi/ajout-player?error=Session+invalide");
+  }
+
+  const existingRegistration = await findExistingTournamentRegistrationByLicense(
+    tournamentId,
+    licence,
+  );
+
+  if (existingRegistration) {
+    const playerName = formatExistingRegistrationPlayer(existingRegistration);
+    const ownerName = formatExistingRegistrationOwner(existingRegistration);
+    redirect(
+      `/admin/tournoi/ajout-player?error=${encodeURIComponent(
+        `Cette licence est déjà inscrite pour ${playerName}, rattachée à ${ownerName}.`,
+      )}`,
+    );
   }
 
   const selectedTournamentEvents = await prisma.tournamentEvent.findMany({

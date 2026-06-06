@@ -275,7 +275,9 @@ export function AddPlayerForm({
 
     try {
       const response = await fetch(
-        `/api/admin/tournoi/fftt/license?licence=${encodeURIComponent(licence)}`,
+        `/api/admin/tournoi/fftt/license?licence=${encodeURIComponent(
+          licence,
+        )}&tournamentId=${encodeURIComponent(tournamentId)}`,
       );
       const data = (await response.json().catch(() => ({}))) as FfttLookupResponse;
 
@@ -401,7 +403,11 @@ export function AddPlayerForm({
             <label htmlFor="licence" className="font-medium">
               Licence *
             </label>
-            <div className="flex gap-2">
+            <div
+              className="flex min-h-10 overflow-hidden rounded-md border border-border bg-background focus-within:ring-2 focus-within:ring-ring"
+              role="group"
+              aria-label="Recherche FFTT par numéro de licence"
+            >
               <input
                 id="licence"
                 name="licence"
@@ -421,7 +427,7 @@ export function AddPlayerForm({
                   }));
                   setFfttLookup({ status: "idle", message: "" });
                 }}
-                className="min-w-0 flex-1 rounded-md border border-border bg-background px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className="min-w-0 flex-1 border-0 bg-transparent px-4 py-2 text-sm outline-none placeholder:text-muted-foreground"
                 placeholder="1234567"
               />
               <button
@@ -430,7 +436,7 @@ export function AddPlayerForm({
                   !formData.licence.trim() || ffttLookup.status === "loading"
                 }
                 onClick={lookupFfttLicense}
-                className="inline-flex cursor-pointer items-center rounded-md border border-border bg-muted px-3 py-2 text-xs font-semibold text-foreground transition hover:bg-muted/80 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex cursor-pointer items-center justify-center border-l border-border bg-muted px-4 py-2 text-xs font-semibold text-foreground transition hover:bg-muted/80 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {ffttLookup.status === "loading" ? "Recherche..." : "FFTT"}
               </button>

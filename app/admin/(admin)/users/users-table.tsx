@@ -95,10 +95,6 @@ export default function UsersTable({
     bureau: filteredUsers.filter((user) => user.managedRole === "BUREAU").length,
     entraineurs: filteredUsers.filter((user) => user.managedRole === "ENTRAINEUR").length,
     members: filteredUsers.filter((user) => user.managedRole === "USER").length,
-    players: filteredUsers.reduce(
-      (total, user) => total + user.players.length,
-      0,
-    ),
   };
 
   return (
@@ -166,7 +162,6 @@ export default function UsersTable({
           <FilterStat label="Bureau" value={filteredStats.bureau} />
           <FilterStat label="Entraîneurs" value={filteredStats.entraineurs} />
           <FilterStat label="Membres" value={filteredStats.members} />
-          <FilterStat label="Licenciés" value={filteredStats.players} />
         </div>
 
         {filteredUsers.length === 0 ? (
@@ -190,9 +185,12 @@ export default function UsersTable({
                 <TableHeader className="bg-muted/30">
                   <TableRow className="hover:bg-muted/30">
                     <TableHead className="h-9 w-[22%] px-3">Utilisateur</TableHead>
-                    <TableHead className="h-9 w-[29%] px-3">Email</TableHead>
-                    <TableHead className="h-9 w-[19%] px-3">Profil</TableHead>
-                    <TableHead className="h-9 w-[30%] px-3">Accès</TableHead>
+                    <TableHead className="h-9 w-[25%] px-3">Email</TableHead>
+                    <TableHead className="h-9 w-[16%] px-3">Profil</TableHead>
+                    <TableHead className="h-9 w-[27%] px-3">Accès</TableHead>
+                    <TableHead className="h-9 w-[10%] px-3 text-right">
+                      Actions
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
 
@@ -253,19 +251,12 @@ function DesktopUserRow({
 
       <TableCell className="px-3 py-3">
         <div className="space-y-1">
-          <div className="flex items-center gap-1">
-            <RoleActionForm
-              user={user}
-              managedRoles={managedRoles}
-              updateUserRole={updateUserRole}
-              compact
-            />
-            <DeleteActionForm
-              user={user}
-              deleteUser={deleteUser}
-              compact
-            />
-          </div>
+          <RoleActionForm
+            user={user}
+            managedRoles={managedRoles}
+            updateUserRole={updateUserRole}
+            compact
+          />
 
           {user.isProtected ? (
             <div className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
@@ -274,6 +265,14 @@ function DesktopUserRow({
             </div>
           ) : null}
         </div>
+      </TableCell>
+
+      <TableCell className="px-3 py-3 text-right">
+        <DeleteActionForm
+          user={user}
+          deleteUser={deleteUser}
+          compact
+        />
       </TableCell>
     </TableRow>
   );
@@ -372,8 +371,8 @@ function RoleActionForm({
       action={updateUserRole}
       className={
         compact
-          ? "flex items-center gap-1.5"
-          : "flex flex-col gap-2 sm:flex-row sm:items-center"
+          ? "inline-flex items-center gap-1 rounded-xl border border-border/70 bg-background/80 p-1 shadow-xs"
+          : "inline-flex w-full flex-col gap-1 rounded-xl border border-border/70 bg-background/80 p-1 shadow-xs sm:w-fit sm:flex-row"
       }
     >
       <input type="hidden" name="userId" value={user.id} />
@@ -381,14 +380,14 @@ function RoleActionForm({
         name="role"
         className={
           compact
-            ? `admin-select h-8 min-w-[5.8rem] max-w-[5.8rem] py-1 pl-2 pr-6 text-[10px] ${
+            ? `admin-select h-8 min-w-[8rem] max-w-[8rem] rounded-lg border-0 bg-transparent py-1 pl-2 pr-7 text-xs shadow-none hover:bg-transparent focus:bg-transparent ${
                 hasPendingChange
-                  ? "border-amber-400/80 ring-1 ring-amber-400/50"
+                  ? "ring-1 ring-amber-400/50"
                   : ""
               }`
-            : `admin-select h-9 min-w-[10rem] py-2 text-xs ${
+            : `admin-select h-9 min-w-[10rem] rounded-lg border-0 bg-transparent py-2 text-xs shadow-none hover:bg-transparent focus:bg-transparent ${
                 hasPendingChange
-                  ? "border-amber-400/80 ring-1 ring-amber-400/50"
+                  ? "ring-1 ring-amber-400/50"
                   : ""
               }`
         }
@@ -487,7 +486,7 @@ function RoleSubmitButton({
   const button = (
     <Button
       type="submit"
-      size={compact ? (hasPendingChange ? "sm" : "icon") : "sm"}
+      size={compact ? "icon" : "sm"}
       disabled={disabled || pending || !hasPendingChange}
       aria-label={
         pending
@@ -505,9 +504,11 @@ function RoleSubmitButton({
       }
       className={
         compact
-          ? hasPendingChange
-            ? "h-8 min-w-[4.5rem] bg-amber-500 px-2 text-[10px] font-semibold text-amber-950 hover:bg-amber-400"
-            : "size-7"
+          ? `size-8 rounded-lg shadow-none ${
+              hasPendingChange
+                ? "bg-amber-500 text-amber-950 hover:bg-amber-400"
+                : ""
+            }`
           : `gap-1.5 sm:min-w-[9.5rem] ${
               hasPendingChange
                 ? "bg-amber-500 text-amber-950 hover:bg-amber-400"
@@ -516,14 +517,7 @@ function RoleSubmitButton({
       }
     >
       {compact ? (
-        hasPendingChange ? (
-          <>
-            <Check className="h-3.5 w-3.5" />
-            Valider
-          </>
-        ) : (
-          <Check className="h-4 w-4" />
-        )
+        <Check className="h-4 w-4" />
       ) : (
         <>
           <UserCog className="h-3.5 w-3.5" />

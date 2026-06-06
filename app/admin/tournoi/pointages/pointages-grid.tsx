@@ -241,12 +241,12 @@ export function PointagesGrid({
     tone: "default" | "warning" = "default",
   ) =>
     cn(
-      "inline-flex cursor-pointer whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-medium transition",
+      "inline-flex cursor-pointer whitespace-nowrap rounded-lg border px-3 py-1.5 text-xs font-medium transition",
       active
         ? tone === "warning"
           ? "border-amber-400/50 bg-amber-100 text-amber-900 dark:bg-amber-900/40 dark:text-amber-200"
           : "border-primary/40 bg-primary/10 text-primary"
-        : "border-border bg-muted/30 text-muted-foreground hover:bg-muted/50",
+        : "border-transparent bg-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground",
     );
 
   const filteredPlayers = useMemo(() => {
@@ -802,7 +802,11 @@ export function PointagesGrid({
               Passez du suivi global au pointage terrain en quelques clics.
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+          <div
+            className="inline-flex w-full flex-wrap items-center gap-1 rounded-2xl border border-border/70 bg-background/70 p-1 shadow-xs xl:w-fit"
+            role="group"
+            aria-label="Filtres rapides de pointage"
+          >
             <button
               type="button"
               onClick={() => setSelectedPointageFilter("all")}
