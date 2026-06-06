@@ -510,85 +510,42 @@ export default function HeaderCentered({
                 )}
               </button>
 
-              <button
-                type="button"
-                aria-label={
-                  isDark ? "Passer au mode clair" : "Passer au mode sombre"
-                }
-                title={isDark ? "Mode clair" : "Mode sombre"}
-                className={cn(
-                  "inline-flex h-10 w-10 items-center justify-center rounded-full border border-transparent bg-muted/20 transition-colors dark:bg-white/5",
-                  isDark
-                    ? "text-amber-300/90 hover:bg-white/10 hover:text-amber-200"
-                    : "text-slate-600 hover:bg-muted/55 hover:text-slate-900",
-                )}
-                onClick={() => setTheme(isDark ? "light" : "dark")}
-              >
-                {isDark ? (
-                  <Sun className="h-4 w-4" />
-                ) : (
-                  <Moon className="h-4 w-4" />
-                )}
-              </button>
-            </div>
+              <div className="hidden items-center gap-1.5 md:flex">
+                {desktopSections.map((section) => {
+                  const active =
+                    section.title === "Club"
+                      ? pathname.startsWith("/club")
+                      : pathname.startsWith("/tournoi");
+                  const href = section.title === "Club" ? "/club" : "/tournoi";
+                  const label =
+                    section.title === "Club"
+                      ? desktopLabels.Club
+                      : desktopLabels.Tournoi;
 
-            <div className="pointer-events-none absolute inset-x-0 top-1/2 hidden -translate-y-1/2 md:flex md:justify-center">
-              <div className="pointer-events-auto flex items-center gap-2.5 text-sm">
-                {desktopSections
-                  .filter((section) => section.title === "Club")
-                  .map((section) => {
-                    const active = pathname.startsWith("/club");
-
-                    return (
-                      <Link
-                        key={section.title}
-                        href="/club"
-                        className={cn(
-                          "rounded-full px-3.5 py-1.5 font-medium tracking-[0.01em] transition-colors",
-                          active
-                            ? "bg-slate-100/85 text-slate-900 dark:bg-slate-400/10 dark:text-white"
-                            : "text-muted-foreground hover:bg-muted/45 hover:text-foreground",
-                        )}
-                      >
-                        {desktopLabels.Club}
-                      </Link>
-                    );
-                  })}
-
-                <div
-                  aria-hidden="true"
-                  className={cn(
-                    "shrink-0 transition-all duration-200",
-                    scrolled ? "w-40 lg:w-48" : "w-48 lg:w-56",
-                  )}
-                />
-
-                {desktopSections
-                  .filter((section) => section.title === "Tournoi")
-                  .map((section) => {
-                    const active = pathname.startsWith("/tournoi");
-
-                    return (
-                      <Link
-                        key={section.title}
-                        href="/tournoi"
-                        className={cn(
-                          "rounded-full px-3 py-1.5 text-[0.925rem] font-medium tracking-normal whitespace-nowrap transition-colors",
-                          active
-                            ? "bg-stone-100/90 text-stone-900 dark:bg-stone-400/10 dark:text-white"
-                            : "text-muted-foreground hover:bg-muted/45 hover:text-foreground",
-                        )}
-                      >
-                        {desktopLabels.Tournoi}
-                      </Link>
-                    );
-                  })}
+                  return (
+                    <Link
+                      key={section.title}
+                      href={href}
+                      className={cn(
+                        "rounded-full px-3 py-1.5 text-[0.9rem] font-medium whitespace-nowrap transition-colors",
+                        active
+                          ? "bg-slate-100/85 text-slate-900 dark:bg-slate-400/10 dark:text-white"
+                          : "text-muted-foreground hover:bg-muted/45 hover:text-foreground",
+                        section.title === "Tournoi" &&
+                          active &&
+                          "bg-stone-100/90 text-stone-900 dark:bg-stone-400/10",
+                      )}
+                    >
+                      {label}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
 
             <Link
               href="/"
-              className="absolute left-1/2 top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-background/95 px-3 py-1 text-center shadow-sm ring-1 ring-border/50 md:hidden"
+              className="absolute left-1/2 top-1/2 z-10 mt-1 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-background/95 px-3 py-1 text-center shadow-sm ring-1 ring-border/50 md:hidden"
             >
               <span className="inline-flex items-center justify-center drop-shadow-[0_10px_24px_rgba(15,23,42,0.18)]">
                 <>
@@ -601,10 +558,10 @@ export default function HeaderCentered({
                     priority
                     sizes="176px"
                     className={cn(
-                      "h-auto w-auto max-w-[10.5rem] object-contain transition-all duration-200 dark:hidden",
+                      "h-auto w-auto max-w-[11rem] object-contain transition-all duration-200 dark:hidden",
                       scrolled
-                        ? "max-h-[2.55rem]"
-                        : "max-h-[2.9rem]",
+                        ? "max-h-[2.7rem]"
+                        : "max-h-[3.1rem]",
                     )}
                   />
                   <Image
@@ -616,10 +573,10 @@ export default function HeaderCentered({
                     priority
                     sizes="176px"
                     className={cn(
-                      "hidden h-auto w-auto max-w-[10.5rem] object-contain transition-all duration-200 dark:block",
+                      "hidden h-auto w-auto max-w-[11rem] object-contain transition-all duration-200 dark:block",
                       scrolled
-                        ? "max-h-[2.55rem]"
-                        : "max-h-[2.9rem]",
+                        ? "max-h-[2.7rem]"
+                        : "max-h-[3.1rem]",
                     )}
                   />
                 </>
@@ -628,7 +585,7 @@ export default function HeaderCentered({
 
             <Link
               href="/"
-              className="absolute left-1/2 top-1/2 hidden max-w-[calc(100%-11rem)] -translate-x-1/2 -translate-y-1/2 items-center justify-center text-center md:flex"
+              className="absolute left-1/2 top-1/2 mt-1 hidden max-w-[calc(100%-11rem)] -translate-x-1/2 -translate-y-1/2 items-center justify-center text-center md:flex"
             >
               <span className="inline-flex items-center justify-center px-2 py-1 drop-shadow-[0_10px_24px_rgba(15,23,42,0.18)]">
                 <>
@@ -640,7 +597,7 @@ export default function HeaderCentered({
                     unoptimized
                     className={cn(
                       "w-auto max-w-full object-contain transition-all duration-200 dark:hidden",
-                      scrolled ? "h-[3.95rem]" : "h-[4.65rem]",
+                      scrolled ? "h-[4.15rem]" : "h-[4.9rem]",
                     )}
                   />
                   <Image
@@ -651,7 +608,7 @@ export default function HeaderCentered({
                     unoptimized
                     className={cn(
                       "hidden w-auto max-w-full object-contain transition-all duration-200 dark:block",
-                      scrolled ? "h-[3.95rem]" : "h-[4.65rem]",
+                      scrolled ? "h-[4.15rem]" : "h-[4.9rem]",
                     )}
                   />
                 </>
@@ -670,6 +627,26 @@ export default function HeaderCentered({
                   S&apos;inscrire
                 </Link>
               ) : null}
+
+              <button
+                type="button"
+                aria-label={
+                  isDark ? "Passer au mode clair" : "Passer au mode sombre"
+                }
+                title={isDark ? "Mode clair" : "Mode sombre"}
+                className={cn(
+                  "inline-flex h-11 w-11 items-center justify-center rounded-full text-slate-600 hover:text-slate-950 dark:text-slate-200 dark:hover:text-white",
+                  headerActionSurface,
+                  isDark && "text-amber-300/90 hover:text-amber-200",
+                )}
+                onClick={() => setTheme(isDark ? "light" : "dark")}
+              >
+                {isDark ? (
+                  <Sun className="h-[1.05rem] w-[1.05rem]" />
+                ) : (
+                  <Moon className="h-[1.05rem] w-[1.05rem]" />
+                )}
+              </button>
 
               {session ? (
                 <>
