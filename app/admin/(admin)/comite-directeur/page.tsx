@@ -29,6 +29,7 @@ const emptyBureauMember: BureauMember = {
 
 const emptySimpleMember: SimpleMember = {
   nom: "",
+  description: "",
   photo: "",
 };
 
@@ -445,6 +446,23 @@ export default function AdminComiteDirecteurPage() {
                   </div>
 
                   <div className="grid gap-2">
+                    <label className="text-sm font-medium">Description</label>
+                    <textarea
+                      className="w-full rounded border px-3 py-2"
+                      rows={3}
+                      value={member.description}
+                      onChange={(event) =>
+                        updateSimpleMember(
+                          "membres",
+                          index,
+                          "description",
+                          event.target.value,
+                        )
+                      }
+                    />
+                  </div>
+
+                  <div className="grid gap-2">
                     <label className="text-sm font-medium">
                       Photo (URL ou chemin `/public`)
                     </label>
@@ -548,6 +566,23 @@ export default function AdminComiteDirecteurPage() {
                           "salaries",
                           index,
                           "nom",
+                          event.target.value,
+                        )
+                      }
+                    />
+                  </div>
+
+                  <div className="grid gap-2">
+                    <label className="text-sm font-medium">Description</label>
+                    <textarea
+                      className="w-full rounded border px-3 py-2"
+                      rows={3}
+                      value={member.description}
+                      onChange={(event) =>
+                        updateSimpleMember(
+                          "salaries",
+                          index,
+                          "description",
                           event.target.value,
                         )
                       }

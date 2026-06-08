@@ -7,6 +7,7 @@ export type BureauMember = {
 
 export type SimpleMember = {
   nom: string;
+  description: string;
   photo: string;
 };
 
@@ -61,7 +62,7 @@ function normalizeBureauMember(value: unknown): BureauMember | null {
 function normalizeSimpleMember(value: unknown): SimpleMember | null {
   if (typeof value === "string") {
     const nom = coerceString(value);
-    return nom ? { nom, photo: "" } : null;
+    return nom ? { nom, description: "", photo: "" } : null;
   }
 
   if (!isObjectRecord(value)) {
@@ -70,10 +71,11 @@ function normalizeSimpleMember(value: unknown): SimpleMember | null {
 
   const member = {
     nom: coerceString(value.nom),
+    description: coerceString(value.description),
     photo: coerceString(value.photo),
   };
 
-  return member.nom || member.photo ? member : null;
+  return member.nom || member.description || member.photo ? member : null;
 }
 
 export function normalizeComiteContent(

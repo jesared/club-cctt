@@ -3,7 +3,13 @@ import { Users } from "lucide-react";
 
 import Reveal from "@/components/Reveal";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import type { SimpleMember } from "@/lib/comite-content";
 import { getComiteResponse } from "@/lib/comite-service";
 
@@ -25,9 +31,9 @@ function PersonCard({
   description?: string;
 }) {
   return (
-    <Card className="group overflow-visible border-0 bg-transparent shadow-none">
-      <CardHeader className="flex flex-col items-center gap-5 pb-4 text-center">
-        <div className="relative h-32 w-32 overflow-hidden rounded-full border border-border/30 bg-muted/10 shadow-[0_18px_40px_-26px_rgba(15,23,42,0.6)] ring-4 ring-background/85">
+    <Card className="group mt-12 h-full overflow-visible border-border/45 bg-card/38 shadow-none transition-colors duration-300 hover:bg-card/55 sm:mt-14">
+      <CardHeader className="flex flex-col items-center gap-4 p-5 pb-3 pt-0 text-center">
+        <div className="relative -mt-10 h-20 w-20 overflow-hidden rounded-full border border-slate-900/20 bg-background shadow-[0_0_0_3px_rgba(248,250,252,0.86),0_0_0_5px_rgba(15,23,42,0.16)] dark:border-white/25 dark:shadow-[0_0_0_3px_rgba(15,23,42,0.92),0_0_0_5px_rgba(255,255,255,0.16)] sm:-mt-12 sm:h-24 sm:w-24">
           <Image
             src={resolvePhoto(photo)}
             alt={name ? `Portrait de ${name}` : "Avatar par défaut"}
@@ -36,18 +42,24 @@ function PersonCard({
           />
         </div>
 
-        <div className="space-y-2">
-          <p className="inline-flex rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">
+        <div className="space-y-3">
+          <Badge
+            variant="outline"
+            className="border-primary/25 bg-primary/8 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] text-primary"
+          >
             {title}
-          </p>
-          <CardTitle className="text-2xl leading-tight">{name}</CardTitle>
+          </Badge>
+          <CardTitle className="text-xl leading-tight sm:text-2xl">
+            {name}
+          </CardTitle>
         </div>
       </CardHeader>
 
       {description ? (
-        <CardContent className="pt-0 text-center text-sm text-muted-foreground">
-          <div className="mx-auto mb-4 h-px w-14 bg-border/70" />
-          <p className="leading-relaxed">{description}</p>
+        <CardContent className="px-5 pb-5 pt-0 text-center">
+          <CardDescription className="mx-auto max-w-[18rem] leading-relaxed">
+            {description}
+          </CardDescription>
         </CardContent>
       ) : null}
     </Card>
@@ -62,9 +74,9 @@ function SimplePersonCard({
   member: SimpleMember;
 }) {
   return (
-    <Card className="group overflow-visible border-0 bg-transparent shadow-none">
-      <CardHeader className="flex flex-col items-center gap-4 text-center">
-        <div className="relative h-24 w-24 overflow-hidden rounded-full border border-border/30 bg-muted/10 ring-4 ring-background/85">
+    <Card className="group mt-10 h-full overflow-visible border-border/45 bg-card/38 shadow-none transition-colors duration-300 hover:bg-card/55 sm:mt-12">
+      <CardHeader className="flex flex-col items-center gap-4 p-5 pt-0 text-center">
+        <div className="relative -mt-8 h-16 w-16 overflow-hidden rounded-full border border-slate-900/20 bg-background shadow-[0_0_0_3px_rgba(248,250,252,0.86),0_0_0_5px_rgba(15,23,42,0.16)] dark:border-white/25 dark:shadow-[0_0_0_3px_rgba(15,23,42,0.92),0_0_0_5px_rgba(255,255,255,0.16)] sm:-mt-10 sm:h-20 sm:w-20">
           <Image
             src={resolvePhoto(member.photo)}
             alt={member.nom ? `Portrait de ${member.nom}` : "Avatar par défaut"}
@@ -73,14 +85,25 @@ function SimplePersonCard({
           />
         </div>
 
-        <div className="space-y-2">
-          <div className="flex items-center justify-center gap-2 text-sm text-primary">
+        <div className="space-y-3">
+          <Badge
+            variant="outline"
+            className="gap-2 border-primary/25 bg-primary/8 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-primary"
+          >
             <Users className="h-4 w-4" />
             <span>{roleLabel}</span>
-          </div>
+          </Badge>
           <CardTitle className="text-xl">{member.nom}</CardTitle>
         </div>
       </CardHeader>
+
+      {member.description ? (
+        <CardContent className="px-5 pb-5 pt-0 text-center">
+          <CardDescription className="mx-auto max-w-[18rem] leading-relaxed">
+            {member.description}
+          </CardDescription>
+        </CardContent>
+      ) : null}
     </Card>
   );
 }
@@ -96,7 +119,7 @@ export default async function ComiteDirecteurPage() {
     : null;
 
   return (
-    <div className="mx-auto max-w-6xl space-y-14 px-4 py-12">
+    <div className="mx-auto max-w-6xl space-y-14 px-4 pb-28 pt-12 sm:pb-32">
       <Reveal>
         <header className="rounded-[2rem] border border-border/70 bg-card/72 p-8 shadow-sm backdrop-blur-[8px] sm:p-10">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(260px,0.8fr)] lg:items-end">
@@ -158,14 +181,14 @@ export default async function ComiteDirecteurPage() {
         </header>
       </Reveal>
 
-      <section className="space-y-8">
+      <section className="space-y-14">
         <Reveal>
           <div className="flex items-end justify-between gap-4 border-b border-border/60 pb-4">
             <h2 className="text-3xl font-semibold">Bureau</h2>
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 sm:gap-y-20 xl:grid-cols-3">
           {data.bureau.map((personne, index) => (
             <Reveal key={`${personne.poste}-${personne.nom}`} delay={index * 120}>
               <PersonCard
@@ -179,14 +202,14 @@ export default async function ComiteDirecteurPage() {
         </div>
       </section>
 
-      <section className="space-y-8">
+      <section className="space-y-14 pt-10">
         <Reveal>
           <div className="flex items-end justify-between gap-4 border-b border-border/60 pb-4">
             <h2 className="text-3xl font-semibold">Membres du comité</h2>
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 sm:gap-y-20 xl:grid-cols-3">
           {data.membres.map((membre, index) => (
             <Reveal key={`${membre.nom}-${index}`} delay={index * 120}>
               <SimplePersonCard roleLabel="Membre" member={membre} />
@@ -195,14 +218,14 @@ export default async function ComiteDirecteurPage() {
         </div>
       </section>
 
-      <section className="space-y-8">
+      <section className="space-y-14 pt-10">
         <Reveal>
           <div className="flex items-end justify-between gap-4 border-b border-border/60 pb-4">
             <h2 className="text-3xl font-semibold">Salariés diplômés</h2>
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 sm:gap-y-20 xl:grid-cols-3">
           {data.salaries.map((salarie, index) => (
             <Reveal key={`${salarie.nom}-${index}`} delay={index * 120}>
               <SimplePersonCard roleLabel="Salarié diplômé" member={salarie} />
