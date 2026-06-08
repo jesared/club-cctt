@@ -103,6 +103,27 @@ function ImagePreview({
   );
 }
 
+function cleanComiteForm(form: ComiteData): ComiteData {
+  return {
+    bureau: form.bureau.map((member) => ({
+      poste: member.poste,
+      nom: member.nom,
+      description: member.description ?? "",
+      photo: member.photo,
+    })),
+    membres: form.membres.map((member) => ({
+      nom: member.nom,
+      description: member.description ?? "",
+      photo: member.photo,
+    })),
+    salaries: form.salaries.map((member) => ({
+      nom: member.nom,
+      description: member.description ?? "",
+      photo: member.photo,
+    })),
+  };
+}
+
 export default function AdminComiteDirecteurPage() {
   const [form, setForm] = useState<ComiteData>(defaultComiteContent);
   const [meta, setMeta] = useState<ComiteResponse["meta"] | null>(null);
@@ -130,10 +151,11 @@ export default function AdminComiteDirecteurPage() {
     setSaving(true);
 
     try {
+      const nextForm = cleanComiteForm(form);
       const res = await fetch("/api/comite", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(nextForm),
       });
 
       if (!res.ok) {
@@ -164,15 +186,14 @@ export default function AdminComiteDirecteurPage() {
     }));
   }
 
-  function updateSimpleMember<K extends keyof SimpleMember>(
-    key: "membres" | "salaries",
+  function updateComiteMember<K extends keyof SimpleMember>(
     index: number,
     field: K,
     value: SimpleMember[K],
   ) {
     setForm((current) => ({
       ...current,
-      [key]: current[key].map((member, currentIndex) =>
+      membres: current.membres.map((member, currentIndex) =>
         currentIndex === index ? { ...member, [field]: value } : member,
       ),
     }));
@@ -185,10 +206,10 @@ export default function AdminComiteDirecteurPage() {
     }));
   }
 
-  function addSimpleMember(key: "membres" | "salaries") {
+  function addComiteMember() {
     setForm((current) => ({
       ...current,
-      [key]: [...current[key], { ...emptySimpleMember }],
+      membres: [...current.membres, { ...emptySimpleMember }],
     }));
   }
 
@@ -199,10 +220,12 @@ export default function AdminComiteDirecteurPage() {
     }));
   }
 
-  function removeSimpleMember(key: "membres" | "salaries", index: number) {
+  function removeComiteMember(index: number) {
     setForm((current) => ({
       ...current,
-      [key]: current[key].filter((_, currentIndex) => currentIndex !== index),
+      membres: current.membres.filter(
+        (_, currentIndex) => currentIndex !== index,
+      ),
     }));
   }
 
@@ -222,23 +245,19 @@ export default function AdminComiteDirecteurPage() {
     });
   }
 
-  function moveSimpleMember(
-    key: "membres" | "salaries",
-    index: number,
-    direction: -1 | 1,
-  ) {
+  function moveComiteMember(index: number, direction: -1 | 1) {
     setForm((current) => {
       const targetIndex = index + direction;
 
-      if (targetIndex < 0 || targetIndex >= current[key].length) {
+      if (targetIndex < 0 || targetIndex >= current.membres.length) {
         return current;
       }
 
-      const nextMembers = [...current[key]];
+      const nextMembers = [...current.membres];
       const [member] = nextMembers.splice(index, 1);
       nextMembers.splice(targetIndex, 0, member);
 
-      return { ...current, [key]: nextMembers };
+      return { ...current, membres: nextMembers };
     });
   }
 
@@ -254,9 +273,14 @@ export default function AdminComiteDirecteurPage() {
             </p>
           </div>
 
-          <Button asChild variant="outline">
-            <Link href="/club/comite-directeur">Voir la page publique</Link>
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild variant="outline">
+              <Link href="/admin/salaries">Modifier les salaries</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/club/comite-directeur">Voir la page publique</Link>
+            </Button>
+          </div>
         </div>
 
         <Card className="border-primary/20 bg-primary/5">
@@ -329,7 +353,7 @@ export default function AdminComiteDirecteurPage() {
                     <textarea
                       className="w-full rounded border px-3 py-2"
                       rows={3}
-                      value={member.description}
+                      value={member.description ?? ""}
                       onChange={(event) =>
                         updateBureauMember(
                           index,
@@ -409,7 +433,7 @@ export default function AdminComiteDirecteurPage() {
             <Button
               type="button"
               variant="outline"
-              onClick={() => addSimpleMember("membres")}
+              onClick={addComiteMember}
             >
               <Plus className="h-4 w-4" />
               Ajouter
@@ -435,8 +459,7 @@ export default function AdminComiteDirecteurPage() {
                       placeholder="Nom du membre"
                       value={member.nom}
                       onChange={(event) =>
-                        updateSimpleMember(
-                          "membres",
+                        updateComiteMember(
                           index,
                           "nom",
                           event.target.value,
@@ -450,10 +473,9 @@ export default function AdminComiteDirecteurPage() {
                     <textarea
                       className="w-full rounded border px-3 py-2"
                       rows={3}
-                      value={member.description}
+                      value={member.description ?? ""}
                       onChange={(event) =>
-                        updateSimpleMember(
-                          "membres",
+                        updateComiteMember(
                           index,
                           "description",
                           event.target.value,
@@ -471,8 +493,7 @@ export default function AdminComiteDirecteurPage() {
                       placeholder="/comite/photo.jpg"
                       value={member.photo}
                       onChange={(event) =>
-                        updateSimpleMember(
-                          "membres",
+                        updateComiteMember(
                           index,
                           "photo",
                           event.target.value,
@@ -494,7 +515,7 @@ export default function AdminComiteDirecteurPage() {
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => moveSimpleMember("membres", index, -1)}
+                      onClick={() => moveComiteMember(index, -1)}
                       disabled={index === 0}
                     >
                       <ArrowUp className="h-4 w-4" />
@@ -503,7 +524,7 @@ export default function AdminComiteDirecteurPage() {
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => moveSimpleMember("membres", index, 1)}
+                      onClick={() => moveComiteMember(index, 1)}
                       disabled={index === form.membres.length - 1}
                     >
                       <ArrowDown className="h-4 w-4" />
@@ -514,134 +535,7 @@ export default function AdminComiteDirecteurPage() {
                   <Button
                     type="button"
                     variant="destructive"
-                    onClick={() => removeSimpleMember("membres", index)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    Supprimer
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
-            <div className="space-y-1.5">
-              <CardTitle>Salaries diplomes</CardTitle>
-              <CardDescription>
-                Ajoutez un nom et une photo pour les salaries affiches sur la page publique.
-              </CardDescription>
-            </div>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => addSimpleMember("salaries")}
-            >
-              <Plus className="h-4 w-4" />
-              Ajouter
-            </Button>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {form.salaries.length === 0 ? (
-              <div className="rounded-xl border border-dashed px-4 py-6 text-sm text-muted-foreground">
-                Aucun salarie pour le moment.
-              </div>
-            ) : null}
-
-            {form.salaries.map((member, index) => (
-              <div
-                key={`salarie-${index}`}
-                className="grid gap-4 rounded-2xl border p-4 md:grid-cols-[minmax(0,1fr)_180px]"
-              >
-                <div className="grid gap-4">
-                  <div className="grid gap-2">
-                    <label className="text-sm font-medium">Nom</label>
-                    <input
-                      className="w-full rounded border px-3 py-2"
-                      placeholder="Nom du salarie"
-                      value={member.nom}
-                      onChange={(event) =>
-                        updateSimpleMember(
-                          "salaries",
-                          index,
-                          "nom",
-                          event.target.value,
-                        )
-                      }
-                    />
-                  </div>
-
-                  <div className="grid gap-2">
-                    <label className="text-sm font-medium">Description</label>
-                    <textarea
-                      className="w-full rounded border px-3 py-2"
-                      rows={3}
-                      value={member.description}
-                      onChange={(event) =>
-                        updateSimpleMember(
-                          "salaries",
-                          index,
-                          "description",
-                          event.target.value,
-                        )
-                      }
-                    />
-                  </div>
-
-                  <div className="grid gap-2">
-                    <label className="text-sm font-medium">
-                      Photo (URL ou chemin `/public`)
-                    </label>
-                    <input
-                      className="w-full rounded border px-3 py-2"
-                      placeholder="/comite/photo.jpg"
-                      value={member.photo}
-                      onChange={(event) =>
-                        updateSimpleMember(
-                          "salaries",
-                          index,
-                          "photo",
-                          event.target.value,
-                        )
-                      }
-                    />
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-3">
-                  <div className="overflow-hidden rounded-xl border bg-muted/20">
-                    <ImagePreview
-                      photo={member.photo}
-                      alt={`Previsualisation de ${member.nom || "la photo"}`}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => moveSimpleMember("salaries", index, -1)}
-                      disabled={index === 0}
-                    >
-                      <ArrowUp className="h-4 w-4" />
-                      Monter
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => moveSimpleMember("salaries", index, 1)}
-                      disabled={index === form.salaries.length - 1}
-                    >
-                      <ArrowDown className="h-4 w-4" />
-                      Descendre
-                    </Button>
-                  </div>
-
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    onClick={() => removeSimpleMember("salaries", index)}
+                    onClick={() => removeComiteMember(index)}
                   >
                     <Trash2 className="h-4 w-4" />
                     Supprimer

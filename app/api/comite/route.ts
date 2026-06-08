@@ -33,7 +33,9 @@ export async function PUT(req: Request) {
   });
 
   revalidatePath("/club/comite-directeur");
+  revalidatePath("/club/salaries");
   revalidatePath("/admin/comite-directeur");
+  revalidatePath("/admin/salaries");
 
   return NextResponse.json<ComiteResponse>({
     data,

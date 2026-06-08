@@ -151,7 +151,7 @@ export default async function ComiteDirecteurPage() {
               </p>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
               <div className="rounded-[1.4rem] border border-border/70 bg-background/52 p-4 backdrop-blur-[6px]">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
                   Bureau
@@ -166,14 +166,6 @@ export default async function ComiteDirecteurPage() {
                 </p>
                 <p className="mt-2 text-3xl font-semibold text-foreground">
                   {String(data.membres.length).padStart(2, "0")}
-                </p>
-              </div>
-              <div className="rounded-[1.4rem] border border-border/70 bg-background/52 p-4 backdrop-blur-[6px]">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                  Salariés
-                </p>
-                <p className="mt-2 text-3xl font-semibold text-foreground">
-                  {String(data.salaries.length).padStart(2, "0")}
                 </p>
               </div>
             </div>
@@ -218,21 +210,6 @@ export default async function ComiteDirecteurPage() {
         </div>
       </section>
 
-      <section className="space-y-14 pt-10">
-        <Reveal>
-          <div className="flex items-end justify-between gap-4 border-b border-border/60 pb-4">
-            <h2 className="text-3xl font-semibold">Salariés diplômés</h2>
-          </div>
-        </Reveal>
-
-        <div className="grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 sm:gap-y-20 xl:grid-cols-3">
-          {data.salaries.map((salarie, index) => (
-            <Reveal key={`${salarie.nom}-${index}`} delay={index * 120}>
-              <SimplePersonCard roleLabel="Salarié diplômé" member={salarie} />
-            </Reveal>
-          ))}
-        </div>
-      </section>
     </div>
   );
 }

@@ -84,7 +84,7 @@ export default async function UserClubContactsPage() {
             </p>
             <p className="text-3xl font-semibold">{comite.data.salaries.length}</p>
             <p className="text-xs text-muted-foreground">
-              Profils salaries references dans les contenus du comite.
+              Profils salaries references dans les contenus club.
             </p>
           </CardContent>
         </Card>
@@ -174,6 +174,12 @@ export default async function UserClubContactsPage() {
               <Link href="/club/comite-directeur">
                 <Users className="mr-2 h-4 w-4" />
                 Voir le comite directeur
+              </Link>
+            </Button>
+            <Button asChild variant="ghost" className="px-0">
+              <Link href="/club/salaries">
+                <Users className="mr-2 h-4 w-4" />
+                Voir les salaries
               </Link>
             </Button>
           </CardContent>

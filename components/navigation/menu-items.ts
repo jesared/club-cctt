@@ -306,6 +306,11 @@ export const navigation: MenuSection[] = [
         label: "Comité directeur",
         icon: Users,
       },
+      {
+        href: "/club/salaries",
+        label: "Salariés diplômés",
+        icon: BriefcaseBusiness,
+      },
       { href: "/club/horaires", label: "Horaires", icon: CalendarClock },
       { href: "/club/tarifs", label: "Tarifs", icon: BadgeEuro },
       {
@@ -362,6 +367,13 @@ export const navigation: MenuSection[] = [
         label: "Comité",
         icon: Users,
         description: "Mettre à jour l'équipe dirigeante et ses portraits.",
+        group: "Contenus club",
+      },
+      {
+        href: "/admin/salaries",
+        label: "Salariés",
+        icon: BriefcaseBusiness,
+        description: "Mettre à jour l'équipe salariée et ses portraits.",
         group: "Contenus club",
       },
       {

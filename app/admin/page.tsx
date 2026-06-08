@@ -3,6 +3,7 @@ import {
   ArrowRight,
   BadgeEuro,
   BellRing,
+  BriefcaseBusiness,
   CalendarClock,
   FileText,
   Handshake,
@@ -189,6 +190,11 @@ export default async function AdminPage() {
           label: "Modifier le comite",
           helper: "Bureau, membres et photos",
         },
+        {
+          href: "/admin/salaries",
+          label: "Modifier les salariés",
+          helper: "Équipe salariée et portraits",
+        },
       ],
       Icon: LayoutGrid,
     },
@@ -278,6 +284,12 @@ export default async function AdminPage() {
       label: "Comite directeur",
       helper: "Équipe dirigeante et portraits",
       Icon: Users,
+    },
+    {
+      href: "/admin/salaries",
+      label: "Salariés diplômés",
+      helper: "Équipe salariée et portraits",
+      Icon: BriefcaseBusiness,
     },
     {
       href: "/admin/menu",

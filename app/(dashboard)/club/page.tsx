@@ -89,9 +89,15 @@ const values = [
 const clubSections = [
   {
     title: "Comité directeur",
-    description: "Rencontrer l'équipe qui fait vivre le club au quotidien.",
+    description: "Rencontrer l'équipe dirigeante élue du club.",
     href: "/club/comite-directeur",
     label: "Voir le comité",
+  },
+  {
+    title: "Salariés diplômés",
+    description: "Découvrir l'équipe salariée qui accompagne la pratique.",
+    href: "/club/salaries",
+    label: "Voir les salariés",
   },
   {
     title: "Partenaires",

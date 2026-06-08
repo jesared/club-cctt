@@ -111,6 +111,7 @@ export default function HeaderCentered({
             "/club/tarifs": "Tarifs et formules d'adhésion.",
             "/club/partenaires": "Soutiens et partenaires du club.",
             "/club/comite-directeur": "Équipe dirigeante du club.",
+            "/club/salaries": "Équipe salariée diplômée.",
             "/club/contact": "Contact et localisation.",
           } as Record<string, string>,
         },
