@@ -102,7 +102,7 @@ export default async function SalariesPage() {
           <Reveal>
             <Card className="border-dashed bg-card/38 shadow-none">
               <CardContent className="p-6 text-sm text-muted-foreground">
-                Aucun salarié n'est encore référencé.
+                Aucun salarié n&apos;est encore référencé.
               </CardContent>
             </Card>
           </Reveal>
