@@ -210,9 +210,26 @@ export default function ClubPage() {
             <CardContent className="space-y-5">
               <p className="max-w-4xl leading-relaxed text-muted-foreground">
                 Le CCTT est un club de tennis de table à Châlons-en-Champagne,
-                affilié à la Fédération Française de Tennis de Table. Nous
-                proposons des séances pour débutants, loisirs et compétiteurs,
-                avec un accompagnement adapté à chaque profil.
+                affilié à la{" "}
+                <a
+                  href="https://www.fftt.com/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-medium text-foreground underline underline-offset-4 transition-colors hover:text-primary"
+                >
+                  Fédération Française de Tennis de Table
+                </a>{" "}
+                et également au{" "}
+                <a
+                  href="https://tthandisport.org/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-medium text-foreground underline underline-offset-4 transition-colors hover:text-primary"
+                >
+                  Tennis de Table Handisport
+                </a>
+                {"."} Nous proposons des séances pour débutants, loisirs et
+                compétiteurs, avec un accompagnement adapté à chaque profil.
               </p>
 
               <div className="grid gap-5 border-t border-border/45 pt-5 sm:grid-cols-3">
