@@ -943,12 +943,18 @@ export default function HeaderCentered({
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="h-10 rounded-full border border-transparent px-2.5 text-sm text-slate-600 transition-colors hover:bg-muted/35 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/6 dark:hover:text-white"
+                  className="h-10 rounded-md border border-[#0D47A1] bg-[linear-gradient(180deg,#2196F3_0%,#0D47A1_100%)] px-3.5 text-[16px] font-semibold text-white shadow-[0_2px_5px_rgba(0,0,0,0.1)] transition-[transform,background-color,box-shadow,filter] hover:-translate-y-px hover:bg-[linear-gradient(180deg,#42A5F5_0%,#1565C0_100%)] hover:text-white hover:shadow-[0_4px_10px_rgba(0,0,0,0.14)] dark:border-[#1565C0]"
                   asChild
                 >
-                  <Link href="/auth/signin?callbackUrl=/user">
+                  <Link
+                    href="/auth/signin?callbackUrl=/user"
+                    aria-label="Se connecter"
+                    title="Se connecter"
+                  >
                     <LogIn className="h-4 w-4" />
-                    <span className="hidden sm:inline">Connexion</span>
+                    <span className="hidden font-['Montserrat',sans-serif] sm:inline">
+                      Espace membre
+                    </span>
                   </Link>
                 </Button>
               )}
@@ -1261,16 +1267,18 @@ export default function HeaderCentered({
                   <Button
                     size="sm"
                     variant="ghost"
-                    className="h-auto w-full justify-start rounded-[0.8rem] border border-border/30 bg-background/50 px-2 py-1.5 text-[12px] text-muted-foreground hover:bg-muted/45 hover:text-foreground"
+                    className="h-auto w-full justify-start rounded-md border border-[#0D47A1] bg-[linear-gradient(180deg,#2196F3_0%,#0D47A1_100%)] px-3 py-2.5 text-[16px] font-semibold text-white shadow-[0_2px_5px_rgba(0,0,0,0.1)] hover:bg-[linear-gradient(180deg,#42A5F5_0%,#1565C0_100%)] hover:text-white hover:shadow-[0_4px_10px_rgba(0,0,0,0.14)] dark:border-[#1565C0]"
                     asChild
                   >
                     <Link
                       href="/auth/signin?callbackUrl=/user"
+                      aria-label="Se connecter"
+                      title="Se connecter"
                       onClick={() => setMenuOpen(false)}
                     >
-                      <LogIn className="h-3.5 w-3.5 shrink-0" />
-                      <span className="truncate text-left text-[12px] font-medium text-foreground/90">
-                        Connexion
+                      <LogIn className="h-4 w-4 shrink-0" />
+                      <span className="truncate text-left font-['Montserrat',sans-serif] text-[16px] font-semibold text-white">
+                        Espace membre
                       </span>
                     </Link>
                   </Button>
