@@ -943,7 +943,7 @@ export default function HeaderCentered({
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="h-10 rounded-md border border-[#0D47A1] bg-[linear-gradient(180deg,#2196F3_0%,#0D47A1_100%)] px-3.5 text-[16px] font-semibold text-white shadow-[0_2px_5px_rgba(0,0,0,0.1)] transition-[transform,background-color,box-shadow,filter] hover:-translate-y-px hover:bg-[linear-gradient(180deg,#42A5F5_0%,#1565C0_100%)] hover:text-white hover:shadow-[0_4px_10px_rgba(0,0,0,0.14)] dark:border-[#1565C0]"
+                  className="h-10 rounded-md border border-[#0D47A1] bg-[#0D47A1] px-3.5 text-[16px] font-semibold text-white shadow-[0_2px_5px_rgba(0,0,0,0.1)] transition-[transform,background-color,box-shadow] hover:-translate-y-px hover:bg-[#0A3A82] hover:text-white hover:shadow-[0_4px_10px_rgba(0,0,0,0.14)] dark:border-[#0D47A1] dark:bg-[#0D47A1] dark:hover:bg-[#0A3A82]"
                   asChild
                 >
                   <Link
@@ -1267,7 +1267,7 @@ export default function HeaderCentered({
                   <Button
                     size="sm"
                     variant="ghost"
-                    className="h-auto w-full justify-start rounded-md border border-[#0D47A1] bg-[linear-gradient(180deg,#2196F3_0%,#0D47A1_100%)] px-3 py-2.5 text-[16px] font-semibold text-white shadow-[0_2px_5px_rgba(0,0,0,0.1)] hover:bg-[linear-gradient(180deg,#42A5F5_0%,#1565C0_100%)] hover:text-white hover:shadow-[0_4px_10px_rgba(0,0,0,0.14)] dark:border-[#1565C0]"
+                    className="h-auto w-full justify-start rounded-md border border-[#0D47A1] bg-[#0D47A1] px-3 py-2.5 text-[16px] font-semibold text-white shadow-[0_2px_5px_rgba(0,0,0,0.1)] hover:bg-[#0A3A82] hover:text-white hover:shadow-[0_4px_10px_rgba(0,0,0,0.14)] dark:border-[#0D47A1] dark:bg-[#0D47A1] dark:hover:bg-[#0A3A82]"
                     asChild
                   >
                     <Link
