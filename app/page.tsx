@@ -116,6 +116,9 @@ export default async function Home() {
       tone: "border-border/60 bg-card/70",
       hoverTone: "hover:border-[#2F6BFF] hover:shadow-[#2F6BFF]/15",
       iconTone: "text-[#2F6BFF]",
+      ctaTone: "text-[#2F6BFF]",
+      ctaHoverTone: "group-hover:bg-[#2F6BFF]/5 group-hover:text-[#2F6BFF]",
+      arrowTone: "text-[#2F6BFF]/75 group-hover:text-[#2F6BFF]",
     },
     {
       title: "Je veux voir les horaires",
@@ -127,6 +130,9 @@ export default async function Home() {
       tone: "border-border/60 bg-card/70",
       hoverTone: "hover:border-[#00D9FF] hover:shadow-[#00D9FF]/15",
       iconTone: "text-[#00D9FF]",
+      ctaTone: "text-[#00B8D9]",
+      ctaHoverTone: "group-hover:bg-[#00D9FF]/6 group-hover:text-[#00B8D9]",
+      arrowTone: "text-[#00B8D9]/75 group-hover:text-[#00B8D9]",
     },
     {
       title: "Je veux m'inscrire au tournoi",
@@ -142,6 +148,9 @@ export default async function Home() {
       tone: "border-border/60 bg-card/70",
       hoverTone: "hover:border-[#FF7A00] hover:shadow-[#FF7A00]/15",
       iconTone: "text-[#FF7A00]",
+      ctaTone: "text-[#FF7A00]",
+      ctaHoverTone: "group-hover:bg-[#FF7A00]/6 group-hover:text-[#FF7A00]",
+      arrowTone: "text-[#FF7A00]/75 group-hover:text-[#FF7A00]",
     },
     {
       title: "Je veux contacter le club",
@@ -153,6 +162,9 @@ export default async function Home() {
       tone: "border-border/60 bg-card/70",
       hoverTone: "hover:border-[#FF2E88] hover:shadow-[#FF2E88]/15",
       iconTone: "text-[#FF2E88]",
+      ctaTone: "text-[#FF2E88]",
+      ctaHoverTone: "group-hover:bg-[#FF2E88]/6 group-hover:text-[#FF2E88]",
+      arrowTone: "text-[#FF2E88]/75 group-hover:text-[#FF2E88]",
     },
   ];
 
@@ -232,7 +244,7 @@ export default async function Home() {
                   <Button
                     asChild
                     size="lg"
-                    className="h-11 rounded-md bg-[#2F6BFF] px-6 text-white shadow-none transition hover:bg-[#255AE8]"
+                    className="h-11 rounded-md bg-[#00B8D9] px-6 text-white shadow-none transition hover:bg-[#009FBC]"
                   >
                     <Link href={primaryHeroAction.href}>
                       {primaryHeroAction.label}
@@ -243,7 +255,11 @@ export default async function Home() {
                     asChild
                     size="lg"
                     variant="outline"
-                    className="h-11 rounded-md border-[#FF2E88]/45 bg-[#FF2E88]/8 px-6 text-[#FF2E88] shadow-none transition hover:border-[#FF2E88] hover:bg-[#FF2E88]/14 hover:text-[#FF2E88]"
+                    className={`h-11 rounded-md px-6 shadow-none transition ${
+                      registrationStatus.canRegister
+                        ? "border-[#FF7A00]/45 bg-[#FF7A00]/8 text-[#FF7A00] hover:border-[#FF7A00] hover:bg-[#FF7A00]/14 hover:text-[#FF7A00]"
+                        : "border-[#FF2E88]/45 bg-[#FF2E88]/8 text-[#FF2E88] hover:border-[#FF2E88] hover:bg-[#FF2E88]/14 hover:text-[#FF2E88]"
+                    }`}
                   >
                     <Link href={secondaryHeroAction.href}>
                       {secondaryHeroAction.label}
@@ -301,9 +317,13 @@ export default async function Home() {
                         {item.description}
                       </p>
                     </div>
-                    <div className="mt-auto flex items-center justify-between gap-3 border-t border-border/50 bg-background/35 px-5 py-3 text-sm font-medium text-primary transition-colors group-hover:bg-primary/5">
+                    <div
+                      className={`mt-auto flex items-center justify-between gap-3 border-t border-border/50 bg-background/35 px-5 py-3 text-sm font-medium transition-colors ${item.ctaTone} ${item.ctaHoverTone}`}
+                    >
                       <span>{item.label}</span>
-                      <ArrowRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-primary" />
+                      <ArrowRight
+                        className={`h-4 w-4 transition-transform group-hover:translate-x-1 ${item.arrowTone}`}
+                      />
                     </div>
                   </Link>
                 </Reveal>
@@ -487,7 +507,11 @@ export default async function Home() {
               </div>
 
               <div className="flex flex-col items-start gap-4 lg:max-w-sm lg:items-end lg:text-right">
-                <Button asChild size="lg" className="rounded-md px-6">
+                <Button
+                  asChild
+                  size="lg"
+                  className="rounded-md bg-[#FF2E88] px-6 text-white hover:bg-[#E12678]"
+                >
                   <Link href="/club/contact">
                     Contacter le club
                     <ArrowRight className="h-4 w-4" />
