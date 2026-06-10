@@ -46,6 +46,7 @@ async function getClubSchedule() {
 
 function formatDateRange(startDate: Date, endDate: Date) {
   const formatter = new Intl.DateTimeFormat("fr-FR", {
+    timeZone: "Europe/Paris",
     day: "2-digit",
     month: "short",
     year: "numeric",

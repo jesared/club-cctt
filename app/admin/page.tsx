@@ -32,6 +32,7 @@ function formatDateTime(value?: Date | null) {
   }
 
   return new Intl.DateTimeFormat("fr-FR", {
+    timeZone: "Europe/Paris",
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -111,7 +112,7 @@ export default async function AdminPage() {
     {
       label: "Notifications",
       value: String(totalNotifications),
-      detail: `${publishedMessages} message(s) publie(s) sur ${totalMessages} au total.`,
+      detail: `${publishedMessages} annonce(s) publiée(s) sur ${totalMessages} au total.`,
       Icon: BellRing,
     },
     {
@@ -201,7 +202,7 @@ export default async function AdminPage() {
     {
       title: "Communication et contrôle",
       description:
-        "Messages internes, notifications, acces utilisateurs, media et audit UX pour garder le site propre.",
+        "Annonces club, notifications, acces utilisateurs, media et audit UX pour garder le site propre.",
       href: "/admin/notifications",
       tone: "border-border bg-card",
       links: [
@@ -212,7 +213,7 @@ export default async function AdminPage() {
         },
         {
           href: "/admin/messages",
-          label: "Gérer les messages",
+          label: "Gérer les annonces",
           helper: `${draftMessages} brouillon(s)`,
         },
         {

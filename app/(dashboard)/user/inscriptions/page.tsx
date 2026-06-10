@@ -29,6 +29,7 @@ import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-w
 import { ACTIVE_TOURNAMENT_STATUSES } from "@/lib/tournament-status";
 
 const DATE_TIME_FORMATTER = new Intl.DateTimeFormat("fr-FR", {
+  timeZone: "Europe/Paris",
   day: "2-digit",
   month: "short",
   hour: "2-digit",

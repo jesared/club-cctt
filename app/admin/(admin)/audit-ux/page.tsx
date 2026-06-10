@@ -168,6 +168,7 @@ const roadmap = {
 
 function formatDate(value: Date) {
   return new Intl.DateTimeFormat("fr-FR", {
+    timeZone: "Europe/Paris",
     dateStyle: "long",
   }).format(value);
 }

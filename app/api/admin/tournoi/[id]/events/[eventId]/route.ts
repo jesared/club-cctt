@@ -3,12 +3,7 @@ import { NextResponse } from "next/server";
 import { getCurrentSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { isAdminRole } from "@/lib/roles";
-
-function parseDate(value: unknown) {
-  if (typeof value !== "string" || value.trim() === "") return null;
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? null : date;
-}
+import { parseParisDateTimeInput } from "@/lib/dates";
 
 function parseIntValue(value: unknown) {
   if (typeof value === "number" && Number.isFinite(value)) return value;
@@ -66,7 +61,7 @@ export async function PUT(
 
   const code = (body.code ?? "").trim().toUpperCase();
   const label = (body.label ?? "").trim();
-  const startAt = parseDate(body.startAt);
+  const startAt = parseParisDateTimeInput(body.startAt);
   const feeOnlineCents = parseIntValue(body.feeOnlineCents);
   const feeOnsiteCents = parseIntValue(body.feeOnsiteCents);
   const maxPlayers = parseIntValue(body.maxPlayers) ?? 32;

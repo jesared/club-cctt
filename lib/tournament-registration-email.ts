@@ -19,6 +19,7 @@ export type RegistrationEmailContext = {
 
 function formatDateTime(value: Date) {
   return new Intl.DateTimeFormat("fr-FR", {
+    timeZone: "Europe/Paris",
     weekday: "long",
     day: "2-digit",
     month: "2-digit",

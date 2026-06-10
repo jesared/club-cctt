@@ -336,9 +336,9 @@ export const navigation: MenuSection[] = [
       },
       {
         href: "/admin/messages",
-        label: "Messages",
+        label: "Annonces",
         icon: MessageSquare,
-        description: "Consulter les échanges et prioriser les demandes reçues.",
+        description: "Publier les informations club visibles par les membres.",
         group: "Communication",
       },
       {

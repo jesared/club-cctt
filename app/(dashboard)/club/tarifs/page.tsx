@@ -39,6 +39,7 @@ export default async function TarifsPage() {
   const showContactSecondaryCta = primaryCtaHref !== "/club/contact";
   const formattedUpdatedAt = meta.updatedAt
     ? new Intl.DateTimeFormat("fr-FR", {
+        timeZone: "Europe/Paris",
         dateStyle: "long",
         timeStyle: "short",
       }).format(new Date(meta.updatedAt))

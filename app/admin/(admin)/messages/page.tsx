@@ -324,7 +324,7 @@ export default function AdminMessagesPage() {
               Administration
             </p>
             <CardTitle className="text-3xl">
-              Messages et informations club
+              Annonces et informations club
             </CardTitle>
           </div>
           <CardDescription className="max-w-3xl text-sm leading-6">
@@ -337,7 +337,7 @@ export default function AdminMessagesPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard
-          label="Messages"
+          label="Annonces"
           value={messages.length}
           helper="tous statuts confondus"
         />
@@ -354,7 +354,7 @@ export default function AdminMessagesPage() {
         <MetricCard
           label="Importants"
           value={importantCount}
-          helper="messages epingles"
+          helper="annonces epinglees"
         />
       </div>
 
@@ -366,7 +366,7 @@ export default function AdminMessagesPage() {
             Publier une information club
           </CardTitle>
           <CardDescription>
-            Redige une annonce claire. Les messages importants sont mis en avant
+            Redige une annonce claire. Les annonces importantes sont mises en avant
             dans l&apos;espace membre.
           </CardDescription>
         </CardHeader>
@@ -398,7 +398,7 @@ export default function AdminMessagesPage() {
                 id="message-title-help"
                 className="text-sm text-muted-foreground"
               >
-                Visible dans la liste des messages. Garde un titre court et
+                Visible dans la liste des annonces. Garde un titre court et
                 explicite.
               </span>
               {titleError ? (
@@ -418,7 +418,7 @@ export default function AdminMessagesPage() {
                 rows={6}
                 required
                 disabled={Boolean(isPublishing)}
-                placeholder="Contenu du message..."
+                placeholder="Contenu de l'annonce..."
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 aria-invalid={contentError}
@@ -440,7 +440,7 @@ export default function AdminMessagesPage() {
                   id="message-content-error"
                   className="text-sm font-medium text-destructive"
                 >
-                  Le contenu du message est obligatoire.
+                  Le contenu de l&apos;annonce est obligatoire.
                 </span>
               ) : null}
             </label>
@@ -456,10 +456,10 @@ export default function AdminMessagesPage() {
                 />
                 <span className="space-y-1">
                   <span className="block text-sm font-medium text-foreground">
-                    Marquer comme message important
+                    Marquer comme annonce importante
                   </span>
                   <span className="block text-sm text-muted-foreground">
-                    Le message sera visuellement mis en avant dans la liste.
+                    L&apos;annonce sera visuellement mise en avant dans la liste.
                   </span>
                 </span>
               </label>
@@ -496,13 +496,13 @@ export default function AdminMessagesPage() {
                   )}
                   {isPublishing === "PUBLISHED"
                     ? "Publication..."
-                    : "Publier le message"}
+                    : "Publier l'annonce"}
                 </Button>
               </div>
               <p className="text-sm text-muted-foreground">
                 {isPublishing
                   ? "Publication en cours..."
-                  : "Enregistre un brouillon pour y revenir plus tard, ou publie directement le message pour les membres."}
+                  : "Enregistre un brouillon pour y revenir plus tard, ou publie directement l'annonce pour les membres."}
               </p>
             </div>
           </form>
@@ -513,9 +513,9 @@ export default function AdminMessagesPage() {
         <CardHeader className="border-b border-border/60 bg-muted/20">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div className="space-y-1">
-              <CardTitle className="text-xl">Messages</CardTitle>
+              <CardTitle className="text-xl">Annonces</CardTitle>
               <CardDescription>
-                Consulte les brouillons et les messages publiés, modifie un
+                Consulte les brouillons et les annonces publiées, modifie un
                 contenu ou retire une annonce devenue obsolete.
               </CardDescription>
             </div>
@@ -556,7 +556,7 @@ export default function AdminMessagesPage() {
                   placeholder="Rechercher par titre ou contenu"
                   value={searchTerm}
                   onChange={(event) => setSearchTerm(event.target.value)}
-                  aria-label="Rechercher un message"
+                  aria-label="Rechercher une annonce"
                 />
               </div>
             </label>
@@ -603,7 +603,7 @@ export default function AdminMessagesPage() {
           {isLoadingMessages ? (
             <div className="rounded-2xl border border-dashed border-border/80 bg-muted/15 px-6 py-10 text-center">
               <p className="font-medium text-foreground">
-                Chargement des messages...
+                Chargement des annonces...
               </p>
             </div>
           ) : messagesLoadError ? (
@@ -611,7 +611,7 @@ export default function AdminMessagesPage() {
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="space-y-1">
                   <p className="font-medium text-foreground">
-                    La liste des messages n&apos;a pas pu être chargée.
+                    La liste des annonces n&apos;a pas pu être chargée.
                   </p>
                   <p className="text-sm text-muted-foreground">
                     Vérifié la connexion ou reessaie dans quelques instants.
@@ -626,7 +626,7 @@ export default function AdminMessagesPage() {
             <div className="rounded-2xl border border-dashed border-border/80 bg-muted/15 px-6 py-10 text-center">
               <div className="space-y-1">
                 <p className="font-medium text-foreground">
-                  Aucun message publie pour le moment.
+                  Aucune annonce publiée pour le moment.
                 </p>
                 <p className="text-sm text-muted-foreground">
                   Utilise le formulaire ci-dessus pour publier la première
@@ -644,7 +644,7 @@ export default function AdminMessagesPage() {
                   }}
                 >
                   <Plus className="h-4 w-4" />
-                  Publier le premier message
+                  Publier la première annonce
                 </Button>
               </div>
             </div>
@@ -652,7 +652,7 @@ export default function AdminMessagesPage() {
             <div className="rounded-2xl border border-dashed border-border/80 bg-muted/15 px-6 py-10 text-center">
               <div className="space-y-1">
                 <p className="font-medium text-foreground">
-                  Aucun message ne correspond a cette recherche.
+                  Aucune annonce ne correspond a cette recherche.
                 </p>
                 <p className="text-sm text-muted-foreground">
                   Essaie un autre mot-cle ou change le filtre actif.
@@ -760,8 +760,8 @@ export default function AdminMessagesPage() {
                         <Button
                           variant="outline"
                           size="icon"
-                          aria-label="Modifier le message"
-                          title="Modifier le message"
+                          aria-label="Modifier l'annonce"
+                          title="Modifier l'annonce"
                           disabled={deletingId === message.id}
                           onClick={() => openEditor(message)}
                         >
@@ -777,13 +777,13 @@ export default function AdminMessagesPage() {
                           size="icon"
                           aria-label={
                             deletingId === message.id
-                              ? "Suppression du message"
-                              : "Supprimer le message"
+                              ? "Suppression de l'annonce"
+                              : "Supprimer l'annonce"
                           }
                           title={
                             deletingId === message.id
                               ? "Suppression..."
-                              : "Supprimer le message"
+                              : "Supprimer l'annonce"
                           }
                           disabled={deletingId === message.id}
                           onClick={() => openDeleteDialog(message)}
@@ -834,10 +834,10 @@ export default function AdminMessagesPage() {
                 </div>
                 <div className="space-y-1.5">
                   <DialogTitle className="text-xl">
-                    Supprimer ce message ?
+                    Supprimer cette annonce ?
                   </DialogTitle>
                   <DialogDescription className="leading-6">
-                    Cette action est definitive. Le message sera retire de
+                    Cette action est definitive. L&apos;annonce sera retiree de
                     l&apos;administration et ne sera plus visible par les
                     membres.
                   </DialogDescription>
@@ -929,7 +929,7 @@ export default function AdminMessagesPage() {
               <div className="flex items-start justify-between gap-4">
                 <div className="space-y-1">
                   <DialogTitle className="text-xl">
-                    Modifier le message
+                    Modifier l&apos;annonce
                   </DialogTitle>
                   <DialogDescription>
                     Mets a jour le contenu puis enregistre les changements.
@@ -970,7 +970,7 @@ export default function AdminMessagesPage() {
                   id="edit-message-title-help"
                   className="text-sm text-muted-foreground"
                 >
-                  Mets a jour le titre visible dans la liste des messages.
+                  Mets a jour le titre visible dans la liste des annonces.
                 </span>
                 {editTitleError ? (
                   <span
@@ -1012,7 +1012,7 @@ export default function AdminMessagesPage() {
                     id="edit-message-content-error"
                     className="text-sm font-medium text-destructive"
                   >
-                    Le contenu du message est obligatoire.
+                    Le contenu de l&apos;annonce est obligatoire.
                   </span>
                 ) : null}
               </label>
@@ -1029,10 +1029,10 @@ export default function AdminMessagesPage() {
                 />
                 <span className="space-y-1">
                   <span className="block text-sm font-medium text-foreground">
-                    Conserver comme message important
+                    Conserver comme annonce importante
                   </span>
                   <span className="block text-sm text-muted-foreground">
-                    Active cette option pour laisser le message mis en avant.
+                    Active cette option pour laisser l&apos;annonce mise en avant.
                   </span>
                 </span>
               </label>
@@ -1069,8 +1069,8 @@ export default function AdminMessagesPage() {
                 </div>
                 <p className="text-sm text-muted-foreground">
                   {editing.status === "DRAFT"
-                    ? "Le message reste visible uniquement dans l'administration."
-                    : "Le message sera visible dans l'espace membre."}
+                    ? "L'annonce reste visible uniquement dans l'administration."
+                    : "L'annonce sera visible dans l'espace membre."}
                 </p>
               </div>
             </CardContent>
@@ -1170,6 +1170,7 @@ function MessageCountBadge({
 
 function formatDateTime(value: string) {
   return new Date(value).toLocaleString("fr-FR", {
+    timeZone: "Europe/Paris",
     dateStyle: "medium",
     timeStyle: "short",
   });

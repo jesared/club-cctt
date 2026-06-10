@@ -121,6 +121,7 @@ const EMPTY_DRAFT: DraftNotification = {
 
 function formatDateTime(value: string) {
   return new Intl.DateTimeFormat("fr-FR", {
+    timeZone: "Europe/Paris",
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(value));

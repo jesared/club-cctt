@@ -9,6 +9,7 @@ import { CopyPlus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatParisDateTimeInput } from "@/lib/dates";
 
 type TournamentSource = {
   id: string;
@@ -49,12 +50,7 @@ type NewTournamentClientProps = {
 };
 
 function toInputValue(value: string | null | undefined) {
-  if (!value) return "";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "";
-  const local = new Date(date);
-  local.setMinutes(local.getMinutes() - local.getTimezoneOffset());
-  return local.toISOString().slice(0, 16);
+  return formatParisDateTimeInput(value);
 }
 
 function addOneYear(value: string | null) {

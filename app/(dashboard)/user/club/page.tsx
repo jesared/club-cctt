@@ -46,7 +46,7 @@ export default async function UserClubPage() {
           href: "/user/club/annonces",
           title: "Annonces internes",
           description:
-            "Messages d'organisation, rappels et informations a relayer aux adhérents.",
+            "Annonces d'organisation, rappels et informations a relayer aux adhérents.",
           icon: Megaphone,
         },
         {

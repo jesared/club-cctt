@@ -785,6 +785,7 @@ export default function HeaderCentered({
                                   const formattedDate = new Intl.DateTimeFormat(
                                     "fr-FR",
                                     {
+                                      timeZone: "Europe/Paris",
                                       day: "2-digit",
                                       month: "short",
                                     },

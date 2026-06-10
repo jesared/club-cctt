@@ -9,6 +9,7 @@ function toCsvValue(value: string | number) {
 }
 
 const DATE_TIME_FORMATTER = new Intl.DateTimeFormat("fr-FR", {
+  timeZone: "Europe/Paris",
   weekday: "long",
   day: "2-digit",
   month: "long",
@@ -76,6 +77,7 @@ export async function GET() {
       const points = registration.player.points ?? "";
       const checkedInAt = entry.checkIn?.checkedInAt
         ? new Intl.DateTimeFormat("fr-FR", {
+            timeZone: "Europe/Paris",
             hour: "2-digit",
             minute: "2-digit",
           }).format(entry.checkIn.checkedInAt)

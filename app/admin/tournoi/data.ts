@@ -143,11 +143,13 @@ export type TournamentProgress = {
 };
 
 const DATE_FORMATTER = new Intl.DateTimeFormat("fr-FR", {
+  timeZone: "Europe/Paris",
   day: "numeric",
   month: "long",
 });
 
 const TIME_FORMATTER = new Intl.DateTimeFormat("fr-FR", {
+  timeZone: "Europe/Paris",
   hour: "2-digit",
   minute: "2-digit",
 });

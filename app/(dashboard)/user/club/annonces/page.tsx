@@ -17,6 +17,7 @@ import { getCurrentSession } from "@/lib/session";
 
 function formatMessageDate(value: Date) {
   return new Intl.DateTimeFormat("fr-FR", {
+    timeZone: "Europe/Paris",
     dateStyle: "medium",
     timeStyle: "short",
   }).format(value);
@@ -60,7 +61,7 @@ export default async function UserClubAnnoncesPage() {
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold">Annonces internes</h1>
           <p className="max-w-3xl text-sm text-muted-foreground">
-            Cette page regroupe les annonces publiées dans l'outil de messages
+            Cette page regroupe les annonces publiées dans l'outil d'annonces
             pour en faire un point d'entree plus simple pour les personnes qui
             participent a la vie du club.
           </p>
@@ -75,7 +76,7 @@ export default async function UserClubAnnoncesPage() {
             </p>
             <p className="text-3xl font-semibold">{messages.length}</p>
             <p className="text-xs text-muted-foreground">
-              Messages publiés remontes dans l'espace club.
+              Annonces publiées remontées dans l'espace club.
             </p>
           </CardContent>
         </Card>
@@ -118,7 +119,7 @@ export default async function UserClubAnnoncesPage() {
         <div>
           <h2 className="text-xl font-semibold">Fil des annonces</h2>
           <p className="text-sm text-muted-foreground">
-            Les messages ci-dessous proviennent des publications déjà gérées
+            Les annonces ci-dessous proviennent des publications déjà gérées
             dans l'administration.
           </p>
         </div>
@@ -194,7 +195,7 @@ export default async function UserClubAnnoncesPage() {
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-muted-foreground">
             <p>Publier ici ce qui est utile au fonctionnement interne du club.</p>
-            <p>Garder les messages importants courts, actionnables et dates.</p>
+            <p>Garder les annonces importantes courtes, actionnables et datees.</p>
             <p>Utiliser les documents du club pour les supports persistants.</p>
           </CardContent>
         </Card>

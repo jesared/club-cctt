@@ -79,6 +79,7 @@ function formatCategory(
 
 function formatDateLabel(startAt: Date) {
   return new Intl.DateTimeFormat("fr-FR", {
+    timeZone: "Europe/Paris",
     weekday: "long",
     day: "2-digit",
     month: "2-digit",
@@ -87,6 +88,7 @@ function formatDateLabel(startAt: Date) {
 
 function formatTimeLabel(startAt: Date) {
   return new Intl.DateTimeFormat("fr-FR", {
+    timeZone: "Europe/Paris",
     hour: "2-digit",
     minute: "2-digit",
   }).format(startAt);
@@ -99,6 +101,7 @@ function formatDateRange(startDate?: Date | null, endDate?: Date | null) {
 
   const sameDay = startDate.toDateString() === endDate.toDateString();
   const startLabel = new Intl.DateTimeFormat("fr-FR", {
+    timeZone: "Europe/Paris",
     day: "2-digit",
     month: "long",
     year: "numeric",
@@ -109,6 +112,7 @@ function formatDateRange(startDate?: Date | null, endDate?: Date | null) {
   }
 
   const endLabel = new Intl.DateTimeFormat("fr-FR", {
+    timeZone: "Europe/Paris",
     day: "2-digit",
     month: "long",
     year: "numeric",
@@ -123,6 +127,7 @@ function formatDateTime(value?: Date | null) {
   }
 
   return new Intl.DateTimeFormat("fr-FR", {
+    timeZone: "Europe/Paris",
     day: "2-digit",
     month: "2-digit",
     year: "numeric",

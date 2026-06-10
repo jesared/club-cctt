@@ -3,12 +3,7 @@ import { NextResponse } from "next/server";
 import { getCurrentSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { isAdminRole } from "@/lib/roles";
-
-function parseDate(value: unknown) {
-  if (typeof value !== "string" || value.trim() === "") return null;
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? null : date;
-}
+import { parseParisDateTimeInput } from "@/lib/dates";
 
 function normalizeOptionalText(value: string | null | undefined) {
   const trimmed = value?.trim();
@@ -112,10 +107,10 @@ export async function PUT(
     );
   }
 
-  const startDate = parseDate(body.startDate);
-  const endDate = parseDate(body.endDate);
-  const registrationOpenAt = parseDate(body.registrationOpenAt);
-  const registrationCloseAt = parseDate(body.registrationCloseAt);
+  const startDate = parseParisDateTimeInput(body.startDate);
+  const endDate = parseParisDateTimeInput(body.endDate);
+  const registrationOpenAt = parseParisDateTimeInput(body.registrationOpenAt);
+  const registrationCloseAt = parseParisDateTimeInput(body.registrationCloseAt);
 
   if (!startDate || !endDate) {
     return NextResponse.json(

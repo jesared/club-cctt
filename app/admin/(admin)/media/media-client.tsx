@@ -72,6 +72,7 @@ function formatBytes(bytes?: number) {
 
 function formatCreatedAt(value: string) {
   return new Date(value).toLocaleString("fr-FR", {
+    timeZone: "Europe/Paris",
     dateStyle: "short",
     timeStyle: "short",
   });

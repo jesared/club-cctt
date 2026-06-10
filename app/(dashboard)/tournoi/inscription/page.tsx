@@ -17,6 +17,7 @@ function formatEventLabel(event: {
   gender: "MIXED" | "M" | "F";
 }) {
   const startHour = new Intl.DateTimeFormat("fr-FR", {
+    timeZone: "Europe/Paris",
     hour: "2-digit",
     minute: "2-digit",
   }).format(event.startAt);
@@ -59,6 +60,7 @@ function formatEventLabel(event: {
 
 function formatEventDateLabel(startAt: Date) {
   return new Intl.DateTimeFormat("fr-FR", {
+    timeZone: "Europe/Paris",
     weekday: "long",
     day: "2-digit",
     month: "long",

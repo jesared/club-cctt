@@ -67,6 +67,7 @@ function formatUpdatedAt(value: string | null) {
   }
 
   return new Intl.DateTimeFormat("fr-FR", {
+    timeZone: "Europe/Paris",
     dateStyle: "long",
     timeStyle: "short",
   }).format(new Date(value));

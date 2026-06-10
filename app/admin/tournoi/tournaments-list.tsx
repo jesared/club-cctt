@@ -23,6 +23,7 @@ type TournamentListProps = {
 };
 
 const DATE_FORMATTER = new Intl.DateTimeFormat("fr-FR", {
+  timeZone: "Europe/Paris",
   day: "2-digit",
   month: "short",
   year: "numeric",

@@ -15,6 +15,7 @@ import NotificationsList from "./notifications-list";
 
 function formatNotificationDate(value: Date) {
   return new Intl.DateTimeFormat("fr-FR", {
+    timeZone: "Europe/Paris",
     dateStyle: "medium",
     timeStyle: "short",
   }).format(value);

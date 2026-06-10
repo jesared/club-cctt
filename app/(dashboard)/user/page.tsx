@@ -446,6 +446,7 @@ export default async function UserProfilePage({
 
 function formatMessageDate(value: Date) {
   return new Intl.DateTimeFormat("fr-FR", {
+    timeZone: "Europe/Paris",
     dateStyle: "medium",
     timeStyle: "short",
   }).format(value);
