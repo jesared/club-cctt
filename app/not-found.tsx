@@ -1,5 +1,6 @@
 import Link from "next/link";
 import NotFoundAnimation from "./not-found-animation";
+import { buttonVariants } from "@/components/ui/button";
 
 export default function NotFoundPage() {
   return (
@@ -17,19 +18,19 @@ export default function NotFoundPage() {
       <div className="flex flex-wrap items-center justify-center gap-3">
         <Link
           href="/"
-          className="inline-flex items-center justify-center rounded-md bg-primary px-5 py-2 text-sm text-primary-foreground hover:opacity-90"
+          className={buttonVariants({ variant: "default", size: "lg" })}
         >
           Retour a l&apos;accueil
         </Link>
         <Link
           href="/tournoi"
-          className="inline-flex items-center justify-center rounded-md border border-border px-5 py-2 text-sm text-foreground hover:bg-muted"
+          className={buttonVariants({ variant: "outline", size: "lg" })}
         >
           Page tournoi
         </Link>
         <Link
           href="/club/contact"
-          className="inline-flex items-center justify-center rounded-md border border-border px-5 py-2 text-sm text-foreground hover:bg-muted"
+          className={buttonVariants({ variant: "outline", size: "lg" })}
         >
           Contact
         </Link>

@@ -8,7 +8,7 @@ const LOTTIE_SRC =
 export default function NotFoundAnimation() {
   return (
     <div className="w-full max-w-md">
-      <div className="rounded-2xl bg-primary-foreground p-3 shadow-sm ">
+      <div className="rounded-2xl border border-border/60 bg-white p-3 shadow-sm dark:bg-white">
         <DotLottieReact src={LOTTIE_SRC} loop autoplay />
       </div>
     </div>
