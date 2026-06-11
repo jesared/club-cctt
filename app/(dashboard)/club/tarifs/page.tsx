@@ -126,7 +126,9 @@ export default async function TarifsPage() {
             <Reveal key={bloc.categorie} delay={index * 120}>
               <Card className="border-l-4 border-l-primary card-hover">
                 <CardHeader className="space-y-2">
-                  <CardTitle>{bloc.categorie}</CardTitle>
+                  <CardTitle className="text-2xl font-bold tracking-tight">
+                    {bloc.categorie}
+                  </CardTitle>
                   {bloc.details ? (
                     <p className="text-sm text-muted-foreground">{bloc.details}</p>
                   ) : null}
@@ -137,14 +139,22 @@ export default async function TarifsPage() {
                     {bloc.lignes.map((ligne) => (
                       <li
                         key={ligne.nom}
-                        className={`flex items-start justify-between gap-4 rounded-xl border border-border/70 bg-background/80 px-4 py-3 ${
-                          ligne.highlight ? "text-primary" : ""
+                        className={`flex min-h-16 items-center justify-between gap-4 rounded-xl border border-border/70 bg-background/80 px-4 py-3 ${
+                          ligne.highlight ? "border-primary/40 bg-primary/5" : ""
                         }`}
                       >
-                        <span className={ligne.highlight ? "font-semibold" : ""}>
+                        <span className="flex-1 text-base font-medium text-sky-600 dark:text-sky-400">
                           {ligne.nom}
                         </span>
-                        <strong className="shrink-0">{ligne.prix}</strong>
+                        <strong
+                          className={`shrink-0 self-center rounded-full px-3 py-1 text-2xl font-bold leading-none ${
+                            ligne.highlight
+                              ? "bg-primary/12 text-foreground"
+                              : "bg-muted text-foreground"
+                          }`}
+                        >
+                          {ligne.prix}
+                        </strong>
                       </li>
                     ))}
                   </ul>

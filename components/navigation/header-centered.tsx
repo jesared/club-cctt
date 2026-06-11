@@ -105,7 +105,6 @@ export default function HeaderCentered({
           eyebrow: "Vie du club",
           icon: Building2,
           description: "Decouvrir le club, ses horaires et ses infos utiles.",
-          cta: { href: "/club/contact", label: "Contacter le club" },
           items: {
             "/club/horaires": "Créneaux, salles et periodes d'ouverture.",
             "/club/tarifs": "Tarifs et formules d'adhésion.",
@@ -136,7 +135,7 @@ export default function HeaderCentered({
           eyebrow: string;
           icon: typeof Building2;
           description: string;
-          cta: { href: string; label: string };
+          cta?: { href: string; label: string };
           items: Record<string, string>;
         }
       >,

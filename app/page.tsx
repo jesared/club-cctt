@@ -472,15 +472,17 @@ export default async function Home() {
                     </div>
                   </div>
 
-                  <div className="overflow-hidden rounded-[1.6rem] bg-muted/20">
-                    <Image
-                      src={eventImageUrl}
-                      alt="Visuel du tournoi CCTT"
-                      width={900}
-                      height={630}
-                      className="h-full min-h-[320px] w-full object-contain object-center"
-                    />
-                  </div>
+                  {eventImageUrl ? (
+                    <div className="overflow-hidden rounded-[1.6rem] bg-muted/20">
+                      <Image
+                        src={eventImageUrl}
+                        alt="Visuel du tournoi CCTT"
+                        width={900}
+                        height={630}
+                        className="h-full min-h-[320px] w-full object-contain object-center"
+                      />
+                    </div>
+                  ) : null}
                 </div>
               </section>
             </Reveal>

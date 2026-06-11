@@ -9,7 +9,6 @@ import type {
   Role,
 } from "@prisma/client";
 
-import type { HorairesData } from "@/lib/horaires-content";
 import { isNotificationSchemaMissingError } from "@/lib/notification-safety";
 import { prisma } from "@/lib/prisma";
 
@@ -39,7 +38,9 @@ export type MessageNotificationSource = {
 
 type NotificationClient = PrismaClient | Prisma.TransactionClient;
 
-function buildNotificationData(input: CreateNotificationInput): Prisma.NotificationUncheckedCreateInput {
+function buildNotificationData(
+  input: CreateNotificationInput,
+): Prisma.NotificationUncheckedCreateInput {
   return {
     type: input.type,
     title: input.title,
@@ -69,46 +70,6 @@ export function buildNotificationFromMessage(
     sourceKind: "MESSAGE",
     audience: "CLUB_SPACE",
     createdByUserId: message.authorId,
-  };
-}
-
-export function buildScheduleNotification(
-  createdByUserId: string,
-): CreateNotificationInput {
-  return {
-    type: "SCHEDULE",
-    title: "Planning du club mis a jour",
-    content:
-      "Les horaires et créneaux du club viennent d'être modifiés. Vérifiez l'agenda interne pour consulter la dernière version.",
-    href: "/user/club/agenda",
-    priority: "HIGH",
-    sourceId: "admin",
-    sourceKind: "HORAIRES",
-    audience: "CLUB_SPACE",
-    createdByUserId,
-  };
-}
-
-export function buildDocumentNotification(input: {
-  title: string;
-  content: string;
-  href?: string | null;
-  sourceId?: string | null;
-  createdByUserId?: string | null;
-  audience?: NotificationAudience;
-  roleScope?: Role | null;
-}): CreateNotificationInput {
-  return {
-    type: "DOCUMENT",
-    title: input.title,
-    content: input.content,
-    href: input.href ?? "/user/club/documents",
-    priority: "NORMAL",
-    sourceId: input.sourceId ?? null,
-    sourceKind: "DOCUMENT",
-    audience: input.audience ?? "CLUB_SPACE",
-    roleScope: input.roleScope ?? null,
-    createdByUserId: input.createdByUserId ?? null,
   };
 }
 
@@ -214,33 +175,17 @@ export async function syncPublishedMessageNotification(
   return syncNotificationBySource(buildNotificationFromMessage(message), client);
 }
 
-export async function syncScheduleNotificationOnChange(input: {
-  previousData: HorairesData | null;
-  nextData: HorairesData;
-  createdByUserId: string;
-  client?: NotificationClient;
-}) {
-  const { previousData, nextData, createdByUserId, client = prisma } = input;
-
-  const previousJson = JSON.stringify(previousData ?? { jours: [] });
-  const nextJson = JSON.stringify(nextData);
-
-  if (previousJson === nextJson) {
-    return null;
-  }
-
-  return syncNotificationBySource(
-    buildScheduleNotification(createdByUserId),
-    client,
-  );
-}
-
-export function buildVisibleNotificationsWhere(role?: Role | null): Prisma.NotificationWhereInput {
+export function buildVisibleNotificationsWhere(
+  role?: Role | null,
+): Prisma.NotificationWhereInput {
   const audiences: Prisma.NotificationWhereInput[] = [{ audience: "ALL_MEMBERS" }];
 
   switch (role) {
     case "CLUB":
-      audiences.push({ audience: "CLUB_SPACE" }, { audience: "ROLE", roleScope: "CLUB" });
+      audiences.push(
+        { audience: "CLUB_SPACE" },
+        { audience: "ROLE", roleScope: "CLUB" },
+      );
       break;
     case "BUREAU":
       audiences.push(

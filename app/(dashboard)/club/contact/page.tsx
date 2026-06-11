@@ -1,4 +1,5 @@
 import ContactForm from "@/components/ContactForm";
+import { ExternalMapLink } from "@/components/external-map-link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ClubContextNav from "@/components/public/club-context-nav";
@@ -17,6 +18,10 @@ import {
 import { prisma } from "@/lib/prisma";
 import { getContactFormAvailability } from "@/lib/public-form-availability";
 
+function buildMapDirectionsUrl(query: string) {
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(query)}`;
+}
+
 export default async function ContactPage({
   searchParams,
 }: {
@@ -29,6 +34,13 @@ export default async function ContactPage({
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
   const initialSubject = normalizeContactSubject(resolvedSearchParams?.sujet);
   const contactAvailability = getContactFormAvailability();
+  const mapQuery = [content.addressName, content.addressLine, content.addressCity]
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .join(", ");
+  const mapDirectionsUrl = mapQuery
+    ? buildMapDirectionsUrl(mapQuery)
+    : null;
 
   return (
     <div className="mx-auto max-w-6xl space-y-10 px-4 py-8 sm:py-12">
@@ -129,7 +141,15 @@ export default async function ContactPage({
                 <div className="flex items-start gap-3">
                   <MapPin className="mt-0.5 h-5 w-5 text-muted-foreground" />
                   <div>
-                    <p>{content.addressName}</p>
+                    {mapDirectionsUrl ? (
+                      <ExternalMapLink
+                        href={mapDirectionsUrl}
+                        label={content.addressName}
+                        className="inline-flex items-center gap-2 text-[#FF2E88] hover:underline"
+                      />
+                    ) : (
+                      <p>{content.addressName}</p>
+                    )}
                     <p className="text-sm text-muted-foreground">
                       {content.addressCity}
                     </p>

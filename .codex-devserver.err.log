@@ -1,0 +1,707 @@
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⨯ Error: Cannot find module './5873.js'
+Require stack:
+- C:\Users\User\Documents\Web\cctt-club\.next\server\webpack-runtime.js
+- C:\Users\User\Documents\Web\cctt-club\.next\server\app\admin\tournoi\ajout-player\page.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\require.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\load-components.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\utils.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\options.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\index.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\next.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\User\Documents\Web\cctt-club\.next\server\app\api\auth\[...all]\route.js:78:7971)
+    at Object.<anonymous> (C:\Users\User\Documents\Web\cctt-club\.next\server\app\api\auth\[...all]\route.js:78:8023) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/api/auth/get-session'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json',
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json',
+  page: '/admin/tournoi/ajout-player'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json'
+}
+Error: Cannot find module './5873.js'
+Require stack:
+- C:\Users\User\Documents\Web\cctt-club\.next\server\webpack-runtime.js
+- C:\Users\User\Documents\Web\cctt-club\.next\server\app\admin\tournoi\ajout-player\page.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\require.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\load-components.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\utils.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\options.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\index.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\next.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\User\Documents\Web\cctt-club\.next\server\app\api\auth\[...all]\route.js:78:7971)
+    at Object.<anonymous> (C:\Users\User\Documents\Web\cctt-club\.next\server\app\api\auth\[...all]\route.js:78:8023) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/api/auth/get-session'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json',
+  page: '/'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json',
+  page: '/admin/tournoi/ajout-player'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json',
+  page: '/api/auth/get-session'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json',
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json'
+}
+ ⨯ Failed to generate static paths for /api/auth/[...all]:
+[Error: Cannot find module './vendor-chunks/@better-auth.js'
+Require stack:
+- C:\Users\User\Documents\Web\cctt-club\.next\server\webpack-runtime.js
+- C:\Users\User\Documents\Web\cctt-club\.next\server\app\api\auth\[...all]\route.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\require.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\load-components.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\utils.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\dev\static-paths-worker.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\compiled\jest-worker\processChild.js] {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json',
+  page: '/api/auth/get-session'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json',
+  page: '/admin/tournoi/ajout-player'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json',
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json',
+  page: '/admin/tournoi/ajout-player'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json',
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json',
+  page: '/admin/tournoi/ajout-player'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json',
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json',
+  page: '/admin/tournoi/ajout-player'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\User\Documents\Web\cctt-club\.next\prerender-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\User\\Documents\\Web\\cctt-club\\.next\\prerender-manifest.json'
+}
+2026-06-07T09:37:44.330Z ERROR [Better Auth]: INTERNAL_SERVER_ERROR [Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.session.findFirst()` invocation:
+
+
+Can't reach database server at `ep-proud-fire-aiy9cvx6.c-4.us-east-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-proud-fire-aiy9cvx6.c-4.us-east-1.aws.neon.tech:5432`.] {
+  code: 'P1001',
+  meta: [Object],
+  clientVersion: '6.19.2'
+}
+ ⨯ Error: Could not find the module "C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '4059721037'
+}
+ ⨯ Error: Could not find the module "C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '4059721037'
+}
+ ⨯ Error: Could not find the module "C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '4059721037'
+}
+ ⨯ Error: Could not find the module "C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '4059721037'
+}
+ ⨯ [TypeError: __webpack_modules__[moduleId] is not a function] {
+  digest: '639078115'
+}
+ ⨯ Error: Could not find the module "C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '4059721037'
+}
+[TypeError: __webpack_modules__[moduleId] is not a function]
+ ⨯ [TypeError: __webpack_modules__[moduleId] is not a function]
+ ⨯ [TypeError: __webpack_modules__[moduleId] is not a function] {
+  page: '/club/comite-directeur'
+}
+ ⨯ Error: Could not find the module "C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '3165394960'
+}
+ ⨯ Error: Could not find the module "C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '3165394960'
+}
+ ⨯ Error: Could not find the module "C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '3165394960'
+}
+ ⨯ Error: Cannot find module './5611.js'
+Require stack:
+- C:\Users\User\Documents\Web\cctt-club\.next\server\webpack-runtime.js
+- C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\require.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\load-components.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\utils.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\options.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\index.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\next.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js:1:327)
+    at Object.<anonymous> (C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js:1:374) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [TypeError: Cannot read properties of undefined (reading '/_app')]
+[TypeError: __webpack_modules__[moduleId] is not a function] {
+  page: '/club/comite-directeur'
+}
+ ⨯ Error: Cannot find module './5611.js'
+Require stack:
+- C:\Users\User\Documents\Web\cctt-club\.next\server\webpack-runtime.js
+- C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\require.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\load-components.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\utils.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\options.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\index.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\next.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js:1:327)
+    at Object.<anonymous> (C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js:1:374) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [TypeError: Cannot read properties of undefined (reading '/_app')]
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ Error: Cannot find module './5873.js'
+Require stack:
+- C:\Users\User\Documents\Web\cctt-club\.next\server\webpack-runtime.js
+- C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\require.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\load-components.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\utils.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\options.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\index.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\next.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\User\Documents\Web\cctt-club\.next\server\app\(dashboard)\club\comite-directeur\page.js:2:14254)
+    at Object.<anonymous> (C:\Users\User\Documents\Web\cctt-club\.next\server\app\(dashboard)\club\comite-directeur\page.js:2:14326) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/club/comite-directeur'
+}
+ ⨯ Error: Cannot find module './5611.js'
+Require stack:
+- C:\Users\User\Documents\Web\cctt-club\.next\server\webpack-runtime.js
+- C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\require.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\load-components.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\utils.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\options.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\index.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\next.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js:1:327)
+    at Object.<anonymous> (C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js:1:374) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [TypeError: Cannot read properties of undefined (reading '/_app')]
+Error: Cannot find module './5873.js'
+Require stack:
+- C:\Users\User\Documents\Web\cctt-club\.next\server\webpack-runtime.js
+- C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\require.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\load-components.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\utils.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\options.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\index.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\next.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\User\Documents\Web\cctt-club\.next\server\app\(dashboard)\club\comite-directeur\page.js:2:14254)
+    at Object.<anonymous> (C:\Users\User\Documents\Web\cctt-club\.next\server\app\(dashboard)\club\comite-directeur\page.js:2:14326) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/club/comite-directeur'
+}
+ ⨯ Error: Cannot find module './5611.js'
+Require stack:
+- C:\Users\User\Documents\Web\cctt-club\.next\server\webpack-runtime.js
+- C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\require.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\load-components.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\utils.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\options.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\index.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\next.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js:1:327)
+    at Object.<anonymous> (C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js:1:374) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [TypeError: Cannot read properties of undefined (reading '/_app')]
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ Error: Cannot find module './5873.js'
+Require stack:
+- C:\Users\User\Documents\Web\cctt-club\.next\server\webpack-runtime.js
+- C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\require.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\load-components.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\utils.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\options.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\index.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\next.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\User\Documents\Web\cctt-club\.next\server\app\(dashboard)\club\comite-directeur\page.js:2:14254)
+    at Object.<anonymous> (C:\Users\User\Documents\Web\cctt-club\.next\server\app\(dashboard)\club\comite-directeur\page.js:2:14326) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/club/comite-directeur'
+}
+ ⨯ Error: Cannot find module './5611.js'
+Require stack:
+- C:\Users\User\Documents\Web\cctt-club\.next\server\webpack-runtime.js
+- C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\require.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\load-components.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\utils.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\options.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\index.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\next.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js:1:327)
+    at Object.<anonymous> (C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js:1:374) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [TypeError: Cannot read properties of undefined (reading '/_app')]
+Error: Cannot find module './5873.js'
+Require stack:
+- C:\Users\User\Documents\Web\cctt-club\.next\server\webpack-runtime.js
+- C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\require.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\load-components.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\utils.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\options.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\index.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\next.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\User\Documents\Web\cctt-club\.next\server\app\(dashboard)\club\comite-directeur\page.js:2:14254)
+    at Object.<anonymous> (C:\Users\User\Documents\Web\cctt-club\.next\server\app\(dashboard)\club\comite-directeur\page.js:2:14326) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/club/comite-directeur'
+}
+ ⨯ Error: Cannot find module './5611.js'
+Require stack:
+- C:\Users\User\Documents\Web\cctt-club\.next\server\webpack-runtime.js
+- C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\require.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\load-components.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\utils.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\options.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\index.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\next.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js:1:327)
+    at Object.<anonymous> (C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js:1:374) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [TypeError: Cannot read properties of undefined (reading '/_app')]
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ Error: Cannot find module './5873.js'
+Require stack:
+- C:\Users\User\Documents\Web\cctt-club\.next\server\webpack-runtime.js
+- C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\require.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\load-components.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\utils.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\options.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\index.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\next.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\User\Documents\Web\cctt-club\.next\server\app\(dashboard)\club\comite-directeur\page.js:2:14254)
+    at Object.<anonymous> (C:\Users\User\Documents\Web\cctt-club\.next\server\app\(dashboard)\club\comite-directeur\page.js:2:14326) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/club/comite-directeur'
+}
+ ⨯ Error: Cannot find module './5611.js'
+Require stack:
+- C:\Users\User\Documents\Web\cctt-club\.next\server\webpack-runtime.js
+- C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\require.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\load-components.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\utils.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\options.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\index.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\next.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js:1:327)
+    at Object.<anonymous> (C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js:1:374) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [TypeError: Cannot read properties of undefined (reading '/_app')]
+Error: Cannot find module './5873.js'
+Require stack:
+- C:\Users\User\Documents\Web\cctt-club\.next\server\webpack-runtime.js
+- C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\require.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\load-components.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\utils.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\options.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\index.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\next.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\User\Documents\Web\cctt-club\.next\server\app\(dashboard)\club\comite-directeur\page.js:2:14254)
+    at Object.<anonymous> (C:\Users\User\Documents\Web\cctt-club\.next\server\app\(dashboard)\club\comite-directeur\page.js:2:14326) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/club/comite-directeur'
+}
+ ⨯ Error: Cannot find module './5611.js'
+Require stack:
+- C:\Users\User\Documents\Web\cctt-club\.next\server\webpack-runtime.js
+- C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\require.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\load-components.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\utils.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\options.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\index.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\next.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js:1:327)
+    at Object.<anonymous> (C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js:1:374) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [TypeError: Cannot read properties of undefined (reading '/_app')]
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ Error: Cannot find module './5873.js'
+Require stack:
+- C:\Users\User\Documents\Web\cctt-club\.next\server\webpack-runtime.js
+- C:\Users\User\Documents\Web\cctt-club\.next\server\app\api\notifications\inbox\route.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\require.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\load-components.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\utils.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\options.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\index.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\next.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\User\Documents\Web\cctt-club\.next\server\app\api\notifications\inbox\route.js:1:9030)
+    at Object.<anonymous> (C:\Users\User\Documents\Web\cctt-club\.next\server\app\api\notifications\inbox\route.js:1:9102) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/api/notifications/inbox'
+}
+ ⨯ Error: Cannot find module './5611.js'
+Require stack:
+- C:\Users\User\Documents\Web\cctt-club\.next\server\webpack-runtime.js
+- C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\require.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\load-components.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\utils.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\options.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\index.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\next.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js:1:327)
+    at Object.<anonymous> (C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js:1:374) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [TypeError: Cannot read properties of undefined (reading '/_app')]
+Error: Cannot find module './5873.js'
+Require stack:
+- C:\Users\User\Documents\Web\cctt-club\.next\server\webpack-runtime.js
+- C:\Users\User\Documents\Web\cctt-club\.next\server\app\api\notifications\inbox\route.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\require.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\load-components.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\utils.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\options.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\index.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\next.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\User\Documents\Web\cctt-club\.next\server\app\api\notifications\inbox\route.js:1:9030)
+    at Object.<anonymous> (C:\Users\User\Documents\Web\cctt-club\.next\server\app\api\notifications\inbox\route.js:1:9102) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/api/notifications/inbox'
+}
+ ⨯ Error: Cannot find module './5611.js'
+Require stack:
+- C:\Users\User\Documents\Web\cctt-club\.next\server\webpack-runtime.js
+- C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\require.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\load-components.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\utils.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\options.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\swc\index.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\config.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\next.js
+- C:\Users\User\Documents\Web\cctt-club\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js:1:327)
+    at Object.<anonymous> (C:\Users\User\Documents\Web\cctt-club\.next\server\pages\_document.js:1:374) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [TypeError: Cannot read properties of undefined (reading '/_app')]
+[TypeError: Cannot read properties of undefined (reading '/_app')]

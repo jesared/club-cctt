@@ -1,8 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
-import { syncScheduleNotificationOnChange } from "@/lib/notifications";
-import { getCurrentSession } from "@/lib/session";
 import {
   defaultHorairesContent,
   isValidHorairesData,
@@ -11,6 +9,7 @@ import {
 } from "@/lib/horaires-content";
 import { prisma } from "@/lib/prisma";
 import { isAdminRole } from "@/lib/roles";
+import { getCurrentSession } from "@/lib/session";
 
 const ADMIN_CONTENT_ID = "admin";
 const DRIVE_CACHE_ID = "drive";
@@ -110,27 +109,10 @@ export async function PUT(req: Request) {
 
   const body = (await req.json()) as Partial<HorairesResponse["data"]>;
   const data = normalizeHorairesContent(body);
-  const existing = await prisma.horairesCache.findUnique({
+  const saved = await prisma.horairesCache.upsert({
     where: { id: ADMIN_CONTENT_ID },
-  });
-
-  const saved = await prisma.$transaction(async (tx) => {
-    const result = await tx.horairesCache.upsert({
-      where: { id: ADMIN_CONTENT_ID },
-      update: { data },
-      create: { id: ADMIN_CONTENT_ID, data },
-    });
-
-    await syncScheduleNotificationOnChange({
-      previousData: normalizeHorairesContent(
-        (existing?.data as Partial<HorairesResponse["data"]>) ?? null,
-      ),
-      nextData: data,
-      createdByUserId: session.user.id,
-      client: tx,
-    });
-
-    return result;
+    update: { data },
+    create: { id: ADMIN_CONTENT_ID, data },
   });
 
   revalidatePath("/club/horaires");

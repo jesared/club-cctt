@@ -54,7 +54,7 @@ export const defaultHomeContent: HomeContentData = {
   ctaButtonHref: "/club/contact",
   eventTitle: "Événement du club",
   eventEnabled: true,
-  eventImageUrl: DEFAULT_EVENT_IMAGE_URL,
+  eventImageUrl: "",
   eventDateLabel: "Avril 2026 - Châlons-en-Champagne",
 };
 
@@ -109,16 +109,17 @@ function coerceString(value: unknown, fallback: string) {
 
 export function resolveEventImageUrl(value: string | null | undefined) {
   if (typeof value !== "string") {
-    return DEFAULT_EVENT_IMAGE_URL;
+    return "";
   }
 
   const normalizedValue = value.trim();
 
   if (
     normalizedValue.length === 0 ||
+    normalizedValue === DEFAULT_EVENT_IMAGE_URL ||
     LEGACY_EVENT_IMAGE_URLS.has(normalizedValue)
   ) {
-    return DEFAULT_EVENT_IMAGE_URL;
+    return "";
   }
 
   return normalizedValue;

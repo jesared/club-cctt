@@ -1,0 +1,378 @@
+
+> cctt-club@0.1.0 dev
+> next dev --hostname 127.0.0.1 --port 3000
+
+   ▲ Next.js 15.5.12
+   - Local:        http://127.0.0.1:3000
+   - Network:      http://127.0.0.1:3000
+   - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 2.2s
+ ✓ Compiled /middleware in 156ms (114 modules)
+ ○ Compiling /admin/tournoi/ajout-player ...
+ ✓ Compiled /admin/tournoi/ajout-player in 1832ms (1727 modules)
+ GET /admin/tournoi/ajout-player 200 in 2577ms
+ GET /admin/tournoi/ajout-player 200 in 1897ms
+ ○ Compiling /api/auth/[...all] ...
+ ✓ Compiled /api/auth/[...all] in 621ms (1732 modules)
+ GET /api/auth/get-session 200 in 1961ms
+ GET /admin/tournoi/ajout-player 200 in 998ms
+ GET /api/auth/get-session 200 in 239ms
+ ○ Compiling /api/admin/tournoi/fftt/license ...
+ ✓ Compiled /api/admin/tournoi/fftt/license in 545ms (1760 modules)
+ GET /api/admin/tournoi/fftt/license?licence=5112995&tournamentId=cmook0ohg0000jm04s3v9i7jc 409 in 1766ms
+ GET /api/admin/tournoi/fftt/license?licence=1312482&tournamentId=cmook0ohg0000jm04s3v9i7jc 200 in 528ms
+ ○ Compiling / ...
+ ✓ Compiled / in 777ms (1809 modules)
+ GET / 200 in 818ms
+ GET / 200 in 802ms
+ GET / 200 in 513ms
+ GET / 200 in 692ms
+ ○ Compiling /auth/signin ...
+ ✓ Compiled /auth/signin in 535ms (1817 modules)
+ GET /auth/signin?callbackUrl=%2Fadmin 200 in 797ms
+ GET /auth/signin?callbackUrl=%2Fadmin 200 in 882ms
+ ✓ Compiled /api/auth/[...all] in 344ms (1383 modules)
+ GET /api/auth/get-session 200 in 1117ms
+ ✓ Compiled /api/notifications/inbox in 503ms (1822 modules)
+ GET /api/notifications/inbox 200 in 1427ms
+ ✓ Compiled in 1583ms (1836 modules)
+ ✓ Compiled in 0ms (1386 modules)
+ ✓ Compiled in 1ms (1386 modules)
+ ✓ Compiled in 1ms (1386 modules)
+ GET / 200 in 2465ms
+ GET /admin/tournoi/ajout-player 200 in 3025ms
+ GET /api/notifications/inbox 200 in 3610ms
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 1277ms (2150 modules)
+ GET /api/auth/get-session 500 in 4614ms
+ GET /api/auth/get-session 500 in 463ms
+ GET / 500 in 4175ms
+ GET / 500 in 773ms
+ GET /admin/tournoi/ajout-player 500 in 4000ms
+ GET /admin/tournoi/ajout-player 500 in 617ms
+ GET /api/auth/get-session 500 in 1482ms
+ GET /api/auth/get-session 500 in 621ms
+ GET / 500 in 1272ms
+ GET / 500 in 382ms
+ GET /admin/tournoi/ajout-player 500 in 1480ms
+ GET /admin/tournoi/ajout-player 500 in 403ms
+ GET / 500 in 1218ms
+ GET / 500 in 408ms
+ GET /admin/tournoi/ajout-player 500 in 1127ms
+ GET /admin/tournoi/ajout-player 500 in 336ms
+ GET / 200 in 1223ms
+ GET /api/notifications/inbox 200 in 937ms
+ GET /api/notifications/inbox 200 in 431ms
+ GET /api/notifications/inbox 200 in 532ms
+ ○ Compiling /tournoi ...
+ ✓ Compiled /tournoi in 1135ms (2092 modules)
+ GET /tournoi 200 in 2505ms
+ ○ Compiling /api/kpi ...
+ ✓ Compiled /api/kpi in 601ms (2094 modules)
+ GET /api/notifications/inbox 200 in 707ms
+ POST /api/kpi 201 in 510ms
+ POST /api/kpi 201 in 902ms
+ ✓ Compiled in 1010ms (2051 modules)
+ ✓ Compiled /tournoi in 300ms (1464 modules)
+ GET /tournoi 200 in 2883ms
+ ○ Compiling /api/kpi ...
+ ✓ Compiled /api/kpi in 694ms (1469 modules)
+ ✓ Compiled (1483 modules)
+ POST /api/kpi 201 in 1278ms
+ GET /api/auth/get-session 200 in 2338ms
+ ✓ Compiled /api/notifications/inbox in 490ms (1486 modules)
+ GET /api/notifications/inbox 200 in 1296ms
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+ ✓ Compiled in 981ms (2074 modules)
+ GET /tournoi 200 in 2912ms
+ GET /tournoi 200 in 1481ms
+ ✓ Compiled /api/kpi in 315ms (1469 modules)
+ ✓ Compiled (1483 modules)
+ POST /api/kpi 201 in 1100ms
+ GET /api/auth/get-session 200 in 1362ms
+ ✓ Compiled /api/notifications/inbox in 330ms (1486 modules)
+ GET /api/notifications/inbox 200 in 1169ms
+ ✓ Compiled in 1011ms (2074 modules)
+ GET /tournoi 200 in 1237ms
+ GET /tournoi 200 in 1017ms
+ ✓ Compiled /api/kpi in 340ms (1469 modules)
+ ✓ Compiled (1483 modules)
+ POST /api/kpi 201 in 1014ms
+ GET /api/auth/get-session 200 in 1249ms
+ ✓ Compiled /api/notifications/inbox in 396ms (1486 modules)
+ GET /api/notifications/inbox 200 in 1014ms
+ ○ Compiling /club ...
+ ✓ Compiled /club in 1051ms (2080 modules)
+ ✓ Compiled in 435ms (611 modules)
+ GET /club 200 in 1530ms
+ GET /club 200 in 961ms
+ GET /club 200 in 952ms
+ ✓ Compiled /api/notifications/inbox in 256ms (1487 modules)
+ GET /api/notifications/inbox 200 in 1412ms
+ GET /api/notifications/inbox 200 in 434ms
+ ✓ Compiled in 1396ms (2080 modules)
+ ✓ Compiled /api/notifications/inbox in 340ms (1487 modules)
+ GET /club 200 in 1084ms
+ GET /api/notifications/inbox 200 in 1570ms
+ GET /club 200 in 553ms
+ ○ Compiling /api/auth/[...all] ...
+ ✓ Compiled /api/auth/[...all] in 594ms (1489 modules)
+ GET /api/auth/get-session 200 in 1165ms
+ GET /api/notifications/inbox 200 in 483ms
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+ GET /api/auth/get-session 200 in 284ms
+ GET /api/auth/get-session 200 in 118ms
+ GET /api/auth/get-session 200 in 1276ms
+ GET /api/auth/get-session 200 in 384ms
+ GET /api/auth/get-session 200 in 248ms
+ GET /api/notifications/inbox 200 in 686ms
+ GET /api/notifications/inbox 200 in 1605ms
+ GET /api/auth/get-session 200 in 1080ms
+ GET /api/auth/get-session 200 in 256ms
+ GET /api/notifications/inbox 200 in 475ms
+ GET /api/auth/get-session 200 in 256ms
+ GET /api/notifications/inbox 200 in 1542ms
+ GET /api/notifications/inbox 200 in 462ms
+ GET /api/auth/get-session 200 in 253ms
+ GET /api/notifications/inbox 200 in 452ms
+ GET /api/auth/get-session 200 in 257ms
+ GET /api/notifications/inbox 200 in 478ms
+ GET /api/auth/get-session 200 in 315ms
+ GET /api/notifications/inbox 200 in 488ms
+ GET /api/auth/get-session 200 in 248ms
+ GET /api/notifications/inbox 200 in 473ms
+ GET /api/notifications/inbox 200 in 615ms
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+ GET /api/auth/get-session 200 in 459ms
+ GET /api/auth/get-session 200 in 89ms
+prisma:error 
+Invalid `prisma.session.findFirst()` invocation:
+
+
+Can't reach database server at `ep-proud-fire-aiy9cvx6.c-4.us-east-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-proud-fire-aiy9cvx6.c-4.us-east-1.aws.neon.tech:5432`.
+ GET /api/auth/get-session 500 in 5437ms
+ GET /api/auth/get-session 200 in 1738ms
+ GET /api/auth/get-session 200 in 301ms
+ GET /api/auth/get-session 200 in 267ms
+ GET /api/notifications/inbox 200 in 667ms
+ GET /api/notifications/inbox 200 in 1557ms
+ GET /api/auth/get-session 200 in 1113ms
+ GET /api/auth/get-session 200 in 260ms
+ GET /api/notifications/inbox 200 in 445ms
+ GET /api/auth/get-session 200 in 263ms
+ GET /api/notifications/inbox 200 in 1536ms
+ GET /api/notifications/inbox 200 in 483ms
+ GET /api/auth/get-session 200 in 261ms
+ GET /api/notifications/inbox 200 in 493ms
+ GET /api/auth/get-session 200 in 338ms
+ GET /api/notifications/inbox 200 in 525ms
+ GET /api/auth/get-session 200 in 265ms
+ GET /api/notifications/inbox 200 in 662ms
+ GET /api/notifications/inbox 200 in 452ms
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+ GET /api/auth/get-session 200 in 399ms
+ GET /api/auth/get-session 200 in 2148ms
+ GET /api/auth/get-session 200 in 98ms
+ GET /api/notifications/inbox 200 in 792ms
+ GET /api/auth/get-session 200 in 3250ms
+ GET /api/auth/get-session 200 in 277ms
+ GET /api/notifications/inbox 200 in 480ms
+ GET /api/auth/get-session 200 in 291ms
+ GET /api/auth/get-session 200 in 267ms
+ GET /api/auth/get-session 200 in 284ms
+ GET /api/notifications/inbox 200 in 690ms
+ GET /api/notifications/inbox 200 in 459ms
+ GET /api/notifications/inbox 200 in 691ms
+ GET /api/notifications/inbox 200 in 1648ms
+ GET /api/auth/get-session 200 in 1178ms
+ GET /api/auth/get-session 200 in 298ms
+ GET /api/notifications/inbox 200 in 537ms
+ GET /api/auth/get-session 200 in 350ms
+ GET /api/notifications/inbox 200 in 655ms
+ GET /api/auth/get-session 200 in 366ms
+ GET /api/notifications/inbox 200 in 765ms
+ GET /api/notifications/inbox 200 in 464ms
+prisma:error Error in PostgreSQL connection: Error { kind: Io, cause: Some(Os { code: 10054, kind: ConnectionReset, message: "Une connexion existante a dû être fermée par l’hôte distant." }) }
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+ GET /api/auth/get-session 200 in 68ms
+ GET /api/auth/get-session 200 in 47ms
+ GET /api/auth/get-session 200 in 1757ms
+ GET /api/auth/get-session 200 in 305ms
+ GET /api/auth/get-session 200 in 233ms
+ GET /api/notifications/inbox 200 in 689ms
+ GET /api/notifications/inbox 200 in 1622ms
+ GET /api/auth/get-session 200 in 1132ms
+ GET /api/auth/get-session 200 in 260ms
+ GET /api/notifications/inbox 200 in 466ms
+ GET /api/auth/get-session 200 in 247ms
+ GET /api/notifications/inbox 200 in 1493ms
+ GET /api/notifications/inbox 200 in 438ms
+ GET /api/auth/get-session 200 in 258ms
+ GET /api/notifications/inbox 200 in 451ms
+ GET /api/auth/get-session 200 in 259ms
+ GET /api/notifications/inbox 200 in 466ms
+ GET /api/auth/get-session 200 in 260ms
+ GET /api/notifications/inbox 200 in 468ms
+ GET /api/auth/get-session 200 in 261ms
+ GET /api/notifications/inbox 200 in 463ms
+ GET /api/notifications/inbox 200 in 718ms
+ ○ Compiling /club/comite-directeur ...
+ ✓ Compiled /club/comite-directeur in 2.1s (2110 modules)
+ ✓ Compiled in 444ms (612 modules)
+ GET /club/comite-directeur 200 in 2687ms
+ GET /api/notifications/inbox 200 in 700ms
+ GET /api/auth/get-session 200 in 204ms
+ GET /api/auth/get-session 200 in 72ms
+ GET /api/auth/get-session 200 in 481ms
+ GET /api/auth/get-session 200 in 289ms
+ GET /api/auth/get-session 200 in 432ms
+ GET /api/notifications/inbox 200 in 543ms
+ GET /api/notifications/inbox 200 in 568ms
+ GET /api/auth/get-session 200 in 378ms
+ GET /api/notifications/inbox 200 in 573ms
+ GET /api/auth/get-session 200 in 318ms
+ GET /api/notifications/inbox 200 in 534ms
+ GET /api/auth/get-session 200 in 322ms
+ GET /api/notifications/inbox 200 in 526ms
+ GET /api/auth/get-session 200 in 275ms
+ GET /api/notifications/inbox 200 in 470ms
+ GET /api/auth/get-session 200 in 275ms
+ GET /api/notifications/inbox 200 in 511ms
+ GET /api/auth/get-session 200 in 289ms
+ GET /api/notifications/inbox 200 in 501ms
+ GET /api/auth/get-session 200 in 284ms
+ GET /api/notifications/inbox 200 in 586ms
+ GET /api/notifications/inbox 200 in 559ms
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3319), routine: Some("ProcessInterrupts") }) }
+ GET /api/auth/get-session 200 in 60ms
+ GET /api/auth/get-session 200 in 62ms
+ GET /api/auth/get-session 200 in 1820ms
+ GET /api/auth/get-session 200 in 278ms
+ GET /api/auth/get-session 200 in 243ms
+ GET /api/notifications/inbox 200 in 756ms
+ GET /api/notifications/inbox 200 in 1511ms
+ GET /api/auth/get-session 200 in 1136ms
+ GET /api/auth/get-session 200 in 255ms
+ GET /api/notifications/inbox 200 in 446ms
+ GET /api/auth/get-session 200 in 253ms
+ GET /api/notifications/inbox 200 in 1493ms
+ GET /api/auth/get-session 200 in 241ms
+ GET /api/notifications/inbox 200 in 645ms
+ GET /api/notifications/inbox 200 in 451ms
+ GET /api/auth/get-session 200 in 244ms
+ GET /api/notifications/inbox 200 in 434ms
+ GET /api/auth/get-session 200 in 253ms
+ GET /api/notifications/inbox 200 in 431ms
+ GET /api/auth/get-session 200 in 250ms
+ GET /api/notifications/inbox 200 in 454ms
+ GET /api/notifications/inbox 200 in 411ms
+ GET / 200 in 558ms
+ GET / 200 in 516ms
+ GET / 200 in 797ms
+ GET /api/auth/get-session 200 in 243ms
+ GET /api/notifications/inbox 200 in 436ms
+ GET /club/comite-directeur 200 in 377ms
+ GET /api/notifications/inbox 200 in 440ms
+ GET /api/auth/get-session 200 in 53ms
+ GET /api/auth/get-session 200 in 47ms
+ GET /api/auth/get-session 200 in 324ms
+ GET /api/auth/get-session 200 in 271ms
+ GET /api/auth/get-session 200 in 233ms
+ GET /api/notifications/inbox 200 in 431ms
+ GET /api/notifications/inbox 200 in 962ms
+ GET /api/auth/get-session 200 in 533ms
+ GET /api/auth/get-session 200 in 272ms
+ GET /api/notifications/inbox 200 in 491ms
+ GET /api/auth/get-session 200 in 277ms
+ GET /api/notifications/inbox 200 in 938ms
+ GET /api/notifications/inbox 200 in 473ms
+ GET /api/auth/get-session 200 in 277ms
+ GET /api/auth/get-session 200 in 268ms
+ GET /api/notifications/inbox 200 in 676ms
+ GET /api/notifications/inbox 200 in 476ms
+ GET /api/auth/get-session 200 in 255ms
+ GET /api/notifications/inbox 200 in 472ms
+ GET /api/auth/get-session 200 in 261ms
+ GET /api/notifications/inbox 200 in 528ms
+ GET /api/auth/get-session 200 in 342ms
+ GET /api/notifications/inbox 200 in 483ms
+ GET /api/auth/get-session 200 in 269ms
+ GET /api/notifications/inbox 200 in 453ms
+ GET /api/notifications/inbox 200 in 446ms
+ GET /api/auth/get-session 200 in 92ms
+ GET /api/auth/get-session 200 in 44ms
+ GET /api/auth/get-session 200 in 257ms
+ GET /api/auth/get-session 200 in 274ms
+ GET /api/notifications/inbox 200 in 465ms
+ GET /api/auth/get-session 200 in 255ms
+ GET /api/notifications/inbox 200 in 480ms
+ GET /api/auth/get-session 200 in 254ms
+ GET /api/notifications/inbox 200 in 451ms
+ GET /api/auth/get-session 200 in 255ms
+ GET /api/notifications/inbox 200 in 462ms
+ GET /api/auth/get-session 200 in 248ms
+ GET /api/notifications/inbox 200 in 450ms
+ GET /api/auth/get-session 200 in 248ms
+ GET /api/notifications/inbox 200 in 471ms
+ GET /api/auth/get-session 200 in 247ms
+ GET /api/notifications/inbox 200 in 460ms
+ GET /api/auth/get-session 200 in 249ms
+ GET /api/notifications/inbox 200 in 477ms
+ GET /api/auth/get-session 200 in 248ms
+ GET /api/notifications/inbox 200 in 453ms
+ GET /api/auth/get-session 200 in 325ms
+ GET /api/notifications/inbox 200 in 516ms
+ GET /api/auth/get-session 200 in 259ms
+ GET /api/notifications/inbox 200 in 480ms
+ GET /api/notifications/inbox 200 in 437ms
+ GET /api/auth/get-session 200 in 349ms
+ GET /api/auth/get-session 200 in 338ms
+ GET /api/notifications/inbox 200 in 450ms
+ GET /api/notifications/inbox 200 in 429ms
+ ✓ Compiled in 1121ms (2090 modules)
+ GET /club/comite-directeur 200 in 653ms
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 1535ms (2186 modules)
+ GET /club/comite-directeur 500 in 3473ms
+ GET /club/comite-directeur 500 in 42ms
+ GET /club/comite-directeur 500 in 483ms
+ GET /club/comite-directeur 500 in 37ms
+ GET /club/comite-directeur 500 in 172ms
+ GET /club/comite-directeur 500 in 47ms
+ GET /club/comite-directeur 500 in 127ms
+ GET /club/comite-directeur 500 in 38ms
+ ✓ Compiled /api/notifications/inbox in 430ms (1496 modules)
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 518ms (2190 modules)
+ GET /api/notifications/inbox 500 in 1159ms
+ GET /api/notifications/inbox 500 in 39ms
+ GET /club 200 in 266ms
+ GET /club 200 in 562ms
+ GET /club 200 in 372ms
+[?25h

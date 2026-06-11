@@ -282,7 +282,7 @@ export default function AdminHomePage() {
                   onChange={(e) => updateField("eventImageUrl", e.target.value)}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Laissez vide pour utiliser la couverture par defaut du tournoi.
+                  Laissez vide pour ne pas afficher d&apos;image.
                 </p>
               </div>
 
