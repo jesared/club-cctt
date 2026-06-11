@@ -54,6 +54,14 @@ function getBadgeLabel(type: BadgeVariant) {
   return "Libre";
 }
 
+function ScheduleBadge({ type }: { type: BadgeVariant }) {
+  return (
+    <Badge variant={type} className="h-6 rounded-full px-2.5">
+      {getBadgeLabel(type)}
+    </Badge>
+  );
+}
+
 export default async function HorairesPage() {
   const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/horaires`, {
     cache: "no-store",
@@ -139,27 +147,27 @@ export default async function HorairesPage() {
             <CardContent className="text-sm">
               <div className="flex flex-wrap gap-x-6 gap-y-3">
                 <div className="flex items-center gap-2">
-                  <Badge variant="jeunes">Jeunes</Badge>
+                  <ScheduleBadge type="jeunes" />
                   <span>Entraînements encadrés pour les jeunes</span>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Badge variant="adultes">Adultes</Badge>
+                  <ScheduleBadge type="adultes" />
                   <span>Créneaux pensés pour les joueurs et joueuses adultes</span>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Badge variant="elite">Elite</Badge>
+                  <ScheduleBadge type="elite" />
                   <span>Groupes à niveau confirmé</span>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Badge variant="loisir">Loisir</Badge>
+                  <ScheduleBadge type="loisir" />
                   <span>Pratique loisir et sport santé</span>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Badge variant="libre">Libre</Badge>
+                  <ScheduleBadge type="libre" />
                   <span>Jeu libre réservé aux licenciés</span>
                 </div>
               </div>
@@ -202,13 +210,7 @@ export default async function HorairesPage() {
                             </p>
                             <div className="flex flex-wrap gap-1.5 sm:justify-end">
                               {seance.type.map((type) => (
-                                <Badge
-                                  key={type}
-                                  variant={type}
-                                  className="h-6 rounded-full px-2.5"
-                                >
-                                  {getBadgeLabel(type)}
-                                </Badge>
+                                <ScheduleBadge key={type} type={type} />
                               ))}
                             </div>
                           </div>
