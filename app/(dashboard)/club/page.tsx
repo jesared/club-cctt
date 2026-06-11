@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import Reveal from "@/components/Reveal";
-import { Button } from "@/components/ui/button";
+import ClubContextNav from "@/components/public/club-context-nav";
 import {
   Card,
   CardContent,
@@ -135,29 +135,7 @@ export default function ClubPage() {
                 </p>
               </div>
 
-              <div
-                className="inline-flex w-full flex-col gap-1 rounded-lg border border-border bg-muted/30 p-1 sm:w-fit sm:flex-row"
-                role="group"
-                aria-label="Actions club"
-              >
-                <Button asChild className="h-10 rounded-md shadow-none">
-                  <Link href="/club/horaires">Voir les horaires</Link>
-                </Button>
-                <Button
-                  asChild
-                  variant="ghost"
-                  className="h-10 rounded-md shadow-none"
-                >
-                  <Link href="/club/tarifs">Voir les tarifs</Link>
-                </Button>
-                <Button
-                  asChild
-                  variant="ghost"
-                  className="h-10 rounded-md shadow-none"
-                >
-                  <Link href="/club/contact">Contacter le club</Link>
-                </Button>
-              </div>
+              <ClubContextNav />
             </div>
 
             <div className="group overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
@@ -190,7 +168,7 @@ export default function ClubPage() {
         <div className="grid gap-4 lg:grid-cols-3">
           {quickStartCards.map((item, index) => (
             <Reveal key={item.title} delay={index * 120}>
-              <Card className="flex h-full flex-col bg-muted/30 card-hover hover:border-[#2F6BFF]/80">
+              <Card className="flex h-full flex-col border-border bg-card shadow-sm card-hover">
                 <CardHeader>
                   <CardTitle>{item.title}</CardTitle>
                 </CardHeader>
@@ -216,7 +194,7 @@ export default function ClubPage() {
 
       <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
         <Reveal>
-          <Card className="bg-muted/40 card-hover hover:border-[#2F6BFF]/80">
+          <Card className="border-border bg-card shadow-sm card-hover">
             <CardHeader>
               <CardTitle>Le club en bref</CardTitle>
             </CardHeader>
@@ -275,7 +253,7 @@ export default function ClubPage() {
         <div className="grid gap-4">
           {clubSections.map((item, index) => (
             <Reveal key={item.title} delay={index * 120}>
-              <Card className="flex h-full flex-col card-hover hover:border-[#2F6BFF]/80">
+              <Card className="flex h-full flex-col border-border bg-card shadow-sm card-hover">
                 <CardHeader>
                   <CardTitle>{item.title}</CardTitle>
                 </CardHeader>
@@ -301,7 +279,7 @@ export default function ClubPage() {
 
       <Reveal>
         <section>
-          <Card className="border-primary/20 card-hover">
+          <Card className="border-border bg-card shadow-sm card-hover">
             <CardHeader>
               <CardTitle>Besoin d&apos;être orienté ?</CardTitle>
             </CardHeader>
@@ -311,29 +289,7 @@ export default function ClubPage() {
                 plus simple reste de nous contacter pour un conseil rapide ou un
                 premier essai.
               </p>
-              <div
-                className="inline-flex w-full flex-col gap-1 rounded-lg border border-border bg-background/70 p-1 sm:w-fit sm:flex-row"
-                role="group"
-                aria-label="Actions d'orientation"
-              >
-                <Button asChild className="h-10 rounded-md shadow-none">
-                  <Link href="/club/contact">Contacter le club</Link>
-                </Button>
-                <Button
-                  asChild
-                  variant="ghost"
-                  className="h-10 rounded-md shadow-none"
-                >
-                  <Link href="/club/horaires">Voir les horaires</Link>
-                </Button>
-                <Button
-                  asChild
-                  variant="ghost"
-                  className="h-10 rounded-md shadow-none"
-                >
-                  <Link href="/club/tarifs">Voir les tarifs</Link>
-                </Button>
-              </div>
+              <ClubContextNav />
             </CardContent>
           </Card>
         </section>
