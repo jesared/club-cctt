@@ -81,14 +81,14 @@ const roles = [
     Icon: ShieldCheck,
     badgeClassName:
       "border-amber-300/70 bg-amber-300 text-amber-950 hover:bg-amber-300/90",
-    summary: "Role complet pour gerer le site, les contenus et le tournoi.",
+    summary: "Role complet pour gérer le site, les contenus et le tournoi.",
     accesses: [
       "Tous les espaces membres",
       "Tout /admin",
       "Administration tournoi",
       "Gestion des utilisateurs et des contenus",
     ],
-    limits: "Les comptes admin sont proteges dans la page utilisateurs : ils ne peuvent pas etre modifies ou supprimes depuis cette interface.",
+    limits: "Les comptes admin sont proteges dans la page utilisateurs : ils ne peuvent pas être modifiés ou supprimes depuis cette interface.",
   },
 ];
 
@@ -173,7 +173,7 @@ export default async function AdminDocumentationPage() {
           </div>
           <CardDescription className="max-w-3xl text-sm leading-6">
             Cette documentation explique les roles disponibles dans le site,
-            les espaces qu'ils ouvrent, puis les regles de diffusion entre
+            les espaces qu'ils ouvrent, puis les règles de diffusion entre
             messages, notifications internes et emails.
           </CardDescription>
         </CardHeader>
@@ -262,7 +262,7 @@ export default async function AdminDocumentationPage() {
               <div>
                 <CardTitle>Pour agir tout de suite</CardTitle>
                 <CardDescription>
-                  Les pages utiles pour verifier ou ajuster les droits.
+                  Les pages utiles pour vérifier ou ajuster les droits.
                 </CardDescription>
               </div>
             </div>
@@ -275,7 +275,7 @@ export default async function AdminDocumentationPage() {
               <div>
                 <p className="font-medium text-foreground">Gestion utilisateurs</p>
                 <p className="text-muted-foreground">
-                  Modifier les roles et verifier les comptes.
+                  Modifier les roles et vérifier les comptes.
                 </p>
               </div>
               <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -343,7 +343,7 @@ export default async function AdminDocumentationPage() {
             </div>
 
             <div className="rounded-2xl border border-border/70 bg-muted/20 p-4 text-sm text-muted-foreground">
-              Aujourd'hui, seules les annonces publiees peuvent generer une
+              Aujourd'hui, seules les annonces publiées peuvent generer une
               notification interne automatiquement. Les horaires et les medias
               ne declenchent plus de notification auto.
             </div>

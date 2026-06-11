@@ -76,6 +76,14 @@ type HeaderInboxItem = {
   href: string;
 };
 
+type PublicSectionMeta = {
+  eyebrow: string;
+  icon: typeof Building2;
+  description: string;
+  cta?: { href: string; label: string };
+  items: Record<string, string>;
+};
+
 export default function HeaderCentered({
   menuVisibility,
   showTournamentRegistration = false,
@@ -129,16 +137,7 @@ export default function HeaderCentered({
             "/tournoi/affiches": "Affiches et supports officiels.",
           } as Record<string, string>,
         },
-      }) satisfies Record<
-        "Club" | "Tournoi",
-        {
-          eyebrow: string;
-          icon: typeof Building2;
-          description: string;
-          cta?: { href: string; label: string };
-          items: Record<string, string>;
-        }
-      >,
+      }) as Record<"Club" | "Tournoi", PublicSectionMeta>,
     [],
   );
 
