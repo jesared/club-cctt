@@ -92,6 +92,22 @@ export default async function EntraineursBenevolesPage() {
               club. Ils accompagnent les séances, soutiennent la progression des
               joueurs et participent à la dynamique collective du CCTT.
             </p>
+            <div
+              className="inline-flex w-full flex-col gap-1 rounded-lg border border-border bg-muted/30 p-1 sm:w-fit sm:flex-row"
+              role="group"
+              aria-label="Autres équipes du club"
+            >
+              <Button asChild className="h-10 rounded-md shadow-none">
+                <Link href="/club/comite-directeur">Voir le comité</Link>
+              </Button>
+              <Button
+                asChild
+                variant="ghost"
+                className="h-10 rounded-md shadow-none"
+              >
+                <Link href="/club/salaries">Voir les salariés</Link>
+              </Button>
+            </div>
           </div>
         </header>
       </Reveal>

@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { GraduationCap, Users } from "lucide-react";
 
 import Reveal from "@/components/Reveal";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -221,6 +223,24 @@ export default async function SalariesPage() {
               Les salariés diplômés accompagnent la pratique sportive, les
               séances et la progression des joueurs au quotidien.
             </p>
+            <div
+              className="inline-flex w-full flex-col gap-1 rounded-lg border border-border bg-muted/30 p-1 sm:w-fit sm:flex-row"
+              role="group"
+              aria-label="Autres équipes du club"
+            >
+              <Button asChild className="h-10 rounded-md shadow-none">
+                <Link href="/club/comite-directeur">Voir le comité</Link>
+              </Button>
+              <Button
+                asChild
+                variant="ghost"
+                className="h-10 rounded-md shadow-none"
+              >
+                <Link href="/club/entraineurs-benevoles">
+                  Voir les bénévoles
+                </Link>
+              </Button>
+            </div>
           </div>
         </header>
       </Reveal>

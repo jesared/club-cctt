@@ -1,8 +1,10 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Users } from "lucide-react";
 
 import Reveal from "@/components/Reveal";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -110,14 +112,7 @@ function SimplePersonCard({
 
 export default async function ComiteDirecteurPage() {
   const payload = await getComiteResponse();
-  const { data, meta } = payload;
-  const formattedUpdatedAt = meta.updatedAt
-    ? new Intl.DateTimeFormat("fr-FR", {
-        timeZone: "Europe/Paris",
-        dateStyle: "long",
-        timeStyle: "short",
-      }).format(new Date(meta.updatedAt))
-    : null;
+  const { data } = payload;
 
   return (
     <div className="mx-auto max-w-6xl space-y-14 px-4 pb-28 pt-12 sm:pb-32">
@@ -132,24 +127,29 @@ export default async function ComiteDirecteurPage() {
                 <h1 className="mb-4 text-4xl font-bold tracking-tight animate-fade-up-2 sm:text-5xl">
                   Comité directeur
                 </h1>
-                {formattedUpdatedAt ? (
-                  <Badge variant={meta.stale ? "secondary" : "outline"}>
-                    {meta.stale
-                      ? `Dernière mise à jour le ${formattedUpdatedAt}`
-                      : `Mis à jour le ${formattedUpdatedAt}`}
-                  </Badge>
-                ) : meta.stale ? (
-                  <Badge variant="secondary">
-                    Dernière mise à jour indisponible
-                  </Badge>
-                ) : (
-                  <Badge variant="outline">Mise à jour en cours</Badge>
-                )}
               </div>
               <p className="max-w-3xl text-base leading-relaxed text-foreground/88 sm:text-lg">
                 Le comité directeur du Châlons-en-Champagne Tennis de Table assure
                 la gestion, l&apos;organisation et le développement du club.
               </p>
+              <div
+                className="mt-6 inline-flex w-full flex-col gap-1 rounded-lg border border-border bg-muted/30 p-1 sm:w-fit sm:flex-row"
+                role="group"
+                aria-label="Autres équipes du club"
+              >
+                <Button asChild className="h-10 rounded-md shadow-none">
+                  <Link href="/club/salaries">Voir les salariés</Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="ghost"
+                  className="h-10 rounded-md shadow-none"
+                >
+                  <Link href="/club/entraineurs-benevoles">
+                    Voir les bénévoles
+                  </Link>
+                </Button>
+              </div>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
@@ -210,7 +210,6 @@ export default async function ComiteDirecteurPage() {
           ))}
         </div>
       </section>
-
     </div>
   );
 }
