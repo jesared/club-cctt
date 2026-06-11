@@ -7,6 +7,7 @@ import {
   CalendarClock,
   FileText,
   Handshake,
+  HeartHandshake,
   Image as ImageIcon,
   LayoutGrid,
   Mail,
@@ -145,6 +146,11 @@ export default async function AdminPage() {
           href: "/admin/tournoi/pointages",
           label: "Ouvrir les pointages",
           helper: "Contrôle salle et présence",
+        },
+        {
+          href: "/admin/benevoles",
+          label: "Modifier les bénévoles",
+          helper: "Entraîneurs bénévoles et portraits",
         },
       ],
       Icon: Ticket,
@@ -291,6 +297,12 @@ export default async function AdminPage() {
       label: "Salariés diplômés",
       helper: "Équipe salariée et portraits",
       Icon: BriefcaseBusiness,
+    },
+    {
+      href: "/admin/benevoles",
+      label: "Entraîneurs bénévoles",
+      helper: "Encadrement bénévole et portraits",
+      Icon: HeartHandshake,
     },
     {
       href: "/admin/menu",

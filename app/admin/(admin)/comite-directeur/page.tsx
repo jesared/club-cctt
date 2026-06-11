@@ -122,6 +122,11 @@ function cleanComiteForm(form: ComiteData): ComiteData {
       description: member.description ?? "",
       photo: member.photo,
     })),
+    benevoles: form.benevoles.map((member) => ({
+      nom: member.nom,
+      description: member.description ?? "",
+      photo: member.photo,
+    })),
   };
 }
 

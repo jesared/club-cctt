@@ -66,6 +66,7 @@ export default function Header({ menuVisibility }: HeaderProps) {
             "/club/partenaires": "Soutiens et partenaires du club.",
             "/club/comite-directeur": "Équipe dirigeante du club.",
             "/club/salaries": "Équipe salariée diplômée.",
+            "/club/entraineurs-benevoles": "Encadrement bénévole du club.",
             "/club/contact": "Contact et localisation.",
           } as Record<string, string>,
         },

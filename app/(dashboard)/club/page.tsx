@@ -100,6 +100,13 @@ const clubSections = [
     label: "Voir les salariés",
   },
   {
+    title: "Entraîneurs bénévoles",
+    description:
+      "Mieux comprendre le rôle des bénévoles dans l'encadrement sportif.",
+    href: "/club/entraineurs-benevoles",
+    label: "Voir les entraîneurs",
+  },
+  {
     title: "Partenaires",
     description: "Découvrir les soutiens qui accompagnent le projet du club.",
     href: "/club/partenaires",

@@ -15,6 +15,7 @@ export type ComiteData = {
   bureau: BureauMember[];
   membres: SimpleMember[];
   salaries: SimpleMember[];
+  benevoles: SimpleMember[];
 };
 
 export type ComiteSource = "admin" | "drive" | "fallback";
@@ -32,6 +33,7 @@ export const defaultComiteContent: ComiteData = {
   bureau: [],
   membres: [],
   salaries: [],
+  benevoles: [],
 };
 
 function coerceString(value: unknown) {
@@ -99,6 +101,11 @@ export function normalizeComiteContent(
           .map((member) => normalizeSimpleMember(member))
           .filter((member): member is SimpleMember => member !== null)
       : defaultComiteContent.salaries,
+    benevoles: Array.isArray(data.benevoles)
+      ? data.benevoles
+          .map((member) => normalizeSimpleMember(member))
+          .filter((member): member is SimpleMember => member !== null)
+      : defaultComiteContent.benevoles,
   };
 }
 
@@ -110,6 +117,7 @@ export function isValidComiteData(value: unknown): value is ComiteData {
   return (
     Array.isArray(value.bureau) &&
     Array.isArray(value.membres) &&
-    Array.isArray(value.salaries)
+    Array.isArray(value.salaries) &&
+    (!("benevoles" in value) || Array.isArray(value.benevoles))
   );
 }

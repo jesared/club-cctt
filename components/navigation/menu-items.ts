@@ -13,6 +13,7 @@ import {
   Dumbbell,
   FileText,
   Handshake,
+  HeartHandshake,
   Image as ImageIcon,
   Layers3,
   LayoutDashboard,
@@ -311,6 +312,11 @@ export const navigation: MenuSection[] = [
         label: "Salariés diplômés",
         icon: BriefcaseBusiness,
       },
+      {
+        href: "/club/entraineurs-benevoles",
+        label: "Entraîneurs bénévoles",
+        icon: Dumbbell,
+      },
       { href: "/club/horaires", label: "Horaires", icon: CalendarClock },
       { href: "/club/tarifs", label: "Tarifs", icon: BadgeEuro },
       {
@@ -374,6 +380,14 @@ export const navigation: MenuSection[] = [
         label: "Salariés",
         icon: BriefcaseBusiness,
         description: "Mettre à jour l'équipe salariée et ses portraits.",
+        group: "Contenus club",
+      },
+      {
+        href: "/admin/benevoles",
+        label: "Bénévoles",
+        icon: HeartHandshake,
+        description:
+          "Mettre à jour les entraîneurs bénévoles et leurs portraits.",
         group: "Contenus club",
       },
       {
