@@ -10,6 +10,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import KpiPageViewTracker from "@/components/KpiPageViewTracker";
+import AdminTournamentVisibilityControls from "@/components/admin-tournament-visibility-controls";
 import { ExternalMapLink } from "@/components/external-map-link";
 import { MetricTile, SectionEyebrow } from "@/components/public/marketing";
 import Reveal from "@/components/Reveal";
@@ -21,6 +22,7 @@ import {
   DEFAULT_EVENT_IMAGE_URL,
 } from "@/lib/home-content";
 import { prisma } from "@/lib/prisma";
+import { isAdminRole } from "@/lib/roles";
 import { tournamentRegistrationContent } from "@/lib/tournament-registration-content";
 import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-window";
 import { ACTIVE_TOURNAMENT_STATUSES } from "@/lib/tournament-status";
@@ -154,7 +156,14 @@ function resolveTournamentPosterUrl(value: string | null | undefined) {
   return normalizedValue === DEFAULT_EVENT_IMAGE_URL ? "" : normalizedValue;
 }
 
-export default async function TournoiHomePage() {
+type PageProps = {
+  searchParams?: Promise<{
+    showRegistrationCta?: string;
+  }>;
+};
+
+export default async function TournoiHomePage({ searchParams }: PageProps) {
+  const resolvedSearchParams = await searchParams;
   const session = await getCurrentSession();
   const userEmail = session?.user?.email?.trim().toLowerCase();
   const [tournament, contactContentRaw, homeContentRaw] = await Promise.all([
@@ -200,6 +209,11 @@ export default async function TournoiHomePage() {
   );
   const eventImageUrl = resolveTournamentPosterUrl(homeContentRaw?.eventImageUrl);
   const registrationStatus = getTournamentRegistrationStatus(tournament);
+  const isAdmin = isAdminRole(session?.user?.role);
+  const showRegistrationCtaOverride =
+    resolvedSearchParams?.showRegistrationCta === "1";
+  const showRegistrationCta =
+    registrationStatus.canRegister || (isAdmin && showRegistrationCtaOverride);
   const isTournamentFinished = tournament?.endDate
     ? new Date() > tournament.endDate
     : false;
@@ -283,11 +297,25 @@ export default async function TournoiHomePage() {
 
                 <TournamentActionBar
                   canRegister={registrationStatus.canRegister}
+                  showRegistrationCta={showRegistrationCta}
                   registrationLabel={registrationStatus.label}
                   registrationHref={tournamentRegistrationContent.cta.href}
                   registrationCtaLabel={tournamentRegistrationContent.cta.label}
                   hasUserRegistration={hasUserRegistration}
                 />
+
+                {isAdmin && !registrationStatus.canRegister ? (
+                  <AdminTournamentVisibilityControls
+                    options={[
+                      {
+                        key: "showRegistrationCta",
+                        label: "Afficher le bouton S'inscrire",
+                        description:
+                          "Permet de tester le CTA d'inscription même quand il est masqué au public.",
+                      },
+                    ]}
+                  />
+                ) : null}
 
                 {!registrationStatus.canRegister && isTournamentFinished ? (
                   <div className="flex flex-wrap gap-3">

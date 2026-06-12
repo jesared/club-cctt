@@ -1,8 +1,10 @@
 import KpiPageViewTracker from "@/components/KpiPageViewTracker";
+import AdminTournamentVisibilityControls from "@/components/admin-tournament-visibility-controls";
 import Reveal from "@/components/Reveal";
 import TournamentRegistrationForm from "@/components/TournamentRegistrationForm";
 import { prisma } from "@/lib/prisma";
 import { getTournamentRegistrationNotificationAvailability } from "@/lib/public-form-availability";
+import { isAdminRole } from "@/lib/roles";
 import { getCurrentSession } from "@/lib/session";
 import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-window";
 import { ACTIVE_TOURNAMENT_STATUSES } from "@/lib/tournament-status";
@@ -67,12 +69,20 @@ function formatEventDateLabel(startAt: Date) {
   }).format(startAt);
 }
 
-export default async function InscriptionsPage() {
+type PageProps = {
+  searchParams?: Promise<{
+    showRegistrationForm?: string;
+  }>;
+};
+
+export default async function InscriptionsPage({ searchParams }: PageProps) {
+  const resolvedSearchParams = await searchParams;
   const session = await getCurrentSession();
   if (!session?.user) {
     redirect("/auth/signin?callbackUrl=/tournoi/inscription");
   }
   const userEmail = session?.user?.email?.trim().toLowerCase();
+  const isAdmin = isAdminRole(session.user.role);
 
   const tournament = await prisma.tournament.findFirst({
     where: {
@@ -118,6 +128,11 @@ export default async function InscriptionsPage() {
   const registrationStatus = getTournamentRegistrationStatus(tournament);
   const notificationAvailability =
     getTournamentRegistrationNotificationAvailability();
+  const showRegistrationFormOverride =
+    resolvedSearchParams?.showRegistrationForm === "1";
+  const canShowRegistrationForm =
+    (registrationStatus.canRegister && notificationAvailability.isAvailable) ||
+    (isAdmin && showRegistrationFormOverride);
 
   const tableOptions = (tournament?.events ?? []).map((event) => {
     const maxPlayers = event.maxPlayers ?? null;
@@ -200,8 +215,23 @@ export default async function InscriptionsPage() {
         </header>
       </Reveal>
 
+      {isAdmin && !canShowRegistrationForm ? (
+        <Reveal>
+          <AdminTournamentVisibilityControls
+            options={[
+              {
+                key: "showRegistrationForm",
+                label: "Afficher le formulaire d'inscription",
+                description:
+                  "Permet de tester le formulaire même quand il est masqué aux visiteurs.",
+              },
+            ]}
+          />
+        </Reveal>
+      ) : null}
+
       <Reveal>
-        {registrationStatus.canRegister && notificationAvailability.isAvailable ? (
+        {canShowRegistrationForm ? (
           <TournamentRegistrationForm tableOptions={tableOptions} />
         ) : (
           <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4 text-sm text-foreground">

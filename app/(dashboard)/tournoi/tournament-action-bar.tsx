@@ -10,6 +10,7 @@ type TournamentActionBarProps = {
   registrationHref: string;
   registrationCtaLabel: string;
   hasUserRegistration: boolean;
+  showRegistrationCta?: boolean;
 };
 
 export default function TournamentActionBar({
@@ -18,10 +19,11 @@ export default function TournamentActionBar({
   registrationHref,
   registrationCtaLabel,
   hasUserRegistration,
+  showRegistrationCta = canRegister,
 }: TournamentActionBarProps) {
   return (
     <div className="inline-grid w-full max-w-full grid-cols-1 gap-2 rounded-xl border border-border/70 bg-background/70 p-1.5 shadow-sm shadow-black/5 md:w-fit md:grid-cols-[max-content_max-content_max-content]">
-      {canRegister ? (
+      {showRegistrationCta ? (
         <TrackedLink
           kpiPage="tournoi"
           kpiLabel="cta-inscription"

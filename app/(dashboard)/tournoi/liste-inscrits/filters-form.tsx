@@ -2,9 +2,10 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
-import { X } from "lucide-react";
+import { Building2, ListFilter, Trophy, X } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { InputGroup, InputGroupAddon } from "@/components/ui/input-group";
 
 type FilterOption = {
   label: string;
@@ -59,42 +60,57 @@ export function FiltersForm({
 
   return (
     <div className="space-y-3">
-      <div className="grid gap-3 md:grid-cols-2">
-        <label className="space-y-1">
-          <span className="text-sm font-medium">Filtrer par tableau</span>
-          <select
-            name="tableau"
-            value={selectedTableau}
-            onChange={(event) => updateFilter("tableau", event.target.value)}
-            className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-          >
-            {tableauOptions.map((tableau) => (
-              <option key={tableau.value} value={tableau.value}>
-                {tableau.label}
-              </option>
-            ))}
-          </select>
+      <div className="grid gap-4 md:grid-cols-2">
+        <label className="space-y-2">
+          <span className="inline-flex items-center gap-2 text-sm font-medium text-foreground">
+            <Trophy className="h-4 w-4 text-primary" />
+            Filtrer par tableau
+          </span>
+          <InputGroup>
+            <InputGroupAddon>Tableau</InputGroupAddon>
+            <select
+              name="tableau"
+              value={selectedTableau}
+              onChange={(event) => updateFilter("tableau", event.target.value)}
+              className="h-11 w-full bg-transparent px-3 text-sm text-foreground outline-none"
+            >
+              {tableauOptions.map((tableau) => (
+                <option key={tableau.value} value={tableau.value}>
+                  {tableau.label}
+                </option>
+              ))}
+            </select>
+          </InputGroup>
         </label>
 
-        <label className="space-y-1">
-          <span className="text-sm font-medium">Filtrer par club</span>
-          <select
-            name="club"
-            value={selectedClub}
-            onChange={(event) => updateFilter("club", event.target.value)}
-            className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-          >
-            {clubOptions.map((club) => (
-              <option key={club.value} value={club.value}>
-                {club.label}
-              </option>
-            ))}
-          </select>
+        <label className="space-y-2">
+          <span className="inline-flex items-center gap-2 text-sm font-medium text-foreground">
+            <Building2 className="h-4 w-4 text-primary" />
+            Filtrer par club
+          </span>
+          <InputGroup>
+            <InputGroupAddon>Club</InputGroupAddon>
+            <select
+              name="club"
+              value={selectedClub}
+              onChange={(event) => updateFilter("club", event.target.value)}
+              className="h-11 w-full bg-transparent px-3 text-sm text-foreground outline-none"
+            >
+              {clubOptions.map((club) => (
+                <option key={club.value} value={club.value}>
+                  {club.label}
+                </option>
+              ))}
+            </select>
+          </InputGroup>
         </label>
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs uppercase tracking-wide text-muted-foreground">Filtres :</span>
+        <span className="inline-flex items-center gap-2 text-xs uppercase tracking-wide text-muted-foreground">
+          <ListFilter className="h-3.5 w-3.5" />
+          Filtres :
+        </span>
         <Badge variant="secondary" className="gap-1">
           Tableau : {selectedTableauLabel}
           {hasTableauFilter ? (

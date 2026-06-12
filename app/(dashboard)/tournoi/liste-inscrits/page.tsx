@@ -1,5 +1,8 @@
-﻿import Reveal from "@/components/Reveal";
+import AdminTournamentVisibilityControls from "@/components/admin-tournament-visibility-controls";
+import Reveal from "@/components/Reveal";
 import { prisma } from "@/lib/prisma";
+import { isAdminRole } from "@/lib/roles";
+import { getCurrentSession } from "@/lib/session";
 import { RegistrationEventStatus } from "@prisma/client";
 import { FiltersForm } from "./filters-form";
 
@@ -7,6 +10,7 @@ type PageProps = {
   searchParams?: Promise<{
     tableau?: string;
     club?: string;
+    showRegisteredList?: string;
   }>;
 };
 
@@ -24,6 +28,10 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
   const resolvedSearchParams = await searchParams;
   const selectedTableau = resolvedSearchParams?.tableau ?? "all";
   const selectedClub = resolvedSearchParams?.club ?? "all";
+  const showRegisteredListOverride =
+    resolvedSearchParams?.showRegisteredList === "1";
+  const session = await getCurrentSession();
+  const isAdmin = isAdminRole(session?.user?.role);
 
   const tournament = await prisma.tournament.findFirst({
     where: {
@@ -89,7 +97,10 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
     },
   });
 
-  if (tournament?.status === "SUSPENDED") {
+  const shouldShowRegisteredList =
+    tournament?.status !== "SUSPENDED" || (isAdmin && showRegisteredListOverride);
+
+  if (!shouldShowRegisteredList) {
     return (
       <main className="mx-auto max-w-7xl space-y-8 px-4 py-10">
         <Reveal>
@@ -97,7 +108,7 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
             <div className="space-y-1">
               <h1 className="text-2xl font-semibold">Liste des inscrits</h1>
               <p className="text-sm text-muted-foreground">
-                {tournament.name} - inscriptions suspendues
+                {tournament?.name ? `${tournament.name} - inscriptions suspendues` : "Inscriptions suspendues"}
               </p>
             </div>
 
@@ -105,6 +116,19 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
               La liste des inscrits est temporairement masquée pendant la
               suspension des inscriptions.
             </p>
+
+            {isAdmin ? (
+              <AdminTournamentVisibilityControls
+                options={[
+                  {
+                    key: "showRegisteredList",
+                    label: "Afficher la liste des inscrits",
+                    description:
+                      "Permet de vérifier la page et les filtres même quand la liste est masquée au public.",
+                  },
+                ]}
+              />
+            ) : null}
           </div>
         </Reveal>
       </main>
@@ -181,8 +205,8 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
     })),
   ];
 
-  const clubs = [...new Set(players.map((player) => player.club))].sort(
-    (a, b) => a.localeCompare(b),
+  const clubs = [...new Set(players.map((player) => player.club))].sort((a, b) =>
+    a.localeCompare(b),
   );
 
   const clubOptions = [
@@ -202,6 +226,7 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
   const totalClubs = clubs.length;
   const totalTableaux = tableaus.length;
   const filteredCount = filteredPlayers.length;
+  const showAdminControls = isAdmin && tournament?.status === "SUSPENDED";
 
   return (
     <main className="mx-auto max-w-7xl space-y-8 px-4 py-10">
@@ -215,6 +240,19 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
                 : "Aucun tournoi actif pour le moment."}
             </p>
           </div>
+
+          {showAdminControls ? (
+            <AdminTournamentVisibilityControls
+              options={[
+                {
+                  key: "showRegisteredList",
+                  label: "Afficher la liste des inscrits",
+                  description:
+                    "Permet de vérifier la page et les filtres même quand la liste est masquée au public.",
+                },
+              ]}
+            />
+          ) : null}
 
           <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {[
@@ -357,4 +395,3 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
     </main>
   );
 }
-
