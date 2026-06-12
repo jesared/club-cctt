@@ -89,7 +89,7 @@ export default async function UserNotificationsPage() {
           <h1 className="text-2xl font-semibold">Notifications</h1>
           <p className="max-w-3xl text-sm text-muted-foreground">
             Retrouvez ici l&apos;historique des annonces, changements de
-            planning et mises a jour documentaires publies pour votre espace.
+            planning et mises à jour documentaires publiés pour votre espace.
           </p>
         </div>
       </header>

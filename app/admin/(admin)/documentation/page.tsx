@@ -81,21 +81,21 @@ const roles = [
     Icon: ShieldCheck,
     badgeClassName:
       "border-amber-300/70 bg-amber-300 text-amber-950 hover:bg-amber-300/90",
-    summary: "Role complet pour gérer le site, les contenus et le tournoi.",
+    summary: "Rôle complet pour gérer le site, les contenus et le tournoi.",
     accesses: [
       "Tous les espaces membres",
       "Tout /admin",
       "Administration tournoi",
       "Gestion des utilisateurs et des contenus",
     ],
-    limits: "Les comptes admin sont proteges dans la page utilisateurs : ils ne peuvent pas être modifiés ou supprimes depuis cette interface.",
+    limits: "Les comptes admin sont protégés dans la page utilisateurs : ils ne peuvent pas être modifiés ou supprimés depuis cette interface.",
   },
 ];
 
 const reminders = [
-  "Les roles se modifient dans /admin/users.",
-  "Un seul role est attribue par compte, mais certains roles ouvrent plusieurs espaces.",
-  "BUREAU et ENTRAINEUR conservent l'acces a l'espace club.",
+  "Les rôles se modifient dans /admin/users.",
+  "Un seul rôle est attribué par compte, mais certains rôles ouvrent plusieurs espaces.",
+  "BUREAU et ENTRAÎNEUR conservent l'accès à l'espace club.",
   "ADMIN ouvre tous les espaces membres en plus du back-office.",
 ];
 
@@ -169,10 +169,10 @@ export default async function AdminDocumentationPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary">
               Documentation admin
             </p>
-            <CardTitle className="text-3xl">Roles et acces</CardTitle>
+            <CardTitle className="text-3xl">Rôles et accès</CardTitle>
           </div>
           <CardDescription className="max-w-3xl text-sm leading-6">
-            Cette documentation explique les roles disponibles dans le site,
+            Cette documentation explique les rôles disponibles dans le site,
             les espaces qu'ils ouvrent, puis les règles de diffusion entre
             messages, notifications internes et emails.
           </CardDescription>
@@ -236,7 +236,7 @@ export default async function AdminDocumentationPage() {
               <div>
                 <CardTitle>Lecture rapide</CardTitle>
                 <CardDescription>
-                  Resume pratique pour attribuer le bon role sans ambiguite.
+                  Résumé pratique pour attribuer le bon rôle sans ambiguïté.
                 </CardDescription>
               </div>
             </div>
@@ -275,7 +275,7 @@ export default async function AdminDocumentationPage() {
               <div>
                 <p className="font-medium text-foreground">Gestion utilisateurs</p>
                 <p className="text-muted-foreground">
-                  Modifier les roles et vérifier les comptes.
+                  Modifier les rôles et vérifier les comptes.
                 </p>
               </div>
               <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -343,9 +343,9 @@ export default async function AdminDocumentationPage() {
             </div>
 
             <div className="rounded-2xl border border-border/70 bg-muted/20 p-4 text-sm text-muted-foreground">
-              Aujourd'hui, seules les annonces publiées peuvent generer une
-              notification interne automatiquement. Les horaires et les medias
-              ne declenchent plus de notification auto.
+              Aujourd'hui, seules les annonces publiées peuvent générer une
+              notification interne automatiquement. Les horaires et les médias
+              ne déclenchent plus de notification auto.
             </div>
           </CardContent>
         </Card>
