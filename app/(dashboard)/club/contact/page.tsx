@@ -146,6 +146,7 @@ export default async function ContactPage({
                         href={mapDirectionsUrl}
                         label={content.addressName}
                         className="inline-flex items-center gap-2 text-[#FF2E88] hover:underline"
+                        showIcon={false}
                       />
                     ) : (
                       <p>{content.addressName}</p>

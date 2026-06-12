@@ -6,12 +6,14 @@ type ExternalMapLinkProps = {
   href: string;
   label: string;
   className?: string;
+  showIcon?: boolean;
 };
 
 export function ExternalMapLink({
   href,
   label,
   className,
+  showIcon = true,
 }: ExternalMapLinkProps) {
   return (
     <a
@@ -24,7 +26,7 @@ export function ExternalMapLink({
         window.open(href, "_blank", "noopener,noreferrer");
       }}
     >
-      <MapPin className="h-4 w-4" />
+      {showIcon ? <MapPin className="h-4 w-4" /> : null}
       {label}
     </a>
   );

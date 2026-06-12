@@ -107,10 +107,10 @@ export function validateAndNormalizeRegistration(
     };
   }
 
-  if (licenseNumber.length < 6 || licenseNumber.length > 20) {
+  if (licenseNumber.length < 3 || licenseNumber.length > 20) {
     return {
       ok: false,
-      message: "Le numero de licence doit contenir entre 6 et 20 caracteres.",
+      message: "Le numero de licence doit contenir entre 3 et 20 caracteres.",
     };
   }
 

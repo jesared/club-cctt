@@ -19,7 +19,7 @@ export async function GET(request: Request) {
   const licence = searchParams.get("licence")?.trim() ?? "";
   const tournamentId = searchParams.get("tournamentId")?.trim() ?? "";
 
-  if (!/^\d{6,20}$/.test(licence)) {
+  if (!/^\d{3,20}$/.test(licence)) {
     return NextResponse.json(
       { error: "Numero de licence invalide." },
       { status: 400 },

@@ -18,7 +18,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const licence = searchParams.get("licence")?.trim() ?? "";
 
-  if (!/^\d{6,20}$/.test(licence)) {
+  if (!/^\d{3,20}$/.test(licence)) {
     return NextResponse.json(
       { error: "Numéro de licence invalide." },
       { status: 400 },

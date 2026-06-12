@@ -217,8 +217,8 @@ function validateField(
       if (!trimmedValue) {
         return "Indiquez le numero de licence FFTT.";
       }
-      if (trimmedValue.length < 6) {
-        return "Le numero de licence doit contenir au moins 6 caracteres.";
+      if (trimmedValue.length < 3) {
+        return "Le numero de licence doit contenir au moins 3 caracteres.";
       }
       return undefined;
     case "points": {
@@ -570,7 +570,7 @@ export default function TournamentRegistrationForm({
       }));
       setFfttLookup({
         status: "success",
-        message: "Infos FFTT récupérées : joueur, club, genre et points.",
+        message: "Profil FFTT trouvé.",
       });
     } catch (error) {
       setFfttLookup({
@@ -1242,18 +1242,18 @@ function ProfileStep({
   return (
     <section className="space-y-3">
       <div className="rounded-lg border border-border/70 bg-muted/20 p-3">
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3">
-          <FieldShell
-            error={fieldErrors.licenseNumber}
-            id="licenseNumber"
-            label="Numéro de licence FFTT"
-          >
+        <FieldShell
+          error={fieldErrors.licenseNumber}
+          id="licenseNumber"
+          label="Numéro de licence FFTT"
+        >
+          <div className="flex min-h-11 items-stretch overflow-hidden rounded-xl border border-input bg-background shadow-xs transition-colors focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/20">
             <input
               id="licenseNumber"
               name="licenseNumber"
               type="text"
               required
-              minLength={6}
+              minLength={3}
               maxLength={20}
               value={formData.licenseNumber}
               onChange={(event) => handleLicenseChange(event.target.value)}
@@ -1269,28 +1269,28 @@ function ProfileStep({
               aria-describedby={
                 fieldErrors.licenseNumber ? "licenseNumber-error" : undefined
               }
-              className="form-field"
+              className="min-w-0 flex-1 rounded-none border-0 bg-transparent px-4 py-2 text-foreground outline-none placeholder:text-muted-foreground"
               placeholder="Ex : 1234567"
             />
-          </FieldShell>
 
-          <button
-            type="button"
-            disabled={
-              !formData.licenseNumber.trim() ||
-              ffttLookup.status === "loading"
-            }
-            onClick={() => void lookupFfttLicense()}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60 focus-ring"
-          >
-            {ffttLookup.status === "loading" ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Search className="h-4 w-4" />
-            )}
-            {ffttLookup.status === "loading" ? "Recherche..." : "Rechercher"}
-          </button>
-        </div>
+            <button
+              type="button"
+              disabled={
+                !formData.licenseNumber.trim() ||
+                ffttLookup.status === "loading"
+              }
+              onClick={() => void lookupFfttLicense()}
+              className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 border-l border-border bg-primary px-4 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60 focus:outline-none"
+            >
+              {ffttLookup.status === "loading" ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Search className="h-4 w-4" />
+              )}
+              {ffttLookup.status === "loading" ? "Recherche..." : "Rechercher"}
+            </button>
+          </div>
+        </FieldShell>
 
         {ffttLookup.status !== "idle" ? (
           <p
@@ -1307,7 +1307,7 @@ function ProfileStep({
       </div>
 
       {hasFfttPlayer ? (
-        <div className="grid gap-3 rounded-lg border border-border/70 bg-background p-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-2 rounded-lg border border-border/70 bg-background p-2 sm:grid-cols-2 lg:grid-cols-4">
           <ReadOnlyField
             error={fieldErrors.lastName}
             id="lastName"
@@ -1369,7 +1369,7 @@ function ProfileStep({
               </select>
             </FieldShell>
           )}
-          <div className="sm:col-span-2 lg:col-span-3">
+          <div className="sm:col-span-2 lg:col-span-4">
             <ReadOnlyField
               error={fieldErrors.club}
               id="club"
@@ -1554,7 +1554,7 @@ function ReviewStep({
           <ReviewItem label="Licence" value={formData.licenseNumber || "-"} />
           <ReviewItem label="Points" value={formData.points || "-"} />
           <ReviewItem label="E-mail" value={formData.email || "-"} />
-          <ReviewItem label="T?l?phone" value={formData.phone || "-"} />
+          <ReviewItem label="Téléphone" value={formData.phone || "-"} />
         </div>
       </div>
 
@@ -1725,18 +1725,31 @@ function ReadOnlyField({
   value: string;
 }) {
   return (
-    <FieldShell error={error} id={id} label={label}>
-      <input
-        id={id}
-        name={name}
-        readOnly
-        required={Boolean(name)}
-        value={value}
-        aria-invalid={error ? "true" : "false"}
-        aria-describedby={error ? `${id}-error` : undefined}
-        className="form-field bg-muted/45"
-      />
-    </FieldShell>
+    <div>
+      <label
+        htmlFor={id}
+        className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+      >
+        {label}
+      </label>
+      <div className="rounded-md border border-border/70 bg-muted/30 px-3 py-2">
+        <input
+          id={id}
+          name={name}
+          readOnly
+          required={Boolean(name)}
+          value={value}
+          aria-invalid={error ? "true" : "false"}
+          aria-describedby={error ? `${id}-error` : undefined}
+          className="w-full bg-transparent text-sm font-medium text-foreground outline-none"
+        />
+      </div>
+      {error ? (
+        <p id={`${id}-error`} className="form-error" role="alert">
+          {error}
+        </p>
+      ) : null}
+    </div>
   );
 }
 
@@ -1763,15 +1776,19 @@ function TableChoice({
           : "border-border bg-background"
       } ${!isSelectable ? "bg-muted/50 text-muted-foreground" : ""}`}
     >
-      <div className="flex flex-wrap items-start justify-between gap-3">
+      <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0 space-y-1">
           <p className="text-sm font-semibold leading-snug text-foreground">
             {table.label}
           </p>
-          <p className="text-xs text-muted-foreground">
-            En ligne : {table.onlinePriceLabel} | Sur place :{" "}
-            {table.onsitePriceLabel}
-          </p>
+          <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
+            <span className="rounded-full border border-border/70 bg-muted/30 px-2 py-0.5 text-muted-foreground">
+              En ligne {table.onlinePriceLabel}
+            </span>
+            <span className="rounded-full border border-border/70 bg-muted/30 px-2 py-0.5 text-muted-foreground">
+              Sur place {table.onsitePriceLabel}
+            </span>
+          </div>
         </div>
         <span
           className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ${
@@ -1790,28 +1807,31 @@ function TableChoice({
         </span>
       </div>
 
-      {table.remainingSpots !== null && !table.isFull ? (
-        <p className="mt-2 text-xs text-muted-foreground">
-          {table.remainingSpots} place{table.remainingSpots > 1 ? "s" : ""}{" "}
-          restante{table.remainingSpots > 1 ? "s" : ""}
-        </p>
-      ) : null}
+      <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
+        {table.remainingSpots !== null && !table.isFull ? (
+          <span>
+            {table.remainingSpots} place{table.remainingSpots > 1 ? "s" : ""}{" "}
+            restante{table.remainingSpots > 1 ? "s" : ""}
+          </span>
+        ) : null}
+        <span>{table.dateLabel}</span>
+      </div>
 
       {!isSelectable ? (
-        <p className="mt-2 rounded-lg border border-border/80 bg-muted/70 px-3 py-2 text-sm text-muted-foreground">
-          Ce tableau ne correspond pas aux informations actuellement saisies.
+        <p className="mt-2 rounded-lg border border-border/80 bg-muted/70 px-3 py-2 text-xs text-muted-foreground">
+          Incompatible avec les informations saisies.
         </p>
       ) : null}
 
       {isSelectable && !table.isFull ? (
-        <label className="mt-2 flex cursor-pointer items-start gap-3 rounded-lg border border-border/80 bg-muted/20 px-3 py-2 text-sm text-foreground transition hover:bg-muted/35">
+        <label className="mt-2 flex cursor-pointer items-center gap-2 rounded-lg border border-border/80 bg-muted/20 px-3 py-2 text-sm text-foreground transition hover:bg-muted/35">
           <input
             type="checkbox"
             checked={isSelected}
             onChange={onToggle}
-            className="mt-1 accent-primary"
+            className="accent-primary"
           />
-          <span>
+          <span className="leading-tight">
             {isSelected
               ? "Retirer ce tableau de ma sélection"
               : "Ajouter ce tableau à ma sélection"}
@@ -1821,21 +1841,21 @@ function TableChoice({
 
       {isSelectable && table.isFull ? (
         <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50/80 px-3 py-2 text-sm text-amber-900">
-          <p className="font-medium">Ce tableau est complet.</p>
-          <label className="mt-2 flex cursor-pointer items-start gap-3">
+          <p className="font-medium">Tableau complet.</p>
+          <label className="mt-2 flex cursor-pointer items-start gap-2">
             <input
               type="checkbox"
               checked={isWaitlist}
               onChange={(event) => onWaitlistChange(event.target.checked)}
               className="mt-1 accent-primary"
             />
-            <span>Me placer sur la liste d&apos;attente pour ce tableau</span>
+            <span>Liste d&apos;attente</span>
           </label>
         </div>
       ) : null}
 
       {isSelected ? (
-        <p className="mt-2 text-xs font-medium text-foreground">
+        <p className="mt-2 text-[11px] font-medium text-foreground">
           {isWaitlist
             ? "Sélection en liste d'attente."
             : "Tableau ajouté au récapitulatif."}

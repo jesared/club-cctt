@@ -1,4 +1,4 @@
-import { BellRing, FolderOpen, Megaphone } from "lucide-react";
+import { BellRing, Megaphone } from "lucide-react";
 
 import {
   Card,
@@ -7,7 +7,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { buildVisibleNotificationsWhere, getDefaultNotificationHref } from "@/lib/notifications";
+import {
+  buildVisibleNotificationsWhere,
+  getDefaultNotificationHref,
+} from "@/lib/notifications";
 import { withNotificationSchemaFallback } from "@/lib/notification-safety";
 import { prisma } from "@/lib/prisma";
 import { getCurrentSession } from "@/lib/session";
@@ -86,7 +89,7 @@ export default async function UserNotificationsPage() {
           <h1 className="text-2xl font-semibold">Notifications</h1>
           <p className="max-w-3xl text-sm text-muted-foreground">
             Retrouvez ici l&apos;historique des annonces, changements de
-            planning et mises a jour documentaires publiés pour votre espace.
+            planning et mises a jour documentaires publies pour votre espace.
           </p>
         </div>
       </header>
@@ -130,7 +133,9 @@ export default async function UserNotificationsPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
               Historique charge
             </p>
-            <p className="text-3xl font-semibold">{formattedNotifications.length}</p>
+            <p className="text-3xl font-semibold">
+              {formattedNotifications.length}
+            </p>
             <p className="text-xs text-muted-foreground">
               Notifications recentes disponibles dans le centre.
             </p>
@@ -140,7 +145,7 @@ export default async function UserNotificationsPage() {
 
       <NotificationsList initialNotifications={formattedNotifications} />
 
-      <section className="grid gap-6 lg:grid-cols-3">
+      <section className="grid gap-6 lg:grid-cols-2">
         <Card className="border-border bg-card shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -162,19 +167,6 @@ export default async function UserNotificationsPage() {
             </CardTitle>
             <CardDescription>
               Les publications admin importantes remontent automatiquement ici.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-
-        <Card className="border-border bg-card shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FolderOpen className="h-4 w-4 text-primary" />
-              Suite logique
-            </CardTitle>
-            <CardDescription>
-              La prochaine évolution pourra ajouter filtres par type et
-              archivage plus profond du flux.
             </CardDescription>
           </CardHeader>
         </Card>

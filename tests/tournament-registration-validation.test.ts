@@ -77,6 +77,38 @@ describe("validateAndNormalizeRegistration", () => {
       message: "Merci de selectionner au moins un tableau.",
     });
   });
+
+  it("accepte un numero de licence a partir de 3 caracteres", () => {
+    const result = validateAndNormalizeRegistration({
+      firstName: "Lea",
+      lastName: "Martin",
+      email: "lea@example.com",
+      phone: "0612345678",
+      licenseNumber: "123",
+      points: "812",
+      gender: "F",
+      club: "CCTT",
+      tables: ["A"],
+    });
+
+    expect(result).toEqual({
+      ok: true,
+      payload: {
+        firstName: "Lea",
+        lastName: "Martin",
+        email: "lea@example.com",
+        phone: "0612345678",
+        licenseNumber: "123",
+        points: "812",
+        pointsNumber: 812,
+        gender: "F",
+        club: "CCTT",
+        tables: ["A"],
+        waitlistTables: [],
+        website: "",
+      },
+    });
+  });
 });
 
 describe("getInvalidTables", () => {
