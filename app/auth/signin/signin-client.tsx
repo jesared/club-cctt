@@ -134,7 +134,7 @@ export default function SignInClient() {
             <Alert className="border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
               <MailCheck className="h-4 w-4" />
               <AlertDescription>
-                Lien envoye. Verifiez votre email.
+                Lien envoye. Vérifiez votre email.
               </AlertDescription>
             </Alert>
           ) : null}
