@@ -24,7 +24,16 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { getVisibleSections } from "@/components/navigation/menu-items";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth-client";
 import {
   Sheet,
@@ -32,6 +41,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { PublicMenuVisibility } from "@/lib/menu-settings";
 import { isPublicMenuVisible } from "@/lib/menu-settings";
 import { isAdminRole } from "@/lib/roles";
@@ -84,6 +94,36 @@ type PublicSectionMeta = {
   items: Record<string, string>;
 };
 
+type ThemeToggleButtonProps = {
+  className?: string;
+  isDark: boolean;
+  onToggle: () => void;
+};
+
+function ThemeToggleButton({
+  className,
+  isDark,
+  onToggle,
+}: ThemeToggleButtonProps) {
+  return (
+    <Button
+      type="button"
+      size="icon"
+      variant="outline"
+      aria-label={isDark ? "Passer au mode clair" : "Passer au mode sombre"}
+      title={isDark ? "Mode clair" : "Mode sombre"}
+      className={cn(
+        "rounded-full border-border/70 bg-background/90 text-slate-600 shadow-sm hover:bg-muted hover:text-slate-950 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10 dark:hover:text-white",
+        isDark && "text-amber-300/90 hover:text-amber-200",
+        className,
+      )}
+      onClick={onToggle}
+    >
+      {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+    </Button>
+  );
+}
+
 export default function HeaderCentered({
   menuVisibility,
   showTournamentRegistration = false,
@@ -103,7 +143,6 @@ export default function HeaderCentered({
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [openSection, setOpenSection] = useState<string | null>("Club");
-  const accountMenuRef = useRef<HTMLDivElement | null>(null);
   const notificationsRef = useRef<HTMLDivElement | null>(null);
 
   const sectionMeta = useMemo(
@@ -277,30 +316,6 @@ export default function HeaderCentered({
       cancelled = true;
     };
   }, [notificationsOpen, session?.user]);
-
-  useEffect(() => {
-    if (!accountMenuOpen) return;
-
-    const handlePointerDown = (event: PointerEvent) => {
-      if (!accountMenuRef.current) return;
-      if (accountMenuRef.current.contains(event.target as Node)) return;
-      setAccountMenuOpen(false);
-    };
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setAccountMenuOpen(false);
-      }
-    };
-
-    window.addEventListener("pointerdown", handlePointerDown);
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("pointerdown", handlePointerDown);
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [accountMenuOpen]);
 
   useEffect(() => {
     if (!notificationsOpen) return;
@@ -510,24 +525,11 @@ export default function HeaderCentered({
                 )}
               </button>
 
-              <button
-                type="button"
-                aria-label={
-                  isDark ? "Passer au mode clair" : "Passer au mode sombre"
-                }
-                title={isDark ? "Mode clair" : "Mode sombre"}
-                className={cn(
-                  "inline-flex h-10 w-10 items-center justify-center rounded-full border border-transparent bg-muted/20 text-slate-600 transition-colors hover:bg-muted/55 hover:text-slate-900 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10 dark:hover:text-white md:hidden",
-                  isDark && "text-amber-300/90 hover:text-amber-200",
-                )}
-                onClick={() => setTheme(isDark ? "light" : "dark")}
-              >
-                {isDark ? (
-                  <Sun className="h-4 w-4" />
-                ) : (
-                  <Moon className="h-4 w-4" />
-                )}
-              </button>
+              <ThemeToggleButton
+                className="md:hidden"
+                isDark={isDark}
+                onToggle={() => setTheme(isDark ? "light" : "dark")}
+              />
 
               <div className="hidden items-center gap-1.5 md:flex">
                 {desktopSections.map((section) => {
@@ -647,31 +649,19 @@ export default function HeaderCentered({
                 </Link>
               ) : null}
 
-              <button
-                type="button"
-                aria-label={
-                  isDark ? "Passer au mode clair" : "Passer au mode sombre"
-                }
-                title={isDark ? "Mode clair" : "Mode sombre"}
-                className={cn(
-                  "hidden h-11 w-11 items-center justify-center rounded-full text-slate-600 hover:text-slate-950 dark:text-slate-200 dark:hover:text-white md:inline-flex",
-                  headerActionSurface,
-                  isDark && "text-amber-300/90 hover:text-amber-200",
-                )}
-                onClick={() => setTheme(isDark ? "light" : "dark")}
-              >
-                {isDark ? (
-                  <Sun className="h-[1.05rem] w-[1.05rem]" />
-                ) : (
-                  <Moon className="h-[1.05rem] w-[1.05rem]" />
-                )}
-              </button>
+              <ThemeToggleButton
+                className={cn("hidden md:inline-flex", headerActionSurface)}
+                isDark={isDark}
+                onToggle={() => setTheme(isDark ? "light" : "dark")}
+              />
 
               {session ? (
                 <>
                   <div ref={notificationsRef} className="relative">
-                    <button
+                    <Button
                       type="button"
+                      size="icon"
+                      variant="outline"
                       aria-label={
                         hasUnreadMessages
                           ? `${unreadNotificationCount} notification${
@@ -682,7 +672,7 @@ export default function HeaderCentered({
                       aria-haspopup="dialog"
                       aria-expanded={notificationsOpen}
                       className={cn(
-                        "group relative inline-flex h-11 w-11 items-center justify-center rounded-full text-slate-600 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:text-slate-200 dark:hover:text-white",
+                        "group relative h-11 w-11 rounded-full text-slate-600 dark:text-slate-200 dark:hover:text-white",
                         headerActionSurface,
                         hasUnreadMessages &&
                           "border-rose-300/70 text-rose-700 dark:border-rose-400/35 dark:text-rose-200",
@@ -696,13 +686,11 @@ export default function HeaderCentered({
                     >
                       <Bell className="h-[1.05rem] w-[1.05rem] transition-transform duration-200 group-hover:-rotate-6 group-hover:scale-110" />
                       {hasUnreadMessages ? (
-                        <>
-                          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-rose-500 px-1 text-[0.65rem] font-semibold leading-none text-white shadow-sm ring-2 ring-background dark:ring-slate-900">
-                            {unreadMessageLabel}
-                          </span>
-                        </>
+                        <Badge className="absolute -right-1 -top-1 h-5 min-w-5 justify-center rounded-full bg-rose-500 px-1 text-[0.65rem] leading-none text-white shadow-sm ring-2 ring-background dark:ring-slate-900">
+                          {unreadMessageLabel}
+                        </Badge>
                       ) : null}
-                    </button>
+                    </Button>
 
                     {notificationsOpen ? (
                       <>
@@ -729,24 +717,32 @@ export default function HeaderCentered({
                               </div>
                               <div className="flex items-center gap-2">
                                 {hasUnreadMessages ? (
-                                  <button
+                                  <Button
                                     type="button"
-                                    className="rounded-full border border-border/70 bg-background/80 px-3 py-1 text-xs font-medium text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
+                                    size="sm"
+                                    variant="outline"
+                                    className="h-7 rounded-full px-3 text-xs"
                                     disabled={isMarkingAllRead}
                                     onClick={() => void markAllMessagesAsRead()}
                                   >
                                     {isMarkingAllRead
                                       ? "Lecture..."
                                       : "Tout marquer comme lu"}
-                                  </button>
+                                  </Button>
                                 ) : null}
-                                <Link
-                                  href={messagesHubHref}
-                                  className="rounded-full border border-border/70 bg-background/80 px-3 py-1 text-xs font-medium text-foreground transition-colors hover:bg-muted"
-                                  onClick={() => setNotificationsOpen(false)}
+                                <Button
+                                  asChild
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-7 rounded-full px-3 text-xs"
                                 >
-                                  Voir tout
-                                </Link>
+                                  <Link
+                                    href={messagesHubHref}
+                                    onClick={() => setNotificationsOpen(false)}
+                                  >
+                                    Voir tout
+                                  </Link>
+                                </Button>
                               </div>
                             </div>
                           </div>
@@ -755,25 +751,29 @@ export default function HeaderCentered({
                             {isInboxLoading ? (
                               <div className="grid gap-2">
                                 {Array.from({ length: 3 }).map((_, index) => (
-                                  <div
+                                  <Card
                                     key={index}
-                                    className="rounded-2xl border border-border/60 bg-muted/25 px-3 py-3"
+                                    className="rounded-2xl border border-border/60 bg-muted/25 shadow-none"
                                   >
-                                    <div className="h-3.5 w-24 rounded-full bg-muted" />
-                                    <div className="mt-3 h-4 w-3/4 rounded-full bg-muted" />
-                                    <div className="mt-2 h-3.5 w-full rounded-full bg-muted" />
-                                  </div>
+                                    <CardContent className="px-3 py-3">
+                                      <Skeleton className="h-3.5 w-24 rounded-full" />
+                                      <Skeleton className="mt-3 h-4 w-3/4 rounded-full" />
+                                      <Skeleton className="mt-2 h-3.5 w-full rounded-full" />
+                                    </CardContent>
+                                  </Card>
                                 ))}
                               </div>
                             ) : inboxItems.length === 0 ? (
-                              <div className="rounded-[1.35rem] border border-dashed border-border/70 bg-muted/15 px-4 py-6 text-center">
-                                <p className="text-sm font-medium text-foreground">
-                                  Rien de nouveau pour le moment
-                                </p>
-                                <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                                  Les prochaines annonces du club apparaîtront ici.
-                                </p>
-                              </div>
+                              <Card className="rounded-[1.35rem] border-dashed border-border/70 bg-muted/15 shadow-none">
+                                <CardContent className="px-4 py-6 text-center">
+                                  <p className="text-sm font-medium text-foreground">
+                                    Rien de nouveau pour le moment
+                                  </p>
+                                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                                    Les prochaines annonces du club apparaîtront ici.
+                                  </p>
+                                </CardContent>
+                              </Card>
                             ) : (
                               <div className="grid gap-2">
                                 {inboxItems.map((item) => {
@@ -791,15 +791,16 @@ export default function HeaderCentered({
                                   ).format(new Date(item.createdAt));
 
                                   return (
-                                    <div
+                                    <Card
                                       key={item.id}
                                       className={cn(
-                                        "rounded-[1.35rem] border px-3 py-3 transition-all duration-200",
+                                        "rounded-[1.35rem] border transition-all duration-200 shadow-none",
                                         item.isUnread
                                           ? "border-rose-200/80 bg-rose-50/70 dark:border-rose-400/20 dark:bg-rose-400/8"
                                           : "border-border/70 bg-background/70",
                                       )}
                                     >
+                                      <CardContent className="px-3 py-3">
                                       <div className="flex items-start justify-between gap-3">
                                         <div className="flex items-center gap-2">
                                           {item.isUnread ? (
@@ -812,9 +813,9 @@ export default function HeaderCentered({
                                           </p>
                                         </div>
                                         {item.important ? (
-                                          <span className="rounded-full bg-foreground px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-background dark:bg-white dark:text-slate-950">
+                                          <Badge className="rounded-full px-2 py-0.5 text-[0.65rem] uppercase tracking-[0.12em]">
                                             Important
-                                          </span>
+                                          </Badge>
                                         ) : null}
                                       </div>
 
@@ -835,9 +836,11 @@ export default function HeaderCentered({
                                         </p>
                                         <div className="flex items-center gap-2">
                                           {item.isUnread ? (
-                                            <button
+                                            <Button
                                               type="button"
-                                              className="rounded-full border border-border/70 bg-background/80 px-2.5 py-1 text-[0.68rem] font-medium text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
+                                              size="sm"
+                                              variant="outline"
+                                              className="h-6 rounded-full px-2.5 text-[0.68rem]"
                                               disabled={pendingReadIds.includes(
                                                 item.id,
                                               )}
@@ -848,18 +851,20 @@ export default function HeaderCentered({
                                               {pendingReadIds.includes(item.id)
                                                 ? "Lecture..."
                                                 : "Marquer comme lu"}
-                                            </button>
+                                            </Button>
                                           ) : null}
-                                          <button
+                                          <Button
                                             type="button"
-                                            className="rounded-full bg-foreground px-2.5 py-1 text-[0.68rem] font-medium text-background transition-opacity hover:opacity-90 dark:bg-white dark:text-slate-950"
+                                            size="sm"
+                                            className="h-6 rounded-full px-2.5 text-[0.68rem]"
                                             onClick={() => void openInboxItem(item)}
                                           >
                                             Ouvrir
-                                          </button>
+                                          </Button>
                                         </div>
                                       </div>
-                                    </div>
+                                      </CardContent>
+                                    </Card>
                                   );
                                 })}
                               </div>
@@ -870,79 +875,77 @@ export default function HeaderCentered({
                     ) : null}
                   </div>
 
-                  <div ref={accountMenuRef} className="relative">
-                    <button
-                      type="button"
-                      aria-label="Ouvrir le menu du compte"
-                      aria-haspopup="menu"
-                      aria-expanded={accountMenuOpen}
-                      className={cn(
-                        "inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-sm text-muted-foreground hover:text-foreground",
-                        headerActionSurface,
-                        accountMenuOpen &&
-                          "border-border bg-background text-foreground shadow-md dark:border-white/15 dark:bg-white/8",
-                      )}
-                      onClick={() => setAccountMenuOpen((prev) => !prev)}
-                    >
-                    {session.user.image ? (
-                      <Image
-                        src={session.user.image}
-                        alt="Avatar"
-                        width={32}
-                        height={32}
-                        className="h-8 w-8 rounded-full object-cover ring-1 ring-border/60"
-                      />
-                    ) : (
-                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-muted ring-1 ring-border/60">
-                        <User2 className="h-4 w-4" />
-                      </span>
-                    )}
-                  </button>
-
-                  {accountMenuOpen ? (
-                    <div
-                      role="menu"
-                      aria-label="Menu du compte"
-                      className="absolute right-0 top-[calc(100%+0.65rem)] z-50 min-w-[12rem] overflow-hidden rounded-2xl border border-border/70 bg-background/95 p-1.5 shadow-xl backdrop-blur"
-                    >
-                      {isAdmin ? (
-                        <Link
-                          href="/admin"
-                          role="menuitem"
-                          className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-muted"
-                          onClick={() => setAccountMenuOpen(false)}
-                        >
-                          <ShieldMinus className="h-4 w-4" />
-                          <span>Administration</span>
-                        </Link>
-                      ) : null}
-                      <Link
-                        href="/user"
-                        role="menuitem"
-                        className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-muted"
-                        onClick={() => setAccountMenuOpen(false)}
-                      >
-                        <User2 className="h-4 w-4" />
-                        <span>Mon espace</span>
-                      </Link>
+                  <DropdownMenu
+                    open={accountMenuOpen}
+                    onOpenChange={setAccountMenuOpen}
+                  >
+                    <DropdownMenuTrigger asChild>
                       <button
                         type="button"
-                        role="menuitem"
-                        className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-500/10 dark:hover:text-red-300"
+                        aria-label="Ouvrir le menu du compte"
+                        className={cn(
+                          "inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-sm text-muted-foreground hover:text-foreground",
+                          headerActionSurface,
+                          accountMenuOpen &&
+                            "border-border bg-background text-foreground shadow-md dark:border-white/15 dark:bg-white/8",
+                        )}
+                      >
+                        {session.user.image ? (
+                          <Image
+                            src={session.user.image}
+                            alt="Avatar"
+                            width={32}
+                            height={32}
+                            className="h-8 w-8 rounded-full object-cover ring-1 ring-border/60"
+                          />
+                        ) : (
+                          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-muted ring-1 ring-border/60">
+                            <User2 className="h-4 w-4" />
+                          </span>
+                        )}
+                      </button>
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent
+                      align="end"
+                      sideOffset={10}
+                      className="min-w-[12rem] rounded-2xl border-border/70 bg-background/95 p-1.5 shadow-xl backdrop-blur"
+                    >
+                      {isAdmin ? (
+                        <DropdownMenuItem asChild className="rounded-xl px-3 py-2.5">
+                          <Link
+                            href="/admin"
+                            onClick={() => setAccountMenuOpen(false)}
+                          >
+                            <ShieldMinus className="h-4 w-4" />
+                            <span>Administration</span>
+                          </Link>
+                        </DropdownMenuItem>
+                      ) : null}
+                      <DropdownMenuItem asChild className="rounded-xl px-3 py-2.5">
+                        <Link
+                          href="/user"
+                          onClick={() => setAccountMenuOpen(false)}
+                        >
+                          <User2 className="h-4 w-4" />
+                          <span>Mon espace</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator className="mx-0 my-1" />
+                      <DropdownMenuItem
+                        className="rounded-xl px-3 py-2.5 text-red-600 focus:bg-red-50 focus:text-red-700 dark:text-red-400 dark:focus:bg-red-500/10 dark:focus:text-red-300"
                         onClick={() => void signOutToHome()}
                       >
                         <LogOut className="h-4 w-4" />
                         <span>Déconnexion</span>
-                      </button>
-                    </div>
-                  ) : null}
-                  </div>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </>
               ) : (
                 <Button
                   size="sm"
-                  variant="ghost"
-                  className="h-10 rounded-md border border-[#0D47A1] bg-[#0D47A1] px-3.5 text-[16px] font-semibold text-white shadow-[0_2px_5px_rgba(0,0,0,0.1)] transition-[transform,background-color,box-shadow] hover:-translate-y-px hover:bg-[#0A3A82] hover:text-white hover:shadow-[0_4px_10px_rgba(0,0,0,0.14)] dark:border-[#0D47A1] dark:bg-[#0D47A1] dark:hover:bg-[#0A3A82]"
+                  className="h-10 rounded-md border border-primary/20 bg-primary px-3.5 text-[16px] font-semibold text-primary-foreground shadow-sm transition-[transform,background-color,box-shadow] hover:-translate-y-px hover:bg-primary/90 hover:text-primary-foreground hover:shadow-md"
                   asChild
                 >
                   <Link
@@ -951,7 +954,7 @@ export default function HeaderCentered({
                     title="Se connecter"
                   >
                     <LogIn className="h-4 w-4" />
-                    <span className="hidden font-['Montserrat',sans-serif] sm:inline">
+                    <span className="hidden sm:inline">
                       Espace membre
                     </span>
                   </Link>
@@ -1214,18 +1217,20 @@ export default function HeaderCentered({
                 )}
               >
                 {isAdmin ? (
-                  <Link
-                    href="/admin"
-                    onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-2 rounded-[0.8rem] border border-border/30 bg-background/50 px-2 py-1.5 text-[12px] text-muted-foreground transition-colors hover:bg-muted/45 hover:text-foreground"
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="h-auto justify-start rounded-[0.8rem] border-border/30 bg-background/50 px-2 py-1.5 text-[12px] text-muted-foreground hover:bg-muted/45 hover:text-foreground"
                   >
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted/80">
-                      <ShieldMinus className="h-3 w-3" />
-                    </span>
-                    <span className="truncate text-[12px] font-medium text-foreground/90">
-                      Admin
-                    </span>
-                  </Link>
+                    <Link href="/admin" onClick={() => setMenuOpen(false)}>
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted/80">
+                        <ShieldMinus className="h-3 w-3" />
+                      </span>
+                      <span className="truncate text-[12px] font-medium text-foreground/90">
+                        Admin
+                      </span>
+                    </Link>
+                  </Button>
                 ) : null}
 
                 {session ? (
@@ -1265,8 +1270,7 @@ export default function HeaderCentered({
                 ) : (
                   <Button
                     size="sm"
-                    variant="ghost"
-                    className="h-auto w-full justify-start rounded-md border border-[#0D47A1] bg-[#0D47A1] px-3 py-2.5 text-[16px] font-semibold text-white shadow-[0_2px_5px_rgba(0,0,0,0.1)] hover:bg-[#0A3A82] hover:text-white hover:shadow-[0_4px_10px_rgba(0,0,0,0.14)] dark:border-[#0D47A1] dark:bg-[#0D47A1] dark:hover:bg-[#0A3A82]"
+                    className="h-auto w-full justify-start rounded-md border border-primary/20 bg-primary px-3 py-2.5 text-[16px] font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 hover:text-primary-foreground hover:shadow-md"
                     asChild
                   >
                     <Link
@@ -1276,7 +1280,7 @@ export default function HeaderCentered({
                       onClick={() => setMenuOpen(false)}
                     >
                       <LogIn className="h-4 w-4 shrink-0" />
-                      <span className="truncate text-left font-['Montserrat',sans-serif] text-[16px] font-semibold text-white">
+                      <span className="truncate text-left text-[16px] font-semibold text-primary-foreground">
                         Espace membre
                       </span>
                     </Link>
@@ -1290,3 +1294,4 @@ export default function HeaderCentered({
     </Sheet>
   );
 }
+

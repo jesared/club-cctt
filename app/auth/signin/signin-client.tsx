@@ -1,10 +1,22 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { AlertCircle, MailCheck } from "lucide-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import { authClient } from "@/lib/auth-client";
 
 export default function SignInClient() {
@@ -28,61 +40,68 @@ export default function SignInClient() {
   const reason = searchParams?.get("reason");
 
   return (
-    <div className="w-full max-w-md space-y-6 rounded-2xl border border-border bg-card/95 p-8 shadow-xl">
-      {reason === "auth" ? (
-        <div className="rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary">
-          Connectez-vous pour acceder a cette page.
-        </div>
-      ) : null}
-      <div className="flex flex-col items-center gap-3 text-center">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-border bg-white shadow-sm">
-          <Image
-            src="/logo.jpg"
-            alt="CCTT"
-            width={48}
-            height={48}
-            className="rounded-md"
-          />
-        </div>
-        <div className="space-y-1">
-          <h1 className="text-2xl font-semibold text-foreground">Connexion</h1>
-          <p className="text-sm text-muted-foreground">
-            Choisissez votre methode de connexion.
-          </p>
-        </div>
-      </div>
+    <Card className="w-full max-w-md border-border/70 bg-card/95 shadow-xl">
+      <CardHeader className="space-y-6">
+        {reason === "auth" ? (
+          <Alert className="border-primary/30 bg-primary/10 text-primary">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Connectez-vous pour acceder a cette page.
+            </AlertDescription>
+          </Alert>
+        ) : null}
 
-      <Button
-        type="button"
-        onClick={() =>
-          void authClient.signIn.social({
-            provider: "google",
-            callbackURL: searchParams?.get("callbackUrl") || "/user",
-          })
-        }
-        className="w-full"
-      >
-        Se connecter avec Google
-      </Button>
+        <div className="flex flex-col items-center gap-3 text-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-border bg-white shadow-sm">
+            <Image
+              src="/logo.jpg"
+              alt="CCTT"
+              width={48}
+              height={48}
+              className="rounded-md"
+            />
+          </div>
+          <div className="space-y-1">
+            <CardTitle className="text-2xl">Connexion</CardTitle>
+            <CardDescription>
+              Choisissez votre methode de connexion.
+            </CardDescription>
+          </div>
+        </div>
+      </CardHeader>
 
-      <div className="space-y-4">
+      <CardContent className="space-y-6">
+        <Button
+          type="button"
+          onClick={() =>
+            void authClient.signIn.social({
+              provider: "google",
+              callbackURL: searchParams?.get("callbackUrl") || "/user",
+            })
+          }
+          className="w-full"
+        >
+          Se connecter avec Google
+        </Button>
+
         <div className="flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-          <span className="h-px flex-1 bg-border" />
+          <Separator className="flex-1" />
           <span>ou</span>
-          <span className="h-px flex-1 bg-border" />
+          <Separator className="flex-1" />
         </div>
 
         <div className="space-y-2">
-          <label className="block text-xs font-medium text-muted-foreground">
+          <Label htmlFor="magic-link-email" className="text-xs text-muted-foreground">
             Lien magique
-          </label>
+          </Label>
           <div className="flex flex-col gap-2 sm:flex-row">
-            <input
+            <Input
+              id="magic-link-email"
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder="vous@exemple.com"
-              className="h-9 flex-1 rounded-md border border-border bg-background px-3 text-sm text-foreground"
+              className="flex-1 bg-background"
             />
             <Button
               type="button"
@@ -92,11 +111,13 @@ export default function SignInClient() {
                   setEmailStatus("error");
                   return;
                 }
+
                 setEmailStatus("sending");
                 const result = await authClient.signIn.magicLink({
                   email: email.trim(),
                   callbackURL: searchParams?.get("callbackUrl") || "/user",
                 });
+
                 if (!result.error) {
                   setEmailStatus("sent");
                 } else {
@@ -108,18 +129,26 @@ export default function SignInClient() {
               {emailStatus === "sending" ? "Envoi..." : "Recevoir le lien"}
             </Button>
           </div>
+
           {emailStatus === "sent" ? (
-            <p className="text-xs text-emerald-500">
-              Lien envoye. Vérifiez votre email.
-            </p>
+            <Alert className="border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
+              <MailCheck className="h-4 w-4" />
+              <AlertDescription>
+                Lien envoye. Verifiez votre email.
+              </AlertDescription>
+            </Alert>
           ) : null}
+
           {emailStatus === "error" ? (
-            <p className="text-xs text-destructive">
-              Email invalide ou envoi impossible.
-            </p>
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Email invalide ou envoi impossible.
+              </AlertDescription>
+            </Alert>
           ) : null}
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

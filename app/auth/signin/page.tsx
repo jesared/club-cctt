@@ -13,7 +13,7 @@ export default function SignInPage() {
       <Suspense fallback={null}>
         <SignInClient />
       </Suspense>
-      <div className="mt-6 flex flex-col items-center gap-2 text-xs text-muted-foreground">
+      <div className="mt-6 flex max-w-md flex-col items-center gap-2 text-center text-xs text-muted-foreground">
         <p>Besoin d&apos;aide ? Contactez le club si vous ne recevez pas le lien.</p>
         <Link
           href="/"
