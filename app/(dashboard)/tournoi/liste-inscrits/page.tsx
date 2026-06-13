@@ -1,5 +1,6 @@
 import AdminTournamentVisibilityControls from "@/components/admin-tournament-visibility-controls";
 import Reveal from "@/components/Reveal";
+import TournamentContextNav from "@/components/public/tournament-context-nav";
 import { prisma } from "@/lib/prisma";
 import { isAdminRole } from "@/lib/roles";
 import { getCurrentSession } from "@/lib/session";
@@ -103,6 +104,10 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
   if (!shouldShowRegisteredList) {
     return (
       <main className="mx-auto max-w-7xl space-y-8 px-4 py-10">
+        <Reveal>
+          <TournamentContextNav />
+        </Reveal>
+
         <Reveal>
           <div className="space-y-4">
             <div className="space-y-1">
@@ -230,6 +235,10 @@ export default async function PlayersByTablePage({ searchParams }: PageProps) {
 
   return (
     <main className="mx-auto max-w-7xl space-y-8 px-4 py-10">
+      <Reveal>
+        <TournamentContextNav />
+      </Reveal>
+
       <Reveal>
         <div className="space-y-4">
           <div className="space-y-1">

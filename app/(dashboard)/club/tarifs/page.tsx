@@ -2,6 +2,7 @@ import Reveal from "@/components/Reveal";
 import ClubContextNav from "@/components/public/club-context-nav";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { TarifsResponse } from "@/lib/tarifs-content";
 import { Activity, Clock, IdCard } from "lucide-react";
@@ -289,24 +290,24 @@ export default async function TarifsPage() {
                 </p>
               </div>
 
-              <div
-                className="inline-flex w-full flex-col gap-1 rounded-lg border border-border bg-background/70 p-1 sm:w-fit sm:flex-row"
-                role="group"
+              <ButtonGroup
                 aria-label="Actions inscription"
+                className="w-full min-w-0 rounded-2xl border border-border/70 bg-background/90 p-1 sm:w-fit"
               >
                 <Button
                   asChild
                   size="lg"
-                  className="h-10 rounded-md shadow-none"
+                  className="h-10 min-w-0 flex-1 rounded-xl border-0 bg-primary px-4 font-semibold shadow-none hover:bg-primary/90 sm:min-w-[12rem]"
                 >
                   <Link href={primaryCtaHref}>{primaryCtaLabel}</Link>
                 </Button>
+                <ButtonGroupSeparator className="mx-px hidden sm:block" />
                 {showContactSecondaryCta ? (
                   <Button
                     asChild
                     size="lg"
                     variant="ghost"
-                    className="h-10 rounded-md shadow-none"
+                    className="h-10 min-w-0 flex-1 rounded-xl px-4 font-semibold text-primary shadow-none hover:bg-primary/10 hover:text-primary sm:min-w-[12rem]"
                   >
                     <Link href="/club/contact">Contacter le club</Link>
                   </Button>
@@ -315,12 +316,12 @@ export default async function TarifsPage() {
                     asChild
                     size="lg"
                     variant="ghost"
-                    className="h-10 rounded-md shadow-none"
+                    className="h-10 min-w-0 flex-1 rounded-xl px-4 font-semibold text-primary shadow-none hover:bg-primary/10 hover:text-primary sm:min-w-[12rem]"
                   >
                     <Link href="/club/horaires">Voir les horaires</Link>
                   </Button>
                 )}
-              </div>
+              </ButtonGroup>
             </CardContent>
           </Card>
         </Reveal>

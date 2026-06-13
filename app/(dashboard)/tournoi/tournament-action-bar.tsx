@@ -3,6 +3,8 @@
 import Link from "next/link";
 
 import TrackedLink from "@/components/TrackedLink";
+import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group";
+import { cn } from "@/lib/utils";
 
 type TournamentActionBarProps = {
   canRegister: boolean;
@@ -21,36 +23,74 @@ export default function TournamentActionBar({
   hasUserRegistration,
   showRegistrationCta = canRegister,
 }: TournamentActionBarProps) {
+  const primaryAction = showRegistrationCta ? (
+    <TrackedLink
+      kpiPage="tournoi"
+      kpiLabel="cta-inscription"
+      href={registrationHref}
+      className="inline-flex h-11 min-w-0 items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-none transition hover:bg-primary/90 focus-ring md:min-w-[12rem]"
+    >
+      {registrationCtaLabel}
+    </TrackedLink>
+  ) : (
+    <span className="inline-flex h-11 min-w-0 items-center justify-center rounded-xl bg-muted px-4 text-sm font-semibold text-muted-foreground md:min-w-[12rem]">
+      {registrationLabel}
+    </span>
+  );
+
+  const actionClassName =
+    "inline-flex h-11 min-w-0 items-center justify-center rounded-xl px-4 text-sm font-semibold transition focus-ring md:min-w-[12rem]";
+
   return (
-    <div className="inline-grid w-full max-w-full grid-cols-1 gap-2 rounded-xl border border-border/70 bg-background/70 p-1.5 shadow-sm shadow-black/5 md:w-fit md:grid-cols-[max-content_max-content_max-content]">
-      {showRegistrationCta ? (
-        <TrackedLink
-          kpiPage="tournoi"
-          kpiLabel="cta-inscription"
-          href={registrationHref}
-          className="inline-flex h-11 min-w-0 items-center justify-center whitespace-nowrap rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/20 transition hover:opacity-90 focus-ring"
-        >
-          {registrationCtaLabel}
-        </TrackedLink>
-      ) : (
-        <span className="inline-flex h-11 min-w-0 items-center justify-center whitespace-nowrap rounded-lg bg-muted px-4 text-sm font-semibold text-muted-foreground">
-          {registrationLabel}
-        </span>
-      )}
-      <Link
-        href="/tournoi/reglement"
-        className="inline-flex h-11 min-w-0 items-center justify-center whitespace-nowrap rounded-lg border border-[#FF7A00] px-4 text-sm font-semibold text-[#FF7A00] transition hover:bg-[#FF7A00]/10 focus-ring"
-      >
-        Consulter le règlement
-      </Link>
-      {hasUserRegistration ? (
+    <>
+      <div className="flex w-full flex-col gap-2 md:hidden">
+        {primaryAction}
         <Link
-          href="/user/inscriptions"
-          className="inline-flex h-11 min-w-0 items-center justify-center whitespace-nowrap rounded-lg border border-border px-4 text-sm font-semibold text-foreground transition hover:bg-accent/40 focus-ring"
+          href="/tournoi/reglement"
+          className={cn(
+            actionClassName,
+            "border border-[#FF7A00] text-[#FF7A00] hover:bg-[#FF7A00]/10",
+          )}
         >
-          Voir mes inscriptions
+          Consulter le reglement
         </Link>
-      ) : null}
-    </div>
+        {hasUserRegistration ? (
+          <Link
+            href="/user/inscriptions"
+            className={cn(actionClassName, "hover:bg-accent/40")}
+          >
+            Voir mes inscriptions
+          </Link>
+        ) : null}
+      </div>
+
+      <ButtonGroup
+        aria-label="Actions tournoi"
+        className="hidden w-fit min-w-0 rounded-2xl border border-border/70 bg-background/90 p-1 shadow-sm md:flex"
+      >
+        {primaryAction}
+        <ButtonGroupSeparator className="mx-px" />
+        <Link
+          href="/tournoi/reglement"
+          className={cn(
+            actionClassName,
+            "text-[#FF7A00] hover:bg-[#FF7A00]/10",
+          )}
+        >
+          Consulter le reglement
+        </Link>
+        {hasUserRegistration ? (
+          <>
+            <ButtonGroupSeparator className="mx-px" />
+            <Link
+              href="/user/inscriptions"
+              className={cn(actionClassName, "hover:bg-accent/40")}
+            >
+              Voir mes inscriptions
+            </Link>
+          </>
+        ) : null}
+      </ButtonGroup>
+    </>
   );
 }

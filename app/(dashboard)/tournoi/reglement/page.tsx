@@ -1,5 +1,6 @@
 ﻿import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Reveal from "@/components/Reveal";
+import TournamentContextNav from "@/components/public/tournament-context-nav";
 
 const pointsCles = [
   "Le tournoi est ouvert aux licenciés FFTT et suit les règles sportives fédérales en vigueur.",
@@ -12,6 +13,11 @@ const pointsCles = [
 export default function ReglementPage() {
   return (
     <main className="max-w-4xl mx-auto px-4 py-16">
+      <Reveal>
+        <div className="mb-6">
+          <TournamentContextNav />
+        </div>
+      </Reveal>
       <Reveal>
         <Card className="card-hover">
           <CardHeader>

@@ -1,6 +1,7 @@
 import KpiPageViewTracker from "@/components/KpiPageViewTracker";
 import AdminTournamentVisibilityControls from "@/components/admin-tournament-visibility-controls";
 import Reveal from "@/components/Reveal";
+import TournamentContextNav from "@/components/public/tournament-context-nav";
 import TournamentRegistrationForm from "@/components/TournamentRegistrationForm";
 import { prisma } from "@/lib/prisma";
 import { getTournamentRegistrationNotificationAvailability } from "@/lib/public-form-availability";
@@ -213,6 +214,10 @@ export default async function InscriptionsPage({ searchParams }: PageProps) {
             ) : null}
           </div>
         </header>
+      </Reveal>
+
+      <Reveal delay={80}>
+        <TournamentContextNav />
       </Reveal>
 
       {isAdmin && !canShowRegistrationForm ? (

@@ -1,6 +1,7 @@
 ﻿import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ImagePopup } from "@/components/ui/image-popup";
 import Reveal from "@/components/Reveal";
+import TournamentContextNav from "@/components/public/tournament-context-nav";
 
 const affiches = [
   {
@@ -79,6 +80,10 @@ export default function TournoiAffichesPage() {
             Cliquez sur un visuel pour l’agrandir ou le partager.
           </p>
         </header>
+      </Reveal>
+
+      <Reveal delay={80}>
+        <TournamentContextNav />
       </Reveal>
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

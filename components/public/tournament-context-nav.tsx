@@ -7,26 +7,28 @@ import { Button } from "@/components/ui/button";
 import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group";
 import { cn } from "@/lib/utils";
 
-const clubContextLinks = [
-  { href: "/club/horaires", label: "Voir les horaires" },
-  { href: "/club/tarifs", label: "Voir les tarifs" },
-  { href: "/club/contact", label: "Contacter le club" },
-  { href: "/club", label: "Decouvrir le club" },
+const tournamentContextLinks = [
+  { href: "/tournoi", label: "Accueil tournoi" },
+  { href: "/tournoi/inscription", label: "Inscription" },
+  { href: "/tournoi/liste-inscrits", label: "Inscrits" },
+  { href: "/tournoi/resultats", label: "Resultats" },
+  { href: "/tournoi/palmares", label: "Palmares" },
+  { href: "/tournoi/affiches", label: "Affiches" },
 ];
 
 function isActive(pathname: string, href: string) {
   return pathname === href;
 }
 
-export default function ClubContextNav() {
+export default function TournamentContextNav() {
   const pathname = usePathname();
 
   return (
     <ButtonGroup
-      aria-label="Navigation club"
-      className="w-full min-w-0 rounded-2xl border border-border/70 bg-background/90 p-1 shadow-sm sm:w-fit"
+      aria-label="Navigation tournoi"
+      className="w-full min-w-0 rounded-2xl border border-border/70 bg-background/90 p-1 shadow-sm lg:w-fit"
     >
-      {clubContextLinks.flatMap((item, index) => {
+      {tournamentContextLinks.flatMap((item, index) => {
         const active = isActive(pathname, item.href);
 
         return [
@@ -35,7 +37,7 @@ export default function ClubContextNav() {
             asChild
             variant={active ? "outline" : "ghost"}
             className={cn(
-              "h-10 min-w-0 flex-1 rounded-xl px-4 text-sm font-semibold shadow-none sm:min-w-[11.5rem]",
+              "h-10 min-w-0 flex-1 rounded-xl px-4 text-sm font-semibold shadow-none lg:min-w-[9.5rem]",
               active
                 ? "border-transparent bg-primary/12 text-primary hover:bg-primary/16 hover:text-primary"
                 : "text-muted-foreground hover:bg-primary/6 hover:text-foreground",
@@ -43,10 +45,10 @@ export default function ClubContextNav() {
           >
             <Link href={item.href}>{item.label}</Link>
           </Button>,
-          index < clubContextLinks.length - 1 ? (
+          index < tournamentContextLinks.length - 1 ? (
             <ButtonGroupSeparator
               key={`${item.href}-separator`}
-              className="mx-px hidden sm:block"
+              className="mx-px hidden lg:block"
             />
           ) : null,
         ];

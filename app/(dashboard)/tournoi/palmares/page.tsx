@@ -1,6 +1,7 @@
 ﻿import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Reveal from "@/components/Reveal";
+import TournamentContextNav from "@/components/public/tournament-context-nav";
 import WinnersCarouselLazy from "./winners-carousel-lazy";
 
 type Winner = {
@@ -296,6 +297,10 @@ export default function TournoiPalmaresPage() {
             tournoi national de Pâques du CCTT.
           </p>
         </header>
+      </Reveal>
+
+      <Reveal delay={80}>
+        <TournamentContextNav />
       </Reveal>
 
       <Reveal>

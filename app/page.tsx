@@ -15,6 +15,7 @@ import Reveal from "@/components/Reveal";
 import { HeroBanner } from "@/components/public/hero-banner";
 import { SectionEyebrow } from "@/components/public/marketing";
 import { Button } from "@/components/ui/button";
+import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group";
 import {
   normalizeHomeContent,
   resolveEventImageUrl,
@@ -22,6 +23,7 @@ import {
 import { prisma } from "@/lib/prisma";
 import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-window";
 import { ACTIVE_TOURNAMENT_STATUSES } from "@/lib/tournament-status";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "CCTT | Club de tennis de table à Châlons-en-Champagne",
@@ -214,6 +216,9 @@ export default async function Home() {
         href: "/club/contact",
         label: "Contacter le club",
       };
+  const secondaryHeroButtonClassName = registrationStatus.canRegister
+    ? "border-transparent bg-amber-500/10 text-amber-600 hover:bg-amber-500/16 hover:text-amber-700"
+    : "border-transparent bg-transparent text-fuchsia-600 hover:bg-fuchsia-500/10 hover:text-fuchsia-700";
 
   return (
     <main className="relative overflow-hidden">
@@ -236,37 +241,36 @@ export default async function Home() {
                   </div>
                 </div>
 
-                <div
-                  className="inline-flex w-full flex-col gap-1 rounded-lg border border-border bg-background/70 p-1 shadow-sm sm:w-fit sm:flex-row"
-                  role="group"
+                <ButtonGroup
                   aria-label="Actions principales"
+                  className="w-full min-w-0 rounded-2xl border border-border/70 bg-background/90 p-1 shadow-sm sm:w-fit"
                 >
                   <Button
                     asChild
                     size="lg"
-                    className="h-11 rounded-md bg-[#00B8D9] px-6 text-white shadow-none transition hover:bg-[#009FBC]"
+                    className="h-11 min-w-0 flex-1 justify-center rounded-xl border-0 bg-cyan-500 px-5 text-sm font-semibold text-white shadow-none whitespace-normal hover:bg-cyan-500/90 sm:min-w-[12.5rem]"
                   >
                     <Link href={primaryHeroAction.href}>
                       {primaryHeroAction.label}
-                      <ArrowRight className="h-4 w-4" />
+                      <ArrowRight data-icon="inline-end" />
                     </Link>
                   </Button>
+                  <ButtonGroupSeparator className="mx-px hidden sm:block" />
                   <Button
                     asChild
                     size="lg"
                     variant="outline"
-                    className={`h-11 rounded-md px-6 shadow-none transition ${
-                      registrationStatus.canRegister
-                        ? "border-[#FF7A00]/45 bg-[#FF7A00]/8 text-[#FF7A00] hover:border-[#FF7A00] hover:bg-[#FF7A00]/14 hover:text-[#FF7A00]"
-                        : "border-[#FF2E88]/45 bg-[#FF2E88]/8 text-[#FF2E88] hover:border-[#FF2E88] hover:bg-[#FF2E88]/14 hover:text-[#FF2E88]"
-                    }`}
+                    className={cn(
+                      "h-11 min-w-0 flex-1 justify-center rounded-xl px-5 text-sm font-semibold shadow-none whitespace-normal sm:min-w-[12.5rem]",
+                      secondaryHeroButtonClassName,
+                    )}
                   >
                     <Link href={secondaryHeroAction.href}>
                       {secondaryHeroAction.label}
-                      <ArrowRight className="h-4 w-4" />
+                      <ArrowRight data-icon="inline-end" />
                     </Link>
                   </Button>
-                </div>
+                </ButtonGroup>
 
               </div>
 
