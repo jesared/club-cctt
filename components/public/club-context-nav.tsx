@@ -8,10 +8,10 @@ import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group"
 import { cn } from "@/lib/utils";
 
 const clubContextLinks = [
-  { href: "/club/horaires", label: "Voir les horaires" },
-  { href: "/club/tarifs", label: "Voir les tarifs" },
-  { href: "/club/contact", label: "Contacter le club" },
-  { href: "/club", label: "Decouvrir le club" },
+  { href: "/club/horaires", label: "Voir les horaires", mobileLabel: "Horaires" },
+  { href: "/club/tarifs", label: "Voir les tarifs", mobileLabel: "Tarifs" },
+  { href: "/club/contact", label: "Contacter le club", mobileLabel: "Contact" },
+  { href: "/club", label: "Decouvrir le club", mobileLabel: "Decouvrir" },
 ];
 
 function isActive(pathname: string, href: string) {
@@ -22,35 +22,62 @@ export default function ClubContextNav() {
   const pathname = usePathname();
 
   return (
-    <ButtonGroup
-      aria-label="Navigation club"
-      className="w-full min-w-0 rounded-2xl border border-border/70 bg-background/90 p-1 shadow-sm sm:w-fit"
-    >
-      {clubContextLinks.flatMap((item, index) => {
-        const active = isActive(pathname, item.href);
+    <>
+      <div
+        aria-label="Navigation club"
+        className="grid w-full grid-cols-2 gap-2 sm:hidden"
+      >
+        {clubContextLinks.map((item) => {
+          const active = isActive(pathname, item.href);
 
-        return [
-          <Button
-            key={item.href}
-            asChild
-            variant={active ? "outline" : "ghost"}
-            className={cn(
-              "h-10 min-w-0 flex-1 rounded-xl px-4 text-sm font-semibold shadow-none sm:min-w-[11.5rem]",
-              active
-                ? "border-transparent bg-primary/12 text-primary hover:bg-primary/16 hover:text-primary"
-                : "text-muted-foreground hover:bg-primary/6 hover:text-foreground",
-            )}
-          >
-            <Link href={item.href}>{item.label}</Link>
-          </Button>,
-          index < clubContextLinks.length - 1 ? (
-            <ButtonGroupSeparator
-              key={`${item.href}-separator`}
-              className="mx-px hidden sm:block"
-            />
-          ) : null,
-        ];
-      })}
-    </ButtonGroup>
+          return (
+            <Button
+              key={item.href}
+              asChild
+              variant={active ? "outline" : "ghost"}
+              className={cn(
+                "h-11 rounded-xl px-3 text-xs font-semibold shadow-none",
+                active
+                  ? "border-transparent bg-primary/12 text-primary hover:bg-primary/16 hover:text-primary"
+                  : "border border-border/70 bg-background/90 text-muted-foreground hover:bg-primary/6 hover:text-foreground",
+              )}
+            >
+              <Link href={item.href}>{item.mobileLabel}</Link>
+            </Button>
+          );
+        })}
+      </div>
+
+      <ButtonGroup
+        aria-label="Navigation club"
+        className="hidden w-full min-w-0 rounded-2xl border border-border/70 bg-background/90 p-1 shadow-sm sm:flex sm:w-fit"
+      >
+        {clubContextLinks.flatMap((item, index) => {
+          const active = isActive(pathname, item.href);
+
+          return [
+            <Button
+              key={item.href}
+              asChild
+              variant={active ? "outline" : "ghost"}
+              className={cn(
+                "h-10 min-w-0 flex-1 rounded-xl px-4 text-sm font-semibold shadow-none sm:min-w-[11.5rem]",
+                active
+                  ? "border-transparent bg-primary/12 text-primary hover:bg-primary/16 hover:text-primary"
+                  : "text-muted-foreground hover:bg-primary/6 hover:text-foreground",
+              )}
+            >
+              <Link href={item.href}>{item.label}</Link>
+            </Button>,
+            index < clubContextLinks.length - 1 ? (
+              <ButtonGroupSeparator
+                key={`${item.href}-separator`}
+                className="mx-px hidden sm:block"
+              />
+            ) : null,
+          ];
+        })}
+      </ButtonGroup>
+    </>
   );
 }
