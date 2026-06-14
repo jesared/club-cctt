@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getClubAccentByHref } from "@/lib/club-context-theme";
 
 export const metadata: Metadata = {
   title: "Le club CCTT - Horaires, tarifs et contact",
@@ -47,6 +48,7 @@ const quickStartCards = [
       "Repérez rapidement les séances jeunes, loisir, entraînement soutenu ou jeu libre.",
     href: "/club/horaires",
     label: "Voir les horaires",
+    accentLabel: "Horaires",
   },
   {
     title: "Comprendre les tarifs",
@@ -54,6 +56,7 @@ const quickStartCards = [
       "Comparez les formules, ce qui est inclus et les modalités de paiement avant de vous lancer.",
     href: "/club/tarifs",
     label: "Voir les tarifs",
+    accentLabel: "Tarifs",
   },
   {
     title: "Faire un essai",
@@ -61,6 +64,7 @@ const quickStartCards = [
       "Le plus simple est de nous contacter pour être orienté vers le bon créneau et le bon interlocuteur.",
     href: "/club/contact",
     label: "Contacter le club",
+    accentLabel: "Contact",
   },
 ];
 
@@ -166,29 +170,40 @@ export default function ClubPage() {
         </Reveal>
 
         <div className="grid gap-4 lg:grid-cols-3">
-          {quickStartCards.map((item, index) => (
-            <Reveal key={item.title} delay={index * 120}>
-              <Card className="flex h-full flex-col border-border bg-card shadow-sm card-hover">
-                <CardHeader>
-                  <CardTitle>{item.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="flex-1">
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    {item.description}
-                  </p>
-                </CardContent>
-                <CardFooter className="mt-auto border-t border-border/45 pt-4">
-                  <Link
-                    href={item.href}
-                    className="group inline-flex items-center gap-2 text-sm font-medium text-[#2F6BFF]"
-                  >
-                    {item.label}
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                  </Link>
-                </CardFooter>
-              </Card>
-            </Reveal>
-          ))}
+          {quickStartCards.map((item, index) => {
+            const accent = getClubAccentByHref(item.href);
+
+            return (
+              <Reveal key={item.title} delay={index * 120}>
+                <Card
+                  className={`flex h-full flex-col border-border bg-card shadow-sm card-hover ${accent.cardHoverClassName}`}
+                >
+                  <CardHeader className="space-y-3">
+                    <div
+                      className={`inline-flex w-fit rounded-full px-3 py-1 text-xs font-medium ${accent.cardPillClassName}`}
+                    >
+                      {item.accentLabel}
+                    </div>
+                    <CardTitle>{item.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex-1">
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      {item.description}
+                    </p>
+                  </CardContent>
+                  <CardFooter className="mt-auto border-t border-border/45 pt-4">
+                    <Link
+                      href={item.href}
+                      className={`group inline-flex items-center gap-2 text-sm font-medium ${accent.cardLinkClassName}`}
+                    >
+                      {item.label}
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    </Link>
+                  </CardFooter>
+                </Card>
+              </Reveal>
+            );
+          })}
         </div>
       </section>
 

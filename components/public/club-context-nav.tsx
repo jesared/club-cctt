@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group";
+import { getClubAccentByHref } from "@/lib/club-context-theme";
 import { cn } from "@/lib/utils";
 
 const clubContextLinks = [
@@ -29,6 +30,7 @@ export default function ClubContextNav() {
       >
         {clubContextLinks.map((item) => {
           const active = isActive(pathname, item.href);
+          const accent = getClubAccentByHref(item.href);
 
           return (
             <Button
@@ -38,8 +40,8 @@ export default function ClubContextNav() {
               className={cn(
                 "h-11 rounded-xl px-3 text-xs font-semibold shadow-none",
                 active
-                  ? "border-transparent bg-primary/12 text-primary hover:bg-primary/16 hover:text-primary"
-                  : "border border-border/70 bg-background/90 text-muted-foreground hover:bg-primary/6 hover:text-foreground",
+                  ? accent.activeButtonClassName
+                  : accent.inactiveButtonClassName,
               )}
             >
               <Link href={item.href}>{item.mobileLabel}</Link>
@@ -54,6 +56,7 @@ export default function ClubContextNav() {
       >
         {clubContextLinks.flatMap((item, index) => {
           const active = isActive(pathname, item.href);
+          const accent = getClubAccentByHref(item.href);
 
           return [
             <Button
@@ -63,8 +66,8 @@ export default function ClubContextNav() {
               className={cn(
                 "h-10 min-w-0 flex-1 rounded-xl px-4 text-sm font-semibold shadow-none sm:min-w-[11.5rem]",
                 active
-                  ? "border-transparent bg-primary/12 text-primary hover:bg-primary/16 hover:text-primary"
-                  : "text-muted-foreground hover:bg-primary/6 hover:text-foreground",
+                  ? accent.activeButtonClassName
+                  : accent.inactiveButtonClassName,
               )}
             >
               <Link href={item.href}>{item.label}</Link>

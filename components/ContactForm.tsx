@@ -390,7 +390,7 @@ export default function ContactForm({
       <Button
         type="submit"
         disabled={isSubmitting}
-        className="focus-ring active:scale-[0.98]"
+        className="bg-[#FF2E88] text-white shadow-none hover:bg-[#E12678] focus-ring active:scale-[0.98]"
       >
         {isSubmitting ? (
           <span className="inline-flex items-center gap-2">

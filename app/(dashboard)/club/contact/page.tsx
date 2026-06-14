@@ -174,7 +174,7 @@ export default async function ContactPage({
                   <Button
                     asChild
                     variant="ghost"
-                    className="h-10 min-w-0 flex-1 rounded-xl px-4 font-semibold text-fuchsia-700 shadow-none hover:bg-fuchsia-500/10 hover:text-fuchsia-700 sm:min-w-[12rem]"
+                    className="h-10 min-w-0 flex-1 rounded-xl border border-[#FF2E88]/20 px-4 font-semibold text-[#FF2E88] shadow-none hover:bg-[#FF2E88]/8 hover:text-[#FF2E88] sm:min-w-[12rem]"
                   >
                     <Link href={content.ctaSecondaryHref}>
                       {content.ctaSecondaryLabel}
@@ -224,13 +224,13 @@ export default async function ContactPage({
                     <div className="flex flex-wrap gap-3">
                       <Link
                         href={`mailto:${content.email}`}
-                        className="inline-flex items-center justify-center rounded-md border px-4 py-2 text-sm hover:bg-muted"
+                        className="inline-flex items-center justify-center rounded-md border border-[#FF2E88]/20 px-4 py-2 text-sm text-[#FF2E88] transition hover:bg-[#FF2E88]/8"
                       >
                         Envoyer un e-mail
                       </Link>
                       <Link
                         href={content.ctaPrimaryHref}
-                        className="inline-flex items-center justify-center rounded-md border px-4 py-2 text-sm hover:bg-muted"
+                        className="inline-flex items-center justify-center rounded-md border border-[#FF2E88]/20 px-4 py-2 text-sm text-[#FF2E88] transition hover:bg-[#FF2E88]/8"
                       >
                         {content.ctaPrimaryLabel}
                       </Link>
