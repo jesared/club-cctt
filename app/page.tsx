@@ -243,7 +243,7 @@ export default async function Home() {
 
                 <ButtonGroup
                   aria-label="Actions principales"
-                  className="w-full min-w-0 rounded-2xl border border-border/70 bg-background/90 p-1 shadow-sm sm:w-fit"
+                  className="w-full min-w-0 bg-transparent p-0 shadow-none sm:w-fit"
                 >
                   <Button
                     asChild

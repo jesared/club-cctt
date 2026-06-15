@@ -66,7 +66,7 @@ export default function TournamentActionBar({
 
       <ButtonGroup
         aria-label="Actions tournoi"
-        className="hidden w-fit min-w-0 rounded-2xl border border-border/70 bg-background/90 p-1 shadow-sm md:flex"
+        className="hidden w-fit min-w-0 bg-transparent p-0 shadow-none md:flex"
       >
         {primaryAction}
         <ButtonGroupSeparator className="mx-px" />

@@ -52,7 +52,7 @@ export default function TournamentContextNav() {
 
       <ButtonGroup
         aria-label="Navigation tournoi"
-        className="hidden w-full min-w-0 rounded-2xl border border-border/70 bg-background/90 p-1 shadow-sm lg:flex lg:w-fit"
+        className="hidden w-full min-w-0 bg-transparent p-0 shadow-none lg:flex lg:w-fit"
       >
         {tournamentContextLinks.flatMap((item, index) => {
           const active = isActive(pathname, item.href);

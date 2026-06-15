@@ -52,7 +52,7 @@ export default function ClubContextNav() {
 
       <ButtonGroup
         aria-label="Navigation club"
-        className="hidden w-full min-w-0 rounded-2xl border border-border/70 bg-background/90 p-1 shadow-sm sm:flex sm:w-fit"
+        className="hidden w-full min-w-0 bg-transparent p-0 shadow-none sm:flex sm:w-fit"
       >
         {clubContextLinks.flatMap((item, index) => {
           const active = isActive(pathname, item.href);

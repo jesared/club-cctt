@@ -159,7 +159,7 @@ export default async function ContactPage({
                 </div>
 
                 <ButtonGroup
-                  className="w-full min-w-0 rounded-2xl border border-border/70 bg-background/90 p-1 sm:w-fit"
+                  className="w-full min-w-0 bg-transparent p-0 shadow-none sm:w-fit"
                   aria-label="Actions coordonnées"
                 >
                   <Button
