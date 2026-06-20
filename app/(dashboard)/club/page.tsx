@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getClubAccentByHref } from "@/lib/club-context-theme";
+import { ctaToneClasses } from "@/lib/cta-theme";
 
 export const metadata: Metadata = {
   title: "Le club CCTT - Horaires, tarifs et contact",
@@ -47,7 +48,7 @@ const quickStartCards = [
     description:
       "Repérez rapidement les séances jeunes, loisir, entraînement soutenu ou jeu libre.",
     href: "/club/horaires",
-    label: "Voir les horaires",
+    label: "Trouver un créneau",
     accentLabel: "Horaires",
   },
   {
@@ -55,7 +56,7 @@ const quickStartCards = [
     description:
       "Comparez les formules, ce qui est inclus et les modalités de paiement avant de vous lancer.",
     href: "/club/tarifs",
-    label: "Voir les tarifs",
+    label: "Comparer les tarifs",
     accentLabel: "Tarifs",
   },
   {
@@ -63,7 +64,7 @@ const quickStartCards = [
     description:
       "Le plus simple est de nous contacter pour être orienté vers le bon créneau et le bon interlocuteur.",
     href: "/club/contact",
-    label: "Contacter le club",
+    label: "Demander un essai",
     accentLabel: "Contact",
   },
 ];
@@ -125,7 +126,7 @@ export default function ClubPage() {
         <header className="rounded-3xl border bg-background p-6 shadow-sm sm:p-8">
           <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
             <div className="space-y-5">
-              <p className="inline-flex items-center rounded-full border border-[#2F6BFF]/40 bg-[#2F6BFF]/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-[#2F6BFF] animate-fade-up-1">
+              <p className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] animate-fade-up-1 ${ctaToneClasses.club.eyebrow}`}>
                 Club CCTT
               </p>
               <div className="space-y-4">
@@ -280,7 +281,7 @@ export default function ClubPage() {
                 <CardFooter className="mt-auto border-t border-border/45 pt-4">
                   <Link
                     href={item.href}
-                    className="group inline-flex items-center gap-2 text-sm font-medium text-[#2F6BFF]"
+                    className={`group inline-flex items-center gap-2 text-sm font-medium ${ctaToneClasses.club.link}`}
                   >
                     {item.label}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />

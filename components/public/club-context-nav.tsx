@@ -9,9 +9,9 @@ import { getClubAccentByHref } from "@/lib/club-context-theme";
 import { cn } from "@/lib/utils";
 
 const clubContextLinks = [
-  { href: "/club/horaires", label: "Voir les horaires", mobileLabel: "Horaires" },
-  { href: "/club/tarifs", label: "Voir les tarifs", mobileLabel: "Tarifs" },
-  { href: "/club/contact", label: "Contacter le club", mobileLabel: "Contact" },
+  { href: "/club/horaires", label: "Trouver un créneau", mobileLabel: "Horaires" },
+  { href: "/club/tarifs", label: "Comparer les tarifs", mobileLabel: "Tarifs" },
+  { href: "/club/contact", label: "Demander un essai", mobileLabel: "Contact" },
   { href: "/club", label: "Decouvrir le club", mobileLabel: "Decouvrir" },
 ];
 

@@ -49,11 +49,11 @@ export default async function TarifsPage() {
     primaryCtaHref === "/club"
       ? "Découvrir le club"
       : primaryCtaHref === "/club/horaires"
-        ? "Voir les horaires"
+        ? "Trouver un créneau"
         : primaryCtaHref === "/club/tarifs"
-          ? "Voir les tarifs"
+          ? "Comparer les tarifs"
           : primaryCtaHref === "/club/contact"
-            ? "Contacter le club"
+            ? "Demander un essai"
             : primaryCtaHref === "/tournoi/inscription"
               ? "S'inscrire au tournoi"
               : data.inscription.ctaLabel;
@@ -309,7 +309,7 @@ export default async function TarifsPage() {
                     variant="ghost"
                     className="h-10 min-w-0 flex-1 rounded-xl px-4 font-semibold text-primary shadow-none hover:bg-primary/10 hover:text-primary sm:min-w-[12rem]"
                   >
-                    <Link href="/club/contact">Contacter le club</Link>
+                    <Link href="/club/contact">Demander un essai</Link>
                   </Button>
                 ) : (
                   <Button
@@ -318,7 +318,7 @@ export default async function TarifsPage() {
                     variant="ghost"
                     className="h-10 min-w-0 flex-1 rounded-xl px-4 font-semibold text-primary shadow-none hover:bg-primary/10 hover:text-primary sm:min-w-[12rem]"
                   >
-                    <Link href="/club/horaires">Voir les horaires</Link>
+                    <Link href="/club/horaires">Trouver un créneau</Link>
                   </Button>
                 )}
               </ButtonGroup>

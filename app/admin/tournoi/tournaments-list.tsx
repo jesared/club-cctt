@@ -161,7 +161,7 @@ export function TournamentsList({
                     href={`/admin/tournoi/edition/${highlightedTournament.id}`}
                     className="inline-flex items-center rounded-md border px-3 py-2 text-sm font-medium hover:bg-background"
                   >
-                    Modifier
+                    Modifier ce tournoi
                   </Link>
                   {highlightedTournament.status === "PUBLISHED" ? (
                     <span className="inline-flex items-center rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700">
@@ -243,7 +243,7 @@ export function TournamentsList({
                               href={`/admin/tournoi/edition/${tournament.id}`}
                               className="text-xs font-semibold text-primary hover:underline"
                             >
-                              Modifier
+                              Modifier ce tournoi
                             </Link>
                           </td>
                           <td className="py-3">

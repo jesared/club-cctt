@@ -146,7 +146,7 @@ export default function UserNotificationsSection({
                     href={notification.href}
                     onClick={() => void markNotificationAsRead(notification)}
                   >
-                    Ouvrir
+                    Lire la notification
                   </Link>
                 </Button>
               </div>

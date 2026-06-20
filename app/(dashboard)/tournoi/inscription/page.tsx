@@ -3,12 +3,14 @@ import AdminTournamentVisibilityControls from "@/components/admin-tournament-vis
 import Reveal from "@/components/Reveal";
 import TournamentContextNav from "@/components/public/tournament-context-nav";
 import TournamentRegistrationForm from "@/components/TournamentRegistrationForm";
+import { Button } from "@/components/ui/button";
 import { prisma } from "@/lib/prisma";
 import { getTournamentRegistrationNotificationAvailability } from "@/lib/public-form-availability";
 import { isAdminRole } from "@/lib/roles";
 import { getCurrentSession } from "@/lib/session";
 import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-window";
 import { ACTIVE_TOURNAMENT_STATUSES } from "@/lib/tournament-status";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 function formatEventLabel(event: {
@@ -198,19 +200,13 @@ export default async function InscriptionsPage({ searchParams }: PageProps) {
               : registrationStatus.message}
           </p>
           <div className="flex flex-wrap gap-2">
-            <a
-              href="/tournoi"
-              className="inline-flex h-10 items-center justify-center rounded-md border border-border px-4 text-sm font-medium text-foreground transition hover:bg-accent/40"
-            >
-              Retour au tournoi
-            </a>
+            <Button asChild variant="outline">
+              <Link href="/tournoi">Revenir au tournoi</Link>
+            </Button>
             {hasUserRegistration ? (
-              <a
-                href="/user/inscriptions"
-                className="inline-flex h-10 items-center justify-center rounded-md border border-primary px-4 text-sm font-medium text-primary transition hover:bg-primary/10"
-              >
-                Voir mes inscriptions
-              </a>
+              <Button asChild variant="outline">
+                <Link href="/user/inscriptions">Suivre mes inscriptions</Link>
+              </Button>
             ) : null}
           </div>
         </header>

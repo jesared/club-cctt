@@ -14,8 +14,10 @@ import AdminTournamentVisibilityControls from "@/components/admin-tournament-vis
 import { ExternalMapLink } from "@/components/external-map-link";
 import { MetricTile, SectionEyebrow } from "@/components/public/marketing";
 import Reveal from "@/components/Reveal";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ImagePopup } from "@/components/ui/image-popup";
+import { ctaToneClasses } from "@/lib/cta-theme";
 import { getCurrentSession } from "@/lib/session";
 import { normalizeContactContent } from "@/lib/contact-content";
 import {
@@ -263,11 +265,11 @@ export default async function TournoiHomePage({ searchParams }: PageProps) {
             <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:items-start">
               <div className="space-y-6">
                 <div className="flex flex-wrap items-center gap-3">
-                  <SectionEyebrow className="border-[#FF7A00]/35 bg-[#FF7A00]/10 text-[#FF7A00]">
+                  <SectionEyebrow className={ctaToneClasses.tournament.eyebrow}>
                     <Trophy className="mr-2 h-3.5 w-3.5" />
                     Tournoi en ligne
                   </SectionEyebrow>
-                  <span className="inline-flex rounded-full border border-[#FF7A00]/30 bg-[#FF7A00]/10 px-3 py-1 text-sm font-medium text-[#FF7A00]">
+                  <span className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${ctaToneClasses.tournament.eyebrow}`}>
                     {registrationStatus.label}
                   </span>
                 </div>
@@ -278,14 +280,14 @@ export default async function TournoiHomePage({ searchParams }: PageProps) {
                   </h1>
                   <div className="flex flex-wrap gap-4 text-sm text-muted-foreground sm:text-base">
                     <span className="inline-flex items-center gap-2">
-                      <CalendarClock className="h-4 w-4 text-[#FF7A00]" />
+                      <CalendarClock className={`h-4 w-4 ${ctaToneClasses.tournament.accentText}`} />
                       {formatDateRange(
                         tournament?.startDate,
                         tournament?.endDate,
                       )}
                     </span>
                     <span className="inline-flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-[#FF7A00]" />
+                      <MapPin className={`h-4 w-4 ${ctaToneClasses.tournament.accentText}`} />
                       {tournamentVenue ?? "Lieu à confirmer"}
                     </span>
                   </div>
@@ -319,24 +321,28 @@ export default async function TournoiHomePage({ searchParams }: PageProps) {
 
                 {!registrationStatus.canRegister && isTournamentFinished ? (
                   <div className="flex flex-wrap gap-3">
-                    <Link
-                      href="/tournoi/resultats"
-                      className="inline-flex items-center justify-center rounded-md border border-[#FF7A00] px-5 py-2 text-sm font-medium text-[#FF7A00] transition hover:bg-[#FF7A00]/10 focus-ring"
+                    <Button
+                      asChild
+                      variant="outline"
+                      className={ctaToneClasses.tournament.softBorderButton}
                     >
-                      Voir les résultats
-                    </Link>
-                    <Link
-                      href="/tournoi/palmares"
-                      className="inline-flex items-center justify-center rounded-md border border-border px-5 py-2 text-sm font-medium text-foreground transition hover:bg-accent/40 focus-ring"
+                      <Link href="/tournoi/resultats">
+                        Consulter les résultats
+                      </Link>
+                    </Button>
+                    <Button asChild variant="outline">
+                      <Link href="/tournoi/palmares">
+                        Consulter le palmarès
+                      </Link>
+                    </Button>
+                    <Button
+                      asChild
+                      variant="outline"
                     >
-                      Voir le palmarès
-                    </Link>
-                    <Link
-                      href="/tournoi/affiches"
-                      className="inline-flex items-center justify-center rounded-md border border-border px-5 py-2 text-sm font-medium text-foreground transition hover:bg-accent/40 focus-ring"
-                    >
-                      Voir les affiches
-                    </Link>
+                      <Link href="/tournoi/affiches">
+                        Consulter les affiches
+                      </Link>
+                    </Button>
                   </div>
                 ) : null}
               </div>
@@ -399,10 +405,10 @@ export default async function TournoiHomePage({ searchParams }: PageProps) {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="rounded-[1.5rem] border border-[#FF7A00]/20 bg-[#FF7A00]/8 p-5">
+                <div className="rounded-[1.5rem] border border-cta-tournament-muted bg-cta-tournament-soft p-5">
                   <div className="flex items-start justify-between gap-4">
                     <div className="space-y-2">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#cc6200]">
+                      <p className={`text-[11px] font-semibold uppercase tracking-[0.22em] ${ctaToneClasses.tournament.accentText}`}>
                         Gymnase
                       </p>
                       <p className="text-lg font-semibold text-foreground">
@@ -414,7 +420,7 @@ export default async function TournoiHomePage({ searchParams }: PageProps) {
                           : "Le lieu sera ajouté ici dès qu'il sera confirmé."}
                       </p>
                     </div>
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#FF7A00]/12 text-[#FF7A00]">
+                    <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${ctaToneClasses.tournament.softButton}`}>
                       <MapPin className="h-5 w-5" />
                     </div>
                   </div>
@@ -422,7 +428,7 @@ export default async function TournoiHomePage({ searchParams }: PageProps) {
                     <ExternalMapLink
                       href={tournamentMapUrl}
                       label="Ouvrir l'itinéraire"
-                      className="mt-4 inline-flex items-center gap-2 rounded-md border border-[#FF7A00]/30 bg-background/80 px-4 py-2 text-sm font-medium text-[#FF7A00] transition hover:bg-[#FF7A00]/10 focus-ring"
+                      className={`mt-4 inline-flex items-center gap-2 rounded-md border bg-background/80 px-4 py-2 text-sm font-medium transition focus-ring ${ctaToneClasses.tournament.softBorderButton}`}
                     />
                   ) : null}
                 </div>

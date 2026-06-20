@@ -3,8 +3,9 @@
 import Link from "next/link";
 
 import TrackedLink from "@/components/TrackedLink";
+import { Button } from "@/components/ui/button";
 import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group";
-import { cn } from "@/lib/utils";
+import { ctaToneClasses } from "@/lib/cta-theme";
 
 type TournamentActionBarProps = {
   canRegister: boolean;
@@ -24,43 +25,47 @@ export default function TournamentActionBar({
   showRegistrationCta = canRegister,
 }: TournamentActionBarProps) {
   const primaryAction = showRegistrationCta ? (
-    <TrackedLink
-      kpiPage="tournoi"
-      kpiLabel="cta-inscription"
-      href={registrationHref}
-      className="inline-flex h-11 min-w-0 items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-none transition hover:bg-primary/90 focus-ring md:min-w-[12rem]"
+    <Button
+      asChild
+      className="h-11 min-w-0 rounded-xl px-4 font-semibold md:min-w-[12rem]"
     >
-      {registrationCtaLabel}
-    </TrackedLink>
+      <TrackedLink
+        kpiPage="tournoi"
+        kpiLabel="cta-inscription"
+        href={registrationHref}
+      >
+        {registrationCtaLabel}
+      </TrackedLink>
+    </Button>
   ) : (
-    <span className="inline-flex h-11 min-w-0 items-center justify-center rounded-xl bg-muted px-4 text-sm font-semibold text-muted-foreground md:min-w-[12rem]">
+    <Button
+      disabled
+      variant="secondary"
+      className="h-11 min-w-0 rounded-xl px-4 font-semibold md:min-w-[12rem]"
+    >
       {registrationLabel}
-    </span>
+    </Button>
   );
-
-  const actionClassName =
-    "inline-flex h-11 min-w-0 items-center justify-center rounded-xl px-4 text-sm font-semibold transition focus-ring md:min-w-[12rem]";
 
   return (
     <>
       <div className="flex w-full flex-col gap-2 md:hidden">
         {primaryAction}
-        <Link
-          href="/tournoi/reglement"
-          className={cn(
-            actionClassName,
-            "border border-[#FF7A00] text-[#FF7A00] hover:bg-[#FF7A00]/10",
-          )}
+        <Button
+          asChild
+          variant="outline"
+          className={`h-11 min-w-0 rounded-xl px-4 font-semibold md:min-w-[12rem] ${ctaToneClasses.tournament.softBorderButton}`}
         >
-          Consulter le reglement
-        </Link>
+          <Link href="/tournoi/reglement">Consulter le reglement</Link>
+        </Button>
         {hasUserRegistration ? (
-          <Link
-            href="/user/inscriptions"
-            className={cn(actionClassName, "hover:bg-accent/40")}
+          <Button
+            asChild
+            variant="ghost"
+            className="h-11 min-w-0 rounded-xl px-4 font-semibold md:min-w-[12rem]"
           >
-            Voir mes inscriptions
-          </Link>
+            <Link href="/user/inscriptions">Suivre mes inscriptions</Link>
+          </Button>
         ) : null}
       </div>
 
@@ -70,24 +75,23 @@ export default function TournamentActionBar({
       >
         {primaryAction}
         <ButtonGroupSeparator className="mx-px" />
-        <Link
-          href="/tournoi/reglement"
-          className={cn(
-            actionClassName,
-            "text-[#FF7A00] hover:bg-[#FF7A00]/10",
-          )}
+        <Button
+          asChild
+          variant="ghost"
+          className={`h-11 min-w-0 rounded-xl px-4 font-semibold md:min-w-[12rem] ${ctaToneClasses.tournament.softButton}`}
         >
-          Consulter le reglement
-        </Link>
+          <Link href="/tournoi/reglement">Consulter le reglement</Link>
+        </Button>
         {hasUserRegistration ? (
           <>
             <ButtonGroupSeparator className="mx-px" />
-            <Link
-              href="/user/inscriptions"
-              className={cn(actionClassName, "hover:bg-accent/40")}
+            <Button
+              asChild
+              variant="ghost"
+              className="h-11 min-w-0 rounded-xl px-4 font-semibold md:min-w-[12rem]"
             >
-              Voir mes inscriptions
-            </Link>
+              <Link href="/user/inscriptions">Suivre mes inscriptions</Link>
+            </Button>
           </>
         ) : null}
       </ButtonGroup>

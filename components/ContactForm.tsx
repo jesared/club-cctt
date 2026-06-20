@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { ctaToneClasses } from "@/lib/cta-theme";
 import {
   type ContactSubject,
   normalizeContactSubject,
@@ -390,15 +391,15 @@ export default function ContactForm({
       <Button
         type="submit"
         disabled={isSubmitting}
-        className="bg-[#FF2E88] text-white shadow-none hover:bg-[#E12678] focus-ring active:scale-[0.98]"
+        className={`${ctaToneClasses.contact.primaryButton} active:scale-[0.98]`}
       >
         {isSubmitting ? (
           <span className="inline-flex items-center gap-2">
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <Loader2 data-icon="inline-start" className="animate-spin" />
             Envoi en cours...
           </span>
         ) : (
-          "Envoyer le message"
+          "Envoyer ma demande"
         )}
       </Button>
     </form>

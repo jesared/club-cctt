@@ -249,7 +249,7 @@ export default async function UserClubAgendaPage() {
             )}
 
             <Button asChild variant="outline" className="w-full">
-              <Link href="/club/horaires">Voir les horaires publics</Link>
+              <Link href="/club/horaires">Consulter les horaires publics</Link>
             </Button>
           </CardContent>
         </Card>

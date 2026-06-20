@@ -362,6 +362,298 @@
 }
 
 @layer components {
+  .text-cta-club {
+    color: #2f6bff;
+  }
+
+  .text-cta-club-muted {
+    color: color-mix(in oklch, #2f6bff 75%, transparent);
+  }
+
+  .bg-cta-club {
+    background-color: #2f6bff;
+  }
+
+  .bg-cta-club-soft {
+    background-color: color-mix(in oklch, #2f6bff 10%, transparent);
+  }
+
+  .border-cta-club {
+    border-color: color-mix(in oklch, #2f6bff 80%, transparent);
+  }
+
+  .border-cta-club-muted {
+    border-color: color-mix(in oklch, #2f6bff 32%, transparent);
+  }
+
+  .shadow-cta-club {
+    box-shadow: var(--shadow-sm),
+      0 8px 24px -18px color-mix(in oklch, #2f6bff 55%, transparent);
+  }
+
+  .cta-card-hover-club:hover {
+    border-color: color-mix(in oklch, #2f6bff 80%, transparent);
+    box-shadow: var(--shadow-sm),
+      0 8px 24px -18px color-mix(in oklch, #2f6bff 55%, transparent);
+  }
+
+  .group:hover .cta-row-hover-club {
+    color: #2f6bff;
+    background-color: color-mix(in oklch, #2f6bff 10%, transparent);
+  }
+
+  .text-cta-schedule {
+    color: #00b8d9;
+  }
+
+  .text-cta-schedule-muted {
+    color: color-mix(in oklch, #00b8d9 75%, transparent);
+  }
+
+  .bg-cta-schedule {
+    background-color: #00b8d9;
+  }
+
+  .bg-cta-schedule-soft {
+    background-color: color-mix(in oklch, #00d9ff 10%, transparent);
+  }
+
+  .border-cta-schedule {
+    border-color: color-mix(in oklch, #00d9ff 80%, transparent);
+  }
+
+  .border-cta-schedule-muted {
+    border-color: color-mix(in oklch, #00d9ff 32%, transparent);
+  }
+
+  .shadow-cta-schedule {
+    box-shadow: var(--shadow-sm),
+      0 8px 24px -18px color-mix(in oklch, #00d9ff 55%, transparent);
+  }
+
+  .cta-card-hover-schedule:hover {
+    border-color: color-mix(in oklch, #00d9ff 80%, transparent);
+    box-shadow: var(--shadow-sm),
+      0 8px 24px -18px color-mix(in oklch, #00d9ff 55%, transparent);
+  }
+
+  .group:hover .cta-row-hover-schedule {
+    color: #00b8d9;
+    background-color: color-mix(in oklch, #00d9ff 10%, transparent);
+  }
+
+  .text-cta-tournament {
+    color: #ff7a00;
+  }
+
+  .text-cta-tournament-muted {
+    color: color-mix(in oklch, #ff7a00 75%, transparent);
+  }
+
+  .bg-cta-tournament {
+    background-color: #ff7a00;
+  }
+
+  .bg-cta-tournament-soft {
+    background-color: color-mix(in oklch, #ff7a00 10%, transparent);
+  }
+
+  .border-cta-tournament {
+    border-color: color-mix(in oklch, #ff7a00 80%, transparent);
+  }
+
+  .border-cta-tournament-muted {
+    border-color: color-mix(in oklch, #ff7a00 32%, transparent);
+  }
+
+  .shadow-cta-tournament {
+    box-shadow: var(--shadow-sm),
+      0 8px 24px -18px color-mix(in oklch, #ff7a00 55%, transparent);
+  }
+
+  .cta-card-hover-tournament:hover {
+    border-color: color-mix(in oklch, #ff7a00 80%, transparent);
+    box-shadow: var(--shadow-sm),
+      0 8px 24px -18px color-mix(in oklch, #ff7a00 55%, transparent);
+  }
+
+  .group:hover .cta-row-hover-tournament {
+    color: #ff7a00;
+    background-color: color-mix(in oklch, #ff7a00 10%, transparent);
+  }
+
+  .text-cta-contact {
+    color: #ff2e88;
+  }
+
+  .text-cta-contact-muted {
+    color: color-mix(in oklch, #ff2e88 75%, transparent);
+  }
+
+  .bg-cta-contact {
+    background-color: #ff2e88;
+  }
+
+  .bg-cta-contact-soft {
+    background-color: color-mix(in oklch, #ff2e88 10%, transparent);
+  }
+
+  .border-cta-contact {
+    border-color: color-mix(in oklch, #ff2e88 80%, transparent);
+  }
+
+  .border-cta-contact-muted {
+    border-color: color-mix(in oklch, #ff2e88 32%, transparent);
+  }
+
+  .shadow-cta-contact {
+    box-shadow: var(--shadow-sm),
+      0 8px 24px -18px color-mix(in oklch, #ff2e88 55%, transparent);
+  }
+
+  .cta-card-hover-contact:hover {
+    border-color: color-mix(in oklch, #ff2e88 80%, transparent);
+    box-shadow: var(--shadow-sm),
+      0 8px 24px -18px color-mix(in oklch, #ff2e88 55%, transparent);
+  }
+
+  .group:hover .cta-row-hover-contact {
+    color: #ff2e88;
+    background-color: color-mix(in oklch, #ff2e88 10%, transparent);
+  }
+
+  .cta-button-primary-cta-club,
+  .cta-button-primary-cta-schedule,
+  .cta-button-primary-cta-tournament,
+  .cta-button-primary-cta-contact {
+    border: 0;
+    color: white;
+    box-shadow: none;
+  }
+
+  .cta-button-primary-cta-club {
+    background-color: #2f6bff;
+  }
+
+  .cta-button-primary-cta-club:hover {
+    background-color: color-mix(in oklch, #2f6bff 88%, black);
+  }
+
+  .cta-button-primary-cta-schedule {
+    background-color: #00b8d9;
+  }
+
+  .cta-button-primary-cta-schedule:hover {
+    background-color: color-mix(in oklch, #00b8d9 88%, black);
+  }
+
+  .cta-button-primary-cta-tournament {
+    background-color: #ff7a00;
+  }
+
+  .cta-button-primary-cta-tournament:hover {
+    background-color: color-mix(in oklch, #ff7a00 88%, black);
+  }
+
+  .cta-button-primary-cta-contact {
+    background-color: #ff2e88;
+  }
+
+  .cta-button-primary-cta-contact:hover {
+    background-color: color-mix(in oklch, #ff2e88 88%, black);
+  }
+
+  .cta-button-soft-cta-club,
+  .cta-button-soft-cta-schedule,
+  .cta-button-soft-cta-tournament,
+  .cta-button-soft-cta-contact,
+  .cta-button-soft-border-cta-club,
+  .cta-button-soft-border-cta-schedule,
+  .cta-button-soft-border-cta-tournament,
+  .cta-button-soft-border-cta-contact {
+    box-shadow: none;
+  }
+
+  .cta-button-soft-cta-club {
+    color: #2f6bff;
+    background-color: color-mix(in oklch, #2f6bff 10%, transparent);
+  }
+
+  .cta-button-soft-cta-club:hover {
+    color: #2f6bff;
+    background-color: color-mix(in oklch, #2f6bff 16%, transparent);
+  }
+
+  .cta-button-soft-cta-schedule {
+    color: #00b8d9;
+    background-color: color-mix(in oklch, #00d9ff 10%, transparent);
+  }
+
+  .cta-button-soft-cta-schedule:hover {
+    color: #00b8d9;
+    background-color: color-mix(in oklch, #00d9ff 16%, transparent);
+  }
+
+  .cta-button-soft-cta-tournament {
+    color: #ff7a00;
+    background-color: color-mix(in oklch, #ff7a00 10%, transparent);
+  }
+
+  .cta-button-soft-cta-tournament:hover {
+    color: #ff7a00;
+    background-color: color-mix(in oklch, #ff7a00 16%, transparent);
+  }
+
+  .cta-button-soft-cta-contact {
+    color: #ff2e88;
+    background-color: color-mix(in oklch, #ff2e88 10%, transparent);
+  }
+
+  .cta-button-soft-cta-contact:hover {
+    color: #ff2e88;
+    background-color: color-mix(in oklch, #ff2e88 16%, transparent);
+  }
+
+  .cta-button-soft-border-cta-club {
+    color: #2f6bff;
+    border-color: color-mix(in oklch, #2f6bff 24%, transparent);
+  }
+
+  .cta-button-soft-border-cta-club:hover {
+    color: #2f6bff;
+    background-color: color-mix(in oklch, #2f6bff 10%, transparent);
+  }
+
+  .cta-button-soft-border-cta-schedule {
+    color: #00b8d9;
+    border-color: color-mix(in oklch, #00d9ff 24%, transparent);
+  }
+
+  .cta-button-soft-border-cta-schedule:hover {
+    color: #00b8d9;
+    background-color: color-mix(in oklch, #00d9ff 10%, transparent);
+  }
+
+  .cta-button-soft-border-cta-tournament {
+    color: #ff7a00;
+    border-color: color-mix(in oklch, #ff7a00 24%, transparent);
+  }
+
+  .cta-button-soft-border-cta-tournament:hover {
+    color: #ff7a00;
+    background-color: color-mix(in oklch, #ff7a00 10%, transparent);
+  }
+
+  .cta-button-soft-border-cta-contact {
+    color: #ff2e88;
+    border-color: color-mix(in oklch, #ff2e88 24%, transparent);
+  }
+
+  .cta-button-soft-border-cta-contact:hover {
+    color: #ff2e88;
+    background-color: color-mix(in oklch, #ff2e88 10%, transparent);
+  }
+
   .admin-form-card {
     @apply overflow-hidden border-border/70 bg-gradient-to-b from-card via-card to-muted/20 shadow-sm;
   }

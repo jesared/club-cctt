@@ -588,7 +588,7 @@ export default function AdminTarifsPage() {
                   onClick={() => addStringItem("lignes")}
                 >
                   <Plus className="h-4 w-4" />
-                  Ajouter
+                  Ajouter un moyen de paiement
                 </Button>
               </div>
 
@@ -642,7 +642,7 @@ export default function AdminTarifsPage() {
                   onClick={() => addStringItem("mentions")}
                 >
                   <Plus className="h-4 w-4" />
-                  Ajouter
+                  Ajouter une mention
                 </Button>
               </div>
 
@@ -703,7 +703,7 @@ export default function AdminTarifsPage() {
             </div>
             <Button type="button" variant="outline" onClick={addInclus}>
               <Plus className="h-4 w-4" />
-              Ajouter
+              Ajouter un élément inclus
             </Button>
           </CardHeader>
           <CardContent className="space-y-3">

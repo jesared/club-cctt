@@ -192,7 +192,7 @@ export default function AdminPartenairesPage() {
           </div>
           <Button type="button" variant="outline" onClick={() => addPartenaire(key)}>
             <Plus className="h-4 w-4" />
-            Ajouter
+            Ajouter un partenaire
           </Button>
         </CardHeader>
         <CardContent className="space-y-4">

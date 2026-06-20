@@ -134,7 +134,7 @@ export default async function AdminPage() {
       links: [
         {
           href: "/admin/tournoi/inscriptions",
-          label: "Voir les inscriptions",
+          label: "Traiter les inscriptions",
           helper: `${tournamentPendingRegistrations} en attente`,
         },
         {
@@ -144,7 +144,7 @@ export default async function AdminPage() {
         },
         {
           href: "/admin/tournoi/pointages",
-          label: "Ouvrir les pointages",
+          label: "Contrôler les pointages",
           helper: "Contrôle salle et présence",
         },
         {
@@ -164,7 +164,7 @@ export default async function AdminPage() {
       links: [
         {
           href: "/admin/home",
-          label: "Modifier la home",
+          label: "Modifier l'accueil public",
           helper: "Hero, visuels et contenus",
         },
         {
@@ -174,7 +174,7 @@ export default async function AdminPage() {
         },
         {
           href: "/admin/contact",
-          label: "Mettre a jour le contact",
+          label: "Mettre à jour le contact",
           helper: "Coordonnées et aide",
         },
         {
@@ -194,7 +194,7 @@ export default async function AdminPage() {
         },
         {
           href: "/admin/comite-directeur",
-          label: "Modifier le comite",
+          label: "Modifier le comité",
           helper: "Bureau, membres et photos",
         },
         {
@@ -224,12 +224,12 @@ export default async function AdminPage() {
         },
         {
           href: "/admin/users",
-          label: "Voir les utilisateurs",
+          label: "Gérer les utilisateurs",
           helper: `${totalUsers} compte(s)`,
         },
         {
           href: "/admin/media",
-          label: "Ouvrir la mediatheque",
+          label: "Gérer la médiathèque",
           helper: `${totalMediaAssets} fichier(s)`,
         },
       ],
@@ -402,7 +402,7 @@ export default async function AdminPage() {
                   href={href}
                   className="inline-flex items-center gap-2 text-sm font-medium text-primary transition hover:opacity-80"
                 >
-                  Ouvrir
+                  Accéder au module
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>

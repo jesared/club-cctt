@@ -130,7 +130,7 @@ export default async function UserClubContactsPage() {
             </div>
             <div className="flex gap-3">
               <Button asChild variant="outline">
-                <Link href="/club/contact">Ouvrir la page contact</Link>
+                <Link href="/club/contact">Accéder au contact public</Link>
               </Button>
             </div>
           </CardContent>

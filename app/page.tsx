@@ -16,6 +16,7 @@ import { HeroBanner } from "@/components/public/hero-banner";
 import { SectionEyebrow } from "@/components/public/marketing";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group";
+import { ctaToneClasses } from "@/lib/cta-theme";
 import {
   normalizeHomeContent,
   resolveEventImageUrl,
@@ -115,26 +116,16 @@ export default async function Home() {
       href: "/club",
       label: "Découvrir le club",
       Icon: Search,
-      tone: "border-border/60 bg-card/70",
-      hoverTone: "hover:border-[#2F6BFF] hover:shadow-[#2F6BFF]/15",
-      iconTone: "text-[#2F6BFF]",
-      ctaTone: "text-[#2F6BFF]",
-      ctaHoverTone: "group-hover:bg-[#2F6BFF]/5 group-hover:text-[#2F6BFF]",
-      arrowTone: "text-[#2F6BFF]/75 group-hover:text-[#2F6BFF]",
+      tone: ctaToneClasses.club,
     },
     {
-      title: "Je veux voir les horaires",
+      title: "Je veux trouver un créneau",
       description:
         "Trouver rapidement le bon créneau selon le profil : jeunes, loisir, entraînement soutenu ou jeu libre.",
       href: "/club/horaires",
-      label: "Voir les horaires",
+      label: "Trouver un créneau",
       Icon: Clock3,
-      tone: "border-border/60 bg-card/70",
-      hoverTone: "hover:border-[#00D9FF] hover:shadow-[#00D9FF]/15",
-      iconTone: "text-[#00D9FF]",
-      ctaTone: "text-[#00B8D9]",
-      ctaHoverTone: "group-hover:bg-[#00D9FF]/6 group-hover:text-[#00B8D9]",
-      arrowTone: "text-[#00B8D9]/75 group-hover:text-[#00B8D9]",
+      tone: ctaToneClasses.schedule,
     },
     {
       title: "Je veux m'inscrire au tournoi",
@@ -145,28 +136,18 @@ export default async function Home() {
         : "/tournoi",
       label: registrationStatus.canRegister
         ? "S'inscrire au tournoi"
-        : "Voir le tournoi",
+        : "Préparer le tournoi",
       Icon: Trophy,
-      tone: "border-border/60 bg-card/70",
-      hoverTone: "hover:border-[#FF7A00] hover:shadow-[#FF7A00]/15",
-      iconTone: "text-[#FF7A00]",
-      ctaTone: "text-[#FF7A00]",
-      ctaHoverTone: "group-hover:bg-[#FF7A00]/6 group-hover:text-[#FF7A00]",
-      arrowTone: "text-[#FF7A00]/75 group-hover:text-[#FF7A00]",
+      tone: ctaToneClasses.tournament,
     },
     {
-      title: "Je veux contacter le club",
+      title: "Je veux faire un essai",
       description:
         "Poser une question, demander un essai, vérifier un tarif ou être orienté vers le bon interlocuteur.",
       href: "/club/contact",
-      label: "Contacter le club",
+      label: "Demander un essai",
       Icon: Mail,
-      tone: "border-border/60 bg-card/70",
-      hoverTone: "hover:border-[#FF2E88] hover:shadow-[#FF2E88]/15",
-      iconTone: "text-[#FF2E88]",
-      ctaTone: "text-[#FF2E88]",
-      ctaHoverTone: "group-hover:bg-[#FF2E88]/6 group-hover:text-[#FF2E88]",
-      arrowTone: "text-[#FF2E88]/75 group-hover:text-[#FF2E88]",
+      tone: ctaToneClasses.contact,
     },
   ];
 
@@ -205,7 +186,7 @@ export default async function Home() {
 
   const primaryHeroAction = {
     href: "/club/horaires",
-    label: "Voir les horaires",
+    label: "Trouver un créneau",
   };
   const secondaryHeroAction = registrationStatus.canRegister
     ? {
@@ -214,11 +195,11 @@ export default async function Home() {
       }
     : {
         href: "/club/contact",
-        label: "Contacter le club",
+        label: "Demander un essai",
       };
   const secondaryHeroButtonClassName = registrationStatus.canRegister
-    ? "border-transparent bg-amber-500/10 text-amber-600 hover:bg-amber-500/16 hover:text-amber-700"
-    : "border-transparent bg-transparent text-fuchsia-600 hover:bg-fuchsia-500/10 hover:text-fuchsia-700";
+    ? ctaToneClasses.tournament.softButton
+    : ctaToneClasses.contact.softButton;
 
   return (
     <main className="relative overflow-hidden">
@@ -248,7 +229,10 @@ export default async function Home() {
                   <Button
                     asChild
                     size="lg"
-                    className="h-11 min-w-0 flex-1 justify-center rounded-xl border-0 bg-cyan-500 px-5 text-sm font-semibold text-white shadow-none whitespace-normal hover:bg-cyan-500/90 sm:min-w-[12.5rem]"
+                    className={cn(
+                      "h-11 min-w-0 flex-1 justify-center rounded-xl px-5 text-sm font-semibold whitespace-normal sm:min-w-[12.5rem]",
+                      ctaToneClasses.schedule.primaryButton,
+                    )}
                   >
                     <Link href={primaryHeroAction.href}>
                       {primaryHeroAction.label}
@@ -260,8 +244,8 @@ export default async function Home() {
                     asChild
                     size="lg"
                     variant="outline"
-                    className={cn(
-                      "h-11 min-w-0 flex-1 justify-center rounded-xl px-5 text-sm font-semibold shadow-none whitespace-normal sm:min-w-[12.5rem]",
+                  className={cn(
+                      "h-11 min-w-0 flex-1 justify-center rounded-xl px-5 text-sm font-semibold whitespace-normal sm:min-w-[12.5rem]",
                       secondaryHeroButtonClassName,
                     )}
                   >
@@ -304,12 +288,18 @@ export default async function Home() {
                 <Reveal key={item.title} className="h-full" delay={index * 90}>
                   <Link
                     href={item.href}
-                    className={`group flex h-full min-h-[236px] flex-col overflow-hidden rounded-[1.65rem] border shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md ${item.tone} ${item.hoverTone}`}
+                    className={cn(
+                      "group flex h-full min-h-[236px] flex-col overflow-hidden rounded-[1.65rem] border border-border/60 bg-card/70 shadow-sm transition duration-200 hover:-translate-y-0.5",
+                      item.tone.cardHover,
+                    )}
                   >
                     <div className="flex flex-1 flex-col p-5">
                       <div className="flex items-center justify-between gap-3">
                         <span
-                          className={`rounded-full bg-background/80 p-2 ${item.iconTone}`}
+                          className={cn(
+                            "rounded-full bg-background/80 p-2",
+                            item.tone.iconBubble,
+                          )}
                         >
                           <Icon className="h-5 w-5" />
                         </span>
@@ -322,11 +312,18 @@ export default async function Home() {
                       </p>
                     </div>
                     <div
-                      className={`mt-auto flex items-center justify-between gap-3 border-t border-border/50 bg-background/35 px-5 py-3 text-sm font-medium transition-colors ${item.ctaTone} ${item.ctaHoverTone}`}
+                      className={cn(
+                        "mt-auto flex items-center justify-between gap-3 border-t border-border/50 bg-background/35 px-5 py-3 text-sm font-medium transition-colors",
+                        item.tone.link,
+                        item.tone.ctaRowHover,
+                      )}
                     >
                       <span>{item.label}</span>
                       <ArrowRight
-                        className={`h-4 w-4 transition-transform group-hover:translate-x-1 ${item.arrowTone}`}
+                        className={cn(
+                          "h-4 w-4 transition-transform group-hover:translate-x-1",
+                          item.tone.arrowText,
+                        )}
                       />
                     </div>
                   </Link>
@@ -460,7 +457,7 @@ export default async function Home() {
                         <Link href={registrationStatus.canRegister ? "/tournoi/inscription" : "/tournoi"}>
                           {registrationStatus.canRegister
                             ? "S'inscrire au tournoi"
-                            : "Voir le tournoi"}
+                            : "Préparer le tournoi"}
                         </Link>
                       </Button>
                       <Button
@@ -470,7 +467,7 @@ export default async function Home() {
                         className="rounded-md px-6"
                       >
                         <Link href="/tournoi/liste-inscrits">
-                          Voir les inscrits
+                          Consulter les inscrits
                         </Link>
                       </Button>
                     </div>
@@ -516,11 +513,11 @@ export default async function Home() {
                 <Button
                   asChild
                   size="lg"
-                  className="rounded-md bg-[#FF2E88] px-6 text-white hover:bg-[#E12678]"
+                  className={cn("rounded-md px-6", ctaToneClasses.contact.primaryButton)}
                 >
                   <Link href="/club/contact">
-                    Contacter le club
-                    <ArrowRight className="h-4 w-4" />
+                    Demander un essai
+                    <ArrowRight data-icon="inline-end" />
                   </Link>
                 </Button>
                 <p className="text-sm leading-relaxed text-muted-foreground">

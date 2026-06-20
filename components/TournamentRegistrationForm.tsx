@@ -944,7 +944,7 @@ export default function TournamentRegistrationForm({
                 href="/user/inscriptions"
                 className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary/90 focus-ring"
               >
-                Voir mes inscriptions
+                Suivre mes inscriptions
               </a>
               <button
                 type="button"

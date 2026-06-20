@@ -248,7 +248,7 @@ export default function NotificationsList({
                   href={notification.href}
                   onClick={() => void markNotificationAsRead(notification.id)}
                 >
-                  Ouvrir
+                  Lire la notification
                 </Link>
               </Button>
             </div>

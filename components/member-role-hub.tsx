@@ -81,7 +81,7 @@ export function MemberRoleHub({
                       href={link.href}
                       className="inline-flex items-center gap-2"
                     >
-                      Ouvrir
+                      Accéder à {link.title}
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>

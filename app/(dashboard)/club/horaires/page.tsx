@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ctaToneClasses } from "@/lib/cta-theme";
 import type { BadgeVariant, HorairesResponse } from "@/lib/horaires-content";
 
 const profileCards = [
@@ -82,7 +83,7 @@ export default async function HorairesPage() {
     <div className="mx-auto max-w-6xl space-y-12 px-4 py-12">
       <Reveal>
         <header className="space-y-6">
-          <p className="inline-flex items-center rounded-full border border-[#00D9FF]/40 bg-[#00D9FF]/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.22em] text-[#00D9FF]">
+          <p className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium uppercase tracking-[0.22em] ${ctaToneClasses.schedule.eyebrow}`}>
             Horaires du club
           </p>
           <div className="flex flex-wrap items-center gap-3">
@@ -121,9 +122,9 @@ export default async function HorairesPage() {
       <section className="grid gap-4 lg:grid-cols-3">
         {profileCards.map((item, index) => (
           <Reveal key={item.title} delay={index * 100}>
-            <Card className="border-border bg-card shadow-sm card-hover hover:border-[#00D9FF]/80">
+            <Card className={`border-border bg-card shadow-sm card-hover ${ctaToneClasses.schedule.cardHover}`}>
               <CardHeader className="space-y-3">
-                <div className="inline-flex w-fit rounded-full border border-[#00D9FF]/30 bg-[#00D9FF]/10 px-3 py-1 text-xs font-medium text-[#00D9FF]">
+                <div className={`inline-flex w-fit rounded-full px-3 py-1 text-xs font-medium ${ctaToneClasses.schedule.eyebrow}`}>
                   {item.badge}
                 </div>
                 <CardTitle className="text-xl">{item.title}</CardTitle>
@@ -201,7 +202,7 @@ export default async function HorairesPage() {
                           {i < jour.seances.length - 1 ? (
                             <span className="absolute top-5 h-[calc(100%+1.5rem)] w-px bg-border/70" />
                           ) : null}
-                          <span className="relative mt-1 size-2 rounded-full bg-[#00D9FF] shadow-[0_0_0_4px_color-mix(in_oklch,var(--background)_76%,transparent)]" />
+                          <span className={`relative mt-1 size-2 rounded-full shadow-[0_0_0_4px_color-mix(in_oklch,var(--background)_76%,transparent)] ${ctaToneClasses.schedule.dot}`} />
                         </div>
 
                         <div className="min-w-0">
@@ -231,7 +232,7 @@ export default async function HorairesPage() {
 
       <section className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
         <Reveal>
-          <Card className="border-l-4 border-l-[#00D9FF] card-hover hover:border-[#00D9FF]/80">
+          <Card className={`border-l-4 border-cta-schedule card-hover ${ctaToneClasses.schedule.cardHover}`}>
             <CardHeader>
               <CardTitle>Ce qu&apos;il faut retenir avant de venir</CardTitle>
             </CardHeader>
@@ -246,7 +247,7 @@ export default async function HorairesPage() {
         </Reveal>
 
         <Reveal delay={120}>
-          <Card className="border-l-4 border-l-[#00D9FF] card-hover hover:border-[#00D9FF]/80">
+          <Card className={`border-l-4 border-cta-schedule card-hover ${ctaToneClasses.schedule.cardHover}`}>
             <CardHeader>
               <CardTitle>Essai gratuit</CardTitle>
             </CardHeader>
@@ -264,17 +265,17 @@ export default async function HorairesPage() {
               >
                 <Button
                   asChild
-                  className="h-10 min-w-0 flex-1 rounded-xl border-0 bg-cyan-500 px-4 font-semibold text-white shadow-none hover:bg-cyan-500/90 sm:min-w-[12rem]"
+                  className={`h-10 min-w-0 flex-1 rounded-xl px-4 font-semibold sm:min-w-[12rem] ${ctaToneClasses.schedule.primaryButton}`}
                 >
-                  <Link href="/club/contact">Contacter le club</Link>
+                  <Link href="/club/contact">Demander un essai</Link>
                 </Button>
                 <ButtonGroupSeparator className="mx-px hidden sm:block" />
                 <Button
                   asChild
                   variant="ghost"
-                  className="h-10 min-w-0 flex-1 rounded-xl px-4 font-semibold text-cyan-700 shadow-none hover:bg-cyan-500/10 hover:text-cyan-700 sm:min-w-[12rem]"
+                  className={`h-10 min-w-0 flex-1 rounded-xl px-4 font-semibold sm:min-w-[12rem] ${ctaToneClasses.schedule.softButton}`}
                 >
-                  <Link href="/club/tarifs">Voir les tarifs</Link>
+                  <Link href="/club/tarifs">Comparer les tarifs</Link>
                 </Button>
               </ButtonGroup>
             </CardContent>

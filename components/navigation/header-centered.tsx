@@ -859,7 +859,7 @@ export default function HeaderCentered({
                                             className="h-6 rounded-full px-2.5 text-[0.68rem]"
                                             onClick={() => void openInboxItem(item)}
                                           >
-                                            Ouvrir
+                                            Lire
                                           </Button>
                                         </div>
                                       </div>

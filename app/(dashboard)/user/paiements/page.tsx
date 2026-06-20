@@ -79,7 +79,7 @@ export default async function UserPaiementsPage() {
         </div>
         <div className="flex items-center gap-2">
           <Button asChild variant="secondary">
-            <Link href="/user/inscriptions">Voir mes inscriptions</Link>
+            <Link href="/user/inscriptions">Suivre mes inscriptions</Link>
           </Button>
         </div>
       </header>

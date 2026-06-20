@@ -6,6 +6,7 @@ import { ArrowRight, HeartHandshake } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ctaToneClasses } from "@/lib/cta-theme";
 import {
   Card,
   CardContent,
@@ -160,13 +161,13 @@ export default async function EntraineursBenevolesPage() {
                 dans l&apos;encadrement et la vie du club, nous pouvons en parler
                 ensemble.
               </p>
-              <Button asChild className="h-10 rounded-md shadow-none">
-                <Link
-                  href="/club/contact"
-                  className="inline-flex items-center gap-2"
-                >
-                  Contacter le club
-                  <ArrowRight className="h-4 w-4" />
+              <Button
+                asChild
+                className={`h-10 rounded-md ${ctaToneClasses.contact.primaryButton}`}
+              >
+                <Link href="/club/contact">
+                  Demander un essai
+                  <ArrowRight data-icon="inline-end" />
                 </Link>
               </Button>
             </CardContent>

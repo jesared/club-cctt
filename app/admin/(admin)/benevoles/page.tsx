@@ -230,7 +230,7 @@ export default function AdminBenevolesPage() {
             </div>
             <Button type="button" variant="outline" onClick={addBenevole}>
               <Plus className="h-4 w-4" />
-              Ajouter
+              Ajouter un bénévole
             </Button>
           </CardHeader>
           <CardContent className="space-y-3">

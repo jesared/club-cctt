@@ -23,7 +23,7 @@ export const defaultContactContent: ContactContentData = {
   addressName: "Salle Tirlet",
   addressLine: "Châlons-en-Champagne Tennis de Table",
   addressCity: "Châlons-en-Champagne",
-  ctaPrimaryLabel: "Voir les horaires",
+  ctaPrimaryLabel: "Trouver un créneau",
   ctaPrimaryHref: "/club/horaires",
   ctaSecondaryLabel: "Consulter les tarifs",
   ctaSecondaryHref: "/club/tarifs",

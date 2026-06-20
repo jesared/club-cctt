@@ -390,7 +390,7 @@ export default function AdminSalariesPage() {
             </div>
             <Button type="button" variant="outline" onClick={addSalary}>
               <Plus className="h-4 w-4" />
-              Ajouter
+              Ajouter un salarié
             </Button>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -436,7 +436,7 @@ export default function AdminSalariesPage() {
                         onClick={() => addSalaryDiploma(index)}
                       >
                         <Plus className="h-4 w-4" />
-                        Ajouter un diplome
+                        Ajouter un diplôme
                       </Button>
                     </div>
 

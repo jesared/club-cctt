@@ -5,6 +5,7 @@ import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ClubContextNav from "@/components/public/club-context-nav";
 import Reveal from "@/components/Reveal";
+import { ctaToneClasses } from "@/lib/cta-theme";
 import { Mail, MapPin, Sparkles, Users } from "lucide-react";
 import Link from "next/link";
 
@@ -47,7 +48,7 @@ export default async function ContactPage({
     <div className="mx-auto max-w-6xl space-y-10 px-4 py-8 sm:py-12">
       <Reveal>
         <header className="rounded-3xl border bg-background p-6 shadow-sm sm:p-8">
-          <p className="inline-flex items-center gap-2 rounded-full border border-[#FF2E88]/40 bg-[#FF2E88]/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.25em] text-[#FF2E88] animate-fade-up-1">
+          <p className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium uppercase tracking-[0.25em] animate-fade-up-1 ${ctaToneClasses.contact.eyebrow}`}>
             <Sparkles className="h-3.5 w-3.5" />
             {content.subtitle}
           </p>
@@ -80,7 +81,7 @@ export default async function ContactPage({
               <Reveal key={item.title} delay={index * 80}>
                 <Link
                   href={`/club/contact?sujet=${encodeURIComponent(item.title)}#contact-form`}
-                  className="group block rounded-2xl border border-border/70 bg-background/80 p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-[#FF2E88]/80 hover:bg-muted/30 hover:shadow-md"
+                  className={`group block rounded-2xl border border-border/70 bg-background/80 p-4 shadow-sm transition hover:-translate-y-0.5 hover:bg-muted/30 hover:shadow-md ${ctaToneClasses.contact.cardHover}`}
                 >
                   <p className="text-base font-semibold text-foreground">
                     {item.title}
@@ -88,8 +89,8 @@ export default async function ContactPage({
                   <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                     {item.detail}
                   </p>
-                  <p className="mt-4 text-sm font-medium text-[#FF2E88]">
-                    Contacter le club
+                  <p className={`mt-4 text-sm font-medium ${ctaToneClasses.contact.link}`}>
+                    Choisir ce motif
                   </p>
                 </Link>
               </Reveal>
@@ -101,7 +102,7 @@ export default async function ContactPage({
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_1.1fr]">
         <Reveal>
           <section>
-            <Card className="h-full border bg-background card-hover hover:border-[#FF2E88]/80">
+            <Card className={`h-full border bg-background card-hover ${ctaToneClasses.contact.cardHover}`}>
               <CardHeader>
                 <CardTitle className="text-2xl">Coordonnées du club</CardTitle>
               </CardHeader>
@@ -129,7 +130,7 @@ export default async function ContactPage({
                   <div>
                     <a
                       href={`mailto:${content.email}`}
-                      className="text-[#FF2E88] hover:underline"
+                      className={`${ctaToneClasses.contact.link} hover:underline`}
                     >
                       {content.email}
                     </a>
@@ -146,7 +147,7 @@ export default async function ContactPage({
                       <ExternalMapLink
                         href={mapDirectionsUrl}
                         label={content.addressName}
-                        className="inline-flex items-center gap-2 text-[#FF2E88] hover:underline"
+                        className={`inline-flex items-center gap-2 hover:underline ${ctaToneClasses.contact.link}`}
                         showIcon={false}
                       />
                     ) : (
@@ -164,7 +165,7 @@ export default async function ContactPage({
                 >
                   <Button
                     asChild
-                    className="h-10 min-w-0 flex-1 rounded-xl border-0 bg-fuchsia-500 px-4 font-semibold text-white shadow-none hover:bg-fuchsia-500/90 sm:min-w-[12rem]"
+                    className={`h-10 min-w-0 flex-1 rounded-xl px-4 font-semibold sm:min-w-[12rem] ${ctaToneClasses.contact.primaryButton}`}
                   >
                     <Link href={content.ctaPrimaryHref}>
                       {content.ctaPrimaryLabel}
@@ -174,7 +175,7 @@ export default async function ContactPage({
                   <Button
                     asChild
                     variant="ghost"
-                    className="h-10 min-w-0 flex-1 rounded-xl border border-[#FF2E88]/20 px-4 font-semibold text-[#FF2E88] shadow-none hover:bg-[#FF2E88]/8 hover:text-[#FF2E88] sm:min-w-[12rem]"
+                    className={`h-10 min-w-0 flex-1 rounded-xl px-4 font-semibold sm:min-w-[12rem] ${ctaToneClasses.contact.softBorderButton}`}
                   >
                     <Link href={content.ctaSecondaryHref}>
                       {content.ctaSecondaryLabel}
@@ -190,7 +191,7 @@ export default async function ContactPage({
           <section>
             <Card
               id="contact-form"
-              className="scroll-mt-24 border card-hover hover:border-[#FF2E88]/80"
+              className={`scroll-mt-24 border card-hover ${ctaToneClasses.contact.cardHover}`}
             >
               <CardHeader>
                 <CardTitle className="text-2xl">Formulaire de contact</CardTitle>
@@ -213,7 +214,7 @@ export default async function ContactPage({
                         En attendant, vous pouvez ecrire directement a{" "}
                         <a
                           href={`mailto:${content.email}`}
-                          className="font-medium text-[#FF2E88] hover:underline"
+                          className={`font-medium hover:underline ${ctaToneClasses.contact.link}`}
                         >
                           {content.email}
                         </a>
@@ -222,18 +223,24 @@ export default async function ContactPage({
                     </div>
 
                     <div className="flex flex-wrap gap-3">
-                      <Link
-                        href={`mailto:${content.email}`}
-                        className="inline-flex items-center justify-center rounded-md border border-[#FF2E88]/20 px-4 py-2 text-sm text-[#FF2E88] transition hover:bg-[#FF2E88]/8"
+                      <Button
+                        asChild
+                        variant="outline"
+                        className={ctaToneClasses.contact.softBorderButton}
                       >
-                        Envoyer un e-mail
-                      </Link>
-                      <Link
-                        href={content.ctaPrimaryHref}
-                        className="inline-flex items-center justify-center rounded-md border border-[#FF2E88]/20 px-4 py-2 text-sm text-[#FF2E88] transition hover:bg-[#FF2E88]/8"
+                        <Link href={`mailto:${content.email}`}>
+                          Écrire au club
+                        </Link>
+                      </Button>
+                      <Button
+                        asChild
+                        variant="outline"
+                        className={ctaToneClasses.contact.softBorderButton}
                       >
-                        {content.ctaPrimaryLabel}
-                      </Link>
+                        <Link href={content.ctaPrimaryHref}>
+                          {content.ctaPrimaryLabel}
+                        </Link>
+                      </Button>
                     </div>
                   </div>
                 )}

@@ -315,7 +315,7 @@ export default function AdminComiteDirecteurPage() {
             </div>
             <Button type="button" variant="outline" onClick={addBureauMember}>
               <Plus className="h-4 w-4" />
-              Ajouter
+              Ajouter un membre
             </Button>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -442,7 +442,7 @@ export default function AdminComiteDirecteurPage() {
               onClick={addComiteMember}
             >
               <Plus className="h-4 w-4" />
-              Ajouter
+              Ajouter un groupe
             </Button>
           </CardHeader>
           <CardContent className="space-y-3">

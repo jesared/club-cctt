@@ -29,7 +29,7 @@ export const defaultHomeContent: HomeContentData = {
   heroTitle: "Châlons-en-Champagne Tennis de Table",
   heroSubtitle:
     "Loisirs et compétition, jeunes et adultes.",
-  heroCtaLabel: "Voir les horaires",
+  heroCtaLabel: "Trouver un créneau",
   heroCtaHref: "/club/horaires",
   heroImageUrl:
     "https://res.cloudinary.com/diimhrbx7/image/upload/v1774952725/600559768_888023470418639_3507961945519905437_n_ayerkl.jpg",
