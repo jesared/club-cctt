@@ -19,7 +19,11 @@ function isActive(pathname: string, href: string) {
   return pathname === href;
 }
 
-export default function ClubContextNav() {
+type ClubContextNavProps = {
+  compact?: boolean;
+};
+
+export default function ClubContextNav({ compact = false }: ClubContextNavProps) {
   const pathname = usePathname();
 
   return (
@@ -38,7 +42,7 @@ export default function ClubContextNav() {
               asChild
               variant={active ? "outline" : "ghost"}
               className={cn(
-                "h-11 rounded-xl px-3 text-xs font-semibold shadow-none",
+                "h-11 rounded-xl px-3 text-xs font-semibold shadow-none transition-[background-color,border-color,color,box-shadow,transform] hover:-translate-y-px hover:shadow-sm focus-visible:shadow-sm",
                 active
                   ? accent.activeButtonClassName
                   : accent.inactiveButtonClassName,
@@ -52,7 +56,7 @@ export default function ClubContextNav() {
 
       <ButtonGroup
         aria-label="Navigation club"
-        className="hidden w-full min-w-0 bg-transparent p-0 shadow-none sm:flex sm:w-fit"
+        className="hidden w-full min-w-0 bg-transparent p-0 shadow-none sm:flex"
       >
         {clubContextLinks.flatMap((item, index) => {
           const active = isActive(pathname, item.href);
@@ -64,13 +68,13 @@ export default function ClubContextNav() {
               asChild
               variant={active ? "outline" : "ghost"}
               className={cn(
-                "h-10 min-w-0 flex-1 rounded-xl px-4 text-sm font-semibold shadow-none sm:min-w-[11.5rem]",
+                "h-10 min-w-0 flex-1 rounded-xl px-3 text-sm font-semibold shadow-none whitespace-normal transition-[background-color,border-color,color,box-shadow,transform] hover:-translate-y-px hover:shadow-sm focus-visible:shadow-sm",
                 active
                   ? accent.activeButtonClassName
                   : accent.inactiveButtonClassName,
               )}
             >
-              <Link href={item.href}>{item.label}</Link>
+              <Link href={item.href}>{compact ? item.mobileLabel : item.label}</Link>
             </Button>,
             index < clubContextLinks.length - 1 ? (
               <ButtonGroupSeparator

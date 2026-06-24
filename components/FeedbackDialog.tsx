@@ -174,7 +174,7 @@ export default function FeedbackDialog() {
             <Button
               type="button"
               variant="outline"
-              className="h-11 w-11 rounded-full border-sky-400/35 bg-background/88 p-0 text-sky-600 shadow-md shadow-slate-950/10 backdrop-blur hover:border-sky-400/60 hover:bg-sky-50 hover:text-sky-700 dark:border-sky-300/25 dark:bg-slate-900/82 dark:text-sky-300 dark:hover:border-sky-300/45 dark:hover:bg-sky-500/10 dark:hover:text-sky-200"
+              className="h-11 w-11 rounded-full border-primary/30 bg-background/88 p-0 text-primary shadow-md shadow-slate-950/10 backdrop-blur hover:border-primary/55 hover:bg-primary/10 hover:text-primary dark:border-primary/30 dark:bg-background/82 dark:text-primary dark:hover:border-primary/55 dark:hover:bg-primary/12 dark:hover:text-primary"
               aria-label="Signaler un bug ou proposer une suggestion"
             >
               <Bug className="h-4 w-4" />

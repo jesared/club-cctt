@@ -20,38 +20,52 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.3211 0 0);
+  --brand-blue: oklch(0.56 0.205 263);
+  --brand-blue-strong: oklch(0.43 0.17 263);
+  --brand-blue-soft: oklch(0.95 0.026 257);
+  --brand-yellow: oklch(0.87 0.165 94);
+  --brand-yellow-strong: oklch(0.72 0.145 86);
+  --brand-ink: oklch(0.25 0.035 258);
+  --background: oklch(0.985 0.006 255);
+  --foreground: var(--brand-ink);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.3211 0 0);
+  --card-foreground: var(--brand-ink);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.3211 0 0);
-  --primary: oklch(0.623 0.214 259.815);
+  --popover-foreground: var(--brand-ink);
+  --primary: var(--brand-blue);
   --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.905 0.182 98.111);
-  --secondary-foreground: oklch(0 0 0);
-  --muted: oklch(0.9875 0.0026 106.4475);
-  --muted-foreground: oklch(0.5382 0 0);
-  --accent: oklch(0.8901 0.0701 210.756);
-  --accent-foreground: oklch(0.3211 0 0);
-  --destructive: oklch(0.7247 0.1463 21.334);
+  --secondary: var(--brand-blue-soft);
+  --secondary-foreground: var(--brand-blue-strong);
+  --muted: oklch(0.965 0.01 255);
+  --muted-foreground: oklch(0.48 0.025 258);
+  --accent: var(--brand-yellow);
+  --accent-foreground: oklch(0.24 0.045 255);
+  --destructive: oklch(0.62 0.19 25);
   --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.8699 0 0);
-  --input: oklch(0.8699 0 0);
-  --ring: oklch(0.905 0.182 98.111);
-  --chart-1: oklch(0.7319 0.1683 150.704);
-  --chart-2: oklch(0.7987 0.0838 261.9897);
-  --chart-3: oklch(0.8901 0.0701 210.756);
-  --chart-4: oklch(0.6673 0.0825 244.8233);
-  --chart-5: oklch(0.6749 0.1856 148.0955);
+  --border: oklch(0.88 0.012 255);
+  --input: oklch(0.88 0.012 255);
+  --ring: var(--brand-blue);
+  --chart-1: var(--brand-blue);
+  --chart-2: var(--brand-yellow);
+  --chart-3: oklch(0.68 0.11 205);
+  --chart-4: oklch(0.63 0.12 155);
+  --chart-5: oklch(0.66 0.15 35);
   --sidebar: oklch(1 0 0);
-  --sidebar-foreground: oklch(0.3211 0 0);
-  --sidebar-primary: oklch(0.7319 0.1683 150.704);
+  --sidebar-foreground: var(--brand-ink);
+  --sidebar-primary: var(--brand-blue);
   --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.8901 0.0701 210.756);
-  --sidebar-accent-foreground: oklch(0.3211 0 0);
-  --sidebar-border: oklch(0.8699 0 0);
-  --sidebar-ring: oklch(0.7319 0.1683 150.704);
+  --sidebar-accent: var(--brand-blue-soft);
+  --sidebar-accent-foreground: var(--brand-blue-strong);
+  --sidebar-border: oklch(0.88 0.012 255);
+  --sidebar-ring: var(--brand-blue);
+  --cta-club: var(--brand-blue);
+  --cta-club-foreground: oklch(1 0 0);
+  --cta-schedule: var(--brand-blue);
+  --cta-schedule-foreground: oklch(1 0 0);
+  --cta-tournament: var(--brand-yellow-strong);
+  --cta-tournament-foreground: oklch(0.22 0.045 255);
+  --cta-contact: var(--brand-yellow-strong);
+  --cta-contact-foreground: oklch(0.22 0.045 255);
   --font-sans: "Inter", "Aptos", "Segoe UI", "Helvetica Neue", sans-serif;
   --font-serif: "Sora", "Inter", "Aptos", "Segoe UI", "Helvetica Neue", sans-serif;
   --font-mono: "JetBrains Mono", "Cascadia Code", "Consolas", monospace;
@@ -80,38 +94,52 @@
 }
 
 .dark {
-  --background: #222c3a;
-  --foreground: #f3f7f9;
-  --card: #1a2230;
-  --card-foreground: #f3f7f9;
-  --popover: #1a2230;
-  --popover-foreground: #f3f7f9;
-  --primary: #6ea8ff;
-  --primary-foreground: #0f1a28;
-  --secondary: oklch(0.9226 0.1578 99.5123);
-  --secondary-foreground: oklch(0 0 0);
-  --muted: #2a3445;
-  --muted-foreground: #c9d5e6;
-  --accent: #2b3749;
-  --accent-foreground: #f3f7f9;
-  --destructive: oklch(0.7247 0.1463 21.334);
+  --brand-blue: oklch(0.72 0.14 258);
+  --brand-blue-strong: oklch(0.82 0.105 252);
+  --brand-blue-soft: oklch(0.27 0.045 257);
+  --brand-yellow: oklch(0.84 0.145 92);
+  --brand-yellow-strong: oklch(0.9 0.13 94);
+  --brand-ink: oklch(0.94 0.015 255);
+  --background: oklch(0.2 0.035 257);
+  --foreground: var(--brand-ink);
+  --card: oklch(0.16 0.032 257);
+  --card-foreground: var(--brand-ink);
+  --popover: oklch(0.16 0.032 257);
+  --popover-foreground: var(--brand-ink);
+  --primary: var(--brand-blue);
+  --primary-foreground: oklch(0.16 0.035 257);
+  --secondary: var(--brand-blue-soft);
+  --secondary-foreground: oklch(0.93 0.02 255);
+  --muted: oklch(0.25 0.035 257);
+  --muted-foreground: oklch(0.78 0.035 255);
+  --accent: var(--brand-yellow);
+  --accent-foreground: oklch(0.16 0.035 257);
+  --destructive: oklch(0.68 0.19 25);
   --destructive-foreground: oklch(1 0 0);
-  --border: #344458;
-  --input: #344458;
-  --ring: #6ea8ff;
-  --chart-1: oklch(0.7319 0.1683 150.704);
-  --chart-2: oklch(0.6673 0.0825 244.8233);
-  --chart-3: oklch(0.7987 0.0838 261.9897);
-  --chart-4: oklch(0.8901 0.0701 210.756);
-  --chart-5: oklch(0.6749 0.1856 148.0955);
-  --sidebar: #222c3a;
-  --sidebar-foreground: #f3f7f9;
-  --sidebar-primary: #6ea8ff;
-  --sidebar-primary-foreground: #0f1a28;
-  --sidebar-accent: #2b3749;
-  --sidebar-accent-foreground: #f3f7f9;
-  --sidebar-border: #344458;
-  --sidebar-ring: #6ea8ff;
+  --border: oklch(0.33 0.04 257);
+  --input: oklch(0.33 0.04 257);
+  --ring: var(--brand-blue);
+  --chart-1: var(--brand-blue);
+  --chart-2: var(--brand-yellow);
+  --chart-3: oklch(0.72 0.1 205);
+  --chart-4: oklch(0.72 0.12 155);
+  --chart-5: oklch(0.76 0.15 35);
+  --sidebar: oklch(0.2 0.035 257);
+  --sidebar-foreground: var(--brand-ink);
+  --sidebar-primary: var(--brand-blue);
+  --sidebar-primary-foreground: oklch(0.16 0.035 257);
+  --sidebar-accent: var(--brand-blue-soft);
+  --sidebar-accent-foreground: oklch(0.93 0.02 255);
+  --sidebar-border: oklch(0.33 0.04 257);
+  --sidebar-ring: var(--brand-blue);
+  --cta-club: var(--brand-blue);
+  --cta-club-foreground: oklch(0.16 0.035 257);
+  --cta-schedule: var(--brand-blue);
+  --cta-schedule-foreground: oklch(0.16 0.035 257);
+  --cta-tournament: var(--brand-yellow);
+  --cta-tournament-foreground: oklch(0.16 0.035 257);
+  --cta-contact: var(--brand-yellow);
+  --cta-contact-foreground: oklch(0.16 0.035 257);
   --font-sans: "Inter", "Aptos", "Segoe UI", "Helvetica Neue", sans-serif;
   --font-serif: "Sora", "Inter", "Aptos", "Segoe UI", "Helvetica Neue", sans-serif;
   --font-mono: "JetBrains Mono", "Cascadia Code", "Consolas", monospace;
@@ -363,163 +391,163 @@
 
 @layer components {
   .text-cta-club {
-    color: #2f6bff;
+    color: var(--cta-club);
   }
 
   .text-cta-club-muted {
-    color: color-mix(in oklch, #2f6bff 75%, transparent);
+    color: color-mix(in oklch, var(--cta-club) 75%, transparent);
   }
 
   .bg-cta-club {
-    background-color: #2f6bff;
+    background-color: var(--cta-club);
   }
 
   .bg-cta-club-soft {
-    background-color: color-mix(in oklch, #2f6bff 10%, transparent);
+    background-color: color-mix(in oklch, var(--cta-club) 10%, transparent);
   }
 
   .border-cta-club {
-    border-color: color-mix(in oklch, #2f6bff 80%, transparent);
+    border-color: color-mix(in oklch, var(--cta-club) 80%, transparent);
   }
 
   .border-cta-club-muted {
-    border-color: color-mix(in oklch, #2f6bff 32%, transparent);
+    border-color: color-mix(in oklch, var(--cta-club) 32%, transparent);
   }
 
   .shadow-cta-club {
     box-shadow: var(--shadow-sm),
-      0 8px 24px -18px color-mix(in oklch, #2f6bff 55%, transparent);
+      0 8px 24px -18px color-mix(in oklch, var(--cta-club) 55%, transparent);
   }
 
   .cta-card-hover-club:hover {
-    border-color: color-mix(in oklch, #2f6bff 80%, transparent);
+    border-color: color-mix(in oklch, var(--cta-club) 80%, transparent);
     box-shadow: var(--shadow-sm),
-      0 8px 24px -18px color-mix(in oklch, #2f6bff 55%, transparent);
+      0 8px 24px -18px color-mix(in oklch, var(--cta-club) 55%, transparent);
   }
 
   .group:hover .cta-row-hover-club {
-    color: #2f6bff;
-    background-color: color-mix(in oklch, #2f6bff 10%, transparent);
+    color: var(--cta-club);
+    background-color: color-mix(in oklch, var(--cta-club) 10%, transparent);
   }
 
   .text-cta-schedule {
-    color: #00b8d9;
+    color: var(--cta-schedule);
   }
 
   .text-cta-schedule-muted {
-    color: color-mix(in oklch, #00b8d9 75%, transparent);
+    color: color-mix(in oklch, var(--cta-schedule) 75%, transparent);
   }
 
   .bg-cta-schedule {
-    background-color: #00b8d9;
+    background-color: var(--cta-schedule);
   }
 
   .bg-cta-schedule-soft {
-    background-color: color-mix(in oklch, #00d9ff 10%, transparent);
+    background-color: color-mix(in oklch, var(--cta-schedule) 10%, transparent);
   }
 
   .border-cta-schedule {
-    border-color: color-mix(in oklch, #00d9ff 80%, transparent);
+    border-color: color-mix(in oklch, var(--cta-schedule) 80%, transparent);
   }
 
   .border-cta-schedule-muted {
-    border-color: color-mix(in oklch, #00d9ff 32%, transparent);
+    border-color: color-mix(in oklch, var(--cta-schedule) 32%, transparent);
   }
 
   .shadow-cta-schedule {
     box-shadow: var(--shadow-sm),
-      0 8px 24px -18px color-mix(in oklch, #00d9ff 55%, transparent);
+      0 8px 24px -18px color-mix(in oklch, var(--cta-schedule) 55%, transparent);
   }
 
   .cta-card-hover-schedule:hover {
-    border-color: color-mix(in oklch, #00d9ff 80%, transparent);
+    border-color: color-mix(in oklch, var(--cta-schedule) 80%, transparent);
     box-shadow: var(--shadow-sm),
-      0 8px 24px -18px color-mix(in oklch, #00d9ff 55%, transparent);
+      0 8px 24px -18px color-mix(in oklch, var(--cta-schedule) 55%, transparent);
   }
 
   .group:hover .cta-row-hover-schedule {
-    color: #00b8d9;
-    background-color: color-mix(in oklch, #00d9ff 10%, transparent);
+    color: var(--cta-schedule);
+    background-color: color-mix(in oklch, var(--cta-schedule) 10%, transparent);
   }
 
   .text-cta-tournament {
-    color: #ff7a00;
+    color: var(--cta-tournament);
   }
 
   .text-cta-tournament-muted {
-    color: color-mix(in oklch, #ff7a00 75%, transparent);
+    color: color-mix(in oklch, var(--cta-tournament) 75%, transparent);
   }
 
   .bg-cta-tournament {
-    background-color: #ff7a00;
+    background-color: var(--cta-tournament);
   }
 
   .bg-cta-tournament-soft {
-    background-color: color-mix(in oklch, #ff7a00 10%, transparent);
+    background-color: color-mix(in oklch, var(--cta-tournament) 12%, transparent);
   }
 
   .border-cta-tournament {
-    border-color: color-mix(in oklch, #ff7a00 80%, transparent);
+    border-color: color-mix(in oklch, var(--cta-tournament) 80%, transparent);
   }
 
   .border-cta-tournament-muted {
-    border-color: color-mix(in oklch, #ff7a00 32%, transparent);
+    border-color: color-mix(in oklch, var(--cta-tournament) 36%, transparent);
   }
 
   .shadow-cta-tournament {
     box-shadow: var(--shadow-sm),
-      0 8px 24px -18px color-mix(in oklch, #ff7a00 55%, transparent);
+      0 8px 24px -18px color-mix(in oklch, var(--cta-tournament) 55%, transparent);
   }
 
   .cta-card-hover-tournament:hover {
-    border-color: color-mix(in oklch, #ff7a00 80%, transparent);
+    border-color: color-mix(in oklch, var(--cta-tournament) 80%, transparent);
     box-shadow: var(--shadow-sm),
-      0 8px 24px -18px color-mix(in oklch, #ff7a00 55%, transparent);
+      0 8px 24px -18px color-mix(in oklch, var(--cta-tournament) 55%, transparent);
   }
 
   .group:hover .cta-row-hover-tournament {
-    color: #ff7a00;
-    background-color: color-mix(in oklch, #ff7a00 10%, transparent);
+    color: var(--cta-tournament);
+    background-color: color-mix(in oklch, var(--cta-tournament) 12%, transparent);
   }
 
   .text-cta-contact {
-    color: #ff2e88;
+    color: var(--cta-contact);
   }
 
   .text-cta-contact-muted {
-    color: color-mix(in oklch, #ff2e88 75%, transparent);
+    color: color-mix(in oklch, var(--cta-contact) 75%, transparent);
   }
 
   .bg-cta-contact {
-    background-color: #ff2e88;
+    background-color: var(--cta-contact);
   }
 
   .bg-cta-contact-soft {
-    background-color: color-mix(in oklch, #ff2e88 10%, transparent);
+    background-color: color-mix(in oklch, var(--cta-contact) 12%, transparent);
   }
 
   .border-cta-contact {
-    border-color: color-mix(in oklch, #ff2e88 80%, transparent);
+    border-color: color-mix(in oklch, var(--cta-contact) 80%, transparent);
   }
 
   .border-cta-contact-muted {
-    border-color: color-mix(in oklch, #ff2e88 32%, transparent);
+    border-color: color-mix(in oklch, var(--cta-contact) 36%, transparent);
   }
 
   .shadow-cta-contact {
     box-shadow: var(--shadow-sm),
-      0 8px 24px -18px color-mix(in oklch, #ff2e88 55%, transparent);
+      0 8px 24px -18px color-mix(in oklch, var(--cta-contact) 55%, transparent);
   }
 
   .cta-card-hover-contact:hover {
-    border-color: color-mix(in oklch, #ff2e88 80%, transparent);
+    border-color: color-mix(in oklch, var(--cta-contact) 80%, transparent);
     box-shadow: var(--shadow-sm),
-      0 8px 24px -18px color-mix(in oklch, #ff2e88 55%, transparent);
+      0 8px 24px -18px color-mix(in oklch, var(--cta-contact) 55%, transparent);
   }
 
   .group:hover .cta-row-hover-contact {
-    color: #ff2e88;
-    background-color: color-mix(in oklch, #ff2e88 10%, transparent);
+    color: var(--cta-contact);
+    background-color: color-mix(in oklch, var(--cta-contact) 12%, transparent);
   }
 
   .cta-button-primary-cta-club,
@@ -527,40 +555,43 @@
   .cta-button-primary-cta-tournament,
   .cta-button-primary-cta-contact {
     border: 0;
-    color: white;
     box-shadow: none;
   }
 
   .cta-button-primary-cta-club {
-    background-color: #2f6bff;
+    color: var(--cta-club-foreground);
+    background-color: var(--cta-club);
   }
 
   .cta-button-primary-cta-club:hover {
-    background-color: color-mix(in oklch, #2f6bff 88%, black);
+    background-color: color-mix(in oklch, var(--cta-club) 88%, black);
   }
 
   .cta-button-primary-cta-schedule {
-    background-color: #00b8d9;
+    color: var(--cta-schedule-foreground);
+    background-color: var(--cta-schedule);
   }
 
   .cta-button-primary-cta-schedule:hover {
-    background-color: color-mix(in oklch, #00b8d9 88%, black);
+    background-color: color-mix(in oklch, var(--cta-schedule) 88%, black);
   }
 
   .cta-button-primary-cta-tournament {
-    background-color: #ff7a00;
+    color: var(--primary-foreground);
+    background-color: var(--primary);
   }
 
   .cta-button-primary-cta-tournament:hover {
-    background-color: color-mix(in oklch, #ff7a00 88%, black);
+    background-color: color-mix(in oklch, var(--primary) 88%, black);
   }
 
   .cta-button-primary-cta-contact {
-    background-color: #ff2e88;
+    color: var(--primary-foreground);
+    background-color: var(--primary);
   }
 
   .cta-button-primary-cta-contact:hover {
-    background-color: color-mix(in oklch, #ff2e88 88%, black);
+    background-color: color-mix(in oklch, var(--primary) 88%, black);
   }
 
   .cta-button-soft-cta-club,
@@ -575,83 +606,83 @@
   }
 
   .cta-button-soft-cta-club {
-    color: #2f6bff;
-    background-color: color-mix(in oklch, #2f6bff 10%, transparent);
+    color: var(--cta-club);
+    background-color: color-mix(in oklch, var(--cta-club) 10%, transparent);
   }
 
   .cta-button-soft-cta-club:hover {
-    color: #2f6bff;
-    background-color: color-mix(in oklch, #2f6bff 16%, transparent);
+    color: var(--cta-club);
+    background-color: color-mix(in oklch, var(--cta-club) 16%, transparent);
   }
 
   .cta-button-soft-cta-schedule {
-    color: #00b8d9;
-    background-color: color-mix(in oklch, #00d9ff 10%, transparent);
+    color: var(--cta-schedule);
+    background-color: color-mix(in oklch, var(--cta-schedule) 10%, transparent);
   }
 
   .cta-button-soft-cta-schedule:hover {
-    color: #00b8d9;
-    background-color: color-mix(in oklch, #00d9ff 16%, transparent);
+    color: var(--cta-schedule);
+    background-color: color-mix(in oklch, var(--cta-schedule) 16%, transparent);
   }
 
   .cta-button-soft-cta-tournament {
-    color: #ff7a00;
-    background-color: color-mix(in oklch, #ff7a00 10%, transparent);
+    color: var(--cta-tournament);
+    background-color: color-mix(in oklch, var(--cta-tournament) 24%, transparent);
   }
 
   .cta-button-soft-cta-tournament:hover {
-    color: #ff7a00;
-    background-color: color-mix(in oklch, #ff7a00 16%, transparent);
+    color: var(--cta-tournament);
+    background-color: color-mix(in oklch, var(--cta-tournament) 34%, transparent);
   }
 
   .cta-button-soft-cta-contact {
-    color: #ff2e88;
-    background-color: color-mix(in oklch, #ff2e88 10%, transparent);
+    color: var(--cta-contact);
+    background-color: color-mix(in oklch, var(--cta-contact) 24%, transparent);
   }
 
   .cta-button-soft-cta-contact:hover {
-    color: #ff2e88;
-    background-color: color-mix(in oklch, #ff2e88 16%, transparent);
+    color: var(--cta-contact);
+    background-color: color-mix(in oklch, var(--cta-contact) 34%, transparent);
   }
 
   .cta-button-soft-border-cta-club {
-    color: #2f6bff;
-    border-color: color-mix(in oklch, #2f6bff 24%, transparent);
+    color: var(--cta-club);
+    border-color: color-mix(in oklch, var(--cta-club) 24%, transparent);
   }
 
   .cta-button-soft-border-cta-club:hover {
-    color: #2f6bff;
-    background-color: color-mix(in oklch, #2f6bff 10%, transparent);
+    color: var(--cta-club);
+    background-color: color-mix(in oklch, var(--cta-club) 10%, transparent);
   }
 
   .cta-button-soft-border-cta-schedule {
-    color: #00b8d9;
-    border-color: color-mix(in oklch, #00d9ff 24%, transparent);
+    color: var(--cta-schedule);
+    border-color: color-mix(in oklch, var(--cta-schedule) 24%, transparent);
   }
 
   .cta-button-soft-border-cta-schedule:hover {
-    color: #00b8d9;
-    background-color: color-mix(in oklch, #00d9ff 10%, transparent);
+    color: var(--cta-schedule);
+    background-color: color-mix(in oklch, var(--cta-schedule) 10%, transparent);
   }
 
   .cta-button-soft-border-cta-tournament {
-    color: #ff7a00;
-    border-color: color-mix(in oklch, #ff7a00 24%, transparent);
+    color: var(--cta-tournament);
+    border-color: color-mix(in oklch, var(--cta-tournament) 40%, transparent);
   }
 
   .cta-button-soft-border-cta-tournament:hover {
-    color: #ff7a00;
-    background-color: color-mix(in oklch, #ff7a00 10%, transparent);
+    color: var(--cta-tournament);
+    background-color: color-mix(in oklch, var(--cta-tournament) 20%, transparent);
   }
 
   .cta-button-soft-border-cta-contact {
-    color: #ff2e88;
-    border-color: color-mix(in oklch, #ff2e88 24%, transparent);
+    color: var(--cta-contact);
+    border-color: color-mix(in oklch, var(--cta-contact) 40%, transparent);
   }
 
   .cta-button-soft-border-cta-contact:hover {
-    color: #ff2e88;
-    background-color: color-mix(in oklch, #ff2e88 10%, transparent);
+    color: var(--cta-contact);
+    background-color: color-mix(in oklch, var(--cta-contact) 20%, transparent);
   }
 
   .admin-form-card {
@@ -874,13 +905,26 @@
 
 .card-hover {
   transition: transform 200ms var(--ease-out-quart),
-    box-shadow 200ms var(--ease-out-quart);
+    box-shadow 200ms var(--ease-out-quart),
+    border-color 200ms var(--ease-out-quart),
+    background-color 200ms var(--ease-out-quart);
 }
 
 .card-hover:hover {
   transform: translateY(-2px);
+  border-color: color-mix(in oklch, var(--primary) 36%, var(--border));
+  background-color: color-mix(in oklch, var(--card) 94%, var(--primary));
   box-shadow: var(--shadow-sm),
-    0 0 0 1px color-mix(in oklch, var(--primary) 18%, transparent);
+    0 0 0 1px color-mix(in oklch, var(--primary) 24%, transparent),
+    0 16px 32px -28px color-mix(in oklch, var(--primary) 55%, transparent);
+}
+
+.dark .card-hover:hover {
+  border-color: color-mix(in oklch, var(--primary) 50%, var(--border));
+  background-color: color-mix(in oklch, var(--card) 88%, var(--primary));
+  box-shadow: var(--shadow-sm),
+    0 0 0 1px color-mix(in oklch, var(--primary) 34%, transparent),
+    0 18px 36px -28px color-mix(in oklch, var(--primary) 65%, transparent);
 }
 
 .card-hover:focus-within {

@@ -525,12 +525,6 @@ export default function HeaderCentered({
                 )}
               </button>
 
-              <ThemeToggleButton
-                className="md:hidden"
-                isDark={isDark}
-                onToggle={() => setTheme(isDark ? "light" : "dark")}
-              />
-
               <div className="hidden items-center gap-1.5 md:flex">
                 {desktopSections.map((section) => {
                   const active =
@@ -973,7 +967,7 @@ export default function HeaderCentered({
         <div className="flex min-h-full flex-col bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.08),_transparent_32%)] px-4 pb-5 pt-14 dark:bg-[radial-gradient(circle_at_top,_rgba(96,165,250,0.1),_transparent_30%)] sm:px-4">
           <SheetHeader className="mb-4 space-y-4 border-b border-border/70 pb-4">
             <div className="space-y-1 text-left">
-              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-sky-500/15 bg-sky-500/8 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-sky-700 dark:text-sky-200">
+              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/8 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
                 <Compass className="h-3.5 w-3.5" />
                 Navigation rapide
               </div>
@@ -984,6 +978,33 @@ export default function HeaderCentered({
                 Retrouvez rapidement les pages utiles du club et du tournoi.
               </p>
             </div>
+
+            <button
+              type="button"
+              onClick={() => setTheme(isDark ? "light" : "dark")}
+              className="flex w-full items-center justify-between rounded-2xl border border-border/70 bg-background/80 px-3 py-2.5 text-left text-sm shadow-sm transition-colors hover:bg-muted/35"
+            >
+              <span className="flex items-center gap-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  {isDark ? (
+                    <Sun className="h-4 w-4" />
+                  ) : (
+                    <Moon className="h-4 w-4" />
+                  )}
+                </span>
+                <span>
+                  <span className="block font-semibold text-foreground">
+                    {isDark ? "Mode clair" : "Mode sombre"}
+                  </span>
+                  <span className="block text-xs leading-5 text-muted-foreground">
+                    Changer l&apos;ambiance du site
+                  </span>
+                </span>
+              </span>
+              <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                {isDark ? "Soleil" : "Lune"}
+              </span>
+            </button>
 
             <div className="rounded-2xl border border-border/70 bg-background/80 p-2 shadow-sm backdrop-blur">
               <div className="grid grid-cols-2 gap-2">
@@ -1007,7 +1028,7 @@ export default function HeaderCentered({
                       className={cn(
                         "rounded-[1rem] border px-3 py-3 text-left transition-all",
                         active
-                          ? "border-sky-500/25 bg-sky-500/10 shadow-sm dark:border-sky-300/20 dark:bg-sky-300/10"
+                          ? "border-primary/25 bg-primary/10 shadow-sm"
                           : "border-border/70 bg-background hover:bg-muted/40",
                       )}
                       aria-pressed={active}
@@ -1017,7 +1038,7 @@ export default function HeaderCentered({
                           className={cn(
                             "flex h-9 w-9 items-center justify-center rounded-full",
                             active
-                              ? "bg-sky-600 text-white dark:bg-sky-200 dark:text-slate-950"
+                              ? "bg-primary text-primary-foreground"
                               : "bg-muted text-muted-foreground",
                           )}
                         >

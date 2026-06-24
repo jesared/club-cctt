@@ -10,10 +10,10 @@ const badgeVariants = cva(
       variant: {
         default: "border-transparent bg-primary text-primary-foreground",
         jeunes: "border-transparent bg-primary text-primary-foreground",
-        adultes: "border-transparent bg-orange-500 text-white",
-        elite: "border-transparent bg-yellow-500 text-black",
-        loisir: "border-transparent bg-green-500 text-black",
-        libre: "border-transparent bg-slate-700 text-white",
+        adultes: "border-transparent bg-secondary text-secondary-foreground",
+        elite: "border-transparent bg-accent text-accent-foreground",
+        loisir: "border-transparent bg-muted text-foreground",
+        libre: "border-transparent bg-foreground text-background",
         secondary:
           "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
         destructive:

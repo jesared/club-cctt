@@ -121,16 +121,16 @@ const clubSections = [
 
 export default function ClubPage() {
   return (
-    <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:space-y-10 sm:px-6 sm:py-12">
+    <div className="mx-auto max-w-7xl space-y-8 px-4 py-7 sm:space-y-10 sm:px-6 sm:py-10">
       <Reveal>
-        <header className="rounded-3xl border bg-background p-6 shadow-sm sm:p-8">
-          <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
-            <div className="space-y-5">
+        <header className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
+          <div className="grid lg:min-h-[420px] lg:grid-cols-[minmax(0,0.96fr)_minmax(420px,1.04fr)]">
+            <div className="flex flex-col justify-center space-y-6 p-5 sm:p-7 lg:p-9">
               <p className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] animate-fade-up-1 ${ctaToneClasses.club.eyebrow}`}>
                 Club CCTT
               </p>
               <div className="space-y-4">
-                <h1 className="text-3xl font-bold tracking-tight sm:text-5xl animate-fade-up-2">
+                <h1 className="max-w-3xl text-3xl font-bold leading-tight tracking-tight sm:text-5xl animate-fade-up-2">
                   Châlons-en-Champagne Tennis de Table
                 </h1>
                 <p className="max-w-2xl text-base text-muted-foreground sm:text-lg animate-fade-up-2">
@@ -140,18 +140,22 @@ export default function ClubPage() {
                 </p>
               </div>
 
-              <ClubContextNav />
+              <ClubContextNav compact />
             </div>
 
-            <div className="group overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+            <div className="group relative min-h-[280px] overflow-hidden border-t border-border/70 lg:min-h-full lg:border-l lg:border-t-0">
               <div
-                className="h-full min-h-[220px] bg-cover bg-center transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-500 ease-out group-hover:scale-[1.03]"
                 style={{
                   backgroundImage:
                     "url(https://res.cloudinary.com/diimhrbx7/image/upload/v1774953003/481667842_663772202843768_4729083360154549573_n_ff3jkc.jpg)",
                 }}
                 aria-hidden="true"
               />
+              <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background/72 to-transparent lg:h-32" />
+              <div className="absolute bottom-4 left-4 rounded-full border border-background/55 bg-background/82 px-3 py-1 text-xs font-medium text-foreground shadow-sm backdrop-blur">
+                Salle, entraînements et vie du club
+              </div>
             </div>
           </div>
         </header>
@@ -177,7 +181,7 @@ export default function ClubPage() {
             return (
               <Reveal key={item.title} delay={index * 120}>
                 <Card
-                  className={`flex h-full flex-col border-border bg-card shadow-sm card-hover ${accent.cardHoverClassName}`}
+                  className="flex h-full flex-col rounded-xl border-border/70 bg-card/92 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md"
                 >
                   <CardHeader className="space-y-3">
                     <div
@@ -210,7 +214,7 @@ export default function ClubPage() {
 
       <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
         <Reveal>
-          <Card className="border-border bg-card shadow-sm card-hover">
+          <Card className="rounded-xl border-border/70 bg-card/92 shadow-sm card-hover">
             <CardHeader>
               <CardTitle>Le club en bref</CardTitle>
             </CardHeader>
@@ -269,7 +273,7 @@ export default function ClubPage() {
         <div className="grid gap-4">
           {clubSections.map((item, index) => (
             <Reveal key={item.title} delay={index * 120}>
-              <Card className="flex h-full flex-col border-border bg-card shadow-sm card-hover">
+              <Card className="flex h-full flex-col rounded-xl border-border/70 bg-card/92 shadow-sm card-hover">
                 <CardHeader>
                   <CardTitle>{item.title}</CardTitle>
                 </CardHeader>
@@ -295,7 +299,7 @@ export default function ClubPage() {
 
       <Reveal>
         <section>
-          <Card className="border-border bg-card shadow-sm card-hover">
+          <Card className="rounded-xl border-border/70 bg-card/92 shadow-sm card-hover">
             <CardHeader>
               <CardTitle>Besoin d&apos;être orienté ?</CardTitle>
             </CardHeader>

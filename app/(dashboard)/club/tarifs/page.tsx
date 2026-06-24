@@ -144,7 +144,7 @@ export default async function TarifsPage() {
                           ligne.highlight ? "border-primary/40 bg-primary/5" : ""
                         }`}
                       >
-                        <span className="flex-1 text-base font-medium text-sky-600 dark:text-sky-400">
+                        <span className="flex-1 text-base font-medium text-primary">
                           {ligne.nom}
                         </span>
                         <strong
