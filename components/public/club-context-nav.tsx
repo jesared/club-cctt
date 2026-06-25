@@ -12,7 +12,7 @@ const clubContextLinks = [
   { href: "/club/horaires", label: "Trouver un créneau", mobileLabel: "Horaires" },
   { href: "/club/tarifs", label: "Comparer les tarifs", mobileLabel: "Tarifs" },
   { href: "/club/contact", label: "Demander un essai", mobileLabel: "Contact" },
-  { href: "/club", label: "Decouvrir le club", mobileLabel: "Decouvrir" },
+  { href: "/club", label: "Découvrir le club", mobileLabel: "Découvrir" },
 ];
 
 function isActive(pathname: string, href: string) {

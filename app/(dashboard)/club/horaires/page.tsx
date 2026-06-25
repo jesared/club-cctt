@@ -230,9 +230,9 @@ export default async function HorairesPage() {
         </div>
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-        <Reveal>
-          <Card className={`border-l-4 border-cta-schedule card-hover ${ctaToneClasses.schedule.cardHover}`}>
+      <section className="grid min-w-0 gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+        <Reveal className="min-w-0">
+          <Card className={`max-w-full border-l-4 border-cta-schedule card-hover ${ctaToneClasses.schedule.cardHover}`}>
             <CardHeader>
               <CardTitle>Ce qu&apos;il faut retenir avant de venir</CardTitle>
             </CardHeader>
@@ -246,8 +246,8 @@ export default async function HorairesPage() {
           </Card>
         </Reveal>
 
-        <Reveal delay={120}>
-          <Card className={`border-l-4 border-cta-schedule card-hover ${ctaToneClasses.schedule.cardHover}`}>
+        <Reveal delay={120} className="min-w-0">
+          <Card className={`max-w-full border-l-4 border-cta-schedule card-hover ${ctaToneClasses.schedule.cardHover}`}>
             <CardHeader>
               <CardTitle>Essai gratuit</CardTitle>
             </CardHeader>

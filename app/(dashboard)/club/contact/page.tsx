@@ -205,7 +205,7 @@ export default async function ContactPage({
                   <ContactForm initialSubject={initialSubject} />
                 ) : (
                   <div className="space-y-4">
-                    <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4 text-sm text-foreground">
+                    <div className="rounded-2xl border border-accent/35 bg-accent/15 p-4 text-sm text-foreground dark:border-accent/45 dark:bg-accent/20">
                       <p className="font-medium">Formulaire temporairement indisponible</p>
                       <p className="mt-1 text-muted-foreground">
                         {contactAvailability.message}

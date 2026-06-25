@@ -235,7 +235,7 @@ export default async function InscriptionsPage({ searchParams }: PageProps) {
         {canShowRegistrationForm ? (
           <TournamentRegistrationForm tableOptions={tableOptions} />
         ) : (
-          <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4 text-sm text-foreground">
+          <div className="rounded-2xl border border-accent/35 bg-accent/15 p-4 text-sm text-foreground dark:border-accent/45 dark:bg-accent/20">
             <p className="font-medium">
               {notificationAvailability.isAvailable
                 ? registrationStatus.label
