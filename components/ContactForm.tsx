@@ -11,12 +11,16 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { ctaToneClasses } from "@/lib/cta-theme";
 import {
   type ContactSubject,
   normalizeContactSubject,
   contactSubjectOptions,
 } from "@/lib/contact-subjects";
+import { cn } from "@/lib/utils";
 
 type FeedbackState =
   | { type: "success"; message: string }
@@ -44,6 +48,8 @@ const initialFormData: ContactFormData = {
 };
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const formControlStateClassName =
+  "aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40";
 
 function validateField(field: ContactField, value: string) {
   const trimmedValue = value.trim();
@@ -229,12 +235,15 @@ export default function ContactForm({
       </p>
 
       <div>
-        <label htmlFor="name" className="mb-1 block text-sm font-medium">
+        <Label htmlFor="name" className="mb-1 block">
           Nom
-        </label>
-        <div className="form-input-group">
-          <User className="form-input-group__icon h-4 w-4" aria-hidden="true" />
-          <input
+        </Label>
+        <div className="relative">
+          <User
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden="true"
+          />
+          <Input
             type="text"
             id="name"
             name="name"
@@ -247,7 +256,7 @@ export default function ContactForm({
             onBlur={() => markFieldAsTouched("name")}
             aria-invalid={fieldErrors.name ? "true" : "false"}
             aria-describedby={fieldErrors.name ? "name-error" : undefined}
-            className="form-field"
+            className={cn("pl-10", formControlStateClassName)}
           />
         </div>
         {fieldErrors.name ? (
@@ -258,12 +267,15 @@ export default function ContactForm({
       </div>
 
       <div>
-        <label htmlFor="email" className="mb-1 block text-sm font-medium">
+        <Label htmlFor="email" className="mb-1 block">
           E-mail
-        </label>
-        <div className="form-input-group">
-          <Mail className="form-input-group__icon h-4 w-4" aria-hidden="true" />
-          <input
+        </Label>
+        <div className="relative">
+          <Mail
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden="true"
+          />
+          <Input
             type="email"
             id="email"
             name="email"
@@ -275,7 +287,7 @@ export default function ContactForm({
             onBlur={() => markFieldAsTouched("email")}
             aria-invalid={fieldErrors.email ? "true" : "false"}
             aria-describedby={fieldErrors.email ? "email-error" : undefined}
-            className="form-field"
+            className={cn("pl-10", formControlStateClassName)}
           />
         </div>
         {fieldErrors.email ? (
@@ -286,31 +298,35 @@ export default function ContactForm({
       </div>
 
       <div>
-        <label htmlFor="subject" className="mb-1 block text-sm font-medium">
+        <Label htmlFor="subject" className="mb-1 block">
           Sujet
-        </label>
-        <div className="form-input-group">
+        </Label>
+        <div className="relative">
           <ListChecks
-            className="form-input-group__icon h-4 w-4"
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
             aria-hidden="true"
           />
           <select
-          id="subject"
-          name="subject"
-          required
-          value={formData.subject}
-          onChange={(event) => setFieldValue("subject", event.target.value)}
-          onBlur={() => markFieldAsTouched("subject")}
-          aria-invalid={fieldErrors.subject ? "true" : "false"}
-          aria-describedby={fieldErrors.subject ? "subject-error" : undefined}
-          className="form-field"
-        >
-          <option value="">Sélectionnez un sujet</option>
-          {contactSubjectOptions.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
+            id="subject"
+            name="subject"
+            required
+            value={formData.subject}
+            onChange={(event) => setFieldValue("subject", event.target.value)}
+            onBlur={() => markFieldAsTouched("subject")}
+            aria-invalid={fieldErrors.subject ? "true" : "false"}
+            aria-describedby={fieldErrors.subject ? "subject-error" : undefined}
+            className={cn(
+              "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 pl-10 text-base shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+              formControlStateClassName,
+              !formData.subject && "text-muted-foreground",
+            )}
+          >
+            <option className="bg-card text-foreground" value="">Sélectionnez un sujet</option>
+            {contactSubjectOptions.map((option) => (
+              <option className="bg-card text-foreground" key={option} value={option}>
+                {option}
+              </option>
+            ))}
           </select>
         </div>
         {fieldErrors.subject ? (
@@ -321,15 +337,15 @@ export default function ContactForm({
       </div>
 
       <div>
-        <label htmlFor="message" className="mb-1 block text-sm font-medium">
+        <Label htmlFor="message" className="mb-1 block">
           Message
-        </label>
-        <div className="form-input-group">
+        </Label>
+        <div className="relative">
           <MessageSquareText
-            className="form-input-group__icon form-input-group__icon--textarea h-4 w-4"
+            className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-muted-foreground"
             aria-hidden="true"
           />
-          <textarea
+          <Textarea
             id="message"
             name="message"
             rows={5}
@@ -342,7 +358,7 @@ export default function ContactForm({
             onBlur={() => markFieldAsTouched("message")}
             aria-invalid={fieldErrors.message ? "true" : "false"}
             aria-describedby={fieldErrors.message ? "message-error" : undefined}
-            className="form-field"
+            className={cn("min-h-32 pl-10", formControlStateClassName)}
           />
         </div>
         {fieldErrors.message ? (

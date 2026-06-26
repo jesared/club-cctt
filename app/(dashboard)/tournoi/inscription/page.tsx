@@ -182,19 +182,24 @@ export default async function InscriptionsPage({ searchParams }: PageProps) {
       : false;
 
   return (
-    <main className="mx-auto max-w-4xl space-y-4 px-4 py-6 sm:py-8">
+    <main className="mx-auto w-full max-w-[1500px] space-y-4 px-4 py-6 sm:px-6 sm:py-8">
       <KpiPageViewTracker page="tournoi-inscription" label="inscription-page" />
 
       <Reveal>
-        <header className="space-y-2 sm:space-y-3">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-primary">
-            Tournoi CCTT
-          </p>
+        <header className="space-y-4 rounded-2xl border border-border/70 bg-card/80 p-4 shadow-sm sm:p-5">
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-primary">
+              Tournoi CCTT
+            </p>
+            <span className="rounded-full border border-accent/35 bg-accent/15 px-3 py-1 text-xs font-medium text-foreground dark:bg-accent/20">
+              {registrationStatus.label}
+            </span>
+          </div>
           <h1 className="text-2xl font-semibold sm:text-3xl">
             Inscription{" "}
             {tournament?.name ? `au ${tournament.name}` : "au Tournoi"}
           </h1>
-          <p className="hidden text-sm leading-relaxed text-muted-foreground sm:block">
+          <p className="text-sm leading-relaxed text-muted-foreground">
             {registrationStatus.canRegister
               ? "Saisissez votre numéro de licence FFTT : le formulaire récupère les données joueur, filtre les tableaux compatibles, puis affiche un récapitulatif avant validation."
               : registrationStatus.message}
@@ -208,6 +213,23 @@ export default async function InscriptionsPage({ searchParams }: PageProps) {
                 <Link href="/user/inscriptions">Suivre mes inscriptions</Link>
               </Button>
             ) : null}
+          </div>
+          <div className="grid gap-2 border-t border-border/60 pt-4 sm:grid-cols-3">
+            {["Licence FFTT", "Choix des tableaux", "Validation finale"].map(
+              (item, index) => (
+                <div
+                  key={item}
+                  className="rounded-xl border border-border/60 bg-background/60 px-3 py-2"
+                >
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                    Étape {index + 1}
+                  </p>
+                  <p className="mt-1 text-sm font-medium text-foreground">
+                    {item}
+                  </p>
+                </div>
+              ),
+            )}
           </div>
         </header>
       </Reveal>

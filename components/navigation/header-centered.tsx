@@ -113,8 +113,8 @@ function ThemeToggleButton({
       aria-label={isDark ? "Passer au mode clair" : "Passer au mode sombre"}
       title={isDark ? "Mode clair" : "Mode sombre"}
       className={cn(
-        "rounded-full border-border/70 bg-background/90 text-slate-600 shadow-sm hover:bg-muted hover:text-slate-950 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10 dark:hover:text-white",
-        isDark && "text-amber-300/90 hover:text-amber-200",
+        "rounded-full border-border/70 bg-background/90 text-muted-foreground shadow-sm hover:bg-muted hover:text-foreground dark:bg-white/5 dark:hover:bg-white/10",
+        isDark && "text-accent hover:text-accent",
         className,
       )}
       onClick={onToggle}
@@ -485,7 +485,7 @@ export default function HeaderCentered({
   const unreadMessageLabel =
     unreadNotificationCount > 9 ? "9+" : String(unreadNotificationCount);
   const headerActionSurface =
-    "border border-border/70 bg-background/90 shadow-sm transition-all duration-200 dark:border-white/10 dark:bg-white/5";
+    "border border-border/70 bg-background/90 shadow-sm transition-all duration-200 hover:border-border hover:bg-muted/60 hover:text-foreground dark:border-white/10 dark:bg-white/5 dark:hover:border-white/15 dark:hover:bg-white/10";
   const inboxSummaryLabel =
     unreadNotificationCount > 0
       ? `${unreadNotificationCount} nouvelle${
@@ -511,8 +511,8 @@ export default function HeaderCentered({
                 type="button"
                 aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
                 className={cn(
-                  "inline-flex h-10 w-10 items-center justify-center rounded-full border border-transparent bg-muted/20 text-slate-600 transition-colors hover:bg-muted/55 hover:text-slate-900 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white",
-                  menuOpen && "bg-muted/75 text-foreground dark:bg-white/12",
+                  "inline-flex h-10 w-10 items-center justify-center rounded-full border border-transparent bg-muted/20 text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground dark:bg-white/5 dark:hover:bg-white/10",
+                  menuOpen && "bg-muted text-foreground dark:bg-white/12",
                 )}
                 aria-expanded={menuOpen}
                 aria-controls="header-centered-menu"
@@ -544,11 +544,11 @@ export default function HeaderCentered({
                       className={cn(
                         "rounded-full px-3 py-1.5 text-[0.9rem] font-medium whitespace-nowrap transition-colors",
                         active
-                          ? "bg-slate-100/85 text-slate-900 dark:bg-slate-400/10 dark:text-white"
+                          ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-white"
                           : "text-muted-foreground hover:bg-muted/45 hover:text-foreground",
                         section.title === "Tournoi" &&
                           active &&
-                          "bg-stone-100/90 text-stone-900 dark:bg-stone-400/10",
+                          "bg-accent/15 text-foreground dark:bg-accent/20",
                       )}
                     >
                       {label}
@@ -666,12 +666,12 @@ export default function HeaderCentered({
                       aria-haspopup="dialog"
                       aria-expanded={notificationsOpen}
                       className={cn(
-                        "group relative h-11 w-11 rounded-full text-slate-600 dark:text-slate-200 dark:hover:text-white",
+                        "group relative h-11 w-11 rounded-full text-muted-foreground",
                         headerActionSurface,
                         hasUnreadMessages &&
-                          "border-rose-300/70 text-rose-700 dark:border-rose-400/35 dark:text-rose-200",
+                          "border-accent/55 text-foreground dark:border-accent/45 dark:text-white",
                         notificationsOpen &&
-                          "border-rose-300/80 bg-background text-slate-950 shadow-md dark:border-rose-400/40 dark:bg-white/8 dark:text-white",
+                          "border-accent/60 bg-background text-foreground shadow-md dark:border-accent/45 dark:bg-white/10 dark:text-white",
                       )}
                       onClick={() => {
                         setAccountMenuOpen(false);
@@ -680,7 +680,7 @@ export default function HeaderCentered({
                     >
                       <Bell className="h-[1.05rem] w-[1.05rem] transition-transform duration-200 group-hover:-rotate-6 group-hover:scale-110" />
                       {hasUnreadMessages ? (
-                        <Badge className="absolute -right-1 -top-1 h-5 min-w-5 justify-center rounded-full bg-rose-500 px-1 text-[0.65rem] leading-none text-white shadow-sm ring-2 ring-background dark:ring-slate-900">
+                        <Badge className="absolute -right-1 -top-1 h-5 min-w-5 justify-center rounded-full bg-accent px-1 text-[0.65rem] leading-none text-accent-foreground shadow-sm ring-2 ring-background">
                           {unreadMessageLabel}
                         </Badge>
                       ) : null}
@@ -691,13 +691,13 @@ export default function HeaderCentered({
                         <button
                           type="button"
                           aria-label="Fermer les notifications"
-                          className="fixed inset-0 z-40 bg-slate-950/28 backdrop-blur-[1px] sm:hidden"
+                          className="fixed inset-0 z-40 bg-foreground/20 backdrop-blur-[1px] sm:hidden"
                           onClick={() => setNotificationsOpen(false)}
                         />
                         <div
                           role="dialog"
                           aria-label="Notifications"
-                          className="fixed inset-x-3 top-[5.25rem] z-50 overflow-hidden rounded-[1.35rem] border border-border/70 bg-background/95 shadow-[0_24px_70px_rgba(15,23,42,0.18)] backdrop-blur dark:bg-slate-950/92 sm:absolute sm:right-0 sm:top-[calc(100%+0.8rem)] sm:left-auto sm:w-[25rem] sm:rounded-[1.6rem]"
+                          className="fixed inset-x-3 top-[5.25rem] z-50 overflow-hidden rounded-[1.35rem] border border-border/70 bg-background/95 shadow-[0_24px_70px_rgba(15,23,42,0.18)] backdrop-blur dark:bg-background/95 sm:absolute sm:right-0 sm:top-[calc(100%+0.8rem)] sm:left-auto sm:w-[25rem] sm:rounded-[1.6rem]"
                         >
                           <div className="border-b border-border/70 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.1),_transparent_58%)] px-4 py-4 dark:bg-[radial-gradient(circle_at_top,_rgba(96,165,250,0.12),_transparent_52%)]">
                             <div className="flex items-start justify-between gap-3">
@@ -790,7 +790,7 @@ export default function HeaderCentered({
                                       className={cn(
                                         "rounded-[1.35rem] border transition-all duration-200 shadow-none",
                                         item.isUnread
-                                          ? "border-rose-200/80 bg-rose-50/70 dark:border-rose-400/20 dark:bg-rose-400/8"
+                                          ? "border-accent/35 bg-accent/10 dark:bg-accent/15"
                                           : "border-border/70 bg-background/70",
                                       )}
                                     >
@@ -798,7 +798,7 @@ export default function HeaderCentered({
                                       <div className="flex items-start justify-between gap-3">
                                         <div className="flex items-center gap-2">
                                           {item.isUnread ? (
-                                            <span className="h-2.5 w-2.5 rounded-full bg-rose-500 shadow-[0_0_0_4px_rgba(244,63,94,0.14)]" />
+                                            <span className="h-2.5 w-2.5 rounded-full bg-accent shadow-[0_0_0_4px_color-mix(in_oklch,var(--accent)_18%,transparent)]" />
                                           ) : (
                                             <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/25" />
                                           )}
@@ -1076,27 +1076,27 @@ export default function HeaderCentered({
                   section.title === "Club"
                     ? {
                         section: expanded
-                          ? "border-slate-300 bg-slate-100/80 dark:border-slate-400/25 dark:bg-slate-500/8"
-                          : "border-slate-200 bg-slate-50/80 dark:border-slate-400/15 dark:bg-slate-500/4",
-                        icon: "bg-slate-200 text-slate-600 dark:bg-slate-400/12 dark:text-slate-300",
-                        activeIcon: "bg-slate-600 text-white dark:bg-slate-300 dark:text-slate-950",
+                          ? "border-primary/30 bg-primary/10 dark:bg-primary/15"
+                          : "border-border/70 bg-card/70 dark:bg-card/40",
+                        icon: "bg-primary/10 text-primary dark:bg-primary/15",
+                        activeIcon: "bg-primary text-primary-foreground",
                         activeRow:
-                          "bg-slate-200/80 text-foreground before:bg-slate-500 dark:bg-slate-400/10 dark:before:bg-slate-300",
+                          "bg-primary/10 text-foreground before:bg-primary dark:bg-primary/15",
                         hoverRow:
-                          "text-slate-700 hover:bg-slate-100 hover:text-slate-950 dark:text-muted-foreground dark:hover:bg-slate-400/6 dark:hover:text-foreground",
-                        cta: "text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-400/8",
+                          "text-muted-foreground hover:bg-muted/55 hover:text-foreground",
+                        cta: "text-muted-foreground hover:bg-muted/55 hover:text-foreground",
                       }
                     : {
                         section: expanded
-                          ? "border-stone-300 bg-stone-100/80 dark:border-stone-400/25 dark:bg-stone-500/8"
-                          : "border-stone-200 bg-stone-50/80 dark:border-stone-400/15 dark:bg-stone-500/4",
-                        icon: "bg-stone-200 text-stone-600 dark:bg-stone-400/12 dark:text-stone-300",
-                        activeIcon: "bg-amber-400 text-stone-950 dark:bg-amber-200 dark:text-stone-950",
+                          ? "border-accent/40 bg-card/85 dark:bg-card/50"
+                          : "border-border/70 bg-card/70 dark:bg-card/40",
+                        icon: "bg-accent/15 text-foreground dark:bg-accent/20",
+                        activeIcon: "bg-accent text-accent-foreground",
                         activeRow:
-                          "bg-stone-200/80 text-foreground before:bg-amber-500 dark:bg-stone-400/10 dark:before:bg-amber-200",
+                          "bg-accent/12 text-foreground before:bg-accent dark:bg-accent/15",
                         hoverRow:
-                          "text-stone-700 hover:bg-stone-100 hover:text-stone-950 dark:text-muted-foreground dark:hover:bg-stone-400/6 dark:hover:text-foreground",
-                        cta: "text-stone-700 hover:bg-stone-100 dark:text-stone-200 dark:hover:bg-stone-400/8",
+                          "text-muted-foreground hover:bg-muted/55 hover:text-foreground",
+                        cta: "text-foreground hover:bg-accent/15",
                       };
 
                 return (
@@ -1234,7 +1234,11 @@ export default function HeaderCentered({
               <div
                 className={cn(
                   "grid gap-1",
-                  isAdmin && session ? "grid-cols-2" : "grid-cols-1",
+                  isAdmin && session
+                    ? "grid-cols-[0.85fr_1fr_1.15fr]"
+                    : session
+                      ? "grid-cols-[1fr_1.15fr]"
+                      : "grid-cols-1",
                 )}
               >
                 {isAdmin ? (
@@ -1250,6 +1254,32 @@ export default function HeaderCentered({
                       <span className="truncate text-[12px] font-medium text-foreground/90">
                         Admin
                       </span>
+                    </Link>
+                  </Button>
+                ) : null}
+
+                {session ? (
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="relative h-auto justify-start rounded-[0.8rem] border-border/30 bg-background/50 px-2 py-1.5 text-[12px] text-muted-foreground hover:bg-muted/45 hover:text-foreground"
+                  >
+                    <Link
+                      href={messagesHubHref}
+                      onClick={() => setMenuOpen(false)}
+                      aria-label={inboxSummaryLabel}
+                    >
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent/15 text-foreground">
+                        <Bell className="h-3 w-3" />
+                      </span>
+                      <span className="truncate text-[12px] font-medium text-foreground/90">
+                        Notifs
+                      </span>
+                      {hasUnreadMessages ? (
+                        <Badge className="absolute -right-1 -top-1 h-4 min-w-4 justify-center rounded-full bg-accent px-1 text-[0.58rem] leading-none text-accent-foreground ring-2 ring-background">
+                          {unreadMessageLabel}
+                        </Badge>
+                      ) : null}
                     </Link>
                   </Button>
                 ) : null}

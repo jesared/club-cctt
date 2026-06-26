@@ -15,7 +15,10 @@ import {
   UserRound,
 } from "lucide-react";
 
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { trackKpiEvent } from "@/lib/kpi";
+import { cn } from "@/lib/utils";
 
 type FeedbackState =
   | { type: "success"; message: string }
@@ -143,6 +146,8 @@ const steps: StepDefinition[] = [
 ];
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const formControlStateClassName =
+  "aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40";
 
 function isEligible(
   points: number | null,
@@ -184,7 +189,7 @@ function validateField(
         return "Indiquez le nom du joueur.";
       }
       if (trimmedValue.length < 2) {
-        return "Le nom doit contenir au moins 2 caracteres.";
+        return "Le nom doit contenir au moins 2 caractères.";
       }
       return undefined;
     case "firstName":
@@ -206,19 +211,19 @@ function validateField(
     case "phone": {
       const digitsOnly = value.replace(/\D/g, "");
       if (!digitsOnly) {
-        return "Indiquez un numero de telephone.";
+        return "Indiquez un numéro de téléphone.";
       }
       if (digitsOnly.length < 10) {
-        return "Le numero de telephone doit contenir au moins 10 chiffres.";
+        return "Le numéro de téléphone doit contenir au moins 10 chiffres.";
       }
       return undefined;
     }
     case "licenseNumber":
       if (!trimmedValue) {
-        return "Indiquez le numero de licence FFTT.";
+        return "Indiquez le numéro de licence FFTT.";
       }
       if (trimmedValue.length < 3) {
-        return "Le numero de licence doit contenir au moins 3 caracteres.";
+        return "Le numéro de licence doit contenir au moins 3 caractères.";
       }
       return undefined;
     case "points": {
@@ -241,7 +246,7 @@ function validateField(
         return "Indiquez le nom du club.";
       }
       if (trimmedValue.length < 2) {
-        return "Le nom du club doit contenir au moins 2 caracteres.";
+        return "Le nom du club doit contenir au moins 2 caractères.";
       }
       return undefined;
     default:
@@ -511,11 +516,11 @@ export default function TournamentRegistrationForm({
     if (!licenseNumber) {
       setFfttLookup({
         status: "error",
-        message: "Renseignez d'abord le numero de licence.",
+        message: "Renseignez d'abord le numéro de licence.",
       });
       setFieldErrors((current) => ({
         ...current,
-        licenseNumber: "Indiquez le numero de licence FFTT.",
+        licenseNumber: "Indiquez le numéro de licence FFTT.",
       }));
       return;
     }
@@ -1051,7 +1056,7 @@ export default function TournamentRegistrationForm({
           </div>
         </div>
 
-        <div className="grid gap-0 xl:grid-cols-[minmax(0,1fr)_300px]">
+        <div className="grid gap-0 2xl:grid-cols-[minmax(0,1fr)_260px]">
           <div className="min-w-0 p-3 sm:p-4">
             {feedback ? (
               <div
@@ -1116,7 +1121,7 @@ export default function TournamentRegistrationForm({
             ) : null}
           </div>
 
-          <aside className="hidden border-l border-border/70 bg-muted/15 p-4 xl:block">
+          <aside className="hidden border-l border-border/70 bg-muted/15 p-4 2xl:block">
             <WizardSummary
               formData={formData}
               profileReady={profileReady}
@@ -1355,7 +1360,11 @@ function ProfileStep({
                 aria-describedby={
                   fieldErrors.gender ? "gender-error" : undefined
                 }
-                className="form-field"
+                className={cn(
+                  "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+                  formControlStateClassName,
+                  !formData.gender && "text-muted-foreground",
+                )}
               >
                 <option className="bg-card text-foreground" value="">
                   Choisir
@@ -1384,7 +1393,7 @@ function ProfileStep({
       {hasFfttPlayer ? (
         <div className="grid gap-3 sm:grid-cols-2">
           <FieldShell error={fieldErrors.email} id="email" label="E-mail">
-            <input
+            <Input
               id="email"
               name="email"
               type="email"
@@ -1396,13 +1405,13 @@ function ProfileStep({
               onFocus={trackStartIfNeeded}
               aria-invalid={fieldErrors.email ? "true" : "false"}
               aria-describedby={fieldErrors.email ? "email-error" : undefined}
-              className="form-field"
+              className={formControlStateClassName}
               placeholder="joueur@email.fr"
             />
           </FieldShell>
 
           <FieldShell error={fieldErrors.phone} id="phone" label="Téléphone">
-            <input
+            <Input
               id="phone"
               name="phone"
               type="tel"
@@ -1415,7 +1424,7 @@ function ProfileStep({
               onFocus={trackStartIfNeeded}
               aria-invalid={fieldErrors.phone ? "true" : "false"}
               aria-describedby={fieldErrors.phone ? "phone-error" : undefined}
-              className="form-field"
+              className={formControlStateClassName}
               placeholder="06 12 34 56 78"
             />
           </FieldShell>
@@ -1460,9 +1469,9 @@ function TablesStep({
         <MetricPill label="En attente" value={String(selectedWaitlistCount)} />
       </div>
 
-      <div className="rounded-lg border border-border/70 bg-muted/25 p-3">
-        <p className="text-sm font-medium text-foreground">{infoMessage}</p>
-        <p className="mt-1 text-sm text-muted-foreground">
+      <div className="rounded-lg border border-border/60 bg-muted/15 px-3 py-2.5">
+        <p className="text-[13px] font-medium leading-snug text-foreground">{infoMessage}</p>
+        <p className="mt-1 text-[13px] leading-snug text-muted-foreground">
           Les tableaux complets peuvent être demandés en liste d&apos;attente.
         </p>
       </div>
@@ -1474,48 +1483,83 @@ function TablesStep({
         >
           <legend className="sr-only">Choix des tableaux</legend>
 
-          {groupedTableOptions.map((group) => (
-            <div key={group.dateKey} className="space-y-3">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="text-sm font-semibold capitalize text-foreground">
-                  {group.dateLabel}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {group.tables.length} tableau
-                  {group.tables.length > 1 ? "x" : ""} proposé
-                  {group.tables.length > 1 ? "s" : ""}
-                </p>
-              </div>
+          <div className="grid gap-4 xl:grid-cols-3">
+            {groupedTableOptions.map((group) => {
+              const eligibleTables = group.tables.filter((table) =>
+                isEligible(parsedPoints, formData.gender, table),
+              );
+              const ineligibleTables = group.tables.filter(
+                (table) => !isEligible(parsedPoints, formData.gender, table),
+              );
 
-              <div className="grid gap-2 md:grid-cols-2">
-                {group.tables.map((table) => {
-                  const isSelectable = isEligible(
-                    parsedPoints,
-                    formData.gender,
-                    table,
-                  );
-                  const isSelected = formData.tables.includes(table.value);
-                  const isWaitlist = formData.waitlistTables.includes(
-                    table.value,
-                  );
+              return (
+                <div key={group.dateKey} className="space-y-2.5">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-sm font-semibold capitalize text-foreground">
+                      {group.dateLabel}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {group.tables.length} tableau
+                      {group.tables.length > 1 ? "x" : ""} proposé
+                      {group.tables.length > 1 ? "s" : ""}
+                    </p>
+                  </div>
 
-                  return (
-                    <TableChoice
-                      key={table.value}
-                      isSelectable={isSelectable}
-                      isSelected={isSelected}
-                      isWaitlist={isWaitlist}
-                      onToggle={() => toggleTable(table.value)}
-                      onWaitlistChange={(checked) =>
-                        handleWaitlistChange(table.value, checked)
-                      }
-                      table={table}
-                    />
-                  );
-                })}
-              </div>
-            </div>
-          ))}
+                  <div className="space-y-2">
+                    {eligibleTables.length > 0 ? (
+                      <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-1">
+                        {eligibleTables.map((table) => {
+                          const isSelected = formData.tables.includes(table.value);
+                          const isWaitlist = formData.waitlistTables.includes(
+                            table.value,
+                          );
+
+                          return (
+                            <TableChoice
+                              key={table.value}
+                              isSelectable
+                              isSelected={isSelected}
+                              isWaitlist={isWaitlist}
+                              onToggle={() => toggleTable(table.value)}
+                              onWaitlistChange={(checked) =>
+                                handleWaitlistChange(table.value, checked)
+                              }
+                              table={table}
+                            />
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <p className="rounded-lg border border-dashed border-border/70 px-3 py-2 text-[11px] text-muted-foreground">
+                        Aucun tableau accessible sur cette journée.
+                      </p>
+                    )}
+
+                    {ineligibleTables.length > 0 ? (
+                      <div className="space-y-1.5">
+                        <p className="px-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                          Autres tableaux
+                        </p>
+                        <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-1">
+                          {ineligibleTables.map((table) => (
+                            <TableChoice
+                              key={table.value}
+                              isSelectable={false}
+                              isSelected={false}
+                              isWaitlist={false}
+                              onToggle={() => undefined}
+                              onWaitlistChange={() => undefined}
+                              table={table}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
 
           {fieldErrors.tables ? (
             <p id="tables-error" className="form-error" role="alert">
@@ -1564,7 +1608,7 @@ function ReviewStep({
             Tableaux demandés
           </p>
           {selectedWaitlistCount > 0 ? (
-            <span className="rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-800">
+            <span className="rounded-full border border-accent/45 bg-accent/15 px-3 py-1 text-xs font-medium text-foreground dark:bg-accent/20">
               {selectedWaitlistCount} liste
               {selectedWaitlistCount > 1 ? "s" : ""} d&apos;attente
             </span>
@@ -1591,8 +1635,8 @@ function ReviewStep({
                   <p
                     className={`mt-3 inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ${
                       isWaitlist
-                        ? "bg-amber-100 text-amber-800"
-                        : "bg-emerald-100 text-emerald-800"
+                        ? "border border-accent/45 bg-accent/15 text-foreground dark:bg-accent/20"
+                        : "border border-primary/35 bg-primary/10 text-primary"
                     }`}
                   >
                     {isWaitlist
@@ -1628,7 +1672,7 @@ function WizardSummary({
 }) {
   return (
     <div className="space-y-3 xl:sticky xl:top-20">
-      <div className="rounded-lg border border-border/70 bg-background/80 p-3">
+      <div className="rounded-lg border border-border/60 bg-background/55 p-3">
         <p className="text-sm font-semibold text-foreground">
           Votre dossier
         </p>
@@ -1637,7 +1681,7 @@ function WizardSummary({
         </p>
 
 
-        <div className="mt-3 rounded-lg border border-border/70 bg-muted/20 p-3">
+        <div className="mt-3 rounded-lg border border-border/60 bg-muted/15 p-3">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             Total estimé
           </p>
@@ -1647,7 +1691,7 @@ function WizardSummary({
         </div>
       </div>
 
-      <div className="rounded-lg border border-border/70 bg-background/80 p-3">
+      <div className="rounded-lg border border-border/60 bg-background/55 p-3">
         <p className="text-sm font-semibold text-foreground">
           Avancement
         </p>
@@ -1658,7 +1702,7 @@ function WizardSummary({
         </div>
       </div>
 
-      <div className="rounded-lg border border-border/70 bg-background/80 p-3">
+      <div className="rounded-lg border border-border/60 bg-background/55 p-3">
         <p className="text-sm font-semibold text-foreground">
           Tableaux sélectionnés
         </p>
@@ -1675,11 +1719,7 @@ function WizardSummary({
               </div>
             ))}
           </div>
-        ) : (
-          <p className="mt-3 text-sm text-muted-foreground">
-            Aucun tableau choisi.
-          </p>
-        )}
+        ) : null}
       </div>
     </div>
   );
@@ -1698,9 +1738,9 @@ function FieldShell({
 }) {
   return (
     <div>
-      <label htmlFor={id} className="mb-1.5 block text-sm font-medium">
+      <Label htmlFor={id} className="mb-1.5 block">
         {label}
-      </label>
+      </Label>
       {children}
       {error ? (
         <p id={`${id}-error`} className="form-error" role="alert">
@@ -1726,12 +1766,12 @@ function ReadOnlyField({
 }) {
   return (
     <div>
-      <label
+      <Label
         htmlFor={id}
         className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground"
       >
         {label}
-      </label>
+      </Label>
       <div className="rounded-md border border-border/70 bg-muted/30 px-3 py-2">
         <input
           id={id}
@@ -1770,33 +1810,37 @@ function TableChoice({
 }) {
   return (
     <div
-      className={`rounded-lg border p-3 transition ${
+      className={`rounded-lg border p-2.5 transition ${
         isSelected
           ? "border-primary/45 bg-primary/10 shadow-sm"
           : "border-border bg-background"
-      } ${!isSelectable ? "bg-muted/50 text-muted-foreground" : ""}`}
+      } ${
+        !isSelectable
+          ? "border-border/60 bg-background/35 text-muted-foreground opacity-75"
+          : ""
+      }`}
     >
       <div className="flex flex-wrap items-start justify-between gap-2">
-        <div className="min-w-0 space-y-1">
-          <p className="text-sm font-semibold leading-snug text-foreground">
+        <div className="min-w-0 space-y-0.5">
+          <p className="text-[13px] font-semibold leading-snug text-foreground">
             {table.label}
           </p>
           <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
-            <span className="rounded-full border border-border/70 bg-muted/30 px-2 py-0.5 text-muted-foreground">
+            <span className="rounded-full border border-border/70 bg-muted/20 px-2 py-0.5 text-muted-foreground">
               En ligne {table.onlinePriceLabel}
             </span>
-            <span className="rounded-full border border-border/70 bg-muted/30 px-2 py-0.5 text-muted-foreground">
+            <span className="rounded-full border border-border/70 bg-muted/20 px-2 py-0.5 text-muted-foreground">
               Sur place {table.onsitePriceLabel}
             </span>
           </div>
         </div>
         <span
-          className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+          className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold ${
             table.isFull
-              ? "bg-amber-100 text-amber-800"
+              ? "border border-accent/45 bg-accent/15 text-foreground dark:bg-accent/20"
               : isSelectable
-                ? "bg-emerald-100 text-emerald-800"
-                : "bg-muted text-muted-foreground"
+                ? "border border-primary/35 bg-primary/10 text-primary"
+                : "border border-border/60 bg-transparent text-muted-foreground"
           }`}
         >
           {table.isFull
@@ -1807,42 +1851,59 @@ function TableChoice({
         </span>
       </div>
 
-      <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
+      <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
         {table.remainingSpots !== null && !table.isFull ? (
           <span>
             {table.remainingSpots} place{table.remainingSpots > 1 ? "s" : ""}{" "}
             restante{table.remainingSpots > 1 ? "s" : ""}
           </span>
         ) : null}
-        <span>{table.dateLabel}</span>
       </div>
 
       {!isSelectable ? (
-        <p className="mt-2 rounded-lg border border-border/80 bg-muted/70 px-3 py-2 text-xs text-muted-foreground">
-          Incompatible avec les informations saisies.
+        <p className="mt-1.5 rounded-lg border border-dashed border-border/70 bg-transparent px-2.5 py-2 text-[11px] text-muted-foreground">
+          Incompatible avec votre profil.
         </p>
       ) : null}
 
       {isSelectable && !table.isFull ? (
-        <label className="mt-2 flex cursor-pointer items-center gap-2 rounded-lg border border-border/80 bg-muted/20 px-3 py-2 text-sm text-foreground transition hover:bg-muted/35">
+        <label
+          className={`mt-1.5 flex cursor-pointer items-center gap-2.5 rounded-lg border px-2.5 py-2 text-sm transition ${
+            isSelected
+              ? "border-primary/45 bg-primary/10 text-foreground"
+              : "border-border/80 bg-muted/20 text-foreground hover:bg-muted/35"
+          }`}
+        >
           <input
             type="checkbox"
             checked={isSelected}
             onChange={onToggle}
-            className="accent-primary"
+            className="peer sr-only"
           />
-          <span className="leading-tight">
-            {isSelected
-              ? "Retirer ce tableau de ma sélection"
-              : "Ajouter ce tableau à ma sélection"}
+          <span
+            aria-hidden="true"
+            className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border transition peer-focus-visible:border-ring peer-focus-visible:ring-[3px] peer-focus-visible:ring-ring/50 ${
+              isSelected
+                ? "border-primary bg-primary text-primary-foreground"
+                : "border-border/80 bg-background text-transparent"
+            }`}
+          >
+            <Check className="h-3 w-3" />
+          </span>
+          <span className="min-w-0 flex-1 leading-tight">
+            <span className="block text-[13px] font-medium">
+              {isSelected
+                ? "Tableau sélectionné"
+                : "Ajouter ce tableau à ma sélection"}
+            </span>
           </span>
         </label>
       ) : null}
 
       {isSelectable && table.isFull ? (
-        <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50/80 px-3 py-2 text-sm text-amber-900">
+        <div className="mt-1.5 rounded-lg border border-accent/45 bg-accent/15 px-2.5 py-2 text-sm text-foreground dark:bg-accent/20">
           <p className="font-medium">Tableau complet.</p>
-          <label className="mt-2 flex cursor-pointer items-start gap-2">
+          <label className="mt-1.5 flex cursor-pointer items-start gap-2">
             <input
               type="checkbox"
               checked={isWaitlist}
@@ -1855,7 +1916,7 @@ function TableChoice({
       ) : null}
 
       {isSelected ? (
-        <p className="mt-2 text-[11px] font-medium text-foreground">
+        <p className="mt-1.5 text-[11px] font-medium text-foreground">
           {isWaitlist
             ? "Sélection en liste d'attente."
             : "Tableau ajouté au récapitulatif."}
@@ -1867,7 +1928,7 @@ function TableChoice({
 
 function MetricPill({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-border/70 bg-background/80 px-3 py-2.5">
+    <div className="rounded-lg border border-border/60 bg-background/65 px-3 py-2">
       <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
         {label}
       </p>
