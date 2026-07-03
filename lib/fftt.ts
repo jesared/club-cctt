@@ -379,7 +379,7 @@ function normalizeFfttClubTeam(record: Record<string, unknown>) {
 function normalizeFfttTeamMatch(
   record: Record<string, unknown>,
   clubNumber: string,
-  teamName: string,
+  team: FfttClubTeam,
 ) {
   const teamA = getString(record, ["equa", "teamA"]);
   const teamB = getString(record, ["equb", "teamB"]);
@@ -388,15 +388,29 @@ function normalizeFfttTeamMatch(
   const link = getString(record, ["lien", "link"]);
   const linkParams = parseQueryString(link);
   const normalizedClubNumber = clubNumber.trim();
-  const normalizedTeamName = normalizeTextForComparison(teamName);
+  const normalizedTeamId = team.teamId.trim();
+  const normalizedTeamName = normalizeTextForComparison(team.teamName);
   const normalizedTeamA = normalizeTextForComparison(teamA);
   const normalizedTeamB = normalizeTextForComparison(teamB);
-  const clubIsTeamA =
-    linkParams.clubnum_1 === normalizedClubNumber ||
-    normalizedTeamA === normalizedTeamName;
-  const clubIsTeamB =
-    linkParams.clubnum_2 === normalizedClubNumber ||
-    normalizedTeamB === normalizedTeamName;
+  const hasMatchTeamIds = Boolean(linkParams.equip_id1 || linkParams.equip_id2);
+  const teamIsTeamA =
+    Boolean(normalizedTeamId && linkParams.equip_id1 === normalizedTeamId) ||
+    (!hasMatchTeamIds && normalizedTeamA === normalizedTeamName);
+  const teamIsTeamB =
+    Boolean(normalizedTeamId && linkParams.equip_id2 === normalizedTeamId) ||
+    (!hasMatchTeamIds && normalizedTeamB === normalizedTeamName);
+  const fallbackClubIsTeamA =
+    !hasMatchTeamIds &&
+    !teamIsTeamA &&
+    !teamIsTeamB &&
+    linkParams.clubnum_1 === normalizedClubNumber;
+  const fallbackClubIsTeamB =
+    !hasMatchTeamIds &&
+    !teamIsTeamA &&
+    !teamIsTeamB &&
+    linkParams.clubnum_2 === normalizedClubNumber;
+  const clubIsTeamA = teamIsTeamA || fallbackClubIsTeamA;
+  const clubIsTeamB = teamIsTeamB || fallbackClubIsTeamB;
 
   if (!teamA || !teamB || (!clubIsTeamA && !clubIsTeamB)) {
     return null;
@@ -446,7 +460,7 @@ async function fetchFfttTeamResults(
   const parsed = parser.parse(xml);
 
   return collectRecords(parsed)
-    .map((record) => normalizeFfttTeamMatch(record, clubNumber, team.teamName))
+    .map((record) => normalizeFfttTeamMatch(record, clubNumber, team))
     .filter((entry): entry is FfttTeamMatch => entry !== null);
 }
 
