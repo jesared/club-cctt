@@ -64,6 +64,16 @@ function getCleanParam(value: string | undefined) {
   return value?.trim() || "";
 }
 
+function getLicenseTypeFilter(value: string | undefined) {
+  const cleanValue = getCleanParam(value);
+
+  if (!cleanValue || cleanValue.toLowerCase() === "all") {
+    return "all";
+  }
+
+  return cleanValue.toUpperCase();
+}
+
 function buildAdherentsHref({
   page,
   pageSize,
@@ -178,9 +188,9 @@ export default async function AdminAdherentsPage({
   const inactive = getSingleParam(resolvedSearchParams.inactive);
   const query = getCleanParam(getSingleParam(resolvedSearchParams.q));
   const status = getStatusFilter(getSingleParam(resolvedSearchParams.status));
-  const licenseType =
-    getCleanParam(getSingleParam(resolvedSearchParams.type)).toUpperCase() ||
-    "all";
+  const licenseType = getLicenseTypeFilter(
+    getSingleParam(resolvedSearchParams.type),
+  );
   const gender = getGenderFilter(getSingleParam(resolvedSearchParams.genre));
   const pageSize = getPageSize(getSingleParam(resolvedSearchParams.perPage));
   const requestedPage = getPositiveInt(
