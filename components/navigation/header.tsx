@@ -68,6 +68,7 @@ export default function Header({ menuVisibility }: HeaderProps) {
             "/club/salaries": "Équipe salariée diplômée.",
             "/club/entraineurs-benevoles": "Encadrement bénévole du club.",
             "/club/contact": "Contact et localisation.",
+            "/competitions": "Résultats des équipes en championnat FFTT.",
           } as Record<string, string>,
         },
         Tournoi: {
@@ -102,7 +103,9 @@ export default function Header({ menuVisibility }: HeaderProps) {
       }).filter((section) =>
         section.items.every(
           (item) =>
-            item.href.startsWith("/club") || item.href.startsWith("/tournoi"),
+            item.href.startsWith("/club") ||
+            item.href.startsWith("/tournoi") ||
+            item.href === "/competitions",
         ),
       ),
     [session, menuVisibility],
@@ -166,6 +169,7 @@ export default function Header({ menuVisibility }: HeaderProps) {
     router.prefetch("/club/horaires");
     router.prefetch("/club/tarifs");
     router.prefetch("/club/contact");
+    router.prefetch("/competitions");
     if (isPublicMenuVisible(menuVisibility, "tournoi")) {
       router.prefetch("/tournoi");
       router.prefetch("/tournoi/inscription");
@@ -217,7 +221,12 @@ export default function Header({ menuVisibility }: HeaderProps) {
                   : section?.title === "Tournoi"
                     ? "/tournoi"
                     : null;
-              const isParentActive = rootHref ? pathname === rootHref : false;
+              const isParentActive =
+                section?.title === "Club"
+                  ? pathname === rootHref || pathname === "/competitions"
+                  : rootHref
+                    ? pathname === rootHref
+                    : false;
               if (!section) {
                 return null;
               }

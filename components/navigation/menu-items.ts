@@ -303,6 +303,12 @@ export const navigation: MenuSection[] = [
     items: [
       { href: "/club", label: "Club", icon: LayoutGrid },
       {
+        href: "/competitions",
+        label: "Championnat",
+        icon: Trophy,
+        description: "Résultats des équipes engagées en championnat FFTT.",
+      },
+      {
         href: "/club/comite-directeur",
         label: "Comité directeur",
         icon: Users,

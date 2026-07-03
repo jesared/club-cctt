@@ -160,6 +160,7 @@ export default function HeaderCentered({
             "/club/salaries": "Équipe salariée diplômée.",
             "/club/entraineurs-benevoles": "Encadrement bénévole du club.",
             "/club/contact": "Contact et localisation.",
+            "/competitions": "Résultats des équipes en championnat FFTT.",
           } as Record<string, string>,
         },
         Tournoi: {
@@ -190,7 +191,9 @@ export default function HeaderCentered({
         .filter((section) =>
           section.items.every(
             (item) =>
-              item.href.startsWith("/club") || item.href.startsWith("/tournoi"),
+              item.href.startsWith("/club") ||
+              item.href.startsWith("/tournoi") ||
+              item.href === "/competitions",
           ),
         )
         .sort((a, b) => {
@@ -254,7 +257,7 @@ export default function HeaderCentered({
   }, [pathname]);
 
   useEffect(() => {
-    if (pathname.startsWith("/club")) {
+    if (pathname.startsWith("/club") || pathname === "/competitions") {
       setOpenSection("Club");
       return;
     }
@@ -266,6 +269,7 @@ export default function HeaderCentered({
 
   useEffect(() => {
     if (!isPublicRoute(pathname)) return;
+    router.prefetch("/competitions");
     if (isPublicMenuVisible(menuVisibility, "tournoi")) {
       router.prefetch("/tournoi");
       router.prefetch("/tournoi/liste-inscrits");
@@ -529,7 +533,8 @@ export default function HeaderCentered({
                 {desktopSections.map((section) => {
                   const active =
                     section.title === "Club"
-                      ? pathname.startsWith("/club")
+                      ? pathname.startsWith("/club") ||
+                        pathname === "/competitions"
                       : pathname.startsWith("/tournoi");
                   const href = section.title === "Club" ? "/club" : "/tournoi";
                   const label =
