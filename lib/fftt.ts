@@ -24,6 +24,7 @@ export type FfttPlayer = {
   points: number | null;
   club: string;
   gender: string;
+  licenseType: string;
 };
 
 export type FfttClubMember = FfttPlayer & {
@@ -241,6 +242,7 @@ function normalizeFfttPlayer(
     points: getPoints(record),
     club: getString(record, ["club", "nomclub", "libelleclub", "clu_nom"]),
     gender: normalizeGender(getString(record, ["sexe", "genre", "gender"])),
+    licenseType: getString(record, ["type", "typelic", "lictype"]),
   };
 }
 
@@ -262,6 +264,7 @@ function normalizeFfttClubMember(
     points: getPoints(record),
     club: getString(record, ["club", "nomclub", "libelleclub", "clu_nom"]),
     gender: normalizeGender(getString(record, ["sexe", "genre", "gender"])),
+    licenseType: getString(record, ["type", "typelic", "lictype"]),
     category: getString(record, [
       "cat",
       "cat" + "egorie",
@@ -270,6 +273,67 @@ function normalizeFfttClubMember(
       "validation",
     ]),
   };
+}
+
+async function fetchFfttClubMemberDetailsByLicense(
+  config: FfttConfig,
+  licence: string,
+) {
+  const response = await fetch(buildLicenseUrl(config, licence), {
+    cache: "no-store",
+    headers: {
+      Accept: "application/xml,text/xml;q=0.9,*/*;q=0.8",
+    },
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+
+  const xml = await readFfttXml(response);
+  const parsed = parser.parse(xml);
+
+  return (
+    collectRecords(parsed)
+      .map((record) => normalizeFfttClubMember(record))
+      .find((entry): entry is FfttClubMember => entry !== null) ?? null
+  );
+}
+
+async function enrichFfttClubMembersWithLicenseDetails(
+  config: FfttConfig,
+  members: FfttClubMember[],
+) {
+  const detailsByLicense = new Map<string, FfttClubMember>();
+  const concurrency = 8;
+  let cursor = 0;
+
+  async function worker() {
+    while (cursor < members.length) {
+      const member = members[cursor];
+      cursor += 1;
+
+      const detail = await fetchFfttClubMemberDetailsByLicense(
+        config,
+        member.licence,
+      ).catch(() => null);
+
+      if (detail) {
+        detailsByLicense.set(member.licence, detail);
+      }
+    }
+  }
+
+  await Promise.all(
+    Array.from({ length: Math.min(concurrency, members.length) }, () =>
+      worker(),
+    ),
+  );
+
+  return members.map((member) => ({
+    ...member,
+    ...(detailsByLicense.get(member.licence) ?? {}),
+  }));
 }
 
 export async function fetchFfttPlayerByLicense(
@@ -368,7 +432,12 @@ export async function fetchFfttClubMembers(
       }
     }
 
-    const members = Array.from(membersByLicense.values()).sort((a, b) => {
+    const members = (
+      await enrichFfttClubMembersWithLicenseDetails(
+        config,
+        Array.from(membersByLicense.values()),
+      )
+    ).sort((a, b) => {
       const nomCompare = a.nom.localeCompare(b.nom, "fr");
       return nomCompare || a.prenom.localeCompare(b.prenom, "fr");
     });

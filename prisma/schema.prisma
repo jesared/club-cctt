@@ -48,6 +48,7 @@ model ClubMember {
   nom        String
   prenom     String
   points     Int?
+  licenseType String?
   category   String?
   gender     String?
   clubName   String?
