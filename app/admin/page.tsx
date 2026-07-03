@@ -13,6 +13,7 @@ import {
   Mail,
   ShieldCheck,
   Ticket,
+  UserPlus,
   Users,
 } from "lucide-react";
 
@@ -47,6 +48,7 @@ export default async function AdminPage() {
 
   const [
     totalUsers,
+    totalClubMembers,
     totalMediaAssets,
     totalMessages,
     totalNotifications,
@@ -55,6 +57,7 @@ export default async function AdminPage() {
     currentTournament,
   ] = await Promise.all([
     prisma.user.count(),
+    prisma.clubMember.count({ where: { active: true } }),
     prisma.mediaAsset.count(),
     prisma.message.count(),
     withNotificationSchemaFallback(() => prisma.notification.count(), 0),
@@ -228,6 +231,11 @@ export default async function AdminPage() {
           helper: `${totalUsers} compte(s)`,
         },
         {
+          href: "/admin/adherents",
+          label: "Synchroniser les adhérents",
+          helper: `${totalClubMembers} licence(s) active(s)`,
+        },
+        {
           href: "/admin/media",
           label: "Gérer la médiathèque",
           helper: `${totalMediaAssets} fichier(s)`,
@@ -321,6 +329,12 @@ export default async function AdminPage() {
       label: "Utilisateurs",
       helper: "Roles et acces",
       Icon: Users,
+    },
+    {
+      href: "/admin/adherents",
+      label: "Adhérents FFTT",
+      helper: `${totalClubMembers} licence(s) active(s)`,
+      Icon: UserPlus,
     },
     {
       href: "/admin/documentation",

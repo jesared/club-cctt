@@ -355,6 +355,13 @@ export const navigation: MenuSection[] = [
         group: "Communication",
       },
       {
+        href: "/admin/adherents",
+        label: "Adhérents",
+        icon: UserPlus,
+        description: "Synchroniser et consulter les licenciés FFTT du club.",
+        group: "Communication",
+      },
+      {
         href: "/admin/documentation",
         label: "Documentation",
         icon: FileText,

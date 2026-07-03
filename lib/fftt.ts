@@ -3,10 +3,14 @@ import { XMLParser } from "fast-xml-parser";
 
 const DEFAULT_FFTT_API_BASE_URL = "https://apiv2.fftt.com/mobile/pxml";
 const DEFAULT_FFTT_LICENSE_ENDPOINT = "xml_licence_b.php";
+const DEFAULT_FFTT_CLUB_PLAYERS_ENDPOINT = "xml_liste_joueur_o.php";
+const DEFAULT_FFTT_CLUB_PARAM = "club";
 
 type FfttConfig = {
   baseUrl: string;
   licenseEndpoint: string;
+  clubPlayersEndpoint: string;
+  clubParam: string;
   appId: string;
   appKey: string;
   serial: string;
@@ -22,8 +26,20 @@ export type FfttPlayer = {
   gender: string;
 };
 
+export type FfttClubMember = FfttPlayer & {
+  category: string;
+};
+
 export type FfttPlayerLookupResult =
   | { ok: true; player: FfttPlayer }
+  | {
+      ok: false;
+      reason: "not-configured" | "not-found" | "upstream-error";
+      message: string;
+    };
+
+export type FfttClubMembersLookupResult =
+  | { ok: true; members: FfttClubMember[] }
   | {
       ok: false;
       reason: "not-configured" | "not-found" | "upstream-error";
@@ -56,6 +72,11 @@ function getFfttConfig(): FfttConfig | null {
     licenseEndpoint:
       process.env.FFTT_API_LICENSE_ENDPOINT?.trim() ||
       DEFAULT_FFTT_LICENSE_ENDPOINT,
+    clubPlayersEndpoint:
+      process.env.FFTT_API_CLUB_PLAYERS_ENDPOINT?.trim() ||
+      DEFAULT_FFTT_CLUB_PLAYERS_ENDPOINT,
+    clubParam:
+      process.env.FFTT_API_CLUB_PARAM?.trim() || DEFAULT_FFTT_CLUB_PARAM,
   };
 }
 
@@ -63,13 +84,11 @@ export function isFfttConfigured() {
   return getFfttConfig() !== null;
 }
 
-function buildFfttUrl(config: FfttConfig, licence: string) {
+function buildSignedFfttUrl(config: FfttConfig, endpoint: string) {
   const tm = Date.now().toString();
   const signatureKey = getSignatureKey(config.appKey);
   const tmc = createHmac("sha1", signatureKey).update(tm).digest("hex");
-  const url = new URL(
-    `${config.baseUrl.replace(/\/$/, "")}/${config.licenseEndpoint}`,
-  );
+  const url = new URL(`${config.baseUrl.replace(/\/$/, "")}/${endpoint}`);
 
   url.searchParams.set("serie", config.serial);
   url.searchParams.set("tm", tm);
@@ -80,7 +99,21 @@ function buildFfttUrl(config: FfttConfig, licence: string) {
     url.searchParams.set("idRel", config.idRel);
   }
 
+  return url;
+}
+
+function buildLicenseUrl(config: FfttConfig, licence: string) {
+  const url = buildSignedFfttUrl(config, config.licenseEndpoint);
+
   url.searchParams.set("licence", licence);
+
+  return url;
+}
+
+function buildClubPlayersUrl(config: FfttConfig, clubNumber: string) {
+  const url = buildSignedFfttUrl(config, config.clubPlayersEndpoint);
+
+  url.searchParams.set(config.clubParam, clubNumber);
 
   return url;
 }
@@ -211,6 +244,34 @@ function normalizeFfttPlayer(
   };
 }
 
+function normalizeFfttClubMember(
+  record: Record<string, unknown>,
+): FfttClubMember | null {
+  const licence = getString(record, ["licence", "numlic", "idlicence"]);
+  const nom = getString(record, ["nom", "lastName", "lastname"]);
+  const prenom = getString(record, ["prenom", "firstName", "firstname"]);
+
+  if (!licence || !nom || !prenom) {
+    return null;
+  }
+
+  return {
+    licence,
+    nom,
+    prenom,
+    points: getPoints(record),
+    club: getString(record, ["club", "nomclub", "libelleclub", "clu_nom"]),
+    gender: normalizeGender(getString(record, ["sexe", "genre", "gender"])),
+    category: getString(record, [
+      "cat",
+      "cat" + "egorie",
+      "category",
+      "type",
+      "validation",
+    ]),
+  };
+}
+
 export async function fetchFfttPlayerByLicense(
   licence: string,
 ): Promise<FfttPlayerLookupResult> {
@@ -226,7 +287,7 @@ export async function fetchFfttPlayerByLicense(
   }
 
   try {
-    const response = await fetch(buildFfttUrl(config, licence), {
+    const response = await fetch(buildLicenseUrl(config, licence), {
       cache: "no-store",
       headers: {
         Accept: "application/xml,text/xml;q=0.9,*/*;q=0.8",
@@ -257,6 +318,70 @@ export async function fetchFfttPlayerByLicense(
     }
 
     return { ok: true, player };
+  } catch {
+    return {
+      ok: false,
+      reason: "upstream-error",
+      message: "Impossible de joindre l'API FFTT pour le moment.",
+    };
+  }
+}
+
+export async function fetchFfttClubMembers(
+  clubNumber: string,
+): Promise<FfttClubMembersLookupResult> {
+  const config = getFfttConfig();
+
+  if (!config) {
+    return {
+      ok: false,
+      reason: "not-configured",
+      message:
+        "API FFTT non configuree. Ajoutez FFTT_API_ID, FFTT_API_KEY et FFTT_API_SERIAL.",
+    };
+  }
+
+  try {
+    const response = await fetch(buildClubPlayersUrl(config, clubNumber), {
+      cache: "no-store",
+      headers: {
+        Accept: "application/xml,text/xml;q=0.9,*/*;q=0.8",
+      },
+    });
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        reason: "upstream-error",
+        message: `La FFTT a repondu avec le statut ${response.status}.`,
+      };
+    }
+
+    const xml = await readFfttXml(response);
+    const parsed = parser.parse(xml);
+    const membersByLicense = new Map<string, FfttClubMember>();
+
+    for (const record of collectRecords(parsed)) {
+      const member = normalizeFfttClubMember(record);
+      if (member) {
+        membersByLicense.set(member.licence, member);
+      }
+    }
+
+    const members = Array.from(membersByLicense.values()).sort((a, b) => {
+      const nomCompare = a.nom.localeCompare(b.nom, "fr");
+      return nomCompare || a.prenom.localeCompare(b.prenom, "fr");
+    });
+
+    if (members.length === 0) {
+      return {
+        ok: false,
+        reason: "not-found",
+        message: "Aucun licencie FFTT trouve pour ce club.",
+      };
+    }
+
+    return { ok: true, members };
   } catch {
     return {
       ok: false,

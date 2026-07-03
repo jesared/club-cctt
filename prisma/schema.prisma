@@ -41,6 +41,25 @@ model Player {
   registrations TournamentRegistration[]
 }
 
+model ClubMember {
+  id         String   @id @default(cuid())
+  clubNumber String
+  licence    String   @unique
+  nom        String
+  prenom     String
+  points     Int?
+  category   String?
+  gender     String?
+  clubName   String?
+  active     Boolean  @default(true)
+  syncedAt   DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([clubNumber, active])
+  @@index([nom, prenom])
+}
+
 model Account {
   id                    String   @id @default(cuid())
   userId                String
