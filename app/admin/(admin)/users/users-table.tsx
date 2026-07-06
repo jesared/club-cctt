@@ -9,10 +9,21 @@ import {
   UserCog,
   Users,
   Check,
+  Pencil,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Card,
   CardContent,
@@ -40,6 +51,7 @@ type UserRow = {
 
 type Props = {
   users: UserRow[];
+  updateUserProfile: (formData: FormData) => Promise<void>;
   updateUserRole: (formData: FormData) => Promise<void>;
   deleteUser: (formData: FormData) => Promise<void>;
   managedRoles: ManagedRole[];
@@ -54,6 +66,7 @@ type ResolvedUser = UserRow & {
 
 export default function UsersTable({
   users,
+  updateUserProfile,
   updateUserRole,
   deleteUser,
   managedRoles,
@@ -174,6 +187,7 @@ export default function UsersTable({
                   key={user.id}
                   user={user}
                   managedRoles={managedRoles}
+                  updateUserProfile={updateUserProfile}
                   updateUserRole={updateUserRole}
                   deleteUser={deleteUser}
                 />
@@ -200,6 +214,7 @@ export default function UsersTable({
                       key={user.id}
                       user={user}
                       managedRoles={managedRoles}
+                      updateUserProfile={updateUserProfile}
                       updateUserRole={updateUserRole}
                       deleteUser={deleteUser}
                     />
@@ -217,11 +232,13 @@ export default function UsersTable({
 function DesktopUserRow({
   user,
   managedRoles,
+  updateUserProfile,
   updateUserRole,
   deleteUser,
 }: {
   user: ResolvedUser;
   managedRoles: ManagedRole[];
+  updateUserProfile: (formData: FormData) => Promise<void>;
   updateUserRole: (formData: FormData) => Promise<void>;
   deleteUser: (formData: FormData) => Promise<void>;
 }) {
@@ -268,11 +285,18 @@ function DesktopUserRow({
       </TableCell>
 
       <TableCell className="px-3 py-3 text-right">
-        <DeleteActionForm
-          user={user}
-          deleteUser={deleteUser}
-          compact
-        />
+        <div className="inline-flex items-center gap-1.5">
+          <EditProfileDialog
+            user={user}
+            updateUserProfile={updateUserProfile}
+            compact
+          />
+          <DeleteActionForm
+            user={user}
+            deleteUser={deleteUser}
+            compact
+          />
+        </div>
       </TableCell>
     </TableRow>
   );
@@ -281,11 +305,13 @@ function DesktopUserRow({
 function MobileUserCard({
   user,
   managedRoles,
+  updateUserProfile,
   updateUserRole,
   deleteUser,
 }: {
   user: ResolvedUser;
   managedRoles: ManagedRole[];
+  updateUserProfile: (formData: FormData) => Promise<void>;
   updateUserRole: (formData: FormData) => Promise<void>;
   deleteUser: (formData: FormData) => Promise<void>;
 }) {
@@ -329,16 +355,22 @@ function MobileUserCard({
           />
         </div>
 
-        <div className="rounded-xl border border-dashed border-destructive/35 bg-destructive/5 p-3">
+        <div className="rounded-xl border border-border/70 bg-background p-3">
           <div className="mb-2 space-y-1">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-destructive/80">
-              Action sensible
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              Profil et suppression
             </p>
             <p className="text-xs text-muted-foreground">
-              La suppression efface le compte utilisateur.
+              Modifiez le nom d&apos;affichage ou supprimez le compte utilisateur.
             </p>
           </div>
-          <DeleteActionForm user={user} deleteUser={deleteUser} />
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <EditProfileDialog
+              user={user}
+              updateUserProfile={updateUserProfile}
+            />
+            <DeleteActionForm user={user} deleteUser={deleteUser} />
+          </div>
 
           {user.isProtected ? (
             <div className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -536,6 +568,92 @@ function RoleSubmitButton({
   }
 
   return button;
+}
+
+function EditProfileDialog({
+  user,
+  updateUserProfile,
+  compact = false,
+}: {
+  user: ResolvedUser;
+  updateUserProfile: (formData: FormData) => Promise<void>;
+  compact?: boolean;
+}) {
+  const currentName = user.name?.trim() ?? "";
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button
+          type="button"
+          size={compact ? "icon" : "sm"}
+          variant="outline"
+          aria-label="Modifier le profil"
+          title={compact ? "Modifier le profil" : undefined}
+          className={
+            compact
+              ? "size-8 border-border/70 bg-background"
+              : "gap-1.5 border-border/70 bg-background"
+          }
+        >
+          <Pencil className={compact ? "h-4 w-4" : "h-3.5 w-3.5"} />
+          {compact ? null : "Modifier"}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-md p-0">
+        <form action={updateUserProfile} className="space-y-5 p-5">
+          <input type="hidden" name="userId" value={user.id} />
+          <DialogHeader>
+            <DialogTitle>Modifier le profil</DialogTitle>
+            <DialogDescription>
+              Corrigez le nom affiché dans l&apos;administration et l&apos;espace membre.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            <label className="grid gap-2">
+              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                Nom d&apos;affichage
+              </span>
+              <input
+                name="name"
+                type="text"
+                required
+                minLength={2}
+                maxLength={100}
+                defaultValue={currentName}
+                placeholder="Ex. Alain Bruggeman"
+                className="admin-input h-10"
+              />
+            </label>
+            <div className="rounded-xl border border-border/70 bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
+              <p className="truncate">Email : {user.email || "Aucun email"}</p>
+              <p>Rôle actuel : {ROLE_META[user.managedRole].label}</p>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button type="button" variant="outline">
+                Annuler
+              </Button>
+            </DialogClose>
+            <ProfileSubmitButton />
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function ProfileSubmitButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button type="submit" disabled={pending}>
+      {pending ? "Enregistrement..." : "Enregistrer"}
+    </Button>
+  );
 }
 
 function DeleteActionButton({

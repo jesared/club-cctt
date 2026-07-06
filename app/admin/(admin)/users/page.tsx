@@ -43,6 +43,23 @@ function getFeedbackBanner(searchParams: UsersPageSearchParams) {
     };
   }
 
+  if (notice === "profile-updated") {
+    return {
+      tone: "success" as const,
+      title: "Profil mis à jour",
+      description: "Le nom d'affichage du compte a bien été enregistré.",
+    };
+  }
+
+  if (error === "invalid-name") {
+    return {
+      tone: "error" as const,
+      title: "Nom invalide",
+      description:
+        "Le nom d'affichage doit contenir entre 2 et 100 caractères.",
+    };
+  }
+
   if (error === "invalid-role") {
     return {
       tone: "error" as const,
@@ -109,6 +126,45 @@ async function updateUserRole(formData: FormData) {
 
   revalidatePath("/admin/users");
   redirect("/admin/users?notice=role-updated");
+}
+
+async function updateUserProfile(formData: FormData) {
+  "use server";
+
+  await requireAdminSession();
+
+  const userId = formData.get("userId");
+  const name = formData.get("name");
+
+  if (typeof userId !== "string") {
+    redirect("/admin/users?error=invalid-user");
+  }
+
+  if (typeof name !== "string") {
+    redirect("/admin/users?error=invalid-name");
+  }
+
+  const nextName = name.trim();
+  if (nextName.length < 2 || nextName.length > 100) {
+    redirect("/admin/users?error=invalid-name");
+  }
+
+  const existingUser = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true },
+  });
+
+  if (!existingUser) {
+    redirect("/admin/users?error=invalid-user");
+  }
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { name: nextName },
+  });
+
+  revalidatePath("/admin/users");
+  redirect("/admin/users?notice=profile-updated");
 }
 
 async function deleteUser(formData: FormData) {
@@ -273,6 +329,7 @@ export default async function AdminUsersPage({
 
       <UsersTable
         users={users}
+        updateUserProfile={updateUserProfile}
         updateUserRole={updateUserRole}
         deleteUser={deleteUser}
         managedRoles={[...MANAGED_ROLES]}
