@@ -622,7 +622,7 @@ function EditProfileDialog({
                 minLength={2}
                 maxLength={100}
                 defaultValue={currentName}
-                placeholder="Ex. Alain Bruggeman"
+                placeholder="John DOE"
                 className="admin-input h-10"
               />
             </label>
