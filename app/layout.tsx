@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 
 import Providers from "@/components/Providers";
 import RootChrome from "@/components/layout/root-chrome";
@@ -52,6 +53,7 @@ export default async function RootLayout({
             {children}
           </RootChrome>
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
