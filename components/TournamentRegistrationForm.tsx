@@ -280,10 +280,12 @@ function formatGender(gender: PlayerGender) {
 
 type TournamentRegistrationFormProps = {
   tableOptions: TableOption[];
+  isTestMode?: boolean;
 };
 
 export default function TournamentRegistrationForm({
   tableOptions,
+  isTestMode = false,
 }: TournamentRegistrationFormProps) {
   const [formData, setFormData] = useState(initialData);
   const [currentStep, setCurrentStep] = useState(0);
@@ -300,7 +302,7 @@ export default function TournamentRegistrationForm({
   });
 
   const trackStartIfNeeded = () => {
-    if (hasStarted) {
+    if (hasStarted || isTestMode) {
       return;
     }
 
@@ -820,7 +822,10 @@ export default function TournamentRegistrationForm({
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/tournoi/inscription", {
+      const endpoint = isTestMode
+        ? "/api/tournoi/inscription?mode=test"
+        : "/api/tournoi/inscription";
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -843,11 +848,13 @@ export default function TournamentRegistrationForm({
         type: "success",
         message,
       });
-      trackKpiEvent({
-        eventType: "SUBMIT",
-        page: "tournoi-inscription",
-        label: "registration-submitted",
-      });
+      if (!isTestMode) {
+        trackKpiEvent({
+          eventType: "SUBMIT",
+          page: "tournoi-inscription",
+          label: "registration-submitted",
+        });
+      }
       setFieldErrors({});
       setTouchedFields({});
       setHasSubmitted(false);
@@ -910,7 +917,7 @@ export default function TournamentRegistrationForm({
             </div>
             <div className="space-y-2">
               <h2 className="text-2xl font-semibold text-foreground">
-                Demande d&apos;inscription envoyée
+                {isTestMode ? "Simulation terminée" : "Demande d’inscription envoyée"}
               </h2>
               <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
                 {successMessage}
@@ -926,7 +933,9 @@ export default function TournamentRegistrationForm({
                 {
                   label: "Statut",
                   value:
-                    selectedWaitlistCount > 0
+                    isTestMode
+                      ? "Test"
+                      : selectedWaitlistCount > 0
                       ? "Avec attente"
                       : "À vérifier",
                 },
@@ -945,23 +954,23 @@ export default function TournamentRegistrationForm({
               ))}
             </div>
             <div className="flex flex-wrap gap-3">
-              <a
+              {!isTestMode && <a
                 href="/user/inscriptions"
                 className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary/90 focus-ring"
               >
                 Suivre mes inscriptions
-              </a>
+              </a>}
               <button
                 type="button"
                 onClick={resetForm}
                 className="inline-flex h-11 items-center justify-center rounded-md border border-border bg-background px-5 text-sm font-medium text-foreground transition hover:bg-muted/40 focus-ring"
               >
-                Inscrire un autre joueur
+                {isTestMode ? "Faire un autre test" : "Inscrire un autre joueur"}
               </button>
             </div>
           </div>
 
-          <div className="rounded-2xl border border-border/70 bg-background/75 p-4">
+          {!isTestMode && <div className="rounded-2xl border border-border/70 bg-background/75 p-4">
             <p className="text-sm font-semibold text-foreground">
               Prochaine étape
             </p>
@@ -972,7 +981,7 @@ export default function TournamentRegistrationForm({
                 utilisateur.
               </p>
             </div>
-          </div>
+          </div>}
         </div>
       </section>
     );
@@ -1185,7 +1194,7 @@ export default function TournamentRegistrationForm({
                   </>
                 ) : (
                   <>
-                    Envoyer ma demande
+                    {isTestMode ? "Simuler l’inscription" : "Envoyer ma demande"}
                     <ShieldCheck className="h-4 w-4" />
                   </>
                 )}
@@ -1593,7 +1602,7 @@ function ReviewStep({
           Joueur et contact
         </p>
         <div className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
-          <ReviewItem label="Joueur" value={formatPlayerName(formData)} />
+          <ReviewItem label="Pongiste" value={formatPlayerName(formData)} />
           <ReviewItem label="Club" value={formData.club || "-"} />
           <ReviewItem label="Licence" value={formData.licenseNumber || "-"} />
           <ReviewItem label="Points" value={formData.points || "-"} />

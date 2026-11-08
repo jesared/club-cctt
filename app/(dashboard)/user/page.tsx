@@ -1,3 +1,4 @@
+import { getEffectivePaidCents, getRegistrationTotalDueCents } from "@/app/admin/tournoi/payment-utils";
 import {
   AlertCircle,
   ArrowRight,
@@ -133,6 +134,7 @@ export default async function UserProfilePage({
                 select: {
                   amountCents: true,
                   status: true,
+                  provider: true,
                 },
               },
             },
@@ -141,17 +143,8 @@ export default async function UserProfilePage({
     ]);
 
   const pendingPaymentCount = paymentRows.filter((registration) => {
-    const totalDueCents = registration.registrationEvents.reduce(
-      (sum, entry) => sum + entry.event.feeOnlineCents,
-      0,
-    );
-    const paidFromPayments = registration.payments
-      .filter((payment) => payment.status === "PAID")
-      .reduce((sum, payment) => sum + payment.amountCents, 0);
-    const effectivePaidCents =
-      registration.payments.length > 0
-        ? paidFromPayments
-        : registration.paidAmountCents;
+    const totalDueCents = getRegistrationTotalDueCents(registration.registrationEvents, registration.payments);
+    const effectivePaidCents = getEffectivePaidCents(registration);
 
     return totalDueCents > 0 && effectivePaidCents < totalDueCents;
   }).length;

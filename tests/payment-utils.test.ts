@@ -4,6 +4,8 @@ import {
   getEffectivePaidCents,
   getPaymentStatusFromAmounts,
   getRegistrationTotalDueCents,
+  REFUND_PROVIDER,
+  REFUND_WITH_CREDIT_PROVIDER,
 } from "../app/admin/tournoi/payment-utils";
 
 describe("payment-utils", () => {
@@ -36,6 +38,22 @@ describe("payment-utils", () => {
         ],
       }),
     ).toBe(700);
+  });
+
+  it.each([
+    { provider: REFUND_PROVIDER, due: 10000, remaining: 2000 },
+    { provider: REFUND_WITH_CREDIT_PROVIDER, due: 8000, remaining: 0 },
+  ])("calcule le solde après un remboursement $provider", ({ provider, due, remaining }) => {
+    const payments = [
+      { amountCents: 10000, status: "PAID" as const },
+      { amountCents: 2000, status: "REFUNDED" as const, provider },
+      { amountCents: 1000, status: "REFUNDED" as const },
+    ];
+    const amountDue = getRegistrationTotalDueCents([{ event: { feeOnlineCents: 10000 } }], payments);
+    const amountPaid = getEffectivePaidCents({ paidAmountCents: 10000, payments });
+    expect(amountDue).toBe(due);
+    expect(amountPaid).toBe(8000);
+    expect(amountDue - amountPaid).toBe(remaining);
   });
 
   it.each([

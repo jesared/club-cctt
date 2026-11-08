@@ -94,3 +94,8 @@ export function createParisDateFormatter(
     ...options,
   });
 }
+
+export function getParisDayKey(date: Date) {
+  const { year, month, day } = getPartMap(date, DATE_TIME_INPUT_FORMATTER);
+  return `${year}-${month}-${day}`;
+}

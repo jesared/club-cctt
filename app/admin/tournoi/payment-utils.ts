@@ -1,7 +1,16 @@
 export type RegistrationPaymentEntry = {
   amountCents: number;
   status: "PENDING" | "PAID" | "FAILED" | "REFUNDED";
+  provider?: string | null;
 };
+
+export const REFUND_PROVIDER = "CCTT_REFUND";
+export const REFUND_WITH_CREDIT_PROVIDER = "CCTT_REFUND_WITH_CREDIT";
+
+export function isRecordedRefund(payment: RegistrationPaymentEntry) {
+  return payment.status === "REFUNDED" &&
+    (payment.provider === REFUND_PROVIDER || payment.provider === REFUND_WITH_CREDIT_PROVIDER);
+}
 
 export type RegistrationEventFeeEntry = {
   event: {
@@ -11,19 +20,31 @@ export type RegistrationEventFeeEntry = {
 
 export type PaymentStatus = "PAYÉ" | "PARTIEL" | "EN ATTENTE";
 
+export function isFullyRefunded(dueCents: number, paidCents: number, hasRefund: boolean) {
+  return dueCents === 0 && paidCents === 0 && hasRefund;
+}
+
 export function getRegistrationTotalDueCents(
   registrationEvents: RegistrationEventFeeEntry[],
+  payments: RegistrationPaymentEntry[] = [],
 ) {
-  return registrationEvents.reduce(
+  const fees = registrationEvents.reduce(
     (sum, entry) => sum + entry.event.feeOnlineCents,
     0,
   );
+  const credits = payments.reduce((sum, payment) =>
+    isRecordedRefund(payment) && payment.provider === REFUND_WITH_CREDIT_PROVIDER
+      ? sum + payment.amountCents
+      : sum, 0);
+  return Math.max(fees - credits, 0);
 }
 
 export function getRecordedPaidCents(payments: RegistrationPaymentEntry[]) {
   return payments
-    .filter((payment) => payment.status === "PAID")
-    .reduce((sum, payment) => sum + payment.amountCents, 0);
+    .reduce((sum, payment) => {
+      if (payment.status === "PAID") return sum + payment.amountCents;
+      return isRecordedRefund(payment) ? sum - payment.amountCents : sum;
+    }, 0);
 }
 
 export function getEffectivePaidCents({
@@ -49,4 +70,19 @@ export function getPaymentStatusFromAmounts(
   }
 
   return "EN ATTENTE";
+}
+
+export function getRegistrationPaymentDisplay(registration: {
+  paidAmountCents: number;
+  payments: RegistrationPaymentEntry[];
+  registrationEvents: RegistrationEventFeeEntry[];
+}) {
+  const due = getRegistrationTotalDueCents(registration.registrationEvents, registration.payments);
+  const paid = getEffectivePaidCents(registration);
+  const status = getPaymentStatusFromAmounts(due, paid);
+
+  return {
+    payment: status === "PAYÉ" ? "Payé" : status === "PARTIEL" ? "À régulariser" : "En attente",
+    fullyRefunded: isFullyRefunded(due, paid, registration.payments.some(isRecordedRefund)),
+  } as const;
 }

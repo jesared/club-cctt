@@ -1,5 +1,7 @@
 import { getCurrentSession } from "@/lib/session";
+import { getRegistrationPaymentDisplay } from "@/app/admin/tournoi/payment-utils";
 import { prisma } from "@/lib/prisma";
+import { getParisDayKey } from "@/lib/dates";
 import { withPrismaRetry } from "@/lib/prisma-retry";
 import { isAdminRole } from "@/lib/roles";
 import { RegistrationEventStatus } from "@prisma/client";
@@ -264,6 +266,8 @@ export async function PATCH(request: Request) {
       where: { id: registrationId },
       select: {
         id: true,
+        paidAmountCents: true,
+        payments: { select: { amountCents: true, status: true, provider: true } },
         registrationEvents: {
           orderBy: [{ event: { startAt: "asc" } }, { event: { code: "asc" } }],
           select: {
@@ -273,6 +277,7 @@ export async function PATCH(request: Request) {
               select: {
                 code: true,
                 startAt: true,
+                feeOnlineCents: true,
               },
             },
             status: true,
@@ -302,14 +307,14 @@ export async function PATCH(request: Request) {
             entry.checkIn !== null ||
             entry.status === RegistrationEventStatus.CHECKED_IN,
         )
-        .map((entry) => entry.event.startAt.toISOString().slice(0, 10)),
+        .map((entry) => getParisDayKey(entry.event.startAt)),
     ),
   );
 
   const registrationEventIdsByDay =
     updatedRegistration.registrationEvents.reduce<Record<string, string[]>>(
       (acc, entry) => {
-        const dayKey = entry.event.startAt.toISOString().slice(0, 10);
+        const dayKey = getParisDayKey(entry.event.startAt);
         if (!acc[dayKey]) {
           acc[dayKey] = [];
         }
@@ -323,6 +328,7 @@ export async function PATCH(request: Request) {
     ok: true,
     player: {
       registrationId: updatedRegistration.id,
+      ...getRegistrationPaymentDisplay(updatedRegistration),
       table:
         updatedRegistration.registrationEvents
           .map((entry) => entry.event.code)

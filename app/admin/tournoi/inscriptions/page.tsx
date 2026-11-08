@@ -1,11 +1,12 @@
-﻿import { requireAdminSession, TournamentAdminPage } from "../_components";
+import Link from "next/link";
+import { requireAdminSession, TournamentAdminPage } from "../_components";
 import {
   getAdminRegistrationsOverview,
   getCurrentTournament,
   getRecentAdminPlayers,
   getRegistrationsByTable,
 } from "../data";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 import { RecentPlayerActionsMenu } from "./recent-player-actions-menu";
 type PageProps = {
   searchParams?: Promise<{
@@ -70,7 +71,98 @@ export default async function AdminTournoiInscriptionsPage({ searchParams }: Pag
   return (
     <TournamentAdminPage
       title="Inscriptions"
-      description="Suivi détaillé des engagements par tableau avec les données Player/TournamentRegistration.">
+      description="Retrouvez les joueurs inscrits et suivez leurs engagements par tableau.">
+      <section className="rounded-xl border bg-card shadow-sm p-6 space-y-4">
+        <div>
+          <h2 className="text-xl font-semibold">Joueurs inscrits</h2>
+          <p className="text-sm text-muted-foreground">
+            {searchQuery ? "Jusqu’à 30 résultats, classés par pertinence." : "Les 30 dossiers les plus récents."}
+          </p>
+        </div>
+        <form className="flex flex-wrap items-center gap-2" method="GET">
+          <label className="relative min-w-0 grow basis-full sm:basis-56">
+            <span className="sr-only">Rechercher par nom, licence ou club</span>
+            <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <input
+              type="search"
+              name="q"
+              defaultValue={searchQuery}
+              placeholder="Rechercher par nom, licence ou club"
+              className="h-10 w-full rounded-md border bg-background pl-9 pr-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            />
+          </label>
+          <button type="submit" className="h-10 rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground">
+            Rechercher
+          </button>
+          {searchQuery ? (
+            <Link href="/admin/tournoi/inscriptions" className="inline-flex h-10 items-center rounded-md border px-3 text-sm hover:bg-muted">
+              Effacer
+            </Link>
+          ) : null}
+        </form>
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm">
+            <thead>
+              <tr className="border-b text-left text-muted-foreground">
+                <th className="py-2 pr-3 font-medium">Dossard</th>
+                <th className="py-2 pr-3 font-medium">Joueur</th>
+                <th className="py-2 pr-3 font-medium">Tableaux</th>
+                <th className="py-2 pr-3 font-medium">Paiement</th>
+                <th className="py-2 pr-3 font-medium">Inscription</th>
+                <th className="py-2 font-medium">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentPlayers.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-6 text-center text-muted-foreground">
+                    {searchQuery ? "Aucun joueur trouvé pour cette recherche." : "Aucun joueur inscrit."}
+                  </td>
+                </tr>
+              ) : null}
+                {recentPlayers.map((player) => (
+                  <tr
+                    key={player.id}
+                    className="border-b last:border-0 hover:bg-muted/30"
+                  >
+                  <td className="py-3 pr-3 text-muted-foreground">{player.dossard}</td>
+                  <td className="py-3 pr-3">
+                    <p className="font-medium text-foreground">{player.name}</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                      {player.club} · Licence {player.licence} · {player.ranking} pts
+                    </p>
+                  </td>
+                  <td className="py-3 pr-3">
+                    <div className="flex flex-wrap gap-1">
+                      {player.table.split(", ").map((code) => (
+                        <span key={code} className="rounded bg-muted px-1.5 py-0.5 text-xs font-medium">{code}</span>
+                      ))}
+                    </div>
+                  </td>
+                  <td className="py-3 pr-3 text-muted-foreground">{player.payment}</td>
+                  <td className="py-3 pr-3 text-muted-foreground">
+                    <div className="space-y-1">
+                      <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${getStatusBadgeClass(player.status)}`}>
+                        {player.status}
+                      </span>
+                      {player.statusDetail ? (
+                        <p className="text-xs text-muted-foreground">{player.statusDetail}</p>
+                      ) : null}
+                    </div>
+                  </td>
+                  <td className="py-3">
+                    <RecentPlayerActionsMenu
+                      playerId={player.id}
+                      paymentGroupKey={player.paymentGroupKey}
+                      licence={player.licence}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
       <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {[ 
           { label: "Dossiers joueurs", value: `${overview.playerDossiers}`, helper: "1 dossier = 1 joueur" },
@@ -167,85 +259,6 @@ export default async function AdminTournoiInscriptionsPage({ searchParams }: Pag
         </details>
       </section>
 
-      <section className="rounded-xl border bg-card shadow-sm p-6 space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div>
-            <h2 className="text-xl font-semibold">Derniers dossiers joueurs</h2>
-            <p className="text-sm text-muted-foreground">
-              30 derniers dossiers crees (tri par date de creation).
-            </p>
-          </div>
-          <form className="flex items-center gap-2" method="GET">
-            <input
-              type="search"
-              name="q"
-              defaultValue={resolvedSearchParams?.q ?? ""}
-              placeholder="Rechercher un joueur..."
-              className="h-9 w-56 rounded-md border bg-background px-3 text-sm"
-            />
-            {searchQuery ? (
-              <button
-                type="submit"
-                name="q"
-                value=""
-                className="inline-flex h-9 items-center rounded-md border px-3 text-xs hover:bg-muted"
-              >
-                Effacer
-              </button>
-            ) : null}
-          </form>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-sm">
-            <thead>
-              <tr className="border-b text-left text-muted-foreground">
-                <th className="py-2 pr-3 font-medium">Dossard</th>
-                <th className="py-2 pr-3 font-medium">Joueur</th>
-                <th className="py-2 pr-3 font-medium">Club</th>
-                <th className="py-2 pr-3 font-medium">Licence</th>
-                <th className="py-2 pr-3 font-medium">Classement</th>
-                <th className="py-2 pr-3 font-medium">Tableau</th>
-                <th className="py-2 pr-3 font-medium">Paiement</th>
-                <th className="py-2 pr-3 font-medium">Statut</th>
-                <th className="py-2 font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-                {recentPlayers.map((player) => (
-                  <tr
-                    key={player.id}
-                    className="border-b last:border-0 hover:bg-muted/30"
-                  >
-                  <td className="py-3 pr-3 text-muted-foreground">{player.dossard}</td>
-                  <td className="py-3 pr-3 text-foreground">{player.name}</td>
-                  <td className="py-3 pr-3 text-muted-foreground">{player.club}</td>
-                  <td className="py-3 pr-3 text-muted-foreground">{player.licence}</td>
-                  <td className="py-3 pr-3 text-muted-foreground">{player.ranking}</td>
-                  <td className="py-3 pr-3 text-muted-foreground">{player.table}</td>
-                  <td className="py-3 pr-3 text-muted-foreground">{player.payment}</td>
-                  <td className="py-3 pr-3 text-muted-foreground">
-                    <div className="space-y-1">
-                      <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${getStatusBadgeClass(player.status)}`}>
-                        {player.status}
-                      </span>
-                      {player.statusDetail ? (
-                        <p className="text-xs text-muted-foreground">{player.statusDetail}</p>
-                      ) : null}
-                    </div>
-                  </td>
-                  <td className="py-3">
-                    <RecentPlayerActionsMenu
-                      playerId={player.id}
-                      paymentGroupKey={player.paymentGroupKey}
-                      licence={player.licence}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
     </TournamentAdminPage>
   );
 }

@@ -1,4 +1,5 @@
 import { getCurrentSession } from "@/lib/session";
+import { isAdminRole } from "@/lib/roles";
 import {
   checkRateLimit,
   createTournamentRegistration,
@@ -20,10 +21,22 @@ import { RegistrationEventStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
+  const isTestMode = request.nextUrl.searchParams.get("mode") === "test";
+
+  if (isTestMode) {
+    const session = await getCurrentSession();
+    if (!session || !isAdminRole(session.user.role)) {
+      return NextResponse.json(
+        { message: "Le mode test est réservé aux administrateurs." },
+        { status: 403 },
+      );
+    }
+  }
+
   const notificationAvailability =
     getTournamentRegistrationNotificationAvailability();
 
-  if (!notificationAvailability.isAvailable) {
+  if (!isTestMode && !notificationAvailability.isAvailable) {
     return NextResponse.json(
       {
         message:
@@ -38,7 +51,7 @@ export async function POST(request: NextRequest) {
     request.headers.get("x-real-ip") ??
     "unknown";
 
-  if (!(await checkRateLimit(clientIp))) {
+  if (!isTestMode && !(await checkRateLimit(clientIp))) {
     return NextResponse.json(
       {
         message:
@@ -88,7 +101,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (!registrationStatus.canRegister) {
+  if (!isTestMode && !registrationStatus.canRegister) {
     return NextResponse.json(
       {
         message: registrationStatus.message,
@@ -98,9 +111,6 @@ export async function POST(request: NextRequest) {
   }
 
   const tournamentId = tournament.id;
-  const ownerId = await ensureWebRegistrationOwnerId();
-  const session = await getCurrentSession();
-  const sessionUserId = session?.user?.id ?? null;
   const existingRegistration = await findExistingTournamentRegistrationByLicense(
     tournamentId,
     payload.licenseNumber,
@@ -179,6 +189,18 @@ export async function POST(request: NextRequest) {
   const waitlistedTables = selectedEventsWithStatus
     .filter((event) => event.status === RegistrationEventStatus.WAITLISTED)
     .map((event) => event.code);
+
+  if (isTestMode) {
+    return NextResponse.json({
+      message: waitlistedTables.length > 0
+        ? `Simulation réussie. Tableaux en liste d’attente : ${waitlistedTables.join(", ")}.`
+        : "Simulation réussie. Les tableaux sélectionnés ont été validés.",
+    });
+  }
+
+  const ownerId = await ensureWebRegistrationOwnerId();
+  const session = await getCurrentSession();
+  const sessionUserId = session?.user?.id ?? null;
 
   try {
     await createTournamentRegistration({

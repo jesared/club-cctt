@@ -1,3 +1,4 @@
+import { getEffectivePaidCents, getRegistrationTotalDueCents } from "@/app/admin/tournoi/payment-utils";
 import {
   CalendarClock,
   CircleDollarSign,
@@ -127,6 +128,7 @@ export default async function MesInscriptionsPage({ searchParams }: PageProps) {
           select: {
             amountCents: true,
             status: true,
+            provider: true,
           },
         },
       },
@@ -162,22 +164,13 @@ export default async function MesInscriptionsPage({ searchParams }: PageProps) {
   const totalDueCents = filteredRegistrations.reduce(
     (sum, registration) =>
       sum +
-      registration.registrationEvents.reduce(
-        (eventSum, entry) => eventSum + entry.event.feeOnlineCents,
-        0,
-      ),
+      getRegistrationTotalDueCents(registration.registrationEvents, registration.payments),
     0,
   );
 
   const totalPaidCents = filteredRegistrations.reduce((sum, registration) => {
-    const paymentsPaid = registration.payments
-      .filter((payment) => payment.status === "PAID")
-      .reduce((paymentSum, payment) => paymentSum + payment.amountCents, 0);
-
     const effectivePaid =
-      registration.payments.length > 0
-        ? paymentsPaid
-        : registration.paidAmountCents;
+      getEffectivePaidCents(registration);
 
     return sum + effectivePaid;
   }, 0);
@@ -313,17 +306,9 @@ export default async function MesInscriptionsPage({ searchParams }: PageProps) {
         <section className="space-y-6">
           {filteredRegistrations.map((registration) => {
             const playerName = `${registration.player.prenom} ${registration.player.nom}`;
-            const paymentsPaid = registration.payments
-              .filter((payment) => payment.status === "PAID")
-              .reduce((sum, payment) => sum + payment.amountCents, 0);
-            const dueCents = registration.registrationEvents.reduce(
-              (sum, entry) => sum + entry.event.feeOnlineCents,
-              0,
-            );
+            const dueCents = getRegistrationTotalDueCents(registration.registrationEvents, registration.payments);
             const paidCents =
-              registration.payments.length > 0
-                ? paymentsPaid
-                : registration.paidAmountCents;
+              getEffectivePaidCents(registration);
             const remainingCents = Math.max(dueCents - paidCents, 0);
 
             return (

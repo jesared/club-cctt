@@ -1,10 +1,15 @@
-﻿import { prisma } from "@/lib/prisma";
+import { getPlayerSearchTerms, scorePlayerSearch } from "./player-search";
+import { prisma } from "@/lib/prisma";
+import { getParisDayKey } from "@/lib/dates";
 import { RegistrationEventStatus, RegistrationStatus } from "@prisma/client";
 import { ACTIVE_TOURNAMENT_STATUSES } from "@/lib/tournament-status";
+import { addPaymentToHistory, type PaymentHistoryEntry } from "./paiement/payment-history";
 import {
   getEffectivePaidCents,
   getPaymentStatusFromAmounts,
   getRecordedPaidCents,
+  getRegistrationPaymentDisplay,
+  isRecordedRefund,
   getRegistrationTotalDueCents,
 } from "./payment-utils";
 import {
@@ -48,6 +53,7 @@ export type AdminPlayerRow = {
   ranking: string;
   table: string;
   payment: string;
+  fullyRefunded: boolean;
   status: string;
   statusDetail: string | null;
   hasCheckedIn: boolean;
@@ -97,6 +103,7 @@ type AdminPlayerRegistrationRecord = {
   payments: Array<{
     amountCents: number;
     status: "PENDING" | "PAID" | "FAILED" | "REFUNDED";
+    provider: string | null;
   }>;
 };
 
@@ -116,6 +123,13 @@ export type AdminPaymentGroupRow = {
   payerLabel: string;
   registrations: number;
   players: string[];
+  playerDetails: {
+    registrationId: string;
+    name: string;
+    tables: { code: string; label: string; feeOnlineCents: number }[];
+    totalAmountDueCents: number;
+  }[];
+  paymentHistory: PaymentHistoryEntry[];
   totalAmountDueCents: number;
   totalPaidCents: number;
   totalPendingCents: number;
@@ -202,6 +216,7 @@ const adminPlayerRegistrationSelect = {
     select: {
       amountCents: true,
       status: true,
+      provider: true,
     },
   },
 } as const;
@@ -325,6 +340,7 @@ export async function getTournamentDashboardStats(
           select: {
             amountCents: true,
             status: true,
+            provider: true,
           },
         },
       },
@@ -365,6 +381,7 @@ export async function getTournamentDashboardStats(
   const paidPlayers = registrations.filter((registration) => {
     const totalDueCents = getRegistrationTotalDueCents(
       registration.registrationEvents,
+      registration.payments,
     );
     const totalPaidCents = getEffectivePaidCents({
       paidAmountCents: registration.paidAmountCents,
@@ -451,6 +468,7 @@ export async function getTournamentProgress(
           select: {
             amountCents: true,
             status: true,
+            provider: true,
           },
         },
       },
@@ -482,6 +500,7 @@ export async function getTournamentProgress(
   const paidPlayers = registrations.filter((registration) => {
     const totalDueCents = getRegistrationTotalDueCents(
       registration.registrationEvents,
+      registration.payments,
     );
     const totalPaidCents = getEffectivePaidCents({
       paidAmountCents: registration.paidAmountCents,
@@ -538,7 +557,7 @@ export async function getTournamentTables(tournamentId: string): Promise<Tournam
 
   return events.map((event) => ({
     id: event.id,
-    dayKey: event.startAt.toISOString().slice(0, 10),
+    dayKey: getParisDayKey(event.startAt),
     date: DATE_FORMATTER.format(event.startAt),
     time: TIME_FORMATTER.format(event.startAt),
     table: event.code,
@@ -687,63 +706,7 @@ function getAdminPlayerStatus(registration: {
   };
 }
 
-function buildAdminPlayerSearchWhere(tournamentId: string, searchQuery?: string) {
-  const normalizedQuery = searchQuery?.trim();
-  if (!normalizedQuery) {
-    return { tournamentId };
-  }
-
-  return {
-    tournamentId,
-    OR: [
-      {
-        player: {
-          prenom: {
-            contains: normalizedQuery,
-            mode: "insensitive" as const,
-          },
-        },
-      },
-      {
-        player: {
-          nom: {
-            contains: normalizedQuery,
-            mode: "insensitive" as const,
-          },
-        },
-      },
-      {
-        player: {
-          club: {
-            contains: normalizedQuery,
-            mode: "insensitive" as const,
-          },
-        },
-      },
-      {
-        player: {
-          licence: {
-            contains: normalizedQuery,
-            mode: "insensitive" as const,
-          },
-        },
-      },
-    ],
-  };
-}
-
 function mapAdminPlayerRow(registration: AdminPlayerRegistrationRecord): AdminPlayerRow {
-  const totalDueCents = getRegistrationTotalDueCents(
-    registration.registrationEvents,
-  );
-  const totalPaidCents = getEffectivePaidCents({
-    paidAmountCents: registration.paidAmountCents,
-    payments: registration.payments,
-  });
-  const paymentStatus = getPaymentStatusFromAmounts(
-    totalDueCents,
-    totalPaidCents,
-  );
   const computedStatus = getAdminPlayerStatus(registration);
 
   return {
@@ -757,12 +720,7 @@ function mapAdminPlayerRow(registration: AdminPlayerRegistrationRecord): AdminPl
     table:
       registration.registrationEvents.map((entry) => entry.event.code).join(", ") ||
       "—",
-    payment:
-      paymentStatus === "PAYÉ"
-        ? "Payé"
-        : paymentStatus === "PARTIEL"
-          ? "À régulariser"
-          : "En attente",
+    ...getRegistrationPaymentDisplay(registration),
     status: computedStatus.status,
     statusDetail: computedStatus.statusDetail,
     hasCheckedIn: computedStatus.hasCheckedIn,
@@ -780,13 +738,13 @@ function mapAdminPlayerRow(registration: AdminPlayerRegistrationRecord): AdminPl
               entry.checkIn !== null ||
               entry.status === RegistrationEventStatus.CHECKED_IN,
           )
-          .map((entry) => entry.event.startAt.toISOString().slice(0, 10)),
+          .map((entry) => getParisDayKey(entry.event.startAt)),
       ),
     ),
     registrationEventIdsByDay: registration.registrationEvents.reduce<
       Record<string, string[]>
     >((acc, entry) => {
-      const dayKey = entry.event.startAt.toISOString().slice(0, 10);
+      const dayKey = getParisDayKey(entry.event.startAt);
       if (!acc[dayKey]) {
         acc[dayKey] = [];
       }
@@ -823,14 +781,48 @@ export async function getRecentAdminPlayers(
   searchQuery?: string,
   limit = 30,
 ): Promise<AdminPlayerRow[]> {
+  const terms = getPlayerSearchTerms(searchQuery ?? "");
+  if (terms.length === 0) {
+    const registrations = await prisma.tournamentRegistration.findMany({
+      where: { tournamentId },
+      orderBy: { createdAt: "desc" },
+      take: limit,
+      select: adminPlayerRegistrationSelect,
+    });
+    return registrations.map(mapAdminPlayerRow);
+  }
+
+  const candidates = await prisma.tournamentRegistration.findMany({
+    where: { tournamentId },
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      player: { select: { prenom: true, nom: true, club: true, licence: true } },
+    },
+  });
+  const ids = candidates
+    .flatMap(({ id, player }) => {
+      const score = scorePlayerSearch(terms, {
+        name: `${player.prenom} ${player.nom}`,
+        club: player.club,
+        licence: player.licence,
+      });
+      return score === null ? [] : [{ id, score }];
+    })
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map(({ id }) => id);
+
+  if (ids.length === 0) return [];
   const registrations = await prisma.tournamentRegistration.findMany({
-    where: buildAdminPlayerSearchWhere(tournamentId, searchQuery),
-    orderBy: [{ createdAt: "desc" }],
-    take: limit,
+    where: { tournamentId, id: { in: ids } },
     select: adminPlayerRegistrationSelect,
   });
-
-  return registrations.map((registration) => mapAdminPlayerRow(registration));
+  const byId = new Map(registrations.map((registration) => [registration.id, registration]));
+  return ids.flatMap((id) => {
+    const registration = byId.get(id);
+    return registration ? [mapAdminPlayerRow(registration)] : [];
+  });
 }
 
 export async function getAdminRegistrationsOverview(
@@ -921,6 +913,8 @@ export async function getAdminPaymentGroups(tournamentId: string): Promise<Admin
         select: {
           event: {
             select: {
+              code: true,
+              label: true,
               feeOnlineCents: true,
             },
           },
@@ -928,22 +922,28 @@ export async function getAdminPaymentGroups(tournamentId: string): Promise<Admin
       },
       payments: {
         select: {
+          id: true,
           amountCents: true,
           status: true,
+          method: true,
+          provider: true,
+          providerRef: true,
+          paidAt: true,
         },
       },
     },
   });
 
-  const groups = new Map<string, AdminPaymentGroupRow>();
+  const groups = new Map<string, Omit<AdminPaymentGroupRow, "paymentHistory"> & {
+    history: Map<string, PaymentHistoryEntry>;
+  }>();
 
   for (const registration of registrations) {
     const groupKey = getPaymentGroupKey(registration);
     const payerInfo = getPaymentPayerInfo(registration);
 
-    const totalAmountDueCents = registration.registrationEvents.reduce(
-      (acc, eventEntry) => acc + eventEntry.event.feeOnlineCents,
-      0,
+    const totalAmountDueCents = getRegistrationTotalDueCents(
+      registration.registrationEvents, registration.payments,
     );
     const paymentsPaidCents = getRecordedPaidCents(registration.payments);
     const hasRecordedPayments = registration.payments.length > 0;
@@ -966,6 +966,8 @@ export async function getAdminPaymentGroups(tournamentId: string): Promise<Admin
         payerLabel: buildPayerLabel(payerInfo.email, payerInfo.phone),
         registrations: 0,
         players: [],
+        playerDetails: [],
+        history: new Map(),
         totalAmountDueCents: 0,
         totalPaidCents: 0,
         totalPendingCents: 0,
@@ -976,8 +978,30 @@ export async function getAdminPaymentGroups(tournamentId: string): Promise<Admin
     }
 
     const group = groups.get(groupKey)!;
+    for (const payment of registration.payments) {
+      if (payment.status === "PAID" || isRecordedRefund(payment)) addPaymentToHistory(group.history, payment);
+    }
+    if (!hasRecordedPayments && effectivePaidCents > 0) {
+      const id = `legacy:${registration.id}`;
+      group.history.set(id, {
+        id,
+        amountCents: effectivePaidCents,
+        method: null,
+        paidAt: null,
+        recordedBy: null,
+      });
+    }
     group.registrations += 1;
-    group.players.push(`${registration.player.prenom} ${registration.player.nom}`.trim());
+    const name = `${registration.player.prenom} ${registration.player.nom}`.trim();
+    group.players.push(name);
+    group.playerDetails.push({
+      registrationId: registration.id,
+      name,
+      tables: registration.registrationEvents
+        .map(({ event }) => event)
+        .sort((a, b) => a.code.localeCompare(b.code, "fr", { numeric: true })),
+      totalAmountDueCents,
+    });
     group.totalAmountDueCents += totalAmountDueCents;
     group.totalPaidCents += effectivePaidCents;
     group.totalPendingCents += totalPendingCents;
@@ -994,16 +1018,28 @@ export async function getAdminPaymentGroups(tournamentId: string): Promise<Admin
     }
   }
 
-  const rows = Array.from(groups.values()).map((group) => {
+  const rows = Array.from(groups.values()).map(({ history, ...group }) => {
     const paymentStatus = getPaymentStatusFromAmounts(
       group.totalAmountDueCents,
       group.totalPaidCents,
     );
 
+    for (const [key, entry] of history) {
+      if (entry.amountCents <= 0) continue;
+      const refundedCents = Array.from(history.values()).reduce(
+        (sum, refund) => refund.refundOf === key ? sum - refund.amountCents : sum, 0,
+      );
+      entry.refundableCents = Math.max(entry.amountCents - refundedCents, 0);
+    }
+
     return {
       ...group,
+      paymentHistory: Array.from(history.values()).sort((a, b) =>
+        (b.paidAt ?? "").localeCompare(a.paidAt ?? "") || a.id.localeCompare(b.id),
+      ),
       paymentStatus,
       players: group.players.sort((a, b) => a.localeCompare(b, "fr")),
+      playerDetails: group.playerDetails.sort((a, b) => a.name.localeCompare(b.name, "fr")),
     };
   });
 

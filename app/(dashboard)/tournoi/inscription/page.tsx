@@ -1,7 +1,6 @@
 import KpiPageViewTracker from "@/components/KpiPageViewTracker";
 import AdminTournamentVisibilityControls from "@/components/admin-tournament-visibility-controls";
 import Reveal from "@/components/Reveal";
-import TournamentContextNav from "@/components/public/tournament-context-nav";
 import TournamentRegistrationForm from "@/components/TournamentRegistrationForm";
 import { Button } from "@/components/ui/button";
 import { prisma } from "@/lib/prisma";
@@ -131,11 +130,10 @@ export default async function InscriptionsPage({ searchParams }: PageProps) {
   const registrationStatus = getTournamentRegistrationStatus(tournament);
   const notificationAvailability =
     getTournamentRegistrationNotificationAvailability();
-  const showRegistrationFormOverride =
-    resolvedSearchParams?.showRegistrationForm === "1";
+  const isTestMode = isAdmin && resolvedSearchParams?.showRegistrationForm === "1";
   const canShowRegistrationForm =
     (registrationStatus.canRegister && notificationAvailability.isAvailable) ||
-    (isAdmin && showRegistrationFormOverride);
+    isTestMode;
 
   const tableOptions = (tournament?.events ?? []).map((event) => {
     const maxPlayers = event.maxPlayers ?? null;
@@ -234,19 +232,15 @@ export default async function InscriptionsPage({ searchParams }: PageProps) {
         </header>
       </Reveal>
 
-      <Reveal delay={80}>
-        <TournamentContextNav />
-      </Reveal>
-
-      {isAdmin && !canShowRegistrationForm ? (
+      {isAdmin ? (
         <Reveal>
           <AdminTournamentVisibilityControls
             options={[
               {
                 key: "showRegistrationForm",
-                label: "Afficher le formulaire d'inscription",
+                label: "Mode test du formulaire",
                 description:
-                  "Permet de tester le formulaire même quand il est masqué aux visiteurs.",
+                  "Simule une inscription, même pendant la suspension, sans créer de dossier ni envoyer d’e-mail.",
               },
             ]}
           />
@@ -255,7 +249,7 @@ export default async function InscriptionsPage({ searchParams }: PageProps) {
 
       <Reveal>
         {canShowRegistrationForm ? (
-          <TournamentRegistrationForm tableOptions={tableOptions} />
+          <TournamentRegistrationForm key={String(isTestMode)} tableOptions={tableOptions} isTestMode={isTestMode} />
         ) : (
           <div className="rounded-2xl border border-accent/35 bg-accent/15 p-4 text-sm text-foreground dark:border-accent/45 dark:bg-accent/20">
             <p className="font-medium">

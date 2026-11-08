@@ -6,6 +6,7 @@ import {
   getRegistrationsByTable,
 } from "../data";
 import { PaymentsToValidate } from "./payments-to-validate";
+import { isFullyRefunded } from "../payment-utils";
 
 function formatEuro(cents: number) {
   return `${(cents / 100).toFixed(0)} EUR`;
@@ -54,22 +55,29 @@ export default async function AdminTournoiPaiementPage({
       const remainingCents = Math.max(group.totalAmountDueCents - group.totalPaidCents, 0);
       const priority: "HAUTE" | "NORMALE" = "NORMALE";
       const dossierType = group.registrations > 1 ? "Dossier groupé" : "Dossier individuel";
-      const statusLabel = formatPaymentStatus(group.paymentStatus);
+      const fullyRefunded = isFullyRefunded(
+        group.totalAmountDueCents,
+        group.totalPaidCents,
+        group.paymentHistory.some((entry) => entry.amountCents < 0),
+      );
+      const paymentStatus = fullyRefunded ? "REMBOURSÉ" as const : group.paymentStatus;
+      const statusLabel = fullyRefunded ? "REMBOURSÉ" : formatPaymentStatus(group.paymentStatus);
 
       return {
         ...group,
+        paymentStatus,
         dossierType,
         remainingCents,
         priority,
         statusLabel,
         suggestedAction:
           group.paymentStatus === "PARTIEL"
-            ? "Refuser le partiel et demander le règlement complet du solde"
-            : "Contrôler le paiement en ligne puis marquer le dossier comme réglé",
+            ? "Encaisser le solde restant"
+            : "Vérifier le règlement et enregistrer le versement",
       };
     })
     .sort((a, b) => b.remainingCents - a.remainingCents);
-  const pendingPaymentsCount = paymentsToValidate.filter((group) => group.paymentStatus !== "PAYÉ").length;
+  const pendingPaymentsCount = paymentsToValidate.filter((group) => group.remainingCents > 0).length;
   const partialPaymentsCount = paymentsToValidate.filter((group) => group.paymentStatus === "PARTIEL").length;
   const totalDossiers = paymentGroups.length;
   const paidDossiers = paymentGroups.filter((group) => group.paymentStatus === "PAYÉ").length;
@@ -153,16 +161,16 @@ export default async function AdminTournoiPaiementPage({
       </section>
 
       <section className="mt-6 grid gap-6 lg:grid-cols-2">
-        <article className="rounded-xl border bg-card p-5 shadow-sm lg:col-span-2">
+        <article className="min-w-0 rounded-xl border bg-card p-4 shadow-sm sm:p-5 lg:col-span-2">
           <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-foreground">Paiements a valider</h2>
+              <h2 className="text-lg font-semibold text-foreground">Dossiers de paiement</h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Vue priorisee des dossiers non soldes pour accelerer les relances et la validation en caisse.
+                Suivez les règlements et retrouvez les dossiers à traiter en caisse.
               </p>
             </div>
-            <span className="inline-flex w-fit rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700">
-              {pendingPaymentsCount} dossier{pendingPaymentsCount > 1 ? "s" : ""} a traiter
+            <span className="inline-flex w-fit shrink-0 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+              {pendingPaymentsCount} dossier{pendingPaymentsCount > 1 ? "s" : ""} à traiter
             </span>
           </div>
 
@@ -174,7 +182,7 @@ export default async function AdminTournoiPaiementPage({
 
           <PaymentsToValidate
             initialPayments={paymentsToValidate}
-            defaultStatusFilter={pendingPaymentsCount === 0 ? "PAYÉ" : "TOUS"}
+            defaultStatusFilter={paymentsToValidate.every((group) => group.paymentStatus === "PAYÉ") ? "PAYÉ" : "TOUS"}
             initialSelectedGroupKey={initialSelectedGroupKey}
           />
         </article>

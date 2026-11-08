@@ -1006,9 +1006,6 @@ export default function HeaderCentered({
                   </span>
                 </span>
               </span>
-              <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-                {isDark ? "Soleil" : "Lune"}
-              </span>
             </button>
 
             <div className="rounded-2xl border border-border/70 bg-background/80 p-2 shadow-sm backdrop-blur">

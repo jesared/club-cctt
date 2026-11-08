@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { useRouter } from "next/navigation";
-import { AlertTriangle, MoreHorizontal, Plus, Trash2 } from "lucide-react";
+import { AlertTriangle, MoreHorizontal, Plus, Save, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -171,10 +171,30 @@ function toEventForm(event: TournamentEditorEventPayload): EventForm {
   };
 }
 
+function areEventsEqual(first: EventForm, second: EventForm) {
+  return (
+    first.code === second.code &&
+    first.label === second.label &&
+    first.gender === second.gender &&
+    first.minPoints === second.minPoints &&
+    first.maxPoints === second.maxPoints &&
+    first.maxPlayers === second.maxPlayers &&
+    first.startAt === second.startAt &&
+    first.feeOnlineCents === second.feeOnlineCents &&
+    first.feeOnsiteCents === second.feeOnsiteCents &&
+    first.status === second.status
+  );
+}
+
+function replaceEventById(events: EventForm[], nextEvent: EventForm) {
+  return events.map((event) => (event.id === nextEvent.id ? nextEvent : event));
+}
+
 export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
   const router = useRouter();
   const [tournament, setTournament] = useState<TournamentForm>(emptyTournament);
   const [events, setEvents] = useState<EventForm[]>([]);
+  const [savedEvents, setSavedEvents] = useState<EventForm[]>([]);
   const [newEvent, setNewEvent] = useState<EventForm>(emptyEvent);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -217,6 +237,15 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
     };
   }, [tournament.endDate, tournament.startDate]);
 
+  const modifiedEvents = useMemo(() => {
+    const savedEventsById = new Map(savedEvents.map((event) => [event.id, event]));
+
+    return events.filter((event) => {
+      const savedEvent = savedEventsById.get(event.id);
+      return !savedEvent || !areEventsEqual(event, savedEvent);
+    });
+  }, [events, savedEvents]);
+
   useEffect(() => {
     async function load() {
       setLoading(true);
@@ -255,6 +284,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
         const eventList = (tournamentData.events ?? []).map(toEventForm);
 
         setEvents(eventList);
+        setSavedEvents(eventList);
       } finally {
         setLoading(false);
       }
@@ -312,7 +342,9 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
         return;
       }
       const createdEvent = json.event;
-      setEvents((current) => [...current, toEventForm(createdEvent)]);
+      const createdEventForm = toEventForm(createdEvent);
+      setEvents((current) => [...current, createdEventForm]);
+      setSavedEvents((current) => [...current, createdEventForm]);
       setNewEvent(emptyEvent);
     } finally {
       setSavingEvent(null);
@@ -343,7 +375,72 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
         alert(json?.error ?? "Mise a jour impossible.");
         return;
       }
+      const savedEvent = json?.event ? toEventForm(json.event) : event;
+      setEvents((current) => replaceEventById(current, savedEvent));
+      setSavedEvents((current) => replaceEventById(current, savedEvent));
       alert("Tableau mis a jour.");
+    } finally {
+      setSavingEvent(null);
+    }
+  }
+
+  async function saveModifiedEvents() {
+    if (!timelineState.canEditEvents) {
+      alert("Le tournoi a déjà démarré.");
+      return;
+    }
+
+    if (modifiedEvents.length === 0) {
+      alert("Aucun tableau modifié à sauvegarder.");
+      return;
+    }
+
+    const incompleteEvent = modifiedEvents.find(
+      (event) => !hasCompleteDateTime(event.startAt),
+    );
+
+    if (incompleteEvent) {
+      alert(`Renseignez la date et l'heure du tableau ${incompleteEvent.code || incompleteEvent.label}.`);
+      return;
+    }
+
+    setSavingEvent("all");
+    try {
+      const savedEventForms: EventForm[] = [];
+
+      for (const event of modifiedEvents) {
+        const res = await fetch(
+          `/api/admin/tournoi/${tournamentId}/events/${event.id}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(event),
+          },
+        );
+        const json = await readJson<TournamentEditorResponse>(res);
+
+        if (!res.ok) {
+          alert(
+            json?.error ??
+              `Mise à jour impossible pour le tableau ${event.code || event.label}.`,
+          );
+          return;
+        }
+
+        savedEventForms.push(json?.event ? toEventForm(json.event) : event);
+      }
+
+      setEvents((current) =>
+        savedEventForms.reduce(replaceEventById, current),
+      );
+      setSavedEvents((current) =>
+        savedEventForms.reduce(replaceEventById, current),
+      );
+      alert(
+        savedEventForms.length === 1
+          ? "1 tableau mis à jour."
+          : `${savedEventForms.length} tableaux mis à jour.`,
+      );
     } finally {
       setSavingEvent(null);
     }
@@ -367,6 +464,7 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
         return;
       }
       setEvents((current) => current.filter((item) => item.id !== id));
+      setSavedEvents((current) => current.filter((item) => item.id !== id));
     } finally {
       setSavingEvent(null);
     }
@@ -656,8 +754,30 @@ export function TournamentEditor({ tournamentId }: TournamentEditorProps) {
       </Dialog>
 
       <Card>
-        <CardHeader className="pb-2">
+        <CardHeader className="flex-row items-center justify-between gap-3 space-y-0 pb-2">
           <CardTitle className="text-lg">Tableaux</CardTitle>
+          <Button
+            type="button"
+            size="sm"
+            onClick={saveModifiedEvents}
+            disabled={
+              savingEvent !== null ||
+              modifiedEvents.length === 0 ||
+              !timelineState.canEditEvents
+            }
+            title={
+              modifiedEvents.length === 0
+                ? "Aucun tableau modifié"
+                : "Sauver tous les tableaux modifiés"
+            }
+          >
+            <Save className="size-4" />
+            {savingEvent === "all"
+              ? "Sauvegarde..."
+              : modifiedEvents.length > 0
+                ? `Sauver ${modifiedEvents.length}`
+                : "Tout est sauvé"}
+          </Button>
         </CardHeader>
         <CardContent className="space-y-4 p-4 text-sm">
           <div>

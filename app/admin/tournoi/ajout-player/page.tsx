@@ -36,8 +36,8 @@ async function createPlayerRegistration(formData: FormData) {
   const pointsValue = String(formData.get("points") ?? "").trim();
   const gender = String(formData.get("gender") ?? "").trim().toUpperCase();
   const club = String(formData.get("club") ?? "").trim();
-  const contactEmail = String(formData.get("contactEmail") ?? "").trim();
-  const contactPhone = String(formData.get("contactPhone") ?? "").trim();
+  const contactEmail = String(formData.get("contactEmail") ?? "").trim() || null;
+  const contactPhone = String(formData.get("contactPhone") ?? "").trim() || null;
   const notes = String(formData.get("notes") ?? "").trim();
   const selectedEvents = formData
     .getAll("eventIds")
@@ -52,8 +52,6 @@ async function createPlayerRegistration(formData: FormData) {
     !pointsValue ||
     !["M", "F"].includes(gender) ||
     !club ||
-    !contactEmail ||
-    !contactPhone ||
     selectedEvents.length === 0
   ) {
     redirect(
@@ -209,21 +207,15 @@ async function updatePlayerRegistration(formData: FormData) {
 
   const tournamentId = String(formData.get("tournamentId") ?? "");
   const registrationId = String(formData.get("registrationId") ?? "").trim();
-  const contactEmail = String(formData.get("contactEmail") ?? "").trim();
-  const contactPhone = String(formData.get("contactPhone") ?? "").trim();
+  const contactEmail = String(formData.get("contactEmail") ?? "").trim() || null;
+  const contactPhone = String(formData.get("contactPhone") ?? "").trim() || null;
   const notes = String(formData.get("notes") ?? "").trim();
   const selectedEvents = formData
     .getAll("eventIds")
     .map((eventId) => String(eventId).trim())
     .filter(Boolean);
 
-  if (
-    !tournamentId ||
-    !registrationId ||
-    !contactEmail ||
-    !contactPhone ||
-    selectedEvents.length === 0
-  ) {
+  if (!tournamentId || !registrationId || selectedEvents.length === 0) {
     redirect(
       `/admin/tournoi/ajout-player?edit=${registrationId}&error=Veuillez+remplir+les+champs+obligatoires`,
     );

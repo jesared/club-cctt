@@ -1,6 +1,5 @@
 ﻿import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Reveal from "@/components/Reveal";
-import TournamentContextNav from "@/components/public/tournament-context-nav";
 
 const TOURNAMENT_2026_RESULTS_URL =
   "https://drive.google.com/drive/u/0/folders/1LBgasYtx4UkDSvjuvBu789wdRG_R6ODE";
@@ -12,9 +11,6 @@ export default function TournoiResultatsPage() {
         <header className="mb-6 flex items-center justify-between">
           <h1 className="text-2xl font-semibold">Résultats du tournoi</h1>
         </header>
-      </Reveal>
-      <Reveal delay={80}>
-        <TournamentContextNav />
       </Reveal>
       <Reveal>
         <Card className="card-hover">

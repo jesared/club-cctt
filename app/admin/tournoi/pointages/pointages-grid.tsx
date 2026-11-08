@@ -1,11 +1,14 @@
 ﻿"use client";
 
+import Link from "next/link";
 import {
   CircleAlert,
   CircleCheckBig,
-  ListFilter,
   MoreVertical,
+  Pencil,
   Search,
+  Trash2,
+  Undo2,
   Users,
   Wallet,
   X,
@@ -14,6 +17,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { getPlayerSearchTerms, scorePlayerSearch } from "../player-search";
 
 type PointagesGridPlayer = {
   id: string;
@@ -25,6 +29,7 @@ type PointagesGridPlayer = {
   table: string;
   status: string;
   payment: string;
+  fullyRefunded: boolean;
   engagedEventIds: string[];
   waitlistEventIds: string[];
   checkedDayKeys: string[];
@@ -55,6 +60,7 @@ type PointagesGridProps = {
   dayColumns: DayColumn[];
   tournamentTables: TournamentTable[];
   initialSearchTerm?: string;
+  initialDay?: string;
 };
 
 function isEligible(points: number | null, table: TournamentTable) {
@@ -73,7 +79,15 @@ function isEligible(points: number | null, table: TournamentTable) {
   return true;
 }
 
-function getPaymentMeta(payment: string) {
+function getPaymentMeta({ payment, fullyRefunded }: PointagesGridPlayer) {
+  if (fullyRefunded) {
+    return {
+      label: "Remboursé",
+      isPending: false,
+      className: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-200",
+    };
+  }
+
   const paymentStatus = payment?.toLowerCase?.() ?? "";
 
   if (
@@ -91,7 +105,7 @@ function getPaymentMeta(payment: string) {
 
   if (paymentStatus.includes("payé") || paymentStatus.includes("paye")) {
     return {
-      label: "Payé",
+      label: "Réglé",
       isPending: false,
       className:
         "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200",
@@ -99,7 +113,7 @@ function getPaymentMeta(payment: string) {
   }
 
   return {
-    label: "En attente",
+    label: "À régler",
     isPending: true,
     className:
       "bg-slate-100 text-red-700 dark:bg-slate-800/60 dark:text-red-200",
@@ -111,6 +125,7 @@ export function PointagesGrid({
   dayColumns,
   tournamentTables,
   initialSearchTerm = "",
+  initialDay = "all",
 }: PointagesGridProps) {
   const [playersState, setPlayersState] =
     useState<PointagesGridPlayer[]>(players);
@@ -125,11 +140,13 @@ export function PointagesGrid({
     },
   );
   const [pendingState, setPendingState] = useState<Record<string, boolean>>({});
+  const [checkError, setCheckError] = useState<string | null>(null);
   const [recentlySavedRow, setRecentlySavedRow] = useState<string | null>(null);
   const [selectedClub, setSelectedClub] = useState<string>("all");
   const [selectedTable, setSelectedTable] = useState<string>("all");
-  const [selectedPointageFilter, setSelectedPointageFilter] =
-    useState<string>("all");
+  const [selectedDay, setSelectedDay] = useState(initialDay);
+  const [presence, setPresence] = useState("all");
+  const [waitlistOnly, setWaitlistOnly] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>(initialSearchTerm);
   const [editingPlayer, setEditingPlayer] =
     useState<PointagesGridPlayer | null>(null);
@@ -149,7 +166,6 @@ export function PointagesGrid({
     left: number;
   } | null>(null);
   const [paymentDrawerOpen, setPaymentDrawerOpen] = useState(false);
-  const [quickMode, setQuickMode] = useState(true);
   const [statsCompact, setStatsCompact] = useState(true);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -230,30 +246,16 @@ export function PointagesGrid({
     });
   }, [normalizedDayColumns, tournamentTables]);
 
-  const hasActiveFilters =
-    selectedClub !== "all" ||
-    selectedTable !== "all" ||
-    selectedPointageFilter !== "all" ||
-    searchTerm.trim().length > 0;
-
-  const filterChipClassName = (
-    active: boolean,
-    tone: "default" | "warning" = "default",
-  ) =>
-    cn(
-      "inline-flex cursor-pointer whitespace-nowrap rounded-lg border px-3 py-1.5 text-xs font-medium transition",
-      active
-        ? tone === "warning"
-          ? "border-amber-400/50 bg-amber-100 text-amber-900 dark:bg-amber-900/40 dark:text-amber-200"
-          : "border-primary/40 bg-primary/10 text-primary"
-        : "border-transparent bg-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground",
-    );
+  const advancedFilterCount = Number(selectedClub !== "all") +
+    Number(selectedTable !== "all") + Number(waitlistOnly) + Number(paymentDrawerOpen);
+  const hasActiveFilters = advancedFilterCount > 0 ||
+    selectedDay !== "all" || presence !== "all" || searchTerm.trim().length > 0;
 
   const filteredPlayers = useMemo(() => {
-    const normalizedSearch = searchTerm.trim().toLocaleLowerCase("fr");
+    const terms = getPlayerSearchTerms(searchTerm);
 
-    return playersState.filter((player) => {
-      const isPaymentPending = getPaymentMeta(player.payment).isPending;
+    const eligiblePlayers = playersState.filter((player) => {
+      const isPaymentPending = getPaymentMeta(player).isPending;
       const matchesClub =
         selectedClub === "all" || player.club === selectedClub;
       const playerTables = player.table
@@ -262,55 +264,44 @@ export function PointagesGrid({
         .filter(Boolean);
       const matchesTable =
         selectedTable === "all" || playerTables.includes(selectedTable);
-      const matchesPointage =
-        selectedPointageFilter === "all" ||
-        (selectedPointageFilter === "waitlist"
-          ? player.waitlistEventIds.length > 0
-          : false) ||
-        (() => {
-          const [status, dayKey] = selectedPointageFilter.split(":");
-          if (!dayKey) {
-            return true;
-          }
+      const matchesPointage = selectedDay === "all" && presence === "all" ||
+        normalizedDayColumns.some(({ key }) => {
+          if (selectedDay !== "all" && selectedDay !== key) return false;
+          if (!player.registrationEventIdsByDay[key]?.length) return false;
+          const checked = checkedState[`${player.id}-${key}`] ?? false;
+          return presence === "all" || checked === (presence === "checked");
+        });
 
-          const hasEventForDay =
-            (player.registrationEventIdsByDay[dayKey] ?? []).length > 0;
-
-          if (!hasEventForDay) {
-            return false;
-          }
-
-          const isChecked = checkedState[`${player.id}-${dayKey}`] ?? false;
-          return status === "checked" ? isChecked : !isChecked;
-        })();
-      const matchesSearch =
-        normalizedSearch.length === 0 ||
-        player.name.toLocaleLowerCase("fr").includes(normalizedSearch) ||
-        player.licence.toLocaleLowerCase("fr").includes(normalizedSearch);
-
-      return (
-        matchesClub &&
-        matchesTable &&
-        matchesPointage &&
-        matchesSearch &&
-        (paymentDrawerOpen ? isPaymentPending : true)
-      );
+      return matchesClub && matchesTable && matchesPointage &&
+        (!waitlistOnly || player.waitlistEventIds.length > 0) &&
+        (!paymentDrawerOpen || isPaymentPending);
     });
+
+    if (terms.length === 0) return eligiblePlayers;
+
+    return eligiblePlayers
+      .flatMap((player) => {
+        const score = scorePlayerSearch(terms, player);
+        return score === null ? [] : [{ player, score }];
+      })
+      .sort((a, b) => b.score - a.score)
+      .map(({ player }) => player);
   }, [
     checkedState,
     playersState,
     searchTerm,
     selectedClub,
-    selectedPointageFilter,
+    selectedDay,
+    presence,
+    waitlistOnly,
+    normalizedDayColumns,
     selectedTable,
     paymentDrawerOpen,
   ]);
 
   useEffect(() => {
-    if (quickMode) {
-      searchInputRef.current?.focus();
-    }
-  }, [quickMode]);
+    searchInputRef.current?.focus();
+  }, []);
 
   const parsedEditingPoints = useMemo(() => {
     if (
@@ -343,7 +334,7 @@ export function PointagesGrid({
     );
   }, [tournamentTables]);
 
-  async function toggleCheck(player: PointagesGridPlayer, dayKey: string) {
+  async function saveCheck(player: PointagesGridPlayer, dayKey: string, checked: boolean) {
     const key = `${player.id}-${dayKey}`;
     const eventIds = player.registrationEventIdsByDay[dayKey] ?? [];
 
@@ -351,12 +342,7 @@ export function PointagesGrid({
       return;
     }
 
-    const nextCheckedValue = !(checkedState[key] ?? false);
-
-    setCheckedState((previousState) => ({
-      ...previousState,
-      [key]: nextCheckedValue,
-    }));
+    setCheckError(null);
     setPendingState((previousState) => ({ ...previousState, [key]: true }));
 
     try {
@@ -367,7 +353,7 @@ export function PointagesGrid({
         },
         body: JSON.stringify({
           registrationEventIds: eventIds,
-          checked: nextCheckedValue,
+          checked: checked,
         }),
       });
 
@@ -375,13 +361,11 @@ export function PointagesGrid({
         throw new Error("Erreur lors de la sauvegarde du pointage");
       }
 
+      setCheckedState((previousState) => ({ ...previousState, [key]: checked }));
       setRecentlySavedRow(player.id);
       setTimeout(() => setRecentlySavedRow(null), 2000);
     } catch {
-      setCheckedState((previousState) => ({
-        ...previousState,
-        [key]: !nextCheckedValue,
-      }));
+      setCheckError(`Le pointage de ${player.name} n’a pas été enregistré. Réessayez.`);
     } finally {
       setPendingState((previousState) => ({ ...previousState, [key]: false }));
     }
@@ -424,6 +408,8 @@ export function PointagesGrid({
         player?: {
           registrationId: string;
           table: string;
+          payment: PointagesGridPlayer["payment"];
+          fullyRefunded: boolean;
           engagedEventIds: string[];
           waitlistEventIds: string[];
           registrationEventIdsByDay: Record<string, string[]>;
@@ -442,6 +428,8 @@ export function PointagesGrid({
             ? {
                 ...player,
                 table: updatedPlayer.table,
+                payment: updatedPlayer.payment,
+                fullyRefunded: updatedPlayer.fullyRefunded,
                 engagedEventIds: updatedPlayer.engagedEventIds,
                 waitlistEventIds: updatedPlayer.waitlistEventIds,
                 registrationEventIdsByDay:
@@ -547,7 +535,10 @@ export function PointagesGrid({
   function resetFilters() {
     setSelectedClub("all");
     setSelectedTable("all");
-    setSelectedPointageFilter("all");
+    setSelectedDay("all");
+    setPresence("all");
+    setWaitlistOnly(false);
+    setPaymentDrawerOpen(false);
     setSearchTerm("");
   }
 
@@ -580,7 +571,7 @@ export function PointagesGrid({
 
   const pendingPaymentsCount = useMemo(() => {
     return filteredPlayers.filter(
-      (player) => getPaymentMeta(player.payment).isPending,
+      (player) => getPaymentMeta(player).isPending,
     ).length;
   }, [filteredPlayers]);
 
@@ -590,58 +581,120 @@ export function PointagesGrid({
     ).length;
   }, [filteredPlayers]);
 
-  const tableColumnCount = (quickMode ? 3 : 6) + normalizedDayColumns.length;
+  const visibleDays = selectedDay === "all"
+    ? dayHeaders
+    : dayHeaders.filter((day) => day.key === selectedDay);
+  const expectedToday = selectedDay === "all"
+    ? []
+    : playersState.filter((player) => player.registrationEventIdsByDay[selectedDay]?.length);
+  const checkedToday = expectedToday.filter((player) => checkedState[`${player.id}-${selectedDay}`]).length;
+  const tableColumnCount = 3 + visibleDays.length;
   const openMenuPlayer = openMenuPlayerId
     ? (playersState.find((player) => player.id === openMenuPlayerId) ?? null)
     : null;
+  const checkedMenuDays = openMenuPlayer
+    ? dayHeaders.filter((day) => checkedState[`${openMenuPlayer.id}-${day.key}`])
+    : [];
 
   return (
-    <section className="space-y-5 rounded-2xl border border-border/70 bg-gradient-to-b from-card via-card to-muted/10 p-5 shadow-sm">
-      <header className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-        <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-            <ListFilter className="h-3.5 w-3.5" />
-            Accueil tournoi
-          </div>
-          <div className="space-y-1">
-            <h2 className="text-2xl font-semibold tracking-tight">
-              Pointage joueurs sur 3 jours
-            </h2>
-            <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
-              Cochez la présence de chaque joueur par jour, filtrez rapidement
-              les situations en attente et gardez un suivi clair de
-              l&apos;accueil.
-            </p>
-          </div>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-full border border-border/70 bg-background/80 px-3 py-1.5 text-xs font-medium text-muted-foreground">
-            {filteredPlayers.length} affichés / {playersState.length} inscrits
-          </span>
-          <button
-            type="button"
-            onClick={() => setStatsCompact((current) => !current)}
-            className={cn(
-              "rounded-full border px-3 py-1.5 text-xs font-medium transition",
-              statsCompact
-                ? "border-primary/30 bg-primary/10 text-primary"
-                : "border-border/70 bg-background/80 text-muted-foreground hover:bg-muted/40",
-            )}
-          >
+    <section className="space-y-4 rounded-2xl border border-border/70 bg-card p-4 shadow-sm sm:p-5">
+      <header className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-2xl font-semibold tracking-tight">Pointage des joueurs</h2>
+        <div className="flex flex-wrap gap-2">
+          <Button type="button" size="sm" variant="outline" className="hover:bg-muted hover:text-foreground" aria-expanded={!statsCompact}
+            onClick={() => setStatsCompact((current) => !current)}>
             {statsCompact ? "Afficher les stats" : "Masquer les stats"}
-          </button>
-          <span
-            className={cn(
-              "rounded-full border px-3 py-1.5 text-xs font-medium",
-              quickMode
-                ? "border-primary/30 bg-primary/10 text-primary"
-                : "border-border/70 bg-background/80 text-muted-foreground",
-            )}
-          >
-            {quickMode ? "Mode rapide actif" : "Mode complet"}
-          </span>
+          </Button>
         </div>
       </header>
+
+      <div className="space-y-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="relative min-w-0 grow basis-56">
+            <span className="sr-only">Rechercher un joueur</span>
+            <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="search"
+              className="admin-input pl-9"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              ref={searchInputRef}
+              placeholder="Nom, licence ou club"
+            />
+          </label>
+          <div role="status" className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+            {selectedDay !== "all" ? (
+              <span className="whitespace-nowrap font-medium text-foreground">
+                {checkedToday} pointé{checkedToday > 1 ? "s" : ""} sur {expectedToday.length} attendu{expectedToday.length > 1 ? "s" : ""}
+              </span>
+            ) : null}
+            {searchTerm.trim() ? (
+              <span>{filteredPlayers.length} résultat{filteredPlayers.length > 1 ? "s" : ""}</span>
+            ) : selectedDay === "all" ? (
+              <span>{filteredPlayers.length} / {playersState.length} joueurs</span>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-end gap-2">
+          <label className="grid min-w-32 flex-1 gap-1 text-xs font-medium sm:flex-none">
+            Jour
+            <select className="admin-select" value={selectedDay}
+              onChange={(event) => setSelectedDay(event.target.value)}>
+              <option value="all">Tous les jours</option>
+              {dayHeaders.map((day) => (
+                <option key={day.key} value={day.key}>{day.orderLabel} · {day.label}</option>
+              ))}
+            </select>
+          </label>
+          <label className="grid min-w-32 flex-1 gap-1 text-xs font-medium sm:flex-none">
+            Présence
+            <select className="admin-select" value={presence}
+              onChange={(event) => setPresence(event.target.value)}>
+              <option value="all">Tous les pointages</option>
+              <option value="unchecked">Non pointés</option>
+              <option value="checked">Pointés</option>
+            </select>
+          </label>
+          {hasActiveFilters ? (
+            <Button type="button" variant="ghost" className="hover:bg-muted hover:text-foreground" onClick={resetFilters}>Réinitialiser</Button>
+          ) : null}
+        </div>
+
+        <details className="rounded-lg border border-border/70">
+          <summary className="cursor-pointer px-3 py-2 text-sm font-medium">
+            Plus de filtres{advancedFilterCount > 0 ? ` (${advancedFilterCount})` : ""}
+          </summary>
+          <div className="grid gap-3 border-t border-border/70 p-3 sm:grid-cols-2">
+            <label className="grid gap-1 text-xs font-medium">
+              Club
+              <select className="admin-select" value={selectedClub}
+                onChange={(event) => setSelectedClub(event.target.value)}>
+                <option value="all">Tous les clubs</option>
+                {clubOptions.map((club) => <option key={club} value={club}>{club}</option>)}
+              </select>
+            </label>
+            <label className="grid gap-1 text-xs font-medium">
+              Tableau
+              <select className="admin-select" value={selectedTable}
+                onChange={(event) => setSelectedTable(event.target.value)}>
+                <option value="all">Tous les tableaux</option>
+                {tableOptions.map((table) => <option key={table.value} value={table.value}>{table.label}</option>)}
+              </select>
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={waitlistOnly}
+                onChange={(event) => setWaitlistOnly(event.target.checked)} />
+              Liste d’attente
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={paymentDrawerOpen}
+                onChange={(event) => setPaymentDrawerOpen(event.target.checked)} />
+              Paiements en attente
+            </label>
+          </div>
+        </details>
+      </div>
 
       {!statsCompact ? (
         <>
@@ -792,195 +845,11 @@ export function PointagesGrid({
         </>
       ) : null}
 
-      <div className="space-y-4 rounded-2xl border border-border/70 bg-card/95 p-4 shadow-sm">
-        <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-          <div className="space-y-1">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Filtres rapides
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Passez du suivi global au pointage terrain en quelques clics.
-            </p>
-          </div>
-          <div
-            className="inline-flex w-full flex-wrap items-center gap-1 rounded-2xl border border-border/70 bg-background/70 p-1 shadow-xs xl:w-fit"
-            role="group"
-            aria-label="Filtres rapides de pointage"
-          >
-            <button
-              type="button"
-              onClick={() => setSelectedPointageFilter("all")}
-              className={filterChipClassName(selectedPointageFilter === "all")}
-            >
-              Tous
-            </button>
-            <button
-              type="button"
-              onClick={() => setSelectedPointageFilter("waitlist")}
-              className={filterChipClassName(
-                selectedPointageFilter === "waitlist",
-                "warning",
-              )}
-            >
-              Attente
-            </button>
-            {dayHeaders.map((dayHeader) => (
-              <button
-                key={`${dayHeader.key}-unchecked`}
-                type="button"
-                onClick={() =>
-                  setSelectedPointageFilter(`unchecked:${dayHeader.key}`)
-                }
-                className={filterChipClassName(
-                  selectedPointageFilter === `unchecked:${dayHeader.key}`,
-                )}
-              >
-                {dayHeader.orderLabel} · Non pointés
-              </button>
-            ))}
-            {dayHeaders.map((dayHeader) => (
-              <button
-                key={`${dayHeader.key}-checked`}
-                type="button"
-                onClick={() =>
-                  setSelectedPointageFilter(`checked:${dayHeader.key}`)
-                }
-                className={filterChipClassName(
-                  selectedPointageFilter === `checked:${dayHeader.key}`,
-                )}
-              >
-                {dayHeader.orderLabel} · Pointés
-              </button>
-            ))}
-            <button
-              type="button"
-              onClick={() => setPaymentDrawerOpen((current) => !current)}
-              className={filterChipClassName(paymentDrawerOpen, "warning")}
-            >
-              {paymentDrawerOpen ? "Paiements en attente" : "Filtrer paiements"}
-            </button>
-            <button
-              type="button"
-              onClick={() => setQuickMode((current) => !current)}
-              className={filterChipClassName(quickMode)}
-            >
-              {quickMode ? "Mode rapide" : "Pointage rapide"}
-            </button>
-            {hasActiveFilters ? (
-              <button
-                type="button"
-                onClick={resetFilters}
-                className="inline-flex cursor-pointer whitespace-nowrap rounded-full border border-border bg-muted/40 px-3 py-1.5 text-xs font-medium text-muted-foreground transition hover:bg-muted/60"
-              >
-                Réinitialiser
-              </button>
-            ) : null}
-          </div>
-        </div>
-
-        <div
-          className={cn(
-            "grid gap-3",
-            quickMode
-              ? "md:grid-cols-[minmax(0,1fr)_minmax(14rem,18rem)]"
-              : "md:grid-cols-2 xl:grid-cols-4",
-          )}
-        >
-          <label className="space-y-1">
-            <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Rechercher un joueur
-            </span>
-            <div className="relative">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <input
-                type="search"
-                className="admin-input pl-9"
-                value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
-                ref={searchInputRef}
-                placeholder="Nom, prénom ou numéro de licence"
-              />
-            </div>
-          </label>
-
-          <label className="space-y-1">
-            <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Filtrer par club
-            </span>
-            <select
-              className="admin-select"
-              value={selectedClub}
-              onChange={(event) => setSelectedClub(event.target.value)}
-            >
-              <option value="all">Tous les clubs</option>
-              {clubOptions.map((club) => (
-                <option key={club} value={club}>
-                  {club}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          {!quickMode ? (
-            <>
-              <label className="space-y-1">
-                <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  Filtrer par tableau
-                </span>
-                <select
-                  className="admin-select"
-                  value={selectedTable}
-                  onChange={(event) => setSelectedTable(event.target.value)}
-                >
-                  <option value="all">Tous les tableaux</option>
-                  {tableOptions.map((tableOption) => (
-                    <option key={tableOption.value} value={tableOption.value}>
-                      {tableOption.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label className="space-y-1">
-                <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  Filtrer par pointage
-                </span>
-                <select
-                  className="admin-select"
-                  value={selectedPointageFilter}
-                  onChange={(event) =>
-                    setSelectedPointageFilter(event.target.value)
-                  }
-                >
-                  <option value="all">Tous les pointages</option>
-                  <option value="waitlist">En attente</option>
-                  {normalizedDayColumns.map((dayColumn) => (
-                    <optgroup key={dayColumn.key} label={dayColumn.label}>
-                      <option value={`unchecked:${dayColumn.key}`}>
-                        Non pointés
-                      </option>
-                      <option value={`checked:${dayColumn.key}`}>
-                        Pointés
-                      </option>
-                    </optgroup>
-                  ))}
-                </select>
-              </label>
-            </>
-          ) : (
-            <div className="rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-muted-foreground md:col-span-2">
-              Le mode rapide masque les colonnes secondaires pour pointer plus
-              vite à l&apos;accueil.
-            </div>
-          )}
-        </div>
-      </div>
+      {checkError ? (
+        <p role="alert" className="text-sm text-destructive">{checkError}</p>
+      ) : null}
 
       <div className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm text-foreground">
-        <div className="border-b border-border/70 bg-muted/20 px-4 py-3 text-sm text-muted-foreground">
-          Faites défiler horizontalement si besoin. Les colonnes joueur,
-          paiement et actions restent visibles.
-        </div>
         <div className="overflow-x-auto overflow-y-visible">
           <table className="min-w-full text-sm">
             <thead className="sticky top-0 z-20 bg-card">
@@ -988,22 +857,16 @@ export function PointagesGrid({
                 <th className="sticky left-0 z-20 bg-card py-3 pl-4 pr-3 font-medium">
                   Joueur
                 </th>
-                {!quickMode ? (
-                  <>
-                    <th className="py-3 pr-3 font-medium">Licence</th>
-                    <th className="py-3 pr-3 font-medium">Club</th>
-                    <th className="py-3 pr-3 font-medium">Tableau(x)</th>
-                  </>
-                ) : null}
                 <th className="sticky text-center right-24 z-20 bg-card py-3 pr-3 font-medium">
                   Paiement
                 </th>
-                {dayHeaders.map((dayHeader) => (
-                  <th key={dayHeader.key} className="py-3 pr-3 font-medium">
+                {visibleDays.map((dayHeader) => (
+                  <th key={dayHeader.key} className={cn("py-3 pr-3 font-medium", selectedDay !== "all" && "w-1/4")}>
                     <div className="space-y-0.5">
                       <span className="block text-[11px] font-semibold text-foreground">
                         {dayHeader.orderLabel}
                       </span>
+                      {selectedDay !== "all" ? <span className="normal-case tracking-normal">{dayHeader.label}</span> : null}
                     </div>
                   </th>
                 ))}
@@ -1015,12 +878,12 @@ export function PointagesGrid({
             <tbody>
               {filteredPlayers.map((player) =>
                 (() => {
-                  const paymentMeta = getPaymentMeta(player.payment);
+                  const paymentMeta = getPaymentMeta(player);
 
                   return (
                     <tr
                       key={player.id}
-                      className={`group border-b border-border/60 last:border-0 hover:bg-accent/10 `}
+                      className="group border-b border-border/60 last:border-0 hover:bg-muted/40"
                     >
                       <td
                         className={`sticky left-0 z-10 py-3 pl-4 pr-3 font-medium text-foreground`}
@@ -1039,40 +902,28 @@ export function PointagesGrid({
                               </span>
                             ) : null}
                           </div>
-                          {quickMode ? (
-                            <p className="text-xs font-normal text-muted-foreground">
-                              {player.club} · {player.licence} ·{" "}
-                              {player.table || "Sans tableau"}
-                            </p>
-                          ) : null}
+                          <p className="text-xs font-normal text-muted-foreground">
+                            {player.club} · {player.licence} ·{" "}
+                            {player.table || "Sans tableau"}
+                          </p>
                         </div>
                       </td>
-                      {!quickMode ? (
-                        <>
-                          <td className="py-3 pr-3 text-foreground">
-                            {player.licence}
-                          </td>
-                          <td className="py-3 pr-3 text-foreground">
-                            {player.club}
-                          </td>
-                          <td className="py-3 pr-3 text-foreground">
-                            {player.table}
-                          </td>
-                        </>
-                      ) : null}
                       <td
                         className={`sticky text-center right-24 z-10 py-3 pr-3 text-foreground`}
                       >
-                        <span
+                        <Link
+                          href={`/admin/tournoi/paiement?dossier=${encodeURIComponent(player.paymentGroupKey)}`}
+                          aria-label={`${paymentMeta.label} · Ouvrir le dossier de paiement de ${player.name}`}
+                          title="Ouvrir le dossier de paiement"
                           className={cn(
-                            " items-center font-semibold",
+                            "inline-flex whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                             paymentMeta.className,
                           )}
                         >
-                          <span className="text-[20px] leading-none">⦿</span>
-                        </span>
+                          {paymentMeta.label}
+                        </Link>
                       </td>
-                      {normalizedDayColumns.map((dayColumn) => {
+                      {visibleDays.map((dayColumn) => {
                         const key = `${player.id}-${dayColumn.key}`;
                         const hasEventForDay =
                           (
@@ -1082,27 +933,25 @@ export function PointagesGrid({
                         return (
                           <td key={key} className="py-3 pr-3 text-foreground">
                             {hasEventForDay ? (
-                              <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-border/60 bg-background/80 px-2 py-2 transition ">
-                                <span className="relative inline-flex h-4 w-4 items-center justify-center">
-                                  <input
-                                    type="checkbox"
-                                    className="peer h-4 w-4 cursor-pointer appearance-none rounded-full border border-slate-500 checked:border-transparent align-middle transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-60"
-                                    checked={checkedState[key] ?? false}
-                                    disabled={pendingState[key]}
-                                    onChange={() =>
-                                      toggleCheck(player, dayColumn.key)
-                                    }
-                                  />
-                                  <CircleCheckBig
-                                    size={18}
-                                    className="pointer-events-none absolute scale-0 transition-transform peer-checked:scale-100 text-primary"
-                                  />
+                              pendingState[key] ? (
+                                <span role="status" className="whitespace-nowrap text-xs text-muted-foreground">En cours…</span>
+                              ) : checkedState[key] ? (
+                                <span className="inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-md border border-emerald-500/40 px-3 font-medium text-emerald-700 dark:text-emerald-300">
+                                  <CircleCheckBig aria-hidden="true" className="h-4 w-4" />
+                                  Présent
                                 </span>
-
-                                {pendingState[key] ? (
-                                  <span className="h-3 w-3 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground" />
-                                ) : null}
-                              </label>
+                              ) : (
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant={selectedDay === "all" ? "secondary" : "default"}
+                                  className="min-w-20 whitespace-nowrap"
+                                  aria-label={`Pointer · ${player.name} · ${dayColumn.orderLabel}`}
+                                  onClick={() => saveCheck(player, dayColumn.key, true)}
+                                >
+                                  Pointer
+                                </Button>
+                              )
                             ) : (
                               <span className="text-xs text-muted-foreground">
                                 Non inscrit
@@ -1125,7 +974,7 @@ export function PointagesGrid({
                                 event.currentTarget as HTMLElement
                               ).getBoundingClientRect();
                               setMenuPosition({
-                                top: rect.bottom + 8,
+                                top: Math.max(8, Math.min(rect.bottom + 8, window.innerHeight - 360)),
                                 left: rect.right,
                               });
                               setOpenMenuPlayerId((currentId) =>
@@ -1135,7 +984,7 @@ export function PointagesGrid({
                             aria-haspopup="menu"
                             aria-expanded={openMenuPlayerId === player.id}
                             aria-label={`Actions pour ${player.name}`}
-                            className="rounded-full"
+                            className="rounded-full hover:bg-muted hover:text-foreground"
                           >
                             <MoreVertical className="h-4 w-4" />
                           </Button>
@@ -1353,27 +1202,28 @@ export function PointagesGrid({
         </div>
       ) : null}
 
-      {openMenuPlayerId && menuPosition ? (
+      {openMenuPlayer && menuPosition ? (
         <div
-          className="fixed z-50 w-44 rounded-md border border-border bg-card p-1 text-sm shadow-xl"
+          className="fixed z-50 w-64 max-w-[calc(100vw-1rem)] overflow-y-auto rounded-xl border border-border bg-card p-1.5 text-sm shadow-xl"
           style={{
             top: menuPosition.top,
             left: menuPosition.left,
             transform: "translateX(-100%)",
+            maxHeight: `calc(100dvh - ${menuPosition.top + 8}px)`,
           }}
           data-pointage-menu-floating={openMenuPlayerId}
           role="menu"
+          aria-label={`Actions pour ${openMenuPlayer.name}`}
         >
+          <p className="px-3 py-2 text-xs font-semibold text-muted-foreground">{openMenuPlayer.name}</p>
           <a
-            href={
-              openMenuPlayer
-                ? `/admin/tournoi/paiement?dossier=${encodeURIComponent(openMenuPlayer.paymentGroupKey)}`
-                : "/admin/tournoi/paiement"
-            }
+            href={`/admin/tournoi/paiement?dossier=${encodeURIComponent(openMenuPlayer.paymentGroupKey)}`}
+            role="menuitem"
             className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-foreground transition hover:bg-muted/60"
             onClick={() => setOpenMenuPlayerId(null)}
           >
-            Ouvrir paiement
+            <Wallet aria-hidden="true" className="h-4 w-4 shrink-0" />
+            Ouvrir le paiement
           </a>
           <button
             type="button"
@@ -1389,8 +1239,34 @@ export function PointagesGrid({
             className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-foreground transition hover:bg-muted/60"
             role="menuitem"
           >
-            Éditer
+            <Pencil aria-hidden="true" className="h-4 w-4 shrink-0" />
+            Modifier l’inscription
           </button>
+          {checkedMenuDays.length > 0 ? (
+            <div role="group" aria-label="Pointages enregistrés" className="my-1 border-t border-border pt-1">
+              <p className="px-3 pb-1 pt-2 text-xs font-semibold text-muted-foreground">Pointages enregistrés</p>
+              {checkedMenuDays.map((day) => (
+                <button
+                  key={day.key}
+                  type="button"
+                  role="menuitem"
+                  disabled={pendingState[`${openMenuPlayer.id}-${day.key}`]}
+                  className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-foreground hover:bg-muted/60 disabled:opacity-50"
+                  onClick={() => {
+                    setOpenMenuPlayerId(null);
+                    void saveCheck(openMenuPlayer, day.key, false);
+                  }}
+                >
+                  <Undo2 aria-hidden="true" className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <span>
+                    <span className="block font-medium">Annuler le pointage</span>
+                    <span className="block text-xs text-muted-foreground">{day.orderLabel} · {day.label}</span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          ) : null}
+          <div role="separator" className="my-1 border-t border-border" />
           <button
             type="button"
             onClick={() => {
@@ -1405,7 +1281,8 @@ export function PointagesGrid({
             className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-destructive transition hover:bg-destructive/10"
             role="menuitem"
           >
-            Supprimer
+            <Trash2 aria-hidden="true" className="h-4 w-4 shrink-0" />
+            Supprimer l’inscription
           </button>
         </div>
       ) : null}

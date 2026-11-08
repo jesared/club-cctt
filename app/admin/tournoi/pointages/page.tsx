@@ -5,6 +5,7 @@ import {
   getTournamentTables,
 } from "../data";
 import { PointagesGrid } from "./pointages-grid";
+import { getParisDayKey } from "@/lib/dates";
 
 type PageProps = {
   searchParams?: Promise<{
@@ -35,6 +36,8 @@ export default async function AdminTournoiPointagesPage({
       ]),
     ).values(),
   ).slice(0, 3);
+  const today = getParisDayKey(new Date());
+  const initialDay = dayColumns.find((day) => day.key === today)?.key ?? "all";
 
   return (
     <TournamentAdminPage
@@ -42,10 +45,12 @@ export default async function AdminTournoiPointagesPage({
       description="Suivi des présences joueurs avec une grille de pointage sur 3 jours."
       showHeader={false}>
       <PointagesGrid
+        key={initialSearchTerm}
         players={adminPlayers}
         dayColumns={dayColumns}
         tournamentTables={tournamentTables}
         initialSearchTerm={initialSearchTerm}
+        initialDay={initialDay}
       />
     </TournamentAdminPage>
   );

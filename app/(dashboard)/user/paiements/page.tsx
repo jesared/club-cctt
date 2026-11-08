@@ -1,3 +1,4 @@
+import { getEffectivePaidCents, getRegistrationTotalDueCents, isRecordedRefund } from "@/app/admin/tournoi/payment-utils";
 import Link from "next/link";
 
 import { getCurrentSession } from "@/lib/session";
@@ -29,27 +30,19 @@ export default async function UserPaiementsPage() {
         select: { event: { select: { feeOnlineCents: true, code: true } } },
       },
       payments: {
-        select: { amountCents: true, status: true, paidAt: true, method: true },
+        select: { amountCents: true, status: true, provider: true, paidAt: true, method: true },
       },
     },
     orderBy: [{ createdAt: "desc" }],
   });
 
   const rows = registrations.map((registration) => {
-    const totalDueCents = registration.registrationEvents.reduce(
-      (acc, entry) => acc + entry.event.feeOnlineCents,
-      0,
-    );
-    const paymentsPaidCents = registration.payments
-      .filter((payment) => payment.status === "PAID")
-      .reduce((acc, payment) => acc + payment.amountCents, 0);
+    const totalDueCents = getRegistrationTotalDueCents(registration.registrationEvents, registration.payments);
     const effectivePaidCents =
-      registration.payments.length > 0
-        ? paymentsPaidCents
-        : registration.paidAmountCents;
+      getEffectivePaidCents(registration);
 
     let statusLabel = "En attente";
-    if (effectivePaidCents >= totalDueCents && totalDueCents > 0) {
+    if (effectivePaidCents >= totalDueCents) {
       statusLabel = "Payé";
     } else if (effectivePaidCents > 0) {
       statusLabel = "Partiel";
@@ -63,7 +56,12 @@ export default async function UserPaiementsPage() {
       totalDueCents,
       paidCents: effectivePaidCents,
       remainingCents: Math.max(totalDueCents - effectivePaidCents, 0),
-      payments: registration.payments,
+      payments: registration.payments.map((payment) => ({
+        amountCents: isRecordedRefund(payment) ? -payment.amountCents : payment.amountCents,
+        status: isRecordedRefund(payment) ? "Remboursé" : payment.status,
+        method: payment.method,
+        paidAt: payment.paidAt,
+      })),
       tables: registration.registrationEvents.map((event) => event.event.code),
     };
   });

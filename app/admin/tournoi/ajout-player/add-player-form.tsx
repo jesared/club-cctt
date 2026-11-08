@@ -553,18 +553,17 @@ export function AddPlayerForm({
                 2. Données complémentaires
               </p>
               <p className="text-xs text-muted-foreground">
-                Ces informations ne sont pas fournies par la FFTT et restent à
-                compléter pour l&apos;organisation du tournoi.
+                La FFTT ne fournit pas ces coordonnées. Vous pouvez les laisser
+                vides.
               </p>
             </div>
 
             <div className="grid gap-4 sm:gap-5 sm:grid-cols-2">
               <label className="space-y-2 text-sm">
-                <span className="font-medium">Email *</span>
+                <span className="font-medium">E-mail</span>
                 <input
                   name="contactEmail"
                   type="email"
-                  required
                   value={formData.contactEmail}
                   onChange={(event) =>
                     setFormData((current) => ({
@@ -577,10 +576,10 @@ export function AddPlayerForm({
                 />
               </label>
               <label className="space-y-2 text-sm">
-                <span className="font-medium">Téléphone *</span>
+                <span className="font-medium">Téléphone</span>
                 <input
                   name="contactPhone"
-                  required
+                  type="tel"
                   value={formData.contactPhone}
                   onChange={(event) =>
                     setFormData((current) => ({
