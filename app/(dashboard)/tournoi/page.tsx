@@ -29,6 +29,7 @@ import { tournamentRegistrationContent } from "@/lib/tournament-registration-con
 import { getTournamentRegistrationStatus } from "@/lib/tournament-registration-window";
 import { ACTIVE_TOURNAMENT_STATUSES } from "@/lib/tournament-status";
 import TournamentActionBar from "./tournament-action-bar";
+import TournamentFaq from "./tournament-faq";
 
 export const metadata: Metadata = {
   title: "Tournoi national de Pâques | CCTT",
@@ -306,6 +307,13 @@ export default async function TournoiHomePage({ searchParams }: PageProps) {
                   hasUserRegistration={hasUserRegistration}
                 />
 
+                <a
+                  href="#faq"
+                  className="w-fit text-sm font-medium text-primary underline underline-offset-4"
+                >
+                  Questions fréquentes
+                </a>
+
                 {isAdmin && !registrationStatus.canRegister ? (
                   <AdminTournamentVisibilityControls
                     options={[
@@ -497,7 +505,7 @@ export default async function TournoiHomePage({ searchParams }: PageProps) {
         </section>
 
         <Reveal>
-          <section>
+          <section id="tableaux" className="scroll-mt-28">
             <Card className="rounded-[1.8rem] border-border/70 bg-card/94 shadow-sm shadow-black/5">
               <CardHeader className="space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-3">
@@ -642,6 +650,7 @@ export default async function TournoiHomePage({ searchParams }: PageProps) {
             </Card>
           </section>
         </Reveal>
+        <TournamentFaq />
       </div>
     </main>
   );

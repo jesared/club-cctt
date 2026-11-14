@@ -1,7 +1,7 @@
 import { getPlayerSearchTerms, scorePlayerSearch } from "./player-search";
 import { prisma } from "@/lib/prisma";
 import { getParisDayKey } from "@/lib/dates";
-import { RegistrationEventStatus, RegistrationStatus } from "@prisma/client";
+import { RegistrationEventStatus, RegistrationStatus, type RegistrationSource } from "@prisma/client";
 import { ACTIVE_TOURNAMENT_STATUSES } from "@/lib/tournament-status";
 import { addPaymentToHistory, type PaymentHistoryEntry } from "./paiement/payment-history";
 import {
@@ -776,31 +776,61 @@ export async function getAdminPlayers(tournamentId: string): Promise<AdminPlayer
   return registrations.map((registration) => mapAdminPlayerRow(registration));
 }
 
-export async function getRecentAdminPlayers(
+const registrationHistorySelect = {
+  ...adminPlayerRegistrationSelect,
+  source: true,
+  user: { select: { name: true } },
+} as const;
+
+function mapRegistrationHistoryRow(
+  registration: AdminPlayerRegistrationRecord & {
+    source: RegistrationSource;
+    user: { name: string } | null;
+  },
+) {
+  return {
+    ...mapAdminPlayerRow(registration),
+    source: registration.source,
+    addedBy: registration.source === "ADMIN" ? registration.user?.name : undefined,
+  };
+}
+
+export async function getAdminRegistrationHistory(
   tournamentId: string,
-  searchQuery?: string,
-  limit = 30,
-): Promise<AdminPlayerRow[]> {
-  const terms = getPlayerSearchTerms(searchQuery ?? "");
+  { searchQuery, source, offset, limit }: {
+    searchQuery: string;
+    source?: RegistrationSource;
+    offset: number;
+    limit: number;
+  },
+) {
+  const terms = getPlayerSearchTerms(searchQuery);
+  const where = { tournamentId, source };
+  const orderBy = [{ createdAt: "desc" }, { playerId: "desc" }] as const;
+
   if (terms.length === 0) {
     const registrations = await prisma.tournamentRegistration.findMany({
-      where: { tournamentId },
-      orderBy: { createdAt: "desc" },
-      take: limit,
-      select: adminPlayerRegistrationSelect,
+      where,
+      orderBy: [...orderBy],
+      skip: offset,
+      take: limit + 1,
+      select: registrationHistorySelect,
     });
-    return registrations.map(mapAdminPlayerRow);
+    return {
+      players: registrations.slice(0, limit).map(mapRegistrationHistoryRow),
+      hasNextPage: registrations.length > limit,
+    };
   }
 
   const candidates = await prisma.tournamentRegistration.findMany({
-    where: { tournamentId },
-    orderBy: { createdAt: "desc" },
+    where,
+    orderBy: [...orderBy],
     select: {
       id: true,
       player: { select: { prenom: true, nom: true, club: true, licence: true } },
     },
   });
-  const ids = candidates
+  const matches = candidates
     .flatMap(({ id, player }) => {
       const score = scorePlayerSearch(terms, {
         name: `${player.prenom} ${player.nom}`,
@@ -809,20 +839,24 @@ export async function getRecentAdminPlayers(
       });
       return score === null ? [] : [{ id, score }];
     })
-    .sort((a, b) => b.score - a.score)
-    .slice(0, limit)
+    .sort((a, b) => b.score - a.score);
+  const ids = matches
+    .slice(offset, offset + limit)
     .map(({ id }) => id);
 
-  if (ids.length === 0) return [];
+  if (ids.length === 0) return { players: [], hasNextPage: false };
   const registrations = await prisma.tournamentRegistration.findMany({
-    where: { tournamentId, id: { in: ids } },
-    select: adminPlayerRegistrationSelect,
+    where: { ...where, id: { in: ids } },
+    select: registrationHistorySelect,
   });
   const byId = new Map(registrations.map((registration) => [registration.id, registration]));
-  return ids.flatMap((id) => {
-    const registration = byId.get(id);
-    return registration ? [mapAdminPlayerRow(registration)] : [];
-  });
+  return {
+    players: ids.flatMap((id) => {
+      const registration = byId.get(id);
+      return registration ? [mapRegistrationHistoryRow(registration)] : [];
+    }),
+    hasNextPage: matches.length > offset + limit,
+  };
 }
 
 export async function getAdminRegistrationsOverview(

@@ -6,6 +6,7 @@ import {
   RegistrationStatus,
 } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireAdminSession, TournamentAdminPage } from "../_components";
 import { getCurrentTournament, getTournamentTables } from "../data";
@@ -470,11 +471,19 @@ export default async function AdminTournoiAjoutPlayerPage({
       ) : null}
 
       <section className="rounded-xl border bg-card p-6 shadow-sm space-y-6">
-        <div>
+        <div className="flex flex-wrap items-start justify-between gap-3">
           <p className="text-sm text-muted-foreground">
             Tous les champs marqués d&apos;un * sont obligatoires. Le joueur
             sera inscrit en statut confirmé.
           </p>
+          {tournament ? (
+            <Link
+              href="/admin/tournoi/inscriptions?source=ADMIN"
+              className="text-sm font-medium text-primary underline underline-offset-4"
+            >
+              Historique des ajouts manuels
+            </Link>
+          ) : null}
         </div>
 
         {tournament ? (

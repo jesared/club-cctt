@@ -1,34 +1,65 @@
 import Link from "next/link";
+import { createParisDateFormatter } from "@/lib/dates";
 import { requireAdminSession, TournamentAdminPage } from "../_components";
 import {
+  getAdminRegistrationHistory,
   getAdminRegistrationsOverview,
   getCurrentTournament,
-  getRecentAdminPlayers,
   getRegistrationsByTable,
 } from "../data";
-import { ChevronDown, Search } from "lucide-react";
+import { ChevronDown, Plus, Search } from "lucide-react";
 import { RecentPlayerActionsMenu } from "./recent-player-actions-menu";
+
+const PAGE_SIZE = 30;
+const historyDateFormatter = createParisDateFormatter({
+  dateStyle: "short",
+  timeStyle: "short",
+});
+
 type PageProps = {
   searchParams?: Promise<{
-    q?: string;
+    q?: string | string[];
+    source?: string | string[];
+    page?: string | string[];
   }>;
 };
 
 export default async function AdminTournoiInscriptionsPage({ searchParams }: PageProps) {
   await requireAdminSession();
-  const resolvedSearchParams = await searchParams;
-  const searchQuery = resolvedSearchParams?.q?.trim() ?? "";
+  const params = await searchParams;
+  const searchQuery = typeof params?.q === "string" ? params.q.trim().slice(0, 120) : "";
+  const source = params?.source === "ADMIN" || params?.source === "WEB" ? params.source : undefined;
+  const requestedPage =
+    typeof params?.page === "string" && /^\d+$/.test(params.page) ? Number(params.page) : 1;
+  const page =
+    requestedPage >= 1 && requestedPage <= Math.floor(2_147_483_647 / PAGE_SIZE)
+      ? requestedPage
+      : 1;
+
+  function historyHref(targetPage: number) {
+    const query = new URLSearchParams();
+    if (searchQuery) query.set("q", searchQuery);
+    if (source) query.set("source", source);
+    if (targetPage > 1) query.set("page", String(targetPage));
+    const queryString = query.toString();
+    return `/admin/tournoi/inscriptions${queryString ? `?${queryString}` : ""}`;
+  }
 
   const tournament = await getCurrentTournament();
-  const [registrationsByTable, recentPlayers, overview] = tournament
+  const [registrationsByTable, { players, hasNextPage }, overview] = tournament
     ? await Promise.all([
         getRegistrationsByTable(tournament.id),
-        getRecentAdminPlayers(tournament.id, searchQuery, 30),
+        getAdminRegistrationHistory(tournament.id, {
+          searchQuery,
+          source,
+          offset: (page - 1) * PAGE_SIZE,
+          limit: PAGE_SIZE,
+        }),
         getAdminRegistrationsOverview(tournament.id),
       ])
     : [
         [],
-        [],
+        { players: [], hasNextPage: false },
         {
           playerDossiers: 0,
           pendingDossiers: 0,
@@ -73,13 +104,23 @@ export default async function AdminTournoiInscriptionsPage({ searchParams }: Pag
       title="Inscriptions"
       description="Retrouvez les joueurs inscrits et suivez leurs engagements par tableau.">
       <section className="rounded-xl border bg-card shadow-sm p-6 space-y-4">
-        <div>
-          <h2 className="text-xl font-semibold">Joueurs inscrits</h2>
-          <p className="text-sm text-muted-foreground">
-            {searchQuery ? "Jusqu’à 30 résultats, classés par pertinence." : "Les 30 dossiers les plus récents."}
-          </p>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 className="text-xl font-semibold">Historique des inscriptions</h2>
+            {tournament ? (
+              <p className="text-sm text-muted-foreground">
+                {searchQuery ? "Résultats classés par pertinence." : "De la plus récente à la plus ancienne."}
+              </p>
+            ) : null}
+          </div>
+          {tournament ? (
+            <Link href="/admin/tournoi/ajout-player" className="inline-flex h-10 items-center gap-2 rounded-md border px-3 text-sm font-medium hover:bg-muted">
+              <Plus aria-hidden="true" className="size-4" />
+              Ajouter un joueur
+            </Link>
+          ) : null}
         </div>
-        <form className="flex flex-wrap items-center gap-2" method="GET">
+        <form action="/admin/tournoi/inscriptions" className="flex flex-wrap items-center gap-2" method="GET">
           <label className="relative min-w-0 grow basis-full sm:basis-56">
             <span className="sr-only">Rechercher par nom, licence ou club</span>
             <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -87,14 +128,23 @@ export default async function AdminTournoiInscriptionsPage({ searchParams }: Pag
               type="search"
               name="q"
               defaultValue={searchQuery}
+              maxLength={120}
               placeholder="Rechercher par nom, licence ou club"
               className="h-10 w-full rounded-md border bg-background pl-9 pr-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
           </label>
+          <label>
+            <span className="sr-only">Origine de l’inscription</span>
+            <select name="source" defaultValue={source ?? ""} className="h-10 rounded-md border bg-background px-3 text-sm">
+              <option value="">Toutes les origines</option>
+              <option value="WEB">Inscriptions en ligne</option>
+              <option value="ADMIN">Ajouts manuels</option>
+            </select>
+          </label>
           <button type="submit" className="h-10 rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground">
-            Rechercher
+            Appliquer
           </button>
-          {searchQuery ? (
+          {searchQuery || source ? (
             <Link href="/admin/tournoi/inscriptions" className="inline-flex h-10 items-center rounded-md border px-3 text-sm hover:bg-muted">
               Effacer
             </Link>
@@ -106,31 +156,41 @@ export default async function AdminTournoiInscriptionsPage({ searchParams }: Pag
               <tr className="border-b text-left text-muted-foreground">
                 <th className="py-2 pr-3 font-medium">Dossard</th>
                 <th className="py-2 pr-3 font-medium">Joueur</th>
+                <th className="py-2 pr-3 font-medium">Date d’inscription</th>
+                <th className="py-2 pr-3 font-medium">Origine</th>
                 <th className="py-2 pr-3 font-medium">Tableaux</th>
                 <th className="py-2 pr-3 font-medium">Paiement</th>
-                <th className="py-2 pr-3 font-medium">Inscription</th>
+                <th className="py-2 pr-3 font-medium">Statut</th>
                 <th className="py-2 font-medium">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {recentPlayers.length === 0 ? (
+              {players.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-6 text-center text-muted-foreground">
-                    {searchQuery ? "Aucun joueur trouvé pour cette recherche." : "Aucun joueur inscrit."}
+                  <td colSpan={8} className="py-6 text-center text-muted-foreground">
+                    {tournament ? "Aucune inscription à afficher." : "Aucun tournoi actif."}
                   </td>
                 </tr>
               ) : null}
-                {recentPlayers.map((player) => (
-                  <tr
-                    key={player.id}
-                    className="border-b last:border-0 hover:bg-muted/30"
-                  >
+              {players.map((player) => (
+                <tr key={player.id} className="border-b last:border-0 hover:bg-muted/30">
                   <td className="py-3 pr-3 text-muted-foreground">{player.dossard}</td>
                   <td className="py-3 pr-3">
                     <p className="font-medium text-foreground">{player.name}</p>
                     <p className="mt-0.5 text-xs text-muted-foreground">
                       {player.club} · Licence {player.licence} · {player.ranking} pts
                     </p>
+                  </td>
+                  <td className="whitespace-nowrap py-3 pr-3 text-muted-foreground">
+                    <time dateTime={player.createdAt}>
+                      {historyDateFormatter.format(new Date(player.createdAt))}
+                    </time>
+                  </td>
+                  <td className="py-3 pr-3">
+                    <p className="whitespace-nowrap">{player.source === "ADMIN" ? "Ajout manuel" : "En ligne"}</p>
+                    {player.addedBy ? (
+                      <p className="mt-0.5 text-xs text-muted-foreground">{player.addedBy}</p>
+                    ) : null}
                   </td>
                   <td className="py-3 pr-3">
                     <div className="flex flex-wrap gap-1">
@@ -162,6 +222,21 @@ export default async function AdminTournoiInscriptionsPage({ searchParams }: Pag
             </tbody>
           </table>
         </div>
+        {tournament && (page > 1 || hasNextPage) ? (
+          <nav aria-label="Pagination de l’historique" className="flex flex-wrap items-center justify-end gap-3">
+            {page > 1 ? (
+              <Link href={historyHref(page - 1)} className="rounded-md border px-3 py-2 text-sm hover:bg-muted">
+                Précédent
+              </Link>
+            ) : null}
+            <span className="text-sm text-muted-foreground">Page {page}</span>
+            {hasNextPage ? (
+              <Link href={historyHref(page + 1)} className="rounded-md border px-3 py-2 text-sm hover:bg-muted">
+                Suivant
+              </Link>
+            ) : null}
+          </nav>
+        ) : null}
       </section>
       <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {[ 
