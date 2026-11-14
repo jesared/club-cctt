@@ -1,4 +1,4 @@
-import { getEffectivePaidCents, getRegistrationTotalDueCents, isRecordedRefund } from "@/app/admin/tournoi/payment-utils";
+import { getEffectivePaidCents, getRegistrationTotalDueCents, isCancelledRefund, isRecordedRefund } from "@/app/admin/tournoi/payment-utils";
 import Link from "next/link";
 
 import { getCurrentSession } from "@/lib/session";
@@ -56,12 +56,16 @@ export default async function UserPaiementsPage() {
       totalDueCents,
       paidCents: effectivePaidCents,
       remainingCents: Math.max(totalDueCents - effectivePaidCents, 0),
-      payments: registration.payments.map((payment) => ({
-        amountCents: isRecordedRefund(payment) ? -payment.amountCents : payment.amountCents,
-        status: isRecordedRefund(payment) ? "Remboursé" : payment.status,
-        method: payment.method,
-        paidAt: payment.paidAt,
-      })),
+      payments: registration.payments.map((payment) => {
+        const cancelled = isCancelledRefund(payment);
+        const refunded = isRecordedRefund(payment);
+        return {
+          amountCents: refunded || cancelled ? -payment.amountCents : payment.amountCents,
+          status: cancelled ? "Remboursement annulé" : refunded ? "Remboursé" : payment.status,
+          method: payment.method,
+          paidAt: payment.paidAt,
+        };
+      }),
       tables: registration.registrationEvents.map((event) => event.event.code),
     };
   });

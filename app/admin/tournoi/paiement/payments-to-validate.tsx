@@ -16,6 +16,7 @@ import {
   updatePaymentGroupNote,
   recordPayment,
   recordRefund,
+  cancelRefund,
 } from "./actions";
 
 type PaymentStatus = "PAYÉ" | "PARTIEL" | "EN ATTENTE" | "REMBOURSÉ";
@@ -282,9 +283,26 @@ export function PaymentsToValidate({
 
   const remainingCents = selectedPayment?.remainingCents ?? 0;
   const refundedCents = selectedPayment?.paymentHistory.reduce(
-    (total, entry) => total + Math.max(-entry.amountCents, 0),
+    (total, entry) => entry.cancelled ? total : total + Math.max(-entry.amountCents, 0),
     0,
   ) ?? 0;
+
+  const handleCancelRefund = (refundId: string) => {
+    if (!selectedPayment || isPending) return;
+    if (!confirm("Annuler l’enregistrement de ce remboursement et rétablir les montants du dossier ? Si l’argent a déjà été rendu, récupérez-le avant de confirmer.")) return;
+
+    const groupKey = selectedPayment.groupKey;
+    startTransition(async () => {
+      try {
+        const result = await cancelRefund(groupKey, refundId);
+        setToastMessage(result.ok ? "Remboursement annulé." : result.error);
+      } catch {
+        setToastMessage("Annulation impossible. Réessayez.");
+      }
+      setTimeout(() => setToastMessage(null), 4000);
+    });
+  };
+
   const paymentValue = manualPaidValue ?? (remainingCents / 100).toFixed(2);
   const amountCents = Math.round(Number(paymentValue) * 100);
   const canRecordPayment =
@@ -674,16 +692,28 @@ export function PaymentsToValidate({
                     {selectedPayment.paymentHistory.map((entry) => (
                       <li key={entry.id} className="flex justify-between gap-3 px-3 py-2 text-sm">
                         <div>
-                          <p>{entry.amountCents < 0 ? "Remboursement" : entry.method ? paymentMethodLabels[entry.method] : "Paiement antérieur · moyen inconnu"}</p>
+                          <p>
+                            {entry.amountCents < 0
+                              ? entry.cancelled ? "Remboursement annulé" : "Remboursement"
+                              : entry.method ? paymentMethodLabels[entry.method] : "Paiement antérieur · moyen inconnu"}
+                          </p>
                           <p className="text-xs text-muted-foreground">
                             {entry.paidAt ? paymentDateFormatter.format(new Date(entry.paidAt)) : "Date non renseignée"}
                             {entry.recordedBy ? ` · ${entry.recordedBy}` : ""}
                           </p>
                           {entry.reason ? <p className="break-words text-xs">{entry.reason}</p> : null}
-                          {entry.reducesDue ? <p className="text-xs text-muted-foreground">Montant dû réduit</p> : null}
+                          {entry.reducesDue && !entry.cancelled ? <p className="text-xs text-muted-foreground">Montant dû réduit</p> : null}
+                          {entry.cancelledAt ? (
+                            <p className="text-xs text-muted-foreground">
+                              Annulé le {paymentDateFormatter.format(new Date(entry.cancelledAt))}
+                              {entry.cancelledBy ? ` · ${entry.cancelledBy}` : ""}
+                            </p>
+                          ) : null}
                         </div>
                         <div className="shrink-0 text-right">
-                          <p className="font-semibold">{formatEuro(entry.amountCents)}</p>
+                          <p className={entry.cancelled ? "text-muted-foreground line-through" : "font-semibold"}>
+                            {formatEuro(entry.amountCents)}
+                          </p>
                           {(entry.refundableCents ?? 0) > 0 ? (
                             <button
                               type="button"
@@ -693,6 +723,16 @@ export function PaymentsToValidate({
                             >
                               <Undo2 aria-hidden="true" className="h-3.5 w-3.5" />
                               Rembourser
+                            </button>
+                          ) : null}
+                          {entry.amountCents < 0 && !entry.cancelled ? (
+                            <button
+                              type="button"
+                              disabled={isPending}
+                              className="mt-1 inline-flex min-h-8 items-center rounded-md border border-border px-2.5 text-xs font-medium text-destructive hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                              onClick={() => handleCancelRefund(entry.id)}
+                            >
+                              Annuler le remboursement
                             </button>
                           ) : null}
                         </div>
@@ -862,7 +902,7 @@ export function PaymentsToValidate({
       ) : null}
 
       {toastMessage ? (
-        <div className="fixed bottom-4 right-4 z-[60] rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground shadow-lg">
+        <div role="status" className="fixed bottom-4 right-4 z-[60] rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground shadow-lg">
           {toastMessage}
         </div>
       ) : null}

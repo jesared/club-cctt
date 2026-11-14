@@ -58,7 +58,7 @@ export default async function AdminTournoiPaiementPage({
       const fullyRefunded = isFullyRefunded(
         group.totalAmountDueCents,
         group.totalPaidCents,
-        group.paymentHistory.some((entry) => entry.amountCents < 0),
+        group.paymentHistory.some((entry) => entry.amountCents < 0 && !entry.cancelled),
       );
       const paymentStatus = fullyRefunded ? "REMBOURSÉ" as const : group.paymentStatus;
       const statusLabel = fullyRefunded ? "REMBOURSÉ" : formatPaymentStatus(group.paymentStatus);

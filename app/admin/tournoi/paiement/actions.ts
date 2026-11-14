@@ -5,7 +5,15 @@ import { PaymentMethod, PaymentStatus, Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { requireAdminSession } from "../_components";
 import { withPrismaRetry } from "@/lib/prisma-retry";
-import { getEffectivePaidCents, getRegistrationTotalDueCents, isRecordedRefund, REFUND_PROVIDER, REFUND_WITH_CREDIT_PROVIDER } from "../payment-utils";
+import {
+  CANCELLED_REFUND_PROVIDER,
+  getEffectivePaidCents,
+  getRegistrationTotalDueCents,
+  isCancelledRefund,
+  isRecordedRefund,
+  REFUND_PROVIDER,
+  REFUND_WITH_CREDIT_PROVIDER,
+} from "../payment-utils";
 import { CASH_DESK_PROVIDER, getPaymentHistoryKey, LEGACY_BALANCE_PROVIDER, readPaymentMetadata } from "./payment-history";
 import { getPaymentGroupKey } from "../payment-grouping";
 
@@ -140,7 +148,8 @@ export async function recordRefund(
       })).filter((registration) => getPaymentGroupKey(registration) === groupKey);
       const payments = registrations.flatMap((registration) => registration.payments);
       if (payments.some((payment) =>
-        isRecordedRefund(payment) && readPaymentMetadata(payment.providerRef).operationId === operationId,
+        (isRecordedRefund(payment) || isCancelledRefund(payment)) &&
+        readPaymentMetadata(payment.providerRef).operationId === operationId,
       )) return { ok: true } as const;
 
       const original = payments.find((payment) => payment.status === "PAID" &&
@@ -197,6 +206,75 @@ export async function recordRefund(
     }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }),
   );
 
+  if (result.ok) revalidateRefundPaths();
+  return result;
+}
+
+export async function cancelRefund(groupKey: string, refundId: string) {
+  const { user } = await requireAdminSession();
+  const tournamentId = groupKey.split(":")[1];
+  if (!tournamentId || !refundId) {
+    return { ok: false, error: "Remboursement introuvable." } as const;
+  }
+
+  const result = await withPrismaRetry(() =>
+    prisma.$transaction(async (tx) => {
+      const registrations = await tx.tournamentRegistration.findMany({
+        where: { tournamentId },
+        include: {
+          player: { select: { ownerId: true, owner: { select: { name: true, email: true } } } },
+          payments: true,
+        },
+        orderBy: { id: "asc" },
+      });
+
+      const target = registrations.filter((registration) => getPaymentGroupKey(registration) === groupKey)
+        .flatMap(({ payments }) => payments)
+        .find((payment) => payment.id === refundId);
+      if (target && isCancelledRefund(target)) return { ok: true } as const;
+      if (!target || !isRecordedRefund(target)) {
+        return { ok: false, error: "Remboursement introuvable dans ce dossier." } as const;
+      }
+
+      const metadata = readPaymentMetadata(target.providerRef);
+      const providerRef = JSON.stringify({
+        ...metadata,
+        reducesDue: target.provider === REFUND_WITH_CREDIT_PROVIDER,
+        cancelledAt: new Date().toISOString(),
+        cancelledBy: user.name || user.email,
+      });
+
+      for (const registration of registrations) {
+        const allocations = registration.payments.filter((payment) =>
+          payment.id === target.id ||
+          (metadata.operationId && isRecordedRefund(payment) &&
+            payment.provider === target.provider && payment.providerRef === target.providerRef),
+        );
+        if (allocations.length === 0) continue;
+
+        const restoredCents = allocations.reduce((sum, payment) => sum + payment.amountCents, 0);
+        await tx.tournamentRegistration.update({
+          where: { id: registration.id },
+          data: {
+            paidAmountCents: getEffectivePaidCents(registration) + restoredCents,
+            payments: {
+              updateMany: {
+                where: { id: { in: allocations.map(({ id }) => id) } },
+                data: { provider: CANCELLED_REFUND_PROVIDER, providerRef },
+              },
+            },
+          },
+        });
+      }
+      return { ok: true } as const;
+    }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }),
+  );
+
+  if (result.ok) revalidateRefundPaths();
+  return result;
+}
+
+function revalidateRefundPaths() {
   revalidatePath("/admin/tournoi/paiement");
   revalidatePath("/admin/tournoi/joueurs");
   revalidatePath("/admin/tournoi/inscriptions");
@@ -204,7 +282,6 @@ export async function recordRefund(
   revalidatePath("/user");
   revalidatePath("/user/paiements");
   revalidatePath("/user/inscriptions");
-  return result;
 }
 
 export async function updatePaymentGroupNote(groupKey: string, note: string) {
