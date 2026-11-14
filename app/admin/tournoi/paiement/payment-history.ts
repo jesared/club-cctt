@@ -1,5 +1,5 @@
 import type { PaymentMethod } from "@prisma/client";
-import { isRecordedRefund, REFUND_WITH_CREDIT_PROVIDER, type RegistrationPaymentEntry } from "../payment-utils";
+import { isCancelledRefund, isRecordedRefund, REFUND_WITH_CREDIT_PROVIDER, type RegistrationPaymentEntry } from "../payment-utils";
 
 export const CASH_DESK_PROVIDER = "CCTT_CASH_DESK";
 export const LEGACY_BALANCE_PROVIDER = "CCTT_LEGACY_BALANCE";
@@ -21,6 +21,9 @@ export type PaymentHistoryEntry = {
   reason?: string;
   reducesDue?: boolean;
   refundableCents?: number;
+  cancelledAt?: string;
+  cancelledBy?: string;
+  cancelled?: boolean;
 };
 
 export function getPaymentHistoryKey(payment: {
@@ -41,6 +44,9 @@ export function readPaymentMetadata(reference: string | null) {
       operationId: typeof metadata?.operationId === "string" ? String(metadata.operationId) : undefined,
       refundOf: typeof metadata?.refundOf === "string" ? String(metadata.refundOf) : undefined,
       reason: typeof metadata?.reason === "string" ? String(metadata.reason) : undefined,
+      reducesDue: metadata?.reducesDue === true,
+      cancelledAt: typeof metadata?.cancelledAt === "string" ? String(metadata.cancelledAt) : undefined,
+      cancelledBy: typeof metadata?.cancelledBy === "string" ? String(metadata.cancelledBy) : undefined,
     };
   } catch {
     return { recordedBy: null };
@@ -58,7 +64,8 @@ export function addPaymentToHistory(
     paidAt: Date | null;
   },
 ) {
-  const refund = isRecordedRefund(payment);
+  const cancelled = isCancelledRefund(payment);
+  const refund = cancelled || isRecordedRefund(payment);
   const id = refund ? payment.providerRef ?? payment.id : getPaymentHistoryKey(payment);
   const amountCents = refund ? -payment.amountCents : payment.amountCents;
   const existing = history.get(id);
@@ -80,7 +87,12 @@ export function addPaymentToHistory(
     ...(refund ? {
       refundOf: metadata.refundOf,
       reason: metadata.reason,
-      reducesDue: payment.provider === REFUND_WITH_CREDIT_PROVIDER,
+      reducesDue: payment.provider === REFUND_WITH_CREDIT_PROVIDER || metadata.reducesDue === true,
+    } : {}),
+    ...(cancelled ? {
+      cancelled: true,
+      cancelledAt: metadata.cancelledAt,
+      cancelledBy: metadata.cancelledBy,
     } : {}),
   });
 }

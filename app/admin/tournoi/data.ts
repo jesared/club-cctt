@@ -10,6 +10,7 @@ import {
   getRecordedPaidCents,
   getRegistrationPaymentDisplay,
   isRecordedRefund,
+  isCancelledRefund,
   getRegistrationTotalDueCents,
 } from "./payment-utils";
 import {
@@ -1013,7 +1014,9 @@ export async function getAdminPaymentGroups(tournamentId: string): Promise<Admin
 
     const group = groups.get(groupKey)!;
     for (const payment of registration.payments) {
-      if (payment.status === "PAID" || isRecordedRefund(payment)) addPaymentToHistory(group.history, payment);
+      if (payment.status === "PAID" || isRecordedRefund(payment) || isCancelledRefund(payment)) {
+        addPaymentToHistory(group.history, payment);
+      }
     }
     if (!hasRecordedPayments && effectivePaidCents > 0) {
       const id = `legacy:${registration.id}`;
@@ -1061,7 +1064,7 @@ export async function getAdminPaymentGroups(tournamentId: string): Promise<Admin
     for (const [key, entry] of history) {
       if (entry.amountCents <= 0) continue;
       const refundedCents = Array.from(history.values()).reduce(
-        (sum, refund) => refund.refundOf === key ? sum - refund.amountCents : sum, 0,
+        (sum, refund) => !refund.cancelled && refund.refundOf === key ? sum - refund.amountCents : sum, 0,
       );
       entry.refundableCents = Math.max(entry.amountCents - refundedCents, 0);
     }

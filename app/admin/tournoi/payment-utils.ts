@@ -6,10 +6,15 @@ export type RegistrationPaymentEntry = {
 
 export const REFUND_PROVIDER = "CCTT_REFUND";
 export const REFUND_WITH_CREDIT_PROVIDER = "CCTT_REFUND_WITH_CREDIT";
+export const CANCELLED_REFUND_PROVIDER = "CCTT_CANCELLED_REFUND";
 
 export function isRecordedRefund(payment: RegistrationPaymentEntry) {
   return payment.status === "REFUNDED" &&
     (payment.provider === REFUND_PROVIDER || payment.provider === REFUND_WITH_CREDIT_PROVIDER);
+}
+
+export function isCancelledRefund(payment: RegistrationPaymentEntry) {
+  return payment.status === "REFUNDED" && payment.provider === CANCELLED_REFUND_PROVIDER;
 }
 
 export type RegistrationEventFeeEntry = {

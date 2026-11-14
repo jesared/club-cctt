@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { CANCELLED_REFUND_PROVIDER } from "../app/admin/tournoi/payment-utils";
 import {
   addPaymentToHistory,
   CASH_DESK_PROVIDER,
@@ -49,5 +50,38 @@ describe("tournament payment history", () => {
       paidAt: null,
       recordedBy: null,
     });
+  });
+
+  it("regroupe les lignes d’un remboursement annulé et conserve sa trace", () => {
+    const history = new Map<string, PaymentHistoryEntry>();
+    const cancelledAt = "2027-03-27T14:00:00.000Z";
+    const refund = {
+      method: "CARD" as const,
+      status: "REFUNDED" as const,
+      provider: CANCELLED_REFUND_PROVIDER,
+      providerRef: JSON.stringify({
+        operationId: "refund-1",
+        refundOf: "payment-1",
+        reason: "Erreur de saisie",
+        reducesDue: true,
+        cancelledAt,
+        cancelledBy: "Caisse",
+      }),
+      paidAt: new Date("2027-03-27T13:00:00Z"),
+    };
+
+    addPaymentToHistory(history, { ...refund, id: "first", amountCents: 900 });
+    addPaymentToHistory(history, { ...refund, id: "second", amountCents: 300 });
+
+    expect([...history.values()]).toMatchObject([{
+      id: "first",
+      amountCents: -1200,
+      reason: "Erreur de saisie",
+      reducesDue: true,
+      refundOf: "payment-1",
+      cancelled: true,
+      cancelledAt,
+      cancelledBy: "Caisse",
+    }]);
   });
 });

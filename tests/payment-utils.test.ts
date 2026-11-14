@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  CANCELLED_REFUND_PROVIDER,
   getEffectivePaidCents,
   getPaymentStatusFromAmounts,
   getRegistrationTotalDueCents,
@@ -54,6 +55,17 @@ describe("payment-utils", () => {
     expect(amountDue).toBe(due);
     expect(amountPaid).toBe(8000);
     expect(amountDue - amountPaid).toBe(remaining);
+  });
+
+  it("rétablit les montants d’un remboursement annulé en conservant les autres remboursements", () => {
+    const payments = [
+      { amountCents: 10000, status: "PAID" as const },
+      { amountCents: 2000, status: "REFUNDED" as const, provider: CANCELLED_REFUND_PROVIDER },
+      { amountCents: 1000, status: "REFUNDED" as const, provider: REFUND_WITH_CREDIT_PROVIDER },
+    ];
+
+    expect(getRegistrationTotalDueCents([{ event: { feeOnlineCents: 10000 } }], payments)).toBe(9000);
+    expect(getEffectivePaidCents({ paidAmountCents: 7000, payments })).toBe(9000);
   });
 
   it.each([
